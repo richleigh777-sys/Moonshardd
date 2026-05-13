@@ -1,0 +1,121 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&family=Outfit:wght@400;500;600;700;800&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+    --font-display: "Outfit", sans-serif;
+    --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+
+    /* Premium Emerald & Slate Theme */
+    --color-surface-main: 0 0% 100%; /* Pure White */
+    --color-surface-alt: 210 20% 98%; /* Slate-50 */
+    --color-surface-highlight: 210 20% 96%; /* Slate-100 */
+    
+    --color-accent-primary: 160 84% 39%; /* Emerald-600 */
+    --color-accent-secondary: 217 91% 60%; /* Blue-500 */
+    
+    --color-text-primary: 215 25% 10%; /* Slate-950 (High Contrast) */
+    --color-text-secondary: 215 16% 25%; /* Slate-800 */
+    --color-text-muted: 215 14% 45%; /* Slate-500 */
+    
+    --color-border-subtle: 214 32% 91%; /* Slate-200 */
+    --color-border-strong: 213 27% 84%; /* Slate-300 */
+
+    --shadow-panel: 0 1px 3px 0 rgba(0, 0, 0, 0.05), 0 1px 2px 0 rgba(0, 0, 0, 0.03);
+    --shadow-float: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -2px rgba(0, 0, 0, 0.04);
+  }
+
+  html.dark, .dark {
+    /* Premium Midnight Slate */
+    --color-surface-main: 222 47% 4%; /* Near Pure Black */
+    --color-surface-alt: 222 47% 8%; /* Slate-900-ish */
+    --color-surface-highlight: 217 33% 15%; /* Slate-800 */
+    
+    --color-accent-primary: 160 84% 45%; /* Emerald-500 */
+    --color-accent-secondary: 217 91% 65%; /* Blue-400 */
+    
+    --color-text-primary: 210 40% 98%; /* White/Slate-50 (High Contrast) */
+    --color-text-secondary: 215 20% 85%; /* Slate-200 */
+    --color-text-muted: 215 15% 65%; /* Slate-400 */
+    
+    --color-border-subtle: 217 33% 18%; /* Slate-800-ish */
+    --color-border-strong: 217 33% 25%; /* Slate-700-ish */
+  }
+
+  html {
+    @apply antialiased h-full overflow-hidden text-[13px] 2xl:text-[14px];
+  }
+
+  body {
+    @apply bg-surface-alt text-text-primary font-sans h-full overflow-hidden;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    -webkit-touch-callout: none;
+  }
+
+  /* Allow selection in specific input fields only */
+  input, textarea {
+    user-select: text !important;
+    -webkit-user-select: text !important;
+  }
+
+  #root {
+    @apply h-full w-full;
+  }
+
+  ::selection {
+    @apply bg-transparent;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-display tracking-tight font-semibold text-text-primary;
+  }
+}
+
+@layer components {
+  .custom-scrollbar::-webkit-scrollbar {
+    @apply w-1.5 h-1.5;
+  }
+  .custom-scrollbar::-webkit-scrollbar-track {
+    @apply bg-transparent;
+  }
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    @apply bg-border-strong/50 rounded-full hover:bg-border-strong transition-colors;
+  }
+
+  .glass-panel {
+    @apply bg-white border border-border-subtle shadow-panel rounded-2xl;
+  }
+
+  .tech-grid {
+    background-image: linear-gradient(rgba(0,0,0,0.02) 1px, transparent 1px), linear-gradient(90deg, rgba(0,0,0,0.02) 1px, transparent 1px);
+    background-size: 20px 20px;
+  }
+}
+
+@layer utilities {
+  @keyframes pulse-slow {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.7; }
+  }
+
+  .animate-pulse-slow {
+    animation: pulse-slow 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+
+  /* Watermark Overlay (Subtle) */
+  .security-overlay {
+    pointer-events: none;
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    opacity: 0.03;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200' viewBox='0 0 100 100'%3E%3Ctext x='10' y='50' font-family='sans-serif' font-size='6' fill='black' transform='rotate(-45 50 50)'%3EESTATE NEXUS SECURE%3C/text%3E%3C/svg%3E");
+  }
+}

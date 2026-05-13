@@ -1,0 +1,74 @@
+
+import { useState, useEffect } from 'react';
+import { Modal } from '../../ui/Modal';
+import { Button } from '../../ui/Base';
+
+interface ServerConfigModalProps {
+    isOpen: boolean;
+    onClose: () => void;
+    initialName?: string;
+    initialRegion?: string;
+    onSave: (name: string, region: string) => void;
+    title: string;
+    actionLabel: string;
+}
+
+export const ServerConfigModal: React.FC<ServerConfigModalProps> = ({ 
+    isOpen, onClose, initialName = '', initialRegion = 'US-East', onSave, title, actionLabel 
+}) => {
+    const [name, setName] = useState(initialName);
+    const [region, setRegion] = useState(initialRegion);
+
+    useEffect(() => {
+        if (isOpen) {
+            const t = setTimeout(() => {
+                setName(initialName);
+                setRegion(initialRegion);
+            }, 0);
+            return () => clearTimeout(t);
+        }
+    }, [isOpen, initialName, initialRegion]);
+
+    return (
+        <Modal isOpen={isOpen} onClose={onClose} title={title}>
+            <div className="space-y-8 p-2">
+                <div className="space-y-2">
+                    <label className="text-xs font-black uppercase text-text-muted tracking-widest ml-1">Server Identifier</label>
+                    <input 
+                        value={name}
+                        onChange={(e) => setName(e.target.value)}
+                        placeholder="e.g. Phoenix Operations"
+                        className="w-full bg-surface-alt border border-border-subtle p-4 rounded-2xl text-sm font-bold outline-none focus:border-indigo-500 transition-all shadow-inner"
+                        autoFocus
+                    />
+                </div>
+                <div className="space-y-2">
+                    <label className="text-xs font-black uppercase text-text-muted tracking-widest ml-1">Geo-Data Region</label>
+                    <div className="relative">
+                        <select 
+                            value={region}
+                            onChange={(e) => setRegion(e.target.value)}
+                            className="w-full bg-surface-alt border border-border-subtle p-4 rounded-2xl text-sm font-bold outline-none focus:border-indigo-500 transition-all appearance-none cursor-pointer"
+                        >
+                            <option value="US-East">N. Virginia (US-East)</option>
+                            <option value="US-West">Oregon (US-West)</option>
+                            <option value="EU-Central">Frankfurt (EU)</option>
+                            <option value="AP-South">Singapore (APAC)</option>
+                        </select>
+                    </div>
+                </div>
+                <div className="pt-6 flex justify-end gap-3 border-t border-border-subtle">
+                    <Button variant="secondary" onClick={onClose} className="h-12 px-6">Cancel</Button>
+                    <Button 
+                        variant="primary" 
+                        onClick={() => onSave(name, region)} 
+                        className="h-12 px-8 bg-indigo-600 hover:bg-indigo-500 shadow-lg shadow-indigo-500/20 uppercase tracking-widest font-black text-xs"
+                        disabled={!name}
+                    >
+                        {actionLabel}
+                    </Button>
+                </div>
+            </div>
+        </Modal>
+    );
+};

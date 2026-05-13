@@ -1,0 +1,171 @@
+{
+  "entities": {
+    "Server": {
+      "title": "Server",
+      "description": "Tenant isolation unit",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "status": { "type": "string", "enum": ["active", "maintenance", "archived", "provisioning", "standby"] },
+        "region": { "type": "string" },
+        "created": { "type": "number" },
+        "userCount": { "type": "number" },
+        "accessKey": { "type": "string" }
+      },
+      "required": ["id", "name", "accessKey"]
+    },
+    "User": {
+      "title": "User",
+      "description": "System operative or administrator",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "serverId": { "type": "string" },
+        "name": { "type": "string" },
+        "role": { "type": "string", "enum": ["admin", "agent"] },
+        "active": { "type": "boolean" },
+        "currentStatus": { "type": "string", "enum": ["online", "offline", "break", "busy"] },
+        "lastActive": { "type": "number" }
+      },
+      "required": ["id", "serverId", "name", "role"]
+    },
+    "Customer": {
+      "title": "Customer",
+      "description": "Deduplicated customer profile",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "serverId": { "type": "string" },
+        "fullName": { "type": "string" },
+        "email": { "type": "string" },
+        "phone": { "type": "string" },
+        "ltv": { "type": "number" },
+        "orderCount": { "type": "number" },
+        "updatedAt": { "type": "number" }
+      },
+      "required": ["id", "serverId", "fullName", "phone"]
+    },
+    "Sale": {
+      "title": "Sale",
+      "description": "Transactional order unit",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "serverId": { "type": "string" },
+        "agentId": { "type": "string" },
+        "customer": { "type": "string" },
+        "amount": { "type": "number" },
+        "status": { "type": "string", "enum": ["Pending", "Approved", "Declined", "Cancelled", "Rescue In Progress"] },
+        "timestamp": { "type": "number" },
+        "updatedAt": { "type": "number" }
+      },
+      "required": ["id", "serverId", "agentId", "status", "amount", "timestamp"]
+    },
+    "Note": {
+      "title": "Note",
+      "description": "Lead/Contact interaction or callback",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "serverId": { "type": "string" },
+        "agentId": { "type": "string" },
+        "content": { "type": "string" },
+        "type": { "type": "string", "enum": ["note", "callback"] },
+        "timestamp": { "type": "number" },
+        "status": { "type": "string", "enum": ["Pending", "Active", "Resolved", "Archived"] },
+        "createdAt": { "type": "number" }
+      },
+      "required": ["id", "serverId", "agentId", "type", "timestamp", "content"]
+    },
+    "Presence": {
+      "title": "Presence",
+      "description": "Real-time activity tracking",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "userId": { "type": "string" },
+        "serverId": { "type": "string" },
+        "userName": { "type": "string" },
+        "resourceId": { "type": "string" },
+        "resourceType": { "type": "string", "enum": ["sale", "customer", "dashboard", "chat"] },
+        "action": { "type": "string", "enum": ["viewing", "editing"] },
+        "timestamp": { "type": "number" }
+      },
+      "required": ["id", "userId", "serverId", "resourceId", "timestamp"]
+    },
+    "SystemConfig": {
+      "title": "System Configuration",
+      "description": "Operational parameters for a server",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "serverId": { "type": "string" },
+        "shiftStart": { "type": "string" },
+        "shiftEnd": { "type": "string" },
+        "baseCommission": { "type": "number" },
+        "telephonyEnabled": { "type": "boolean" }
+      }
+    },
+    "ChatChannel": {
+      "title": "Chat Channel",
+      "description": "Communication group",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "memberIds": { "type": "array", "items": { "type": "string" } }
+      }
+    }
+  },
+  "firestore": {
+    "/servers/{serverId}": {
+      "schema": "Server",
+      "description": "Root server configuration"
+    },
+    "/servers/{serverId}/users/{userId}": {
+      "schema": "User",
+      "description": "Operatives within a server"
+    },
+    "/servers/{serverId}/customers/{customerId}": {
+      "schema": "Customer",
+      "description": "Customer profiles"
+    },
+    "/servers/{serverId}/sales/{saleId}": {
+      "schema": "Sale",
+      "description": "Transaction records"
+    },
+    "/servers/{serverId}/notes/{noteId}": {
+      "schema": "Note",
+      "description": "Leads and interaction notes"
+    },
+    "/servers/{serverId}/presence/{presenceId}": {
+      "schema": "Presence",
+      "description": "Real-time presence indicators"
+    },
+    "/servers/{serverId}/systemConfig/{configId}": {
+      "schema": "SystemConfig",
+      "description": "Server configuration node"
+    },
+    "/servers/{serverId}/channels/{channelId}": {
+      "schema": "ChatChannel",
+      "description": "Chat channels"
+    },
+    "/servers/{serverId}/messages/{messageId}": {
+      "schema": "object",
+      "description": "Chat messages"
+    },
+    "/servers/{serverId}/audit/{auditId}": {
+      "schema": "object",
+      "description": "Audit logs"
+    },
+    "/servers/{serverId}/attendance/{attId}": {
+      "schema": "object",
+      "description": "Attendance logs"
+    },
+    "/servers/{serverId}/notifications/{notifId}": {
+      "schema": "object",
+      "description": "Live notifications"
+    }
+  }
+}

@@ -1,0 +1,51 @@
+import { useState, useCallback } from 'react';
+import { Sale, PipelineStage } from '../types';
+import { useCRM } from '../hooks/useCRM';
+import { sfx } from '../lib/soundService';
+
+export const useNexusOptimizer = (sales: Sale[]) => {
+  const { updateSaleStatus } = useCRM();
+  const [isOptimizing, setIsOptimizing] = useState(false);
+
+  const executeCorrection = useCallback(async () => {
+    setIsOptimizing(true);
+    sfx.playSubmit();
+
+    const corrections: Promise<void>[] = [];
+    let count = 0;
+
+    sales.forEach(sale => {
+      let targetStage: PipelineStage | null = null;
+
+      // Rule A: Approved sales must be in 'Closed'
+      if (sale.status === 'Approved' && sale.pipelineStatus !== 'Closed') {
+        targetStage = 'Closed';
+      }
+      // Rule B: Declined sales must be in 'Declined'
+      else if (sale.status === 'Declined' && sale.pipelineStatus !== 'Declined') {
+        targetStage = 'Declined';
+      }
+      // Rule C: Rescue In Progress must be in 'Declined' (Recovery Column)
+      else if (sale.status === 'Rescue In Progress' && sale.pipelineStatus !== 'Declined') {
+        targetStage = 'Declined';
+      }
+
+      if (targetStage) {
+        count++;
+        corrections.push(updateSaleStatus(sale.id, sale.status, { pipelineStatus: targetStage }));
+      }
+    });
+
+    await Promise.all(corrections);
+    
+    // Artificial delay for visual "Scanning" interaction
+    await new Promise(resolve => setTimeout(resolve, 1200));
+    
+    setIsOptimizing(false);
+    if (count > 0) sfx.playSuccess();
+    
+    return count;
+  }, [sales, updateSaleStatus]);
+
+  return { isOptimizing, executeCorrection };
+};

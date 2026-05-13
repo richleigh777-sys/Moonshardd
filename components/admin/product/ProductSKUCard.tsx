@@ -1,0 +1,111 @@
+
+import React from 'react';
+import { Package, Power, Edit3, Copy, AlertTriangle, Trash2 } from 'lucide-react';
+import { Product } from '../../../types';
+import { getInventoryHealth, calculateMargin } from '../../../utils/productMath';
+import { StockReactor } from './StockReactor';
+
+interface Props {
+    product: Product;
+    revenue: number;
+    volume: number;
+    onToggle: (id: string) => void;
+    onEdit: (p: Product) => void;
+    onDuplicate: (p: Product) => void;
+    onDelete: (id: string) => void;
+    viewMode: 'grid' | 'list';
+}
+
+export const ProductSKUCard: React.FC<Props> = ({ product, volume, onToggle, onEdit, onDuplicate, onDelete, viewMode }) => {
+    const health = getInventoryHealth(product);
+    const margin = calculateMargin(product.price, product.cost || 0);
+
+    // --- LIST VIEW ---
+    if (viewMode === 'list') {
+        return (
+            <div className={`group flex items-center justify-between p-4 rounded-2xl border transition-all hover:bg-surface-alt/40 ${product.active ? 'bg-surface-main border-border-subtle' : 'bg-surface-alt/20 border-dashed border-border-subtle opacity-60'}`}>
+                <div className="flex items-center gap-4">
+                    <div className={`w-10 h-10 rounded-xl flex items-center justify-center border shadow-inner ${product.active ? 'bg-accent-primary/10 border-accent-primary/20 text-accent-primary' : 'bg-surface-alt text-text-muted border-border-subtle'}`}>
+                        <Package size={18} strokeWidth={2.5}/>
+                    </div>
+                    <div>
+                        <h5 className="font-bold text-sm text-text-primary uppercase tracking-tight">{product.name}</h5>
+                        <p className="text-[9px] font-black uppercase text-text-muted tracking-widest">{product.category || 'GENERAL'} • {product.sku || 'NO-SKU'}</p>
+                    </div>
+                </div>
+
+                <div className="flex items-center gap-8">
+                    <div className="text-right">
+                        <p className="text-[9px] font-black uppercase text-text-muted tracking-widest mb-0.5">Price</p>
+                        <p className="text-sm font-black num-font text-text-primary">${product.price}</p>
+                    </div>
+                    <div className="text-right">
+                        <p className="text-[9px] font-black uppercase text-text-muted tracking-widest mb-0.5">Stock</p>
+                        <p className={`text-sm font-black num-font ${health === 'CRITICAL' ? 'text-red-500' : 'text-text-primary'}`}>{product.stock || 0}</p>
+                    </div>
+                    <div className="text-right hidden md:block">
+                        <p className="text-[9px] font-black uppercase text-text-muted tracking-widest mb-0.5">Margin</p>
+                        <p className="text-sm font-black num-font text-emerald-500">{margin}%</p>
+                    </div>
+                </div>
+
+                <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <button onClick={() => onDuplicate(product)} className="p-2 hover:bg-blue-500/10 hover:text-blue-500 rounded-lg text-text-muted transition-colors"><Copy size={14}/></button>
+                    <button onClick={() => onEdit(product)} className="p-2 hover:bg-accent-primary/10 hover:text-accent-primary rounded-lg text-text-muted transition-colors"><Edit3 size={14}/></button>
+                    <button onClick={() => onToggle(product.id)} className={`p-2 rounded-lg transition-colors ${product.active ? 'hover:bg-amber-500/10 hover:text-amber-500 text-text-muted' : 'text-text-muted hover:text-emerald-500'}`}><Power size={14}/></button>
+                    <div className="w-px h-4 bg-border-subtle mx-1"></div>
+                    <button onClick={() => onDelete(product.id)} className="p-2 hover:bg-red-500/10 hover:text-red-500 rounded-lg text-text-muted transition-colors"><Trash2 size={14}/></button>
+                </div>
+            </div>
+        );
+    }
+
+    // --- GRID VIEW ---
+    return (
+        <div className={`group relative bg-surface-main border rounded-[1.8rem] p-5 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl overflow-hidden flex flex-col ${
+            product.active ? 'border-border-subtle hover:border-accent-primary/40' : 'border-dashed opacity-60 bg-surface-alt/20'
+        }`}>
+            {/* Hover Actions */}
+            <div className="absolute top-4 right-4 flex gap-1 opacity-0 group-hover:opacity-100 transition-all z-20 translate-x-2 group-hover:translate-x-0">
+                <button onClick={() => onDuplicate(product)} className="p-2 rounded-xl bg-surface-alt hover:bg-blue-500/10 text-text-muted hover:text-blue-500 border border-border-subtle shadow-sm transition-all" title="Clone SKU">
+                    <Copy size={12}/>
+                </button>
+                <button onClick={() => onToggle(product.id)} className="p-2 rounded-xl bg-surface-alt hover:bg-amber-500/10 text-text-muted hover:text-amber-500 border border-border-subtle shadow-sm transition-all" title={product.active ? 'Deactivate' : 'Activate'}>
+                    <Power size={12}/>
+                </button>
+                <button onClick={() => onEdit(product)} className="p-2 bg-surface-alt hover:bg-accent-primary/10 rounded-xl text-text-muted hover:text-accent-primary border border-border-subtle shadow-sm transition-all" title="Edit SKU">
+                    <Edit3 size={12}/>
+                </button>
+                <button onClick={() => onDelete(product.id)} className="p-2 bg-surface-alt hover:bg-red-500/10 rounded-xl text-text-muted hover:text-red-500 border border-border-subtle shadow-sm transition-all" title="Delete SKU">
+                    <Trash2 size={12}/>
+                </button>
+            </div>
+
+            <div className="flex-1 space-y-4 relative z-10">
+                <div className="flex justify-between items-start">
+                    <div className={`w-10 h-10 rounded-xl flex items-center justify-center border shadow-inner transition-transform group-hover:scale-110 ${product.active ? 'bg-accent-primary/10 border-accent-primary/20 text-accent-primary' : 'bg-surface-alt text-text-muted'}`}>
+                        <Package size={18} strokeWidth={2.5}/>
+                    </div>
+                    {health !== 'OPTIMAL' && (
+                        <div className={`px-2 py-0.5 rounded text-[8px] font-black uppercase tracking-wider border flex items-center gap-1 ${health === 'CRITICAL' ? 'bg-red-500/10 text-red-500 border-red-500/20' : 'bg-amber-500/10 text-amber-500 border-amber-500/20'}`}>
+                            <AlertTriangle size={8}/> {health}
+                        </div>
+                    )}
+                </div>
+
+                <div>
+                    <p className="text-[9px] font-black uppercase text-text-muted tracking-widest mb-1 truncate opacity-70">{product.category || 'GENERAL'}</p>
+                    <h5 className="font-black text-text-primary text-base uppercase tracking-tight italic truncate pr-8 leading-tight">{product.name}</h5>
+                    <div className="flex items-center gap-2 mt-2">
+                        <span className="text-xl font-black text-text-primary num-font">${product.price}</span>
+                        <span className={`text-[9px] font-bold uppercase px-1.5 py-0.5 rounded border ${margin > 50 ? 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20' : margin < 20 ? 'bg-red-500/10 text-red-500 border-red-500/20' : 'bg-blue-500/10 text-blue-500 border-blue-500/20'}`}>
+                            {margin}% Margin
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <StockReactor stock={product.stock || 0} volume={volume} health={health} />
+        </div>
+    );
+};

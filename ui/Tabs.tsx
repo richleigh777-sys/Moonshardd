@@ -1,0 +1,1 @@
+export { Tabs, TabList, TabTrigger, TabContent } from '../components/ui/Tabs';

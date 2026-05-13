@@ -1,0 +1,99 @@
+
+import React from 'react';
+import { Sale } from '../../types';
+import { 
+    DollarSign, Zap, Target, Layers, BarChart3
+} from 'lucide-react';
+import { useAnalytics } from '../../hooks/useAnalytics';
+import { KineticNumber } from '../ui/KineticNumber';
+import { StatCard } from './analytics/StatCard';
+import { TemporalHeatmap } from './analytics/TemporalHeatmap';
+import { ProductMixChart } from './analytics/ProductMixChart';
+
+interface AdminAnalyticsProps {
+  sales: Sale[];
+}
+
+export const AdminAnalytics: React.FC<AdminAnalyticsProps> = ({ sales = [] }) => {
+  const { timeRange, setTimeRange, metrics } = useAnalytics(sales);
+
+  return (
+    <div className="flex flex-col gap-6 animate-in fade-in duration-700 w-full overflow-visible pb-4">
+        
+        {/* Header Toolbar */}
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center bg-surface-main/80 backdrop-blur-xl p-3 pr-4 rounded-[2.5rem] border border-border-subtle shadow-lg gap-4 shrink-0 relative overflow-hidden">
+            <div className="absolute inset-0 bg-gradient-to-r from-indigo-500/5 to-transparent pointer-events-none"></div>
+            
+            <div className="flex items-center gap-4 px-4 py-2 relative z-10">
+                <div className="p-3 bg-indigo-500/10 rounded-2xl text-indigo-500 border border-indigo-500/20 shadow-neon">
+                    <BarChart3 size={24} strokeWidth={2.5} />
+                </div>
+                <div>
+                    <h3 className="text-lg font-black uppercase tracking-tighter text-text-primary italic">Admin Intelligence</h3>
+                    <p className="text-[10px] font-bold text-text-muted uppercase tracking-widest flex items-center gap-1.5">
+                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                        Live Metrics • {timeRange} View
+                    </p>
+                </div>
+            </div>
+
+            <div className="flex bg-surface-alt p-1.5 rounded-2xl border border-border-subtle relative z-10 shadow-inner">
+                {(['Today', 'Week', 'Month', 'All'] as const).map(range => (
+                    <button
+                        key={range}
+                        onClick={() => setTimeRange(range)}
+                        className={`px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${
+                            timeRange === range 
+                            ? 'bg-surface-main text-text-primary shadow-md ring-1 ring-border-subtle' 
+                            : 'text-text-muted hover:text-text-secondary hover:bg-surface-main/50'
+                        }`}
+                    >
+                        {range}
+                    </button>
+                ))}
+            </div>
+        </div>
+
+        {/* Stats Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
+            <StatCard 
+                title="Total Revenue" 
+                value={<KineticNumber value={metrics.totalRevenue} prefix="$" />}
+                sub="Gross Volume" 
+                icon={DollarSign} 
+                color="text-emerald-500" 
+                trend="+12.5%"
+                sparklineData={metrics.trends.revenue}
+            />
+            <StatCard 
+                title="Active Deal Flow" 
+                value={<KineticNumber value={metrics.dealCount} />} 
+                sub={`${metrics.activeAgentCount} Agents Contributing`} 
+                icon={Layers} 
+                color="text-indigo-500" 
+                sparklineData={metrics.trends.volume}
+            />
+            <StatCard 
+                title="Win Rate" 
+                value={`${metrics.conversionRate.toFixed(1)}%`} 
+                sub="Approval Efficiency" 
+                icon={Zap} 
+                color="text-amber-500" 
+            />
+            <StatCard 
+                title="Average Order" 
+                value={<KineticNumber value={metrics.dealCount > 0 ? Math.round(metrics.totalRevenue / metrics.dealCount) : 0} prefix="$" />}
+                sub="Value Per Transaction" 
+                icon={Target} 
+                color="text-purple-500" 
+            />
+        </div>
+
+        {/* Chart Layout */}
+        <div className="grid grid-cols-1 xl:grid-cols-3 gap-6 auto-rows-fr">
+            <TemporalHeatmap data={metrics.heatMap} />
+            <ProductMixChart data={metrics.pieData} />
+        </div>
+    </div>
+  );
+};
