@@ -253,9 +253,9 @@ export const ResizableFrame: React.FC<ResizableFrameProps> = ({
                 <>
                     {/* 1. Holographic Alignment Grid (Visible during resize) */}
                     {isResizing && (
-                        <div className="absolute inset-0 z-40 pointer-events-none opacity-40 bg-[linear-gradient(rgba(124,58,237,0.2)_1px,transparent_1px),linear-gradient(90deg,rgba(124,58,237,0.2)_1px,transparent_1px)] bg-[size:50px_50px] animate-in fade-in duration-300">
+                        <div className="absolute inset-0 z-40 pointer-events-none opacity-40 bg-[linear-gradient(rgba(124,58,237,0.2)_1px,transparent_1px),linear-gradient(90deg,rgba(124,58,237,0.2)_1px,transparent_1px)] bg-[length:20px_20px] rounded-[inherit]">
                             {/* Central Crosshair */}
-                            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-8 h-8 border border-accent-primary/50 opacity-50 flex items-center justify-center">
+                            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-8 h-8 border border-accent-primary/50 opacity-50 flex items-center justify-center rounded-full">
                                 <div className="w-1 h-1 bg-accent-primary rounded-full"></div>
                             </div>
                         </div>
@@ -263,14 +263,14 @@ export const ResizableFrame: React.FC<ResizableFrameProps> = ({
 
                     {/* 2. Holographic HUD */}
                     {isResizing && (
-                        <div className={`absolute top-4 right-4 z-[60] backdrop-blur-xl border px-4 py-2.5 rounded-xl shadow-2xl flex items-center gap-4 animate-in fade-in zoom-in duration-200 pointer-events-none select-none ${isSnapped ? 'bg-emerald-950/80 border-emerald-500/50 text-emerald-400' : 'bg-black/80 border-accent-primary/50 text-accent-primary'}`}>
-                            {isSnapped ? <Magnet size={16} className="animate-pulse" /> : <Ruler size={16} className="animate-pulse" />}
-                            <div className="flex flex-col">
+                        <div className="absolute top-4 right-4 z-[60] backdrop-blur-xl border border-border-subtle/50 px-4 py-2.5 rounded-xl shadow-2xl flex items-center gap-4 animate-in fade-in zoom-in duration-200 pointer-events-none bg-surface-main/80">
+                            {isSnapped ? <Magnet size={16} className="animate-pulse text-emerald-500" /> : <Ruler size={16} className="animate-pulse text-accent-primary" />}
+                            <div className="flex flex-col gap-0.5">
                                 <span className="text-[9px] font-black uppercase tracking-widest opacity-70 flex justify-between gap-4">
                                     <span>Dimensions</span>
                                     {isSnapped && <span className="text-emerald-400">MAGNETIC LOCK</span>}
                                 </span>
-                                <span className="text-sm font-mono font-bold tracking-wider">
+                                <span className="text-sm font-mono font-bold tracking-wider text-text-primary">
                                     W:{Math.round(typeof dimensions.width === 'number' ? dimensions.width : measuredSize.w || 0)} 
                                     <span className="opacity-30 mx-2">|</span> 
                                     H:{Math.round(typeof dimensions.height === 'number' ? dimensions.height : measuredSize.h || 0)}
@@ -296,8 +296,8 @@ export const ResizableFrame: React.FC<ResizableFrameProps> = ({
                     >
                         {direction === 'vertical' ? (
                             // Vertical Handle Bar
-                            <div className="w-full h-full flex items-center justify-center relative hover:bg-accent-primary/10 transition-colors">
-                                <div className="w-16 h-1 rounded-full bg-accent-primary/40 group-hover:bg-accent-primary group-hover:shadow-[0_0_10px_var(--color-accent-primary)] transition-all"></div>
+                            <div className="w-full h-full flex items-center justify-center relative hover:bg-accent-primary/10 transition-colors rounded-t-lg">
+                                <div className="w-16 h-1 rounded-full bg-accent-primary/40 group-hover:bg-accent-primary group-hover:shadow-[0_0_10px_var(--color-accent-primary)] transition-all" />
                             </div>
                         ) : (
                             // Corner Tech Handle
@@ -306,15 +306,16 @@ export const ResizableFrame: React.FC<ResizableFrameProps> = ({
                                 <button 
                                     onClick={handleReset}
                                     onMouseDown={(e) => e.stopPropagation()}
-                                    className="absolute bottom-2 right-12 p-1.5 bg-surface-main border border-border-subtle rounded-lg text-text-muted hover:text-status-error hover:border-status-error transition-all shadow-sm opacity-0 group-hover:opacity-100 scale-90 hover:scale-100 flex items-center gap-1 cursor-pointer"
+                                    className="absolute bottom-2 right-12 p-1.5 bg-surface-main border border-border-subtle rounded-lg text-text-muted hover:text-rose-500 hover:border-rose-500/30 transition-all"
                                     title="Reset Size"
+                                    aria-label="Reset frame size"
                                 >
-                                    <RefreshCw size={10} />
+                                    <RefreshCw size={11} />
                                 </button>
 
                                 {/* The Grip Graphic */}
                                 <div className={`
-                                    absolute bottom-0 right-0 w-8 h-8 border-b-[3px] border-r-[3px] rounded-br-2xl transition-all duration-300
+                                    absolute bottom-0 right-0 w-8 h-8 border-b-[3px] border-r-[3px] rounded-tl-lg transition-all duration-300
                                     ${isResizing ? 'border-accent-primary bg-accent-primary/10' : 'border-accent-primary/30 group-hover:border-accent-primary bg-surface-main/30 backdrop-blur-sm'}
                                 `}></div>
                                 
@@ -324,7 +325,7 @@ export const ResizableFrame: React.FC<ResizableFrameProps> = ({
                                 <div className="absolute bottom-4 right-2 w-1 h-1 bg-accent-primary/50 rounded-full"></div>
                                 
                                 {/* Keyboard Hint */}
-                                <div className="absolute bottom-1 right-1 opacity-0 group-focus:opacity-100 transition-opacity text-[8px] text-accent-primary font-black -translate-x-full pr-2 whitespace-nowrap pointer-events-none">
+                                <div className="absolute bottom-1 right-1 opacity-0 group-focus:opacity-100 transition-opacity text-[8px] text-accent-primary font-black -translate-x-full pr-2 whitespace-nowrap">
                                     USE ARROWS
                                 </div>
                             </div>
