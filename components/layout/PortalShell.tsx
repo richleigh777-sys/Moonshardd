@@ -107,7 +107,7 @@ export const PortalShell: React.FC<PortalShellProps> = ({
                                     </div>
                                     <span className="font-black uppercase tracking-tighter">Nexus OS</span>
                                 </div>
-                                <button onClick={() => setIsMobileMenuOpen(false)} className="p-2 text-text-muted">
+                                <button onClick={() => setIsMobileMenuOpen(false)} className="p-2 text-text-muted hover:text-text-primary transition-colors">
                                     <CloseIcon size={20} />
                                 </button>
                             </div>
@@ -115,8 +115,8 @@ export const PortalShell: React.FC<PortalShellProps> = ({
                                 {sidebarContent}
                             </nav>
                             <div className="p-4 border-t border-border-subtle">
-                                <button onClick={handleLogout} className="w-full p-4 flex items-center gap-4 text-rose-500 bg-rose-500/5 rounded-xl font-bold">
-                                    <LogOut size={20} />
+                                <button onClick={handleLogout} className="w-full p-3 flex items-center gap-3 text-rose-600 bg-rose-500/10 border border-rose-500/20 rounded-lg font-bold hover:bg-rose-500/20 transition-colors">
+                                    <LogOut size={18} />
                                     <span>Log Out</span>
                                 </button>
                             </div>
@@ -132,11 +132,11 @@ export const PortalShell: React.FC<PortalShellProps> = ({
                 className={`
                     hidden lg:flex fixed inset-y-0 left-0 z-[100] transition-all duration-300 ease-out flex-col shrink-0
                     bg-slate-950 border-r border-white/5 text-white
-                    ${isSidebarCollapsed ? 'w-12' : 'w-52 shadow-xl'}
+                    ${isSidebarCollapsed ? 'w-16' : 'w-56 shadow-xl'}
                 `}
             >
-                <div className="h-12 flex items-center justify-center shrink-0 border-b border-white/5">
-                    <div className="w-8 h-8 flex items-center justify-center rounded-lg bg-accent-primary text-white cursor-pointer hover:scale-105 transition-transform shadow-lg shadow-accent-primary/20" onClick={() => setIsTimeSheetOpen(true)}>
+                <div className="h-16 flex items-center justify-center shrink-0 border-b border-white/5">
+                    <div className="w-8 h-8 flex items-center justify-center rounded-lg bg-accent-primary text-white cursor-pointer hover:scale-105 transition-transform shadow-lg shadow-accent-primary/20">
                         <Shield size={16} fill="currentColor" />
                     </div>
                 </div>
@@ -146,7 +146,7 @@ export const PortalShell: React.FC<PortalShellProps> = ({
                 </nav>
 
                 <div className="p-2 border-t border-white/5 bg-black/20">
-                    <button onClick={handleLogout} className="w-full p-2.5 flex items-center gap-3 text-white/70 hover:text-white transition-all rounded-lg">
+                    <button onClick={handleLogout} className="w-full p-2.5 flex items-center gap-3 text-white/70 hover:text-white hover:bg-white/5 transition-all rounded-lg" title="Log Out">
                         <LogOut size={18} />
                         {!isSidebarCollapsed && <span className="text-xs font-bold">Log Out</span>}
                     </button>
@@ -154,25 +154,27 @@ export const PortalShell: React.FC<PortalShellProps> = ({
             </aside>
 
             {/* MAIN CONTENT AREA */}
-            <main className={`flex-1 flex flex-col min-w-0 transition-all duration-300 ${isSidebarCollapsed ? 'lg:ml-12' : 'lg:ml-52'} h-full overflow-hidden bg-surface-alt`}>
+            <main className={`flex-1 flex flex-col min-w-0 transition-all duration-300 ${isSidebarCollapsed ? 'lg:ml-16' : 'lg:ml-56'} h-full overflow-hidden bg-surface-alt`}>
                 
                 {/* HEADER */}
-                <header className="h-12 px-4 md:px-5 flex items-center justify-between bg-surface-main border-b border-border-subtle shrink-0 z-[50] shadow-sm">
-                    <div className="flex items-center gap-3 md:gap-4">
+                <header className="h-16 px-4 md:px-6 flex items-center justify-between bg-surface-main border-b border-border-subtle shrink-0 z-[50] shadow-sm">
+                    <div className="flex items-center gap-3 md:gap-4 min-w-0">
                         <button 
                             onClick={() => setIsMobileMenuOpen(true)}
-                            className="p-1.5 -ml-1 text-text-muted hover:text-text-primary lg:hidden"
+                            className="p-1.5 -ml-1 text-text-muted hover:text-text-primary lg:hidden transition-colors"
+                            aria-label="Toggle menu"
                         >
                             <Menu size={20} />
                         </button>
 
-                        <h1 className="text-sm md:text-base font-black text-text-primary truncate max-w-[120px] md:max-w-none uppercase tracking-tight">{title}</h1>
+                        <h1 className="text-sm md:text-base font-black text-text-primary truncate uppercase tracking-tight">{title}</h1>
                         
                         {activeServer && (
                             <div className="relative">
                                 <button 
                                     onClick={() => user.accessLevel >= 10 && setIsServerSwitcherOpen(!isServerSwitcherOpen)}
-                                    className={`flex items-center gap-2 px-3 py-1.5 bg-surface-highlight border border-border-subtle rounded-lg transition-all ${user.accessLevel >= 10 ? 'hover:border-accent-primary cursor-pointer' : 'cursor-default'}`}
+                                    className={`flex items-center gap-2 px-3 py-1.5 bg-surface-highlight border border-border-subtle rounded-lg transition-all text-xs font-bold ${user.accessLevel >= 10 ? 'hover:border-accent-primary/50 cursor-pointer' : 'cursor-not-allowed opacity-50'}`}
+                                    disabled={user.accessLevel < 10}
                                 >
                                     <Server size={12} className="text-text-muted" />
                                     <span className="text-[10px] font-black uppercase text-text-secondary hidden sm:inline">{activeServer.name}</span>
@@ -188,7 +190,7 @@ export const PortalShell: React.FC<PortalShellProps> = ({
                                                 initial={{ opacity: 0, y: 10, scale: 0.95 }}
                                                 animate={{ opacity: 1, y: 0, scale: 1 }}
                                                 exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                                                className="absolute top-full left-0 mt-2 w-56 bg-surface-main border border-border-strong shadow-float rounded-2xl z-50 overflow-hidden"
+                                                className="absolute top-full left-0 mt-2 w-56 bg-surface-main border border-border-strong shadow-float rounded-lg z-50 overflow-hidden"
                                             >
                                                 <div className="p-3 border-b border-border-subtle bg-surface-alt/30">
                                                     <p className="text-[10px] font-black uppercase tracking-widest text-text-muted">Switch Node</p>
@@ -198,7 +200,7 @@ export const PortalShell: React.FC<PortalShellProps> = ({
                                                         <button
                                                             key={server.id}
                                                             onClick={() => handleSwitchServer(server.id)}
-                                                            className={`w-full px-4 py-3 flex items-center justify-between hover:bg-surface-highlight transition-colors ${activeServer.id === server.id ? 'bg-accent-primary/5 text-accent-primary' : 'text-text-secondary'}`}
+                                                            className={`w-full px-4 py-3 flex items-center justify-between hover:bg-surface-highlight transition-colors ${activeServer.id === server.id ? 'bg-surface-highlight' : ''}`}
                                                         >
                                                             <div className="flex items-center gap-3">
                                                                 <Server size={14} />
@@ -216,23 +218,25 @@ export const PortalShell: React.FC<PortalShellProps> = ({
                         )}
                     </div>
 
-                    <div className="flex items-center gap-2 md:gap-4">
+                    <div className="flex items-center gap-2 md:gap-4 flex-shrink-0">
                         {headerContent}
 
                         <div className="flex items-center gap-2">
                             {!isClockedIn ? (
                                 <button 
                                     onClick={handleClockIn}
-                                    className="flex items-center gap-2 px-3 md:px-4 py-2 bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl font-bold text-xs transition-all shadow-lg shadow-emerald-500/20 active:scale-95"
+                                    className="flex items-center gap-2 px-3 md:px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg font-bold text-xs transition-all shadow-lg shadow-emerald-600/30 hover:shadow-emerald-600/50"
+                                    title="Clock in to start your shift"
                                 >
                                     <Play size={14} fill="currentColor" />
                                     <span className="hidden sm:inline">Clock In</span>
                                 </button>
                             ) : (
-                                <div className="flex items-center gap-1 md:gap-2 p-1 bg-surface-highlight border border-border-subtle rounded-xl">
+                                <div className="flex items-center gap-1 md:gap-2 p-1 bg-surface-highlight border border-border-subtle rounded-lg">
                                     <div 
-                                        className="px-2 md:px-3 py-1.5 bg-surface-main border border-border-subtle rounded-lg cursor-pointer hover:bg-surface-alt transition-colors"
+                                        className="px-2 md:px-3 py-1.5 bg-surface-main border border-border-subtle rounded-md cursor-pointer hover:bg-surface-alt transition-colors"
                                         onClick={() => setIsTimeSheetOpen(true)}
+                                        title="View timesheet"
                                     >
                                         <span className={`text-xs font-mono font-bold ${isOnBreak ? 'text-amber-500' : 'text-emerald-500'}`}>
                                             {formatTimer(workTimeSeconds)}
@@ -240,7 +244,8 @@ export const PortalShell: React.FC<PortalShellProps> = ({
                                     </div>
                                     <button 
                                         onClick={() => onToggleBreak()} 
-                                        className={`flex items-center gap-2 px-2 md:px-3 py-1.5 rounded-lg font-bold text-[10px] uppercase tracking-wider transition-all ${isOnBreak ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-500/20' : 'bg-amber-500 text-white shadow-lg shadow-amber-500/20 hover:bg-amber-600'}`}
+                                        className={`flex items-center gap-2 px-2 md:px-3 py-1.5 rounded-md font-bold text-[10px] uppercase tracking-wider transition-all ${isOnBreak ? 'bg-emerald-600 text-white' : 'bg-amber-600 text-white'}`}
+                                        title={isOnBreak ? 'Resume work' : 'Take a break'}
                                     >
                                         {isOnBreak ? (
                                             <>
@@ -260,14 +265,24 @@ export const PortalShell: React.FC<PortalShellProps> = ({
                         
                         <div className="hidden md:block w-px h-6 bg-border-subtle mx-1"></div>
 
-                        <button onClick={toggleTheme} className="hidden md:flex p-2.5 text-text-muted hover:text-text-primary hover:bg-surface-highlight transition-all rounded-lg">
+                        <button 
+                          onClick={toggleTheme} 
+                          className="hidden md:flex p-2.5 text-text-muted hover:text-text-primary hover:bg-surface-highlight transition-all rounded-lg" 
+                          title={`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`}
+                          aria-label={`Theme: ${theme}`}
+                        >
                             {theme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
                         </button>
                         
-                        <button onClick={() => setIsNotificationPanelOpen(!isNotificationPanelOpen)} className="p-2.5 text-text-muted hover:text-text-primary relative rounded-lg">
+                        <button 
+                          onClick={() => setIsNotificationPanelOpen(!isNotificationPanelOpen)} 
+                          className="p-2.5 text-text-muted hover:text-text-primary hover:bg-surface-highlight transition-all rounded-lg relative" 
+                          title="Notifications"
+                          aria-label={`Notifications: ${notifications.length} unread`}
+                        >
                             <Bell size={20} />
                             {notifications.length > 0 && (
-                                <span className="absolute top-2.5 right-2.5 w-2 h-2 bg-rose-500 border-2 border-surface-main rounded-full"></span>
+                                <span className="absolute top-2 right-2 w-2.5 h-2.5 bg-rose-500 border-2 border-surface-main rounded-full animate-pulse"></span>
                             )}
                         </button>
                     </div>
@@ -276,7 +291,7 @@ export const PortalShell: React.FC<PortalShellProps> = ({
                 {/* WORKSPACE */}
                 <div className="flex-1 overflow-hidden relative bg-surface-alt">
                     <div className="absolute inset-0 overflow-y-auto overflow-x-hidden custom-scrollbar">
-                        <div className="max-w-[1800px] mx-auto w-full flex flex-col min-h-full p-2 md:p-3">
+                        <div className="max-w-[1800px] mx-auto w-full flex flex-col min-h-full p-3 md:p-4">
                             {children}
                         </div>
                     </div>
