@@ -9,7 +9,7 @@ export function calculateUIMetrics(
   const approvedSales = sales.filter((s) => s.status === 'Approved' && s.agentId === currentUser.id);
   const timePerSale =
     approvedSales.reduce((sum, sale) => {
-      // @ts-ignore
+      // @ts-expect-error type variance
       return sum + ((sale.closedAt || Date.now()) - sale.timestamp);
     }, 0) / Math.max(1, approvedSales.length);
 

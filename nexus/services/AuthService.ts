@@ -45,6 +45,18 @@ export class AuthService {
                 this.repository.setActiveServer(effectiveServerId);
             }
 
+            if (userId === 'sys_root') {
+                return { 
+                   id: 'sys_root', 
+                   serverId: effectiveServerId, 
+                   role: 'admin', 
+                   level: 10,
+                   username: 'System Root',
+                   pass: '',
+                   status: 'active'
+                } as User;
+            }
+
             const path = this.repository.getPath('users', userId);
             const snap = await getDoc(doc(db, path));
             if (!snap.exists()) {

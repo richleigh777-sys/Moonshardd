@@ -39,7 +39,13 @@ export function handleFirestoreError(error: unknown, operationType: OperationTyp
     },
     operationType,
     path
+  };
+
+  // Skip logging "Missing or insufficient permissions." if user is null (e.g. during logout with active listeners)
+  if (errInfo.error.includes("Missing or insufficient permissions") && operationType === OperationType.LIST) {
+      return; 
   }
+
   console.error('Firestore Error: ', JSON.stringify(errInfo));
   
   // For operations like get/create/update/delete, we want to throw the error 

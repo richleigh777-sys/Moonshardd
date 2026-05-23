@@ -1,4 +1,4 @@
-/* eslint-disable react-hooks/set-state-in-effect */
+ 
 
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import { useCRM } from '../../../../hooks/useCRM';

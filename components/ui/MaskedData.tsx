@@ -16,7 +16,7 @@ export const MaskedData: React.FC<MaskedDataProps> = ({ value, type = 'phone' })
     // Auto-hide when unmounted or lost focus (optional)
     useEffect(() => {
         if (!isSuperAdmin) {
-            // eslint-disable-next-line react-hooks/set-state-in-effect
+             
             setRevealed(false);
         }
     }, [value, isSuperAdmin]);

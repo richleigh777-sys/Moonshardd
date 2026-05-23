@@ -27,7 +27,7 @@ export const OmniSearch = () => {
 
     useEffect(() => {
         if (!query.trim() || query.length < 3) {
-            // eslint-disable-next-line react-hooks/set-state-in-effect
+             
             setResults([]);
             return;
         }

@@ -1,4 +1,4 @@
-/* eslint-disable react-hooks/set-state-in-effect */
+ 
 import React, { useState, useEffect, useRef } from 'react';
 import { Clock, Bell, Check, Plus, Timer, Calendar, RefreshCw, StickyNote } from 'lucide-react';
 import { Card, Input, Button } from '../../components/ui/Base';

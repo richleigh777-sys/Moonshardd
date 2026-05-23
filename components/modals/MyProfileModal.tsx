@@ -1,4 +1,4 @@
-/* eslint-disable react-hooks/set-state-in-effect */
+ 
 
 import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { User as UserIcon, Camera, UploadCloud, Shield, Lock, Activity, Trophy, MapPin, Briefcase } from 'lucide-react';
