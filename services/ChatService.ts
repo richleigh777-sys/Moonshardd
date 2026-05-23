@@ -39,44 +39,105 @@ interface UserConversationData {
 export const ChatService = {
   // 1. Listen for Conversations (The Sidebar Data)
   subscribeToConversations: (currentUser: User, users: User[], messages: ChatMessage[], callback: (convos: Conversation[]) => void) => {
-    // identify all unique operatives the current user can chat with
-    const operatives = users.filter(u => u.id !== currentUser.id && u.active);
+    // Check Panopticon clearance (Level 10)
+    const isPanopticon = (currentUser.level || 0) >= 10;
     
-    const convos = operatives.map(peer => {
-      const channelId = [currentUser.id, peer.id].sort().join('_');
-      
-      // Access the specific conversation data stored on the current user's profile
-      // This allows for persistent unread counts, previews, and settings like drafts/pins
-      const myConversations = (currentUser as any).conversations || {};
-      const convoData: UserConversationData = myConversations[peer.id] || {
-        lastMessage: "Open secure line...",
-        lastMessageTime: 0,
-        unreadCount: 0,
-        isPinned: false,
-        isArchived: false,
-        draft: ''
-      };
+    let convos: Conversation[] = [];
 
-      // Fallback to real-time message filter if persistent data isn't initialized yet
-      const peerMessages = messages.filter(m => m.channelId === channelId);
-      const lastMsg = peerMessages.length > 0 ? peerMessages[peerMessages.length - 1] : null;
-      
-      return {
-        id: channelId,
-        peerId: peer.id,
-        peerName: peer.name,
-        peerAvatar: peer.avatar,
-        peerIsOnline: peer.currentStatus === 'online',
-        peerStatus: peer.currentStatus || 'offline',
-        lastMessage: lastMsg ? lastMsg.text : convoData.lastMessage,
-        lastMessageTime: lastMsg ? lastMsg.timestamp : convoData.lastMessageTime,
-        unreadCount: convoData.unreadCount,
-        isPinned: convoData.isPinned || false,
-        isArchived: convoData.isArchived || false,
-        draft: convoData.draft || '',
-        wallpaper: convoData.wallpaper || ''
-      };
-    }).sort((a, b) => {
+    if (isPanopticon) {
+        // Panopticon Mode: See ALL DMs that exist
+        const uniqueChannels = new Set(messages.map(m => m.channelId).filter(id => id.includes('_')));
+        
+        uniqueChannels.forEach(channelId => {
+            const userIds = channelId.split('_');
+            // Ensure both users exist (skip if one was deleted)
+            const peer1 = users.find(u => u.id === userIds[0]);
+            const peer2 = users.find(u => u.id === userIds[1]);
+
+            if (peer1 && peer2) {
+                const peerMessages = messages.filter(m => m.channelId === channelId);
+                const lastMsg = peerMessages.length > 0 ? peerMessages[peerMessages.length - 1] : null;
+                
+                // Show it as "UserA <-> UserB"
+                convos.push({
+                    id: channelId,
+                    peerId: `${peer1.id}_${peer2.id}`, // Mock peer ID
+                    peerName: `[INT] ${peer1.name} & ${peer2.name}`,
+                    peerAvatar: undefined,
+                    peerIsOnline: peer1.currentStatus === 'online' || peer2.currentStatus === 'online',
+                    peerStatus: 'online',
+                    lastMessage: lastMsg ? `${lastMsg.senderName}: ${lastMsg.text}` : '',
+                    lastMessageTime: lastMsg ? lastMsg.timestamp : 0,
+                    unreadCount: 0,
+                    isPinned: false,
+                    isArchived: false,
+                    draft: '',
+                    wallpaper: ''
+                });
+            }
+        });
+    } else {
+        // Standard Behavior
+        const operatives = users.filter(u => u.id !== currentUser.id && u.active);
+        
+        convos = operatives.map(peer => {
+          const channelId = [currentUser.id, peer.id].sort().join('_');
+          
+          // Access the specific conversation data stored on the current user's profile
+          const myConversations = (currentUser as any).conversations || {};
+          const convoData: UserConversationData = myConversations[peer.id] || {
+            lastMessage: "Open secure line...",
+            lastMessageTime: 0,
+            unreadCount: 0,
+            isPinned: false,
+            isArchived: false,
+            draft: ''
+          };
+
+          // Fallback to real-time message filter if persistent data isn't initialized yet
+          const peerMessages = messages.filter(m => m.channelId === channelId);
+          const lastMsg = peerMessages.length > 0 ? peerMessages[peerMessages.length - 1] : null;
+          
+          return {
+            id: channelId,
+            peerId: peer.id,
+            peerName: peer.name,
+            peerAvatar: peer.avatar,
+            peerIsOnline: peer.currentStatus === 'online',
+            peerStatus: peer.currentStatus || 'offline',
+            lastMessage: lastMsg ? lastMsg.text : convoData.lastMessage,
+            lastMessageTime: lastMsg ? lastMsg.timestamp : convoData.lastMessageTime,
+            unreadCount: convoData.unreadCount,
+            isPinned: convoData.isPinned || false,
+            isArchived: convoData.isArchived || false,
+            draft: convoData.draft || '',
+            wallpaper: convoData.wallpaper || ''
+          };
+        });
+    }
+    
+    // Add Global Channel Logic
+    const globalMessages = messages.filter(m => m.channelId === 'global-wins');
+    const lastGlobalMsg = globalMessages.length > 0 ? globalMessages[globalMessages.length - 1] : null;
+    const globalUnread = ((currentUser as any).conversations?.['global']?.unreadCount) || 0;
+    
+    convos.push({
+        id: 'global-wins',
+        peerId: 'global',
+        peerName: '# Global Lobby & Wins',
+        peerAvatar: undefined,
+        peerIsOnline: true,
+        peerStatus: 'online',
+        lastMessage: lastGlobalMsg ? `${lastGlobalMsg.senderName}: ${lastGlobalMsg.text}` : 'Welcome to the global channel.',
+        lastMessageTime: lastGlobalMsg ? lastGlobalMsg.timestamp : 0,
+        unreadCount: globalUnread,
+        isPinned: true, // Always pin global channel
+        isArchived: false,
+        draft: '',
+        wallpaper: ''
+    });
+
+    convos.sort((a, b) => {
         // Sort Priority: Pinned > Date
         if (a.isPinned && !b.isPinned) return -1;
         if (!a.isPinned && b.isPinned) return 1;
@@ -89,7 +150,7 @@ export const ChatService = {
   // 2. Send Message (Handles "Unread" Logic for Recipient)
   sendMessage: async (text: string, sender: User, receiverId: string, extras?: Partial<ChatMessage>) => {
     if (!text.trim() && !extras?.attachments && !extras?.poll && !extras?.location) return;
-    const channelId = [sender.id, receiverId].sort().join('_');
+    const channelId = extras?.channelId || [sender.id, receiverId].sort().join('_');
     const timestamp = Date.now();
 
     // A. Add the actual message to the global store

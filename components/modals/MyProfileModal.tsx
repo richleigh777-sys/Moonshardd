@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/set-state-in-effect */
 
 import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { User as UserIcon, Camera, UploadCloud, Shield, Lock, Activity, Trophy, MapPin, Briefcase } from 'lucide-react';
@@ -134,26 +135,26 @@ export const MyProfileModal: React.FC<MyProfileModalProps> = ({ isOpen, onClose,
                                             <UserIcon size={48} />
                                         </div>
                                     )}
-                                    <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity backdrop-blur-[1px]">
+                                    <div className="absolute inset-0 bg-surface-alt flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity backdrop-blur-[1px]">
                                         <Camera className="text-white drop-shadow-md" size={24} />
                                     </div>
                                 </div>
                                 <div className="absolute -bottom-2 -right-2 bg-accent-primary text-white p-1.5 rounded-xl border-4 border-surface-main shadow-lg">
-                                    <UploadCloud size={14} />
+                                    <UploadCloud size={16} />
                                 </div>
-                                <input ref={fileInputRef} type="file" className="hidden" accept="image/*" onChange={handleFileChange} />
+                                <input autoComplete="off" data-lpignore="true" data-prevent-autofill="true" spellCheck={false} ref={fileInputRef} type="file" className="hidden" accept="image/*" onChange={handleFileChange} />
                             </div>
 
                             {/* Identity Text */}
                             <div className="mb-2">
-                                <h3 className="text-2xl font-black text-text-primary uppercase tracking-tight flex items-center gap-2">
+                                <h3 className="text-2xl font-[700] text-text-primary  tracking-tight flex items-center gap-2">
                                     {formData.name || 'Unknown Agent'}
-                                    <span className="px-2 py-0.5 rounded text-[10px] bg-accent-primary/10 text-accent-primary border border-accent-primary/20 tracking-wider">
+                                    <span className="px-2.5 py-1 rounded text-xs bg-accent-primary/10 text-accent-primary border border-accent-primary/20 tracking-wider">
                                         {stats.rank}
                                     </span>
                                 </h3>
-                                <p className="text-xs font-bold text-text-muted uppercase tracking-widest flex items-center gap-2">
-                                    <Shield size={12} className="text-emerald-500" /> Clearance Level {user.accessLevel}
+                                <p className="text-xs font-bold text-text-muted  tracking-widest flex items-center gap-2">
+                                    <Shield size={16} className="text-status-success" /> Clearance Level {user.accessLevel}
                                 </p>
                             </div>
                         </div>
@@ -161,13 +162,13 @@ export const MyProfileModal: React.FC<MyProfileModalProps> = ({ isOpen, onClose,
                         {/* Stats Summary (Desktop) */}
                         <div className="hidden md:flex gap-4 mb-2">
                             <div className="text-right">
-                                <p className="text-[10px] font-black uppercase text-text-muted tracking-widest">Revenue</p>
-                                <p className="text-xl font-black text-text-primary num-font tracking-tight">${stats.revenue.toLocaleString()}</p>
+                                <p className="text-xs font-[700]  text-text-muted tracking-widest">Revenue</p>
+                                <p className="text-xl font-[700] text-text-primary num-font tracking-tight">${stats.revenue.toLocaleString()}</p>
                             </div>
                             <div className="w-px h-8 bg-border-subtle"></div>
                             <div className="text-right">
-                                <p className="text-[10px] font-black uppercase text-text-muted tracking-widest">Win Rate</p>
-                                <p className="text-xl font-black text-emerald-500 num-font tracking-tight">{stats.winRate}%</p>
+                                <p className="text-xs font-[700]  text-text-muted tracking-widest">Win Rate</p>
+                                <p className="text-xl font-[700] text-status-success num-font tracking-tight">{stats.winRate}%</p>
                             </div>
                         </div>
                     </div>
@@ -177,19 +178,19 @@ export const MyProfileModal: React.FC<MyProfileModalProps> = ({ isOpen, onClose,
                 <div className="px-6 border-b border-border-subtle bg-surface-main flex items-center gap-6 shrink-0">
                     <button 
                         onClick={() => setActiveTab('identity')}
-                        className={`py-4 text-xs font-bold uppercase tracking-wider border-b-2 transition-all ${activeTab === 'identity' ? 'border-accent-primary text-accent-primary' : 'border-transparent text-text-muted hover:text-text-primary'}`}
+                        className={`py-4 text-xs font-bold  tracking-wider border-b-2 transition-all ${activeTab === 'identity' ? 'border-accent-primary text-accent-primary' : 'border-transparent text-text-muted hover:text-text-primary'}`}
                     >
                         Identity
                     </button>
                     <button 
                         onClick={() => setActiveTab('financials')}
-                        className={`py-4 text-xs font-bold uppercase tracking-wider border-b-2 transition-all ${activeTab === 'financials' ? 'border-accent-primary text-accent-primary' : 'border-transparent text-text-muted hover:text-text-primary'}`}
+                        className={`py-4 text-xs font-bold  tracking-wider border-b-2 transition-all ${activeTab === 'financials' ? 'border-accent-primary text-accent-primary' : 'border-transparent text-text-muted hover:text-text-primary'}`}
                     >
                         Financials
                     </button>
                     <button 
                         onClick={() => setActiveTab('security')}
-                        className={`py-4 text-xs font-bold uppercase tracking-wider border-b-2 transition-all ${activeTab === 'security' ? 'border-accent-primary text-accent-primary' : 'border-transparent text-text-muted hover:text-text-primary'}`}
+                        className={`py-4 text-xs font-bold  tracking-wider border-b-2 transition-all ${activeTab === 'security' ? 'border-accent-primary text-accent-primary' : 'border-transparent text-text-muted hover:text-text-primary'}`}
                     >
                         Security
                     </button>
@@ -202,8 +203,8 @@ export const MyProfileModal: React.FC<MyProfileModalProps> = ({ isOpen, onClose,
                         <div className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-300">
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div className="space-y-4">
-                                    <h4 className="text-xs font-black uppercase text-text-muted tracking-widest flex items-center gap-2 mb-2">
-                                        <UserIcon size={14} className="text-accent-primary"/> Personal Details
+                                    <h4 className="text-xs font-[700]  text-text-muted tracking-widest flex items-center gap-2 mb-2">
+                                        <UserIcon size={16} className="text-accent-primary"/> Personal Details
                                     </h4>
                                     <Input label="Display Name" name="name" value={formData.name} onChange={handleChange} />
                                     {/* Fix: Remove unsupported icon prop */}
@@ -212,26 +213,26 @@ export const MyProfileModal: React.FC<MyProfileModalProps> = ({ isOpen, onClose,
                                     <Input label="Phone Number" name="phone" value={formData.phone} onChange={handleChange} />
                                 </div>
                                 <div className="space-y-4">
-                                    <h4 className="text-xs font-black uppercase text-text-muted tracking-widest flex items-center gap-2 mb-2">
-                                        <MapPin size={14} className="text-accent-primary"/> Location
+                                    <h4 className="text-xs font-[700]  text-text-muted tracking-widest flex items-center gap-2 mb-2">
+                                        <MapPin size={16} className="text-accent-primary"/> Location
                                     </h4>
                                     <Input label="Physical Address" name="address" value={formData.address} onChange={handleChange} />
                                     
                                     <div className="p-4 bg-surface-main rounded-2xl border border-border-subtle mt-6">
-                                        <h5 className="text-[10px] font-bold uppercase text-text-muted tracking-widest mb-3">Performance Snapshot</h5>
+                                        <h5 className="text-xs font-bold  text-text-muted tracking-widest mb-3">Performance Snapshot</h5>
                                         <div className="grid grid-cols-2 gap-4">
                                             <div className="flex items-center gap-3">
-                                                <div className="p-2 bg-indigo-500/10 text-indigo-500 rounded-lg"><Trophy size={16}/></div>
+                                                <div className="p-2 bg-accent-secondary/10 text-accent-secondary rounded-lg"><Trophy size={16}/></div>
                                                 <div>
-                                                    <p className="text-[9px] text-text-muted uppercase font-bold">Total Deals</p>
-                                                    <p className="text-sm font-black text-text-primary num-font">{stats.deals}</p>
+                                                    <p className="text-xs text-text-muted  font-bold">Total Deals</p>
+                                                    <p className="text-sm font-[700] text-text-primary num-font">{stats.deals}</p>
                                                 </div>
                                             </div>
                                             <div className="flex items-center gap-3">
-                                                <div className="p-2 bg-emerald-500/10 text-emerald-500 rounded-lg"><Activity size={16}/></div>
+                                                <div className="p-2 bg-emerald-500/10 text-status-success rounded-lg"><Activity size={16}/></div>
                                                 <div>
-                                                    <p className="text-[9px] text-text-muted uppercase font-bold">Active Rank</p>
-                                                    <p className="text-sm font-black text-text-primary">{stats.rank}</p>
+                                                    <p className="text-xs text-text-muted  font-bold">Active Rank</p>
+                                                    <p className="text-sm font-[700] text-text-primary">{stats.rank}</p>
                                                 </div>
                                             </div>
                                         </div>
@@ -246,8 +247,8 @@ export const MyProfileModal: React.FC<MyProfileModalProps> = ({ isOpen, onClose,
                             <div className="p-4 bg-blue-500/5 border border-blue-500/20 rounded-2xl flex items-start gap-3 mb-6">
                                 <Briefcase size={18} className="text-blue-500 mt-0.5 shrink-0" />
                                 <div>
-                                    <h4 className="text-xs font-bold text-blue-500 uppercase tracking-wide">Payout Configuration</h4>
-                                    <p className="text-[10px] text-blue-400/80 leading-relaxed mt-1">
+                                    <h4 className="text-xs font-bold text-blue-500  tracking-wide">Payout Configuration</h4>
+                                    <p className="text-xs text-blue-400/80 leading-relaxed mt-1">
                                         Ensure these details are accurate to avoid delays in commission payouts. Data is encrypted at rest.
                                     </p>
                                 </div>
@@ -264,14 +265,14 @@ export const MyProfileModal: React.FC<MyProfileModalProps> = ({ isOpen, onClose,
                     {activeTab === 'security' && (
                         <div className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-300">
                             <div className="max-w-md">
-                                <h4 className="text-xs font-black uppercase text-text-muted tracking-widest flex items-center gap-2 mb-4">
-                                    <Lock size={14} className="text-accent-primary"/> Account Access
+                                <h4 className="text-xs font-[700]  text-text-muted tracking-widest flex items-center gap-2 mb-4">
+                                    <Lock size={16} className="text-accent-primary"/> Account Access
                                 </h4>
                                 <div className="space-y-4">
                                     <Input label="User ID (Immutable)" value={user.id} disabled className="bg-surface-alt/50 font-mono text-text-muted" />
                                     <Input label="New Password" type="password" name="password" value={formData.password} onChange={handleChange} placeholder="••••••••" />
-                                    <p className="text-[10px] text-text-muted flex items-center gap-1.5 bg-surface-alt p-2 rounded-lg border border-border-subtle">
-                                        <Shield size={10} /> Password changes take effect on next login.
+                                    <p className="text-xs text-text-muted flex items-center gap-1.5 bg-surface-alt p-2 rounded-lg border border-border-subtle">
+                                        <Shield size={16} /> Password changes take effect on next login.
                                     </p>
                                 </div>
                             </div>

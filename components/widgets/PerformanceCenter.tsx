@@ -29,6 +29,7 @@ export const PerformanceCenter: React.FC<PerformanceCenterProps> = ({ sales, cur
     const [selectedYear] = useState(now.getFullYear());
     const [activePeriod, setActivePeriod] = useState<'Today' | 'Week' | '1' | '2' | 'MTD'>('MTD');
     
+    const isSuperAdmin = (currentUser.level || currentUser.accessLevel || 0) >= 10;
     const isAdmin = currentUser.role === 'admin';
     const [selectedTeam, setSelectedTeam] = useState<string>('All');
     const [targetAgentId, setTargetAgentId] = useState<string>(isAdmin ? 'all' : currentUser.id);
@@ -155,10 +156,10 @@ export const PerformanceCenter: React.FC<PerformanceCenterProps> = ({ sales, cur
 
     const getGrade = (score: number) => {
         if (score >= 90) return { label: 'S', color: 'text-purple-400', bg: 'bg-purple-500/10', border: 'border-purple-500/30' };
-        if (score >= 75) return { label: 'A', color: 'text-emerald-400', bg: 'bg-emerald-500/10', border: 'border-emerald-500/30' };
+        if (score >= 75) return { label: 'A', color: 'text-status-success', bg: 'bg-emerald-500/10', border: 'border-status-success/30' };
         if (score >= 60) return { label: 'B', color: 'text-blue-400', bg: 'bg-blue-500/10', border: 'border-blue-500/30' };
-        if (score >= 40) return { label: 'C', color: 'text-amber-400', bg: 'bg-amber-500/10', border: 'border-amber-500/30' };
-        return { label: 'D', color: 'text-red-400', bg: 'bg-red-500/10', border: 'border-red-500/30' };
+        if (score >= 40) return { label: 'C', color: 'text-status-warning', bg: 'bg-amber-500/10', border: 'border-status-warning/30' };
+        return { label: 'D', color: 'text-status-error', bg: 'bg-red-500/10', border: 'border-status-error/30' };
     };
     
     const grade = getGrade(nexusScore);
@@ -198,18 +199,18 @@ export const PerformanceCenter: React.FC<PerformanceCenterProps> = ({ sales, cur
                         <Activity size={24} strokeWidth={2} className="text-accent-primary" />
                     </div>
                     <div>
-                        <h2 className="text-xl font-black text-text-primary tracking-tight flex items-center gap-2">
+                        <h2 className="text-xl font-[700] text-text-primary tracking-tight flex items-center gap-2">
                             Performance Intelligence
                         </h2>
                         <div className="flex items-center gap-3 mt-1">
-                            <span className="text-[10px] font-bold text-text-muted uppercase tracking-widest flex items-center gap-1.5">
+                            <span className="text-xs font-bold text-text-muted  tracking-widest flex items-center gap-1.5">
                                 Data Source:
-                                <span className="text-accent-primary bg-accent-primary/5 px-2 py-0.5 rounded border border-accent-primary/10">
+                                <span className="text-accent-primary bg-accent-primary/5 px-2.5 py-1 rounded border border-accent-primary/10">
                                     {isAdmin ? (targetAgentId === 'all' ? 'Organization Wide' : 'Agent Focus') : 'Personal Ledger'}
                                 </span>
                             </span>
-                            <span className="text-[10px] font-bold text-emerald-500 uppercase tracking-widest flex items-center gap-1 bg-emerald-500/5 px-2 py-0.5 rounded border border-emerald-500/10">
-                                <RefreshCw size={10} className="animate-spin-slow"/> Live Sync
+                            <span className="text-xs font-bold text-status-success  tracking-widest flex items-center gap-1 bg-emerald-500/5 px-2.5 py-1 rounded border border-emerald-500/10">
+                                <RefreshCw size={16} className="animate-spin-slow"/> Live Sync
                             </span>
                         </div>
                     </div>
@@ -219,12 +220,12 @@ export const PerformanceCenter: React.FC<PerformanceCenterProps> = ({ sales, cur
                     {isAdmin && (
                         <div className="flex items-center gap-2 bg-surface-alt p-1 rounded-xl border border-border-subtle shadow-inner">
                              <div className="pl-3 pr-2 border-r border-border-subtle">
-                                <Filter size={14} className="text-text-muted" />
+                                <Filter size={16} className="text-text-muted" />
                              </div>
                             <select 
                                 value={selectedTeam} 
                                 onChange={(e) => { setSelectedTeam(e.target.value); sfx.playClick(); }} 
-                                className="bg-transparent text-[10px] font-bold uppercase text-text-primary outline-none cursor-pointer py-2 px-2 hover:text-accent-primary transition-colors"
+                                className="bg-transparent text-xs font-bold  text-text-primary outline-none cursor-pointer py-2 px-2 hover:text-accent-primary transition-colors"
                             >
                                 <option value="All">All Squads</option>
                                 {uniqueTeams.map(t => <option key={t} value={t}>{t}</option>)}
@@ -232,7 +233,7 @@ export const PerformanceCenter: React.FC<PerformanceCenterProps> = ({ sales, cur
                             <select 
                                 value={targetAgentId} 
                                 onChange={(e) => { setTargetAgentId(e.target.value); sfx.playClick(); }} 
-                                className="bg-transparent text-[10px] font-bold uppercase text-text-primary outline-none cursor-pointer py-2 px-2 hover:text-accent-primary transition-colors border-l border-border-subtle"
+                                className="bg-transparent text-xs font-bold  text-text-primary outline-none cursor-pointer py-2 px-2 hover:text-accent-primary transition-colors border-l border-border-subtle"
                             >
                                 <option value="all">Global</option>
                                 {filteredAgents.map(u => <option key={u.id} value={u.id}>{u.name}</option>)}
@@ -245,7 +246,7 @@ export const PerformanceCenter: React.FC<PerformanceCenterProps> = ({ sales, cur
                             <button 
                                 key={p} 
                                 onClick={() => { setActivePeriod(p); sfx.playClick(); }} 
-                                className={`px-4 py-2 text-[10px] font-bold uppercase rounded-lg transition-all whitespace-nowrap ${
+                                className={`px-4 py-2 text-xs font-bold  rounded-lg transition-all whitespace-nowrap ${
                                     activePeriod === p 
                                     ? 'bg-surface-main text-text-primary shadow-sm ring-1 ring-border-subtle' 
                                     : 'text-text-muted hover:text-text-primary hover:bg-surface-main/50'
@@ -255,15 +256,16 @@ export const PerformanceCenter: React.FC<PerformanceCenterProps> = ({ sales, cur
                             </button>
                         ))}
                     </div>
-
-                    <Button 
-                        variant="secondary" 
-                        onClick={handleExportReport} 
-                        isLoading={isExporting}
-                        className="h-10 px-4 text-[10px] uppercase font-black tracking-widest border border-border-subtle hover:border-accent-primary/50"
-                    >
-                        <Download size={14} className="mr-2"/> Export
-                    </Button>
+                    {isSuperAdmin && (
+                        <Button 
+                            variant="secondary" 
+                            onClick={handleExportReport} 
+                            isLoading={isExporting}
+                            className="h-10 px-4 text-xs  font-[700] tracking-widest border border-border-subtle hover:border-accent-primary/50"
+                        >
+                            <Download size={16} className="mr-2"/> Export
+                        </Button>
+                    )}
                 </div>
             </div>
 
@@ -292,16 +294,16 @@ export const PerformanceCenter: React.FC<PerformanceCenterProps> = ({ sales, cur
                         
                         <div className="flex items-center gap-3 mb-6 border-b border-border-subtle pb-3 relative z-10">
                             <Target size={20} className="text-accent-primary" />
-                            <h4 className="text-xs font-black uppercase text-text-primary tracking-widest">Efficiency Metrics</h4>
+                            <h4 className="text-xs font-[700]  text-text-primary tracking-widest">Efficiency Metrics</h4>
                         </div>
                         <div className="space-y-4 relative z-10">
                             <div className="flex flex-col justify-center items-center bg-surface-alt/40 rounded-2xl p-6 border border-border-subtle hover:border-accent-primary/20 transition-colors">
-                                <p className="text-[9px] font-bold text-text-muted uppercase tracking-widest mb-1">Average Order Value</p>
-                                <span className="text-4xl font-black text-text-primary num-font tracking-tighter">${Math.round(periodStats.avgOrder).toLocaleString()}</span>
+                                <p className="text-xs font-bold text-text-muted  tracking-widest mb-1">Average Order Value</p>
+                                <span className="text-4xl font-[700] text-text-primary num-font tracking-tighter">${Math.round(periodStats.avgOrder).toLocaleString()}</span>
                             </div>
-                            <div className="flex flex-col justify-center items-center bg-surface-alt/40 rounded-2xl p-6 border border-border-subtle hover:border-indigo-500/20 transition-colors">
-                                <p className="text-[9px] font-bold text-text-muted uppercase tracking-widest mb-1">Volume Processed</p>
-                                <span className="text-4xl font-black text-indigo-500 num-font tracking-tighter">{periodStats.sales.length} Deals</span>
+                            <div className="flex flex-col justify-center items-center bg-surface-alt/40 rounded-2xl p-6 border border-border-subtle hover:border-accent-secondary/20 transition-colors">
+                                <p className="text-xs font-bold text-text-muted  tracking-widest mb-1">Volume Processed</p>
+                                <span className="text-4xl font-[700] text-accent-secondary num-font tracking-tighter">{periodStats.sales.length} Deals</span>
                             </div>
                         </div>
                     </Card>
@@ -312,9 +314,9 @@ export const PerformanceCenter: React.FC<PerformanceCenterProps> = ({ sales, cur
             <div className="flex justify-center pt-4">
                 <button 
                     onClick={() => { setShowManifest(!showManifest); sfx.playClick(); }}
-                    className={`flex items-center gap-3 px-8 py-3 rounded-2xl text-[10px] font-bold uppercase tracking-widest transition-all border ${showManifest ? 'bg-surface-main text-accent-primary border-accent-primary/30 shadow-md' : 'bg-surface-alt text-text-muted border-border-subtle hover:text-text-primary hover:bg-surface-main'}`}
+                    className={`flex items-center gap-3 px-8 py-3 rounded-2xl text-xs font-bold  tracking-widest transition-all border ${showManifest ? 'bg-surface-main text-accent-primary border-accent-primary/30 shadow-md' : 'bg-surface-alt text-text-muted border-border-subtle hover:text-text-primary hover:bg-surface-main'}`}
                 >
-                    {showManifest ? <ChevronDown size={14}/> : <ChevronRight size={14}/>}
+                    {showManifest ? <ChevronDown size={16}/> : <ChevronRight size={16}/>}
                     {showManifest ? 'Hide Ledger' : 'View Financial Ledger'}
                 </button>
             </div>

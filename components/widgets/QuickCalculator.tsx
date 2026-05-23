@@ -48,25 +48,25 @@ export const QuickCalculator = ({ onClose }: { onClose?: () => void }) => {
     ];
 
     return (
-        <div className="w-72 refraction-glass rounded-[2rem] overflow-hidden animate-in zoom-in-95 duration-300 relative group border border-white/10 shadow-2xl">
+        <div className="w-72 refraction-glass rounded-[2rem] overflow-hidden animate-in zoom-in-95 duration-300 relative group border border-border-subtle shadow-2xl">
             
             {/* Header */}
             <div className="px-5 py-4 bg-surface-alt/40 border-b border-border-subtle flex justify-between items-center handle cursor-move backdrop-blur-md">
                 <div className="flex items-center gap-2 text-text-muted">
-                    <Calculator size={14} />
-                    <span className="text-[10px] font-black uppercase tracking-widest">Calc // Pro</span>
+                    <Calculator size={16} />
+                    <span className="text-xs font-[700]  tracking-widest">Calc // Pro</span>
                 </div>
                 {onClose && (
-                    <button onClick={onClose} className="text-text-muted hover:text-status-error transition-colors p-1 hover:bg-white/10 rounded-lg">
-                        <X size={14} />
+                    <button onClick={onClose} className="text-text-muted hover:text-status-error transition-colors p-1 hover:bg-surface-highlight rounded-lg">
+                        <X size={16} />
                     </button>
                 )}
             </div>
 
             {/* Display */}
             <div className="p-5 bg-surface-main/60 relative backdrop-blur-sm">
-                <div className="text-[10px] text-text-muted text-right h-4 mb-1 font-mono tracking-wider">{equation}</div>
-                <div className="text-3xl font-black text-text-primary text-right num-font tracking-tight overflow-hidden whitespace-nowrap drop-shadow-sm">
+                <div className="text-xs text-text-muted text-right h-4 mb-1 font-mono tracking-wider">{equation}</div>
+                <div className="text-3xl font-[700] text-text-primary text-right num-font tracking-tight overflow-hidden whitespace-nowrap drop-shadow-sm">
                     {display}
                 </div>
                 
@@ -74,8 +74,8 @@ export const QuickCalculator = ({ onClose }: { onClose?: () => void }) => {
                 {showHistory && (
                     <div className="absolute inset-0 bg-surface-main/95 backdrop-blur-xl z-20 p-4 overflow-y-auto custom-scrollbar flex flex-col">
                         <div className="flex justify-between items-center mb-3 pb-2 border-b border-border-subtle shrink-0">
-                            <span className="text-[10px] font-black uppercase text-text-muted tracking-widest">Tape Log</span>
-                            <button onClick={() => setShowHistory(false)} className="hover:bg-surface-alt p-1 rounded"><X size={12}/></button>
+                            <span className="text-xs font-[700]  text-text-muted tracking-widest">Tape Log</span>
+                            <button onClick={() => setShowHistory(false)} className="hover:bg-surface-alt p-1 rounded"><X size={16}/></button>
                         </div>
                         <div className="flex-1 space-y-1">
                             {history.map((h, i) => (
@@ -83,7 +83,7 @@ export const QuickCalculator = ({ onClose }: { onClose?: () => void }) => {
                                     {h}
                                 </div>
                             ))}
-                            {history.length === 0 && <div className="text-center text-[10px] text-text-muted mt-4 opacity-50 uppercase tracking-widest">Memory Empty</div>}
+                            {history.length === 0 && <div className="text-center text-xs text-text-muted mt-4 opacity-50  tracking-widest">Memory Empty</div>}
                         </div>
                     </div>
                 )}

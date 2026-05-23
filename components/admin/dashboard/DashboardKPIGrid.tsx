@@ -38,6 +38,7 @@ export const DashboardKPIGrid: React.FC<DashboardKPIGridProps> = ({ totalRevenue
                 icon={Activity} 
                 color="blue" 
                 progress={75}
+                contentStyle={{ height: '150px' }}
             />
             <SummaryCard 
                 label="Conversion Rate" 

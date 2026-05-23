@@ -12,9 +12,11 @@ import { CommandPalette } from '../layout/CommandPalette';
 import { SystemBootSequence } from './SystemBootSequence';
 import { GhostModeBanner } from './GhostModeBanner';
 import { useAppInitialization } from '../../hooks/useAppInitialization';
+import { GlobalWorkers } from './GlobalWorkers';
 
-const AgentPortal = React.lazy(() => import('../../views/AgentPortal').then(module => ({ default: module.AgentPortal })));
-const AdminPortal = React.lazy(() => import('../../views/AdminPortal').then(module => ({ default: module.AdminPortal })));
+import { AgentPortal } from '../../views/AgentPortal';
+import { AdminPortal } from '../../views/AdminPortal';
+
 
 export const MainContent: React.FC = () => {
     const {
@@ -30,6 +32,7 @@ export const MainContent: React.FC = () => {
         <SecurityLayout>
             <VibeLayout>
                 <div className="h-full w-full text-text-primary transition-all duration-300 font-sans relative">
+                    <GlobalWorkers />
                     <MoneyRain active={showMoneyRain} />
                     <SyncOverlay isSyncing={isSyncing} />
                     <CallbackManager />
@@ -47,13 +50,13 @@ export const MainContent: React.FC = () => {
                             <LoginScreen onLogin={handleLogin} isDbConnected={true} users={[]} />
                         )}
                         
-                        {currentUser && view === 'server_select' && (
+                        {currentUser && view === 'server_select' && (currentUser.level || currentUser.accessLevel || 0) >= 10 && (
                             <ServerGateway />
                         )}
                         
                         <Suspense fallback={<SystemBootSequence />}>
-                            {view === 'agent_dashboard' && currentUser && <AgentPortal />}
-                            {view === 'admin_dashboard' && currentUser && <AdminPortal onGhostLogin={handleGhostLogin} />}
+                            {view === 'agent_dashboard' && currentUser && (currentUser.role === 'agent' || (currentUser.level || 0) < 5) && <AgentPortal />}
+                            {view === 'admin_dashboard' && currentUser && (currentUser.role === 'admin' || (currentUser.level || 0) >= 5) && <AdminPortal onGhostLogin={handleGhostLogin} />}
                         </Suspense>
                     </div>
                 </div>

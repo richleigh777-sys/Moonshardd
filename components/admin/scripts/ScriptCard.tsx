@@ -16,11 +16,10 @@ export const ScriptCard = React.memo<ScriptCardProps>(({ script, isActive, onCli
 
     const getTypeStyles = (type: string) => {
         switch(type) {
-            case 'Sales': return 'text-emerald-500 bg-emerald-500/10 border-emerald-500/20';
-            case 'Rebuttal': return 'text-red-500 bg-red-500/10 border-red-500/20';
+            case 'Sales': return 'text-status-success bg-emerald-500/10 border-emerald-500/20';
+            case 'Rebuttal': return 'text-status-error bg-red-500/10 border-red-500/20';
             case 'FollowUp': return 'text-blue-500 bg-blue-500/10 border-blue-500/20';
-            case 'Rescue': return 'text-amber-500 bg-amber-500/10 border-amber-500/20';
-            case 'Template': return 'text-purple-500 bg-purple-500/10 border-purple-500/20';
+            case 'Rescue': return 'text-status-warning bg-amber-500/10 border-amber-500/20';
             default: return 'text-text-muted bg-surface-alt border-border-subtle';
         }
     };
@@ -52,7 +51,7 @@ export const ScriptCard = React.memo<ScriptCardProps>(({ script, isActive, onCli
             `}
         >
             <div className="flex justify-between items-start w-full relative z-10">
-                <span className={`text-[9px] font-black uppercase tracking-widest px-2 py-0.5 rounded border ${styles}`}>
+                <span className={`text-xs font-[700]  tracking-widest px-2.5 py-1 rounded border ${styles}`}>
                     {script.type}
                 </span>
                 {isActive && <div className="w-1.5 h-1.5 bg-accent-primary rounded-full animate-pulse shadow-[0_0_8px_var(--color-accent-primary)]"></div>}
@@ -63,7 +62,7 @@ export const ScriptCard = React.memo<ScriptCardProps>(({ script, isActive, onCli
             </h4>
 
             <div className="flex items-center justify-between w-full relative z-10">
-                <span className="text-[9px] font-mono text-text-muted opacity-60">
+                <span className="text-xs font-mono text-text-muted opacity-60">
                     Last active: {new Date(script.lastUpdated).toLocaleDateString()}
                 </span>
                 
@@ -73,17 +72,17 @@ export const ScriptCard = React.memo<ScriptCardProps>(({ script, isActive, onCli
                         className="p-1.5 rounded-lg hover:bg-surface-main border border-transparent hover:border-border-subtle text-text-muted hover:text-text-primary transition-colors"
                         title="Duplicate"
                     >
-                        <DuplicateIcon size={12}/>
+                        <DuplicateIcon size={16}/>
                     </div>
                     <div 
                         onClick={handleCopy}
                         className={`
                             p-1.5 rounded-lg hover:bg-surface-main border border-transparent hover:border-border-subtle transition-colors
-                            ${copied ? 'text-emerald-500' : 'text-text-muted hover:text-text-primary'}
+                            ${copied ? 'text-status-success' : 'text-text-muted hover:text-text-primary'}
                         `}
                         title="Quick Copy"
                     >
-                        {copied ? <Check size={12}/> : <Copy size={12}/>}
+                        {copied ? <Check size={16}/> : <Copy size={16}/>}
                     </div>
                 </div>
             </div>

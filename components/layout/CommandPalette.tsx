@@ -162,7 +162,7 @@ export const CommandPalette: React.FC = () => {
 
     return (
         <div className="fixed inset-0 z-[9999] flex items-start justify-center pt-[15vh] px-4 font-sans">
-            <div className="absolute inset-0 bg-black/40 dark:bg-black/80 backdrop-blur-sm animate-in fade-in duration-200" onClick={() => setIsOpen(false)}></div>
+            <div className="absolute inset-0 bg-surface-alt dark:bg-black/80 backdrop-blur-sm animate-in fade-in duration-200" onClick={() => setIsOpen(false)}></div>
             
             <div 
                 className="w-full max-w-2xl bg-surface-main border border-border-subtle rounded-xl shadow-2xl overflow-hidden flex flex-col animate-in zoom-in-95 slide-in-from-top-4 duration-200 ring-1 ring-white/5"
@@ -180,7 +180,7 @@ export const CommandPalette: React.FC = () => {
                         autoComplete="off"
                     />
                     <div className="flex items-center gap-1.5">
-                        <span className="text-[10px] font-medium text-text-muted bg-surface-alt px-1.5 py-0.5 rounded border border-border-subtle">ESC</span>
+                        <span className="text-xs font-medium text-text-muted bg-surface-alt px-3 py-1.5 rounded border border-border-subtle">ESC</span>
                     </div>
                 </div>
 
@@ -193,7 +193,7 @@ export const CommandPalette: React.FC = () => {
                     ) : (
                         commands.map((section) => (
                             <div key={section.section} className="mb-2">
-                                <div className="px-3 py-1.5 text-[11px] font-semibold text-text-muted uppercase tracking-wider flex items-center gap-2">
+                                <div className="px-3 py-1.5 text-sm font-semibold text-text-muted  tracking-wider flex items-center gap-2">
                                     {section.section}
                                 </div>
                                 <div className="space-y-0.5">
@@ -221,11 +221,11 @@ export const CommandPalette: React.FC = () => {
                                                 </div>
                                                 <div className="flex items-center gap-2">
                                                     {(item as any).hotkey && !query && (
-                                                        <span className={`text-[10px] font-mono font-medium w-5 h-5 flex items-center justify-center rounded border ${isActive ? 'bg-surface-main border-border-subtle text-text-primary' : 'bg-surface-alt border-border-subtle text-text-muted'}`}>
+                                                        <span className={`text-xs font-mono font-medium w-5 h-5 flex items-center justify-center rounded border ${isActive ? 'bg-surface-main border-border-subtle text-text-primary' : 'bg-surface-alt border-border-subtle text-text-muted'}`}>
                                                             {(item as any).hotkey}
                                                         </span>
                                                     )}
-                                                    {isActive && <ArrowRight size={14} className="text-text-muted" />}
+                                                    {isActive && <ArrowRight size={16} className="text-text-muted" />}
                                                 </div>
                                             </button>
                                         );
@@ -237,7 +237,7 @@ export const CommandPalette: React.FC = () => {
                 </div>
 
                 {/* Footer */}
-                <div className="h-9 bg-surface-alt/50 border-t border-border-subtle flex items-center justify-between px-4 text-[10px] font-medium text-text-muted tracking-tight">
+                <div className="h-9 bg-surface-alt/50 border-t border-border-subtle flex items-center justify-between px-4 text-xs font-medium text-text-muted tracking-tight">
                     <div className="flex items-center gap-2">
                         <span>Command Palette</span>
                     </div>

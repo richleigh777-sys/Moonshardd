@@ -37,6 +37,19 @@ export const seedInfrastructure = () => {
             });
         }
 
+        // Add 1 Manager per Server
+        users.push({
+            id: `admin-${serverId}-1`,
+            serverId: serverId,
+            pass: 'admin123',
+            name: `Manager (${companyName})`,
+            role: 'admin',
+            level: 5,
+            commissionRate: 0,
+            active: true,
+            currentStatus: 'offline'
+        });
+
         configs.push({
             ...INITIAL_PRODUCT_CONFIG,
             serverId
@@ -70,7 +83,7 @@ export const seedInfrastructure = () => {
     users.push({
         id: SYSTEM_ADMIN_ID,
         serverId: servers[0].id, // Default to first server
-        pass: 'root',
+        pass: 'root123',
         name: 'System Administrator',
         role: 'admin',
         level: 10,

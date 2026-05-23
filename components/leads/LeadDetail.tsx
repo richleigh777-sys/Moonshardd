@@ -90,7 +90,7 @@ export const LeadDetail: React.FC<LeadDetailProps> = ({ activeLead, onMarkDone, 
         return (
             <div className="flex flex-col items-center justify-center h-full text-text-muted opacity-40">
                 <Target size={48} strokeWidth={1} className="mb-4" />
-                <p className="text-xs font-black uppercase tracking-[0.3em]">Select an objective from Nexus</p>
+                <p className="text-xs font-[700]  tracking-[0.3em]">Select an objective from Nexus</p>
             </div>
         );
     }
@@ -104,21 +104,21 @@ export const LeadDetail: React.FC<LeadDetailProps> = ({ activeLead, onMarkDone, 
                     <div className="flex items-start justify-between">
                         <div className="space-y-1">
                             <div className="flex items-center gap-4">
-                                <div className="w-16 h-16 rounded-3xl bg-gradient-to-br from-indigo-500 via-purple-600 to-blue-600 flex items-center justify-center text-white font-black text-2xl shadow-xl ring-4 ring-indigo-500/10">
+                                <div className="w-16 h-16 rounded-3xl bg-gradient-to-br from-indigo-500 via-purple-600 to-blue-600 flex items-center justify-center text-white font-[700] text-2xl shadow-xl ring-4 ring-indigo-500/10">
                                     {activeLead.customerName?.charAt(0) || '?'}
                                 </div>
                                 <div>
-                                    <h2 className="text-3xl font-black text-text-primary uppercase tracking-tight leading-none">{activeLead.customerName}</h2>
+                                    <h2 className="text-3xl font-[700] text-text-primary  tracking-tight leading-none">{activeLead.customerName}</h2>
                                     <div className="flex items-center gap-2 mt-2">
-                                        <span className="text-[10px] font-bold text-text-muted uppercase bg-surface-alt px-2.5 py-1 rounded-full border border-border-subtle flex items-center gap-1.5">
-                                            <Clock size={12} className="text-accent-primary"/> Due: {activeLead.date} @ {activeLead.time}
+                                        <span className="text-xs font-bold text-text-muted  bg-surface-alt px-2.5 py-1 rounded-full border border-border-subtle flex items-center gap-1.5">
+                                            <Clock size={16} className="text-accent-primary"/> Due: {activeLead.date} @ {activeLead.time}
                                         </span>
-                                        <span className="text-[10px] font-bold text-emerald-500 uppercase bg-emerald-500/10 px-2.5 py-1 rounded-full border border-emerald-500/20 flex items-center gap-1.5">
-                                            <User size={12}/> {getPhoneTime(activeLead.phone || '')} Local
+                                        <span className="text-xs font-bold text-status-success  bg-emerald-500/10 px-2.5 py-1 rounded-full border border-emerald-500/20 flex items-center gap-1.5">
+                                            <User size={16}/> {getPhoneTime(activeLead.phone || '')} Local
                                         </span>
                                         {activeLead.status && (
-                                            <span className={`text-[10px] font-bold uppercase px-2.5 py-1 rounded-full border flex items-center gap-1.5 ${
-                                                activeLead.status === 'Resolved' ? 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20' :
+                                            <span className={`text-xs font-bold  px-2.5 py-1 rounded-full border flex items-center gap-1.5 ${
+                                                activeLead.status === 'Resolved' ? 'bg-emerald-500/10 text-status-success border-emerald-500/20' :
                                                 activeLead.status === 'Active' ? 'bg-blue-500/10 text-blue-500 border-blue-500/20' :
                                                 'bg-surface-alt text-text-muted border-border-subtle'
                                             }`}>
@@ -130,8 +130,8 @@ export const LeadDetail: React.FC<LeadDetailProps> = ({ activeLead, onMarkDone, 
                             </div>
                         </div>
                         <div className="text-right">
-                            <div className="text-2xl font-mono font-black text-text-primary tracking-wider">{activeLead.phone}</div>
-                            <button onClick={() => { navigator.clipboard.writeText(activeLead.phone || ''); sfx.playConfirm(); }} className="text-[10px] font-black text-accent-primary uppercase tracking-widest hover:brightness-125 mt-1 transition-all">Copy Connection String</button>
+                            <div className="text-2xl font-mono font-[700] text-text-primary tracking-wider">{activeLead.phone}</div>
+                            <button onClick={() => { navigator.clipboard.writeText(activeLead.phone || ''); sfx.playConfirm(); }} className="text-xs font-[700] text-accent-primary  tracking-widest hover:brightness-125 mt-1 transition-all">Copy Connection String</button>
                         </div>
                     </div>
 
@@ -141,13 +141,13 @@ export const LeadDetail: React.FC<LeadDetailProps> = ({ activeLead, onMarkDone, 
                             <button
                                 key={tab}
                                 onClick={() => { setActiveTab(tab); sfx.playClick(); }}
-                                className={`px-6 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${
+                                className={`px-6 py-2 rounded-xl text-xs font-[700]  tracking-widest transition-all ${
                                     activeTab === tab ? 'bg-surface-main text-text-primary shadow-sm border border-border-subtle' : 'text-text-muted hover:text-text-primary'
                                 }`}
                             >
-                                {tab === 'Briefing' && <Sparkles size={12} className="inline mr-2 -mt-0.5" />}
-                                {tab === 'History' && <History size={12} className="inline mr-2 -mt-0.5" />}
-                                {tab === 'Details' && <Info size={12} className="inline mr-2 -mt-0.5" />}
+                                {tab === 'Briefing' && <Sparkles size={16} className="inline mr-2 -mt-0.5" />}
+                                {tab === 'History' && <History size={16} className="inline mr-2 -mt-0.5" />}
+                                {tab === 'Details' && <Info size={16} className="inline mr-2 -mt-0.5" />}
                                 {tab}
                             </button>
                         ))}
@@ -163,12 +163,12 @@ export const LeadDetail: React.FC<LeadDetailProps> = ({ activeLead, onMarkDone, 
                                             <Sparkles size={32} />
                                         </div>
                                         <div>
-                                            <h3 className="text-lg font-black text-text-primary uppercase tracking-tight">Intelligence Briefing</h3>
+                                            <h3 className="text-lg font-[700] text-text-primary  tracking-tight">Intelligence Briefing</h3>
                                             <p className="text-xs text-text-muted font-medium mt-1">Generate a strategic summary of this relationship using AI.</p>
                                         </div>
                                         <Button 
                                             onClick={handleGenerateBriefing}
-                                            className="h-12 px-8 bg-text-primary text-surface-main hover:bg-text-secondary rounded-xl font-black uppercase text-[10px] tracking-widest"
+                                            className="h-12 px-8 bg-text-primary text-surface-main hover:bg-text-secondary rounded-xl font-[700]  text-xs tracking-widest"
                                         >
                                             Synthesize Intelligence
                                         </Button>
@@ -183,8 +183,8 @@ export const LeadDetail: React.FC<LeadDetailProps> = ({ activeLead, onMarkDone, 
                                             <Sparkles size={24} className="absolute inset-0 m-auto text-accent-primary animate-pulse" />
                                         </div>
                                         <div className="animate-pulse">
-                                            <p className="text-xs font-black uppercase tracking-[0.3em] text-text-primary">Scanning Nexus Logs</p>
-                                            <p className="text-[9px] font-bold text-text-muted mt-2">Deducing behavioral patterns and sentiment...</p>
+                                            <p className="text-xs font-[700]  tracking-[0.3em] text-text-primary">Scanning Nexus Logs</p>
+                                            <p className="text-xs font-bold text-text-muted mt-2">Deducing behavioral patterns and sentiment...</p>
                                         </div>
                                     </div>
                                 )}
@@ -194,19 +194,19 @@ export const LeadDetail: React.FC<LeadDetailProps> = ({ activeLead, onMarkDone, 
                                         <div className="grid grid-cols-3 gap-4">
                                             <div className="p-5 bg-surface-alt/40 border border-border-subtle rounded-3xl relative overflow-hidden group">
                                                 <TrendingUp size={48} className="absolute -right-4 -bottom-4 text-text-primary/5 group-hover:scale-110 transition-transform" />
-                                                <p className="text-[10px] font-black text-text-muted uppercase tracking-widest mb-2">Sentiment</p>
-                                                <p className={`text-xl font-black uppercase ${
-                                                    briefing.sentiment === 'Positive' ? 'text-emerald-500' :
-                                                    briefing.sentiment === 'Frustrated' ? 'text-red-500' : 'text-amber-500'
+                                                <p className="text-xs font-[700] text-text-muted  tracking-widest mb-2">Sentiment</p>
+                                                <p className={`text-xl font-[700]  ${
+                                                    briefing.sentiment === 'Positive' ? 'text-status-success' :
+                                                    briefing.sentiment === 'Frustrated' ? 'text-status-error' : 'text-status-warning'
                                                 }`}>
                                                     {briefing.sentiment}
                                                 </p>
                                             </div>
                                             <div className="p-5 bg-surface-alt/40 border border-border-subtle rounded-3xl col-span-2">
-                                                <p className="text-[10px] font-black text-text-muted uppercase tracking-widest mb-2">Primary Themes</p>
+                                                <p className="text-xs font-[700] text-text-muted  tracking-widest mb-2">Primary Themes</p>
                                                 <div className="flex flex-wrap gap-2">
                                                     {briefing.keyThemes.map((t, i) => (
-                                                        <span key={i} className="px-3 py-1 bg-surface-main border border-border-subtle rounded-lg text-[9px] font-bold uppercase text-text-primary">
+                                                        <span key={i} className="px-3 py-1 bg-surface-main border border-border-subtle rounded-lg text-xs font-bold  text-text-primary">
                                                             {t}
                                                         </span>
                                                     ))}
@@ -215,17 +215,17 @@ export const LeadDetail: React.FC<LeadDetailProps> = ({ activeLead, onMarkDone, 
                                         </div>
 
                                         <div className="p-6 bg-gradient-to-br from-surface-alt to-surface-main border border-border-subtle rounded-[32px] shadow-sm">
-                                            <p className="text-[10px] font-black text-accent-primary uppercase tracking-widest mb-3 flex items-center gap-2">
-                                                <Sparkles size={12}/> Executive Summary
+                                            <p className="text-xs font-[700] text-accent-primary  tracking-widest mb-3 flex items-center gap-2">
+                                                <Sparkles size={16}/> Executive Summary
                                             </p>
                                             <p className="text-sm font-medium text-text-primary leading-relaxed italic">
                                                 "{briefing.summary}"
                                             </p>
                                         </div>
 
-                                        <div className="p-6 bg-indigo-500/5 border border-indigo-500/20 rounded-[32px] ring-1 ring-indigo-500/10">
-                                            <p className="text-[10px] font-black text-indigo-500 uppercase tracking-widest mb-3 flex items-center gap-2">
-                                                <AlertTriangle size={12}/> Strategic Recommendation
+                                        <div className="p-6 bg-indigo-500/5 border border-accent-secondary/20 rounded-[32px] ring-1 ring-indigo-500/10">
+                                            <p className="text-xs font-[700] text-accent-secondary  tracking-widest mb-3 flex items-center gap-2">
+                                                <AlertTriangle size={16}/> Strategic Recommendation
                                             </p>
                                             <p className="text-sm font-bold text-text-primary">
                                                 {briefing.recommendation}
@@ -234,9 +234,9 @@ export const LeadDetail: React.FC<LeadDetailProps> = ({ activeLead, onMarkDone, 
                                         
                                         <button 
                                             onClick={() => setBriefing(null)} 
-                                            className="text-[9px] font-black text-text-muted uppercase tracking-widest hover:text-text-primary transition-colors flex items-center gap-2 mx-auto"
+                                            className="text-xs font-[700] text-text-muted  tracking-widest hover:text-text-primary transition-colors flex items-center gap-2 mx-auto"
                                         >
-                                            <History size={12}/> Refresh Analysis
+                                            <History size={16}/> Refresh Analysis
                                         </button>
                                     </div>
                                 )}
@@ -258,19 +258,19 @@ export const LeadDetail: React.FC<LeadDetailProps> = ({ activeLead, onMarkDone, 
                                 {/* Core Data */}
                                 <div className="grid grid-cols-2 gap-4">
                                     <div className="p-5 bg-surface-alt/40 border border-border-subtle rounded-3xl">
-                                        <p className="text-[10px] font-black text-text-muted uppercase tracking-widest mb-4">Identity Details</p>
+                                        <p className="text-xs font-[700] text-text-muted  tracking-widest mb-4">Identity Details</p>
                                         <div className="space-y-4">
                                             <div className="flex items-center gap-3">
-                                                <div className="p-2 bg-surface-main rounded-xl border border-border-subtle"><Mail size={14} className="text-text-muted"/></div>
+                                                <div className="p-2 bg-surface-main rounded-xl border border-border-subtle"><Mail size={16} className="text-text-muted"/></div>
                                                 <div>
-                                                    <p className="text-[9px] font-black text-text-muted uppercase">Email Address</p>
+                                                    <p className="text-xs font-[700] text-text-muted ">Email Address</p>
                                                     <p className="text-xs font-bold text-text-primary">{customerProfile?.email || 'Not Provided'}</p>
                                                 </div>
                                             </div>
                                             <div className="flex items-center gap-3">
-                                                <div className="p-2 bg-surface-main rounded-xl border border-border-subtle"><Phone size={14} className="text-text-muted"/></div>
+                                                <div className="p-2 bg-surface-main rounded-xl border border-border-subtle"><Phone size={16} className="text-text-muted"/></div>
                                                 <div>
-                                                    <p className="text-[9px] font-black text-text-muted uppercase">Primary Phone</p>
+                                                    <p className="text-xs font-[700] text-text-muted ">Primary Phone</p>
                                                     <p className="text-xs font-bold text-text-primary">{activeLead.phone}</p>
                                                 </div>
                                             </div>
@@ -278,24 +278,24 @@ export const LeadDetail: React.FC<LeadDetailProps> = ({ activeLead, onMarkDone, 
                                     </div>
 
                                     <div className="p-5 bg-surface-alt/40 border border-border-subtle rounded-3xl">
-                                        <p className="text-[10px] font-black text-text-muted uppercase tracking-widest mb-4">Commercial Profile</p>
+                                        <p className="text-xs font-[700] text-text-muted  tracking-widest mb-4">Commercial Profile</p>
                                         <div className="space-y-4">
                                             <div className="flex items-center justify-between">
                                                 <div className="flex items-center gap-3">
-                                                    <div className="p-2 bg-surface-main rounded-xl border border-border-subtle"><ShoppingBag size={14} className="text-text-muted"/></div>
+                                                    <div className="p-2 bg-surface-main rounded-xl border border-border-subtle"><ShoppingBag size={16} className="text-text-muted"/></div>
                                                     <div>
-                                                        <p className="text-[9px] font-black text-text-muted uppercase">Lifetime Orders</p>
+                                                        <p className="text-xs font-[700] text-text-muted ">Lifetime Orders</p>
                                                         <p className="text-xs font-bold text-text-primary">{customerProfile?.orderCount || 0}</p>
                                                     </div>
                                                 </div>
                                                 <div className="text-right">
-                                                    <p className="text-[9px] font-black text-text-muted uppercase">LTV</p>
-                                                    <p className="text-xs font-bold text-emerald-500">${(customerProfile?.ltv || 0).toLocaleString()}</p>
+                                                    <p className="text-xs font-[700] text-text-muted ">LTV</p>
+                                                    <p className="text-xs font-bold text-status-success">${(customerProfile?.ltv || 0).toLocaleString()}</p>
                                                 </div>
                                             </div>
                                             {customerProfile?.lastOrderDate && (
                                                 <div className="pt-2 border-t border-border-subtle/50">
-                                                    <p className="text-[9px] font-black text-text-muted uppercase mb-1">Last Transaction</p>
+                                                    <p className="text-xs font-[700] text-text-muted  mb-1">Last Transaction</p>
                                                     <p className="text-xs font-bold text-text-primary">{new Date(customerProfile.lastOrderDate).toLocaleDateString()}</p>
                                                 </div>
                                             )}
@@ -306,16 +306,16 @@ export const LeadDetail: React.FC<LeadDetailProps> = ({ activeLead, onMarkDone, 
                                 {/* Registry Analysis */}
                                 <div className="p-6 bg-surface-alt/40 border border-border-subtle rounded-3xl space-y-4 shadow-sm">
                                     <div className="flex items-center gap-2 pb-2 border-b border-border-subtle/50">
-                                        <StickyNote size={14} className="text-accent-primary"/>
-                                        <span className="text-[10px] font-black uppercase text-text-muted tracking-widest">Lead Intelligence</span>
+                                        <StickyNote size={16} className="text-accent-primary"/>
+                                        <span className="text-xs font-[700]  text-text-muted tracking-widest">Lead Intelligence</span>
                                     </div>
                                     <div className="space-y-4">
                                         <div className="bg-surface-main p-4 rounded-2xl border border-border-subtle">
-                                            <p className="text-[10px] font-bold text-text-muted uppercase mb-1">Callback Reason</p>
+                                            <p className="text-xs font-bold text-text-muted  mb-1">Callback Reason</p>
                                             <p className="text-sm font-bold text-text-primary">{activeLead.reason}</p>
                                         </div>
                                         <div className="bg-surface-main p-4 rounded-2xl border border-border-subtle">
-                                            <p className="text-[10px] font-bold text-text-muted uppercase mb-1">Raw Context Log</p>
+                                            <p className="text-xs font-bold text-text-muted  mb-1">Raw Context Log</p>
                                             <p className="text-sm font-medium text-text-secondary leading-relaxed italic">"{activeLead.content.split('|')[1]?.trim() || activeLead.content}"</p>
                                         </div>
                                     </div>
@@ -323,7 +323,7 @@ export const LeadDetail: React.FC<LeadDetailProps> = ({ activeLead, onMarkDone, 
                                     {activeLead.medicalConditions && activeLead.medicalConditions.length > 0 && (
                                         <div className="flex flex-wrap gap-2 pt-2">
                                             {activeLead.medicalConditions.map(c => (
-                                                <span key={c} className="px-3 py-1 bg-surface-main border border-border-subtle rounded-lg text-[9px] font-bold uppercase text-text-secondary shadow-sm">
+                                                <span key={c} className="px-3 py-1 bg-surface-main border border-border-subtle rounded-lg text-xs font-bold  text-text-secondary shadow-sm">
                                                     {c}
                                                 </span>
                                             ))}
@@ -334,27 +334,27 @@ export const LeadDetail: React.FC<LeadDetailProps> = ({ activeLead, onMarkDone, 
                                         <div className="p-6 bg-surface-alt/40 border border-border-subtle rounded-3xl space-y-4 shadow-sm">
                                             <div className="flex items-center justify-between pb-2 border-b border-border-subtle/50">
                                                 <div className="flex items-center gap-2">
-                                                    <Tag size={14} className="text-accent-primary"/>
-                                                    <span className="text-[10px] font-black uppercase text-text-muted tracking-widest">Metadata Tags</span>
+                                                    <Tag size={16} className="text-accent-primary"/>
+                                                    <span className="text-xs font-[700]  text-text-muted tracking-widest">Metadata Tags</span>
                                                 </div>
                                             </div>
                                             
                                             <div className="flex flex-wrap gap-2 min-h-[32px]">
                                                 {activeLead.tags?.map(tag => (
-                                                    <span key={tag} className="flex items-center gap-1 px-3 py-1 bg-surface-main border border-border-subtle rounded-xl text-[10px] font-bold uppercase text-text-secondary group/tag overflow-hidden">
+                                                    <span key={tag} className="flex items-center gap-1 px-3 py-1 bg-surface-main border border-border-subtle rounded-xl text-xs font-bold  text-text-secondary group/tag overflow-hidden">
                                                         {tag}
                                                         <button onClick={() => handleRemoveTag(tag)} className="p-0.5 hover:bg-surface-alt rounded opacity-0 group-hover/tag:opacity-100 transition-opacity">
-                                                            <X size={10} />
+                                                            <X size={16} />
                                                         </button>
                                                     </span>
                                                 ))}
                                                 {(!activeLead.tags || activeLead.tags.length === 0) && (
-                                                    <p className="text-[10px] font-medium text-text-muted italic py-1">No tags assigned</p>
+                                                    <p className="text-xs font-medium text-text-muted italic py-1">No tags assigned</p>
                                                 )}
                                             </div>
 
                                             <form onSubmit={handleAddTag} className="flex gap-2">
-                                                <input 
+                                                <input autoComplete="off" data-lpignore="true" data-prevent-autofill="true" spellCheck={false} 
                                                     type="text" 
                                                     value={newTag}
                                                     onChange={e => setNewTag(e.target.value)}
@@ -370,8 +370,8 @@ export const LeadDetail: React.FC<LeadDetailProps> = ({ activeLead, onMarkDone, 
                                         <div className="p-6 bg-surface-alt/40 border border-border-subtle rounded-3xl space-y-4 shadow-sm">
                                             <div className="flex items-center justify-between pb-2 border-b border-border-subtle/50">
                                                 <div className="flex items-center gap-2">
-                                                    <Clock size={14} className="text-amber-500"/>
-                                                    <span className="text-[10px] font-black uppercase text-text-muted tracking-widest">Follow-up Reminder</span>
+                                                    <Clock size={16} className="text-status-warning"/>
+                                                    <span className="text-xs font-[700]  text-text-muted tracking-widest">Follow-up Reminder</span>
                                                 </div>
                                             </div>
 
@@ -379,9 +379,9 @@ export const LeadDetail: React.FC<LeadDetailProps> = ({ activeLead, onMarkDone, 
                                                 {activeLead.reminderAt ? (
                                                     <div className="p-3 bg-amber-500/10 border border-amber-500/20 rounded-2xl flex items-center justify-between">
                                                         <div className="flex items-center gap-3">
-                                                            <div className="p-2 bg-amber-500/20 rounded-lg text-amber-500"><Clock size={14}/></div>
+                                                            <div className="p-2 bg-amber-500/20 rounded-lg text-status-warning"><Clock size={16}/></div>
                                                             <div>
-                                                                <p className="text-[9px] font-black text-amber-500 uppercase tracking-widest">Active Reminder</p>
+                                                                <p className="text-xs font-[700] text-status-warning  tracking-widest">Active Reminder</p>
                                                                 <p className="text-xs font-bold text-text-primary">{new Date(activeLead.reminderAt).toLocaleString()}</p>
                                                             </div>
                                                         </div>
@@ -392,7 +392,7 @@ export const LeadDetail: React.FC<LeadDetailProps> = ({ activeLead, onMarkDone, 
                                                             }}
                                                             className="p-2 hover:bg-amber-500/20 rounded-xl text-amber-600 transition-colors"
                                                         >
-                                                            <X size={14}/>
+                                                            <X size={16}/>
                                                         </button>
                                                     </div>
                                                 ) : (
@@ -409,14 +409,14 @@ export const LeadDetail: React.FC<LeadDetailProps> = ({ activeLead, onMarkDone, 
                                                                     await updateNote(activeLead.id, { reminderAt: Date.now() + opt.val, reminderDismissed: false });
                                                                     sfx.playConfirm();
                                                                 }}
-                                                                className="py-2 bg-surface-main border border-border-subtle rounded-xl text-[10px] font-black uppercase text-text-muted hover:text-accent-primary hover:border-accent-primary transition-all"
+                                                                className="py-2 bg-surface-main border border-border-subtle rounded-xl text-xs font-[700]  text-text-muted hover:text-accent-primary hover:border-accent-primary transition-all"
                                                             >
                                                                 +{opt.label}
                                                             </button>
                                                         ))}
                                                     </div>
                                                 )}
-                                                <input 
+                                                <input autoComplete="off" data-lpignore="true" data-prevent-autofill="true" spellCheck={false} 
                                                     type="datetime-local" 
                                                     onChange={async (e) => {
                                                         const val = new Date(e.target.value).getTime();
@@ -425,7 +425,7 @@ export const LeadDetail: React.FC<LeadDetailProps> = ({ activeLead, onMarkDone, 
                                                             sfx.playConfirm();
                                                         }
                                                     }}
-                                                    className="w-full h-10 px-4 bg-surface-main border border-border-subtle rounded-xl text-[10px] font-black uppercase text-text-primary outline-none focus:border-accent-primary transition-colors cursor-pointer"
+                                                    className="w-full h-10 px-4 bg-surface-main border border-border-subtle rounded-xl text-xs font-[700]  text-text-primary outline-none focus:border-accent-primary transition-colors cursor-pointer"
                                                 />
                                             </div>
                                         </div>
@@ -453,7 +453,7 @@ export const LeadDetail: React.FC<LeadDetailProps> = ({ activeLead, onMarkDone, 
                         onClick={handleResolve} 
                         disabled={activeLead.status === 'Resolved'}
                         className={`h-14 px-6 transition-all gap-2 ${
-                            activeLead.status === 'Resolved' ? 'text-emerald-500 bg-emerald-500/5' : 'text-emerald-500 hover:bg-emerald-500/10'
+                            activeLead.status === 'Resolved' ? 'text-status-success bg-emerald-500/5' : 'text-status-success hover:bg-emerald-500/10'
                         }`}
                     >
                         <CheckSquare size={16} /> {activeLead.status === 'Resolved' ? 'Mission Resolved' : 'Mark Resolved'}
@@ -463,7 +463,7 @@ export const LeadDetail: React.FC<LeadDetailProps> = ({ activeLead, onMarkDone, 
                 <Button 
                     variant="primary" 
                     onClick={handleEngage} 
-                    className="h-14 px-10 text-xs font-black uppercase tracking-[0.2em] shadow-xl shadow-accent-primary/20 bg-accent-primary hover:brightness-110 rounded-2xl flex items-center gap-3 group transition-all"
+                    className="h-14 px-10 text-xs font-[700]  tracking-[0.2em] shadow-xl shadow-accent-primary/20 bg-accent-primary hover:brightness-110 rounded-2xl flex items-center gap-3 group transition-all"
                 >
                     Initialize Connection <ArrowUpRight size={16} className="group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
                 </Button>

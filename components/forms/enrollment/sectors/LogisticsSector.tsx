@@ -11,28 +11,28 @@ interface Props {
 
 export const LogisticsSector: React.FC<Props> = ({ formData, handleIdentityChange, useShippingForBilling, setUseShippingForBilling }) => {
     return (
-        <div className="group/logistics relative p-4 bg-black/40 rounded-xl border border-white/5 shadow-inner overflow-hidden">
+        <div className="group/logistics relative p-4 bg-surface-alt/40 rounded-xl border border-border-subtle shadow-inner overflow-hidden">
             <div className="absolute inset-0 bg-gradient-to-br from-accent-primary/[0.02] to-transparent pointer-events-none"></div>
             
             <div className="flex items-center justify-between mb-3 relative z-10">
                 <div className="flex items-center gap-2">
-                    <div className="p-1.5 bg-indigo-500/20 rounded-lg text-indigo-400 border border-indigo-500/30">
-                        <MapPin size={14} strokeWidth={2.5}/>
+                    <div className="p-1.5 bg-indigo-500/20 rounded-lg text-accent-secondary border border-indigo-500/30">
+                        <MapPin size={16} strokeWidth={2.5}/>
                     </div>
                     <div>
-                        <h4 className="text-[9px] font-black uppercase text-indigo-300 tracking-[0.15em] italic leading-none">Logistics</h4>
+                        <h4 className="text-xs font-[700]  text-indigo-300 tracking-[0.15em] italic leading-none">Logistics</h4>
                     </div>
                 </div>
                 <button 
                     onClick={() => setUseShippingForBilling(!useShippingForBilling)} 
                     className={`
-                        text-[8px] font-black uppercase px-3 py-1 rounded-lg border transition-all duration-500 flex items-center gap-1.5
+                        text-sm font-[700]  px-3 py-1 rounded-lg border transition-all duration-500 flex items-center gap-1.5
                         ${useShippingForBilling 
-                            ? 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30 shadow-[0_0_10px_rgba(16,185,129,0.1)]' 
-                            : 'bg-white/5 text-text-muted border-white/5 hover:text-white hover:border-white/20'}
+                            ? 'bg-emerald-500/20 text-status-success border-status-success/30 shadow-[0_0_10px_rgba(16,185,129,0.1)]' 
+                            : 'bg-surface-highlight text-text-muted border-border-subtle hover:text-text-primary hover:border-border-strong'}
                     `}
                 >
-                    {useShippingForBilling ? <ShieldCheck size={10} strokeWidth={3}/> : <Globe size={10}/>}
+                    {useShippingForBilling ? <ShieldCheck size={16} strokeWidth={3}/> : <Globe size={16}/>}
                     Unified
                 </button>
             </div>
@@ -45,7 +45,7 @@ export const LogisticsSector: React.FC<Props> = ({ formData, handleIdentityChang
                         value={formData.shippingAddress} 
                         onChange={handleIdentityChange} 
                         placeholder="Enter coordinates..." 
-                        className="h-9 text-xs font-bold bg-black/40"
+                        className="h-9 text-xs font-bold bg-surface-alt/40"
                         status={formData.shippingAddress.length > 10 ? 'valid' : 'default'}
                     />
                 </div>
@@ -57,7 +57,7 @@ export const LogisticsSector: React.FC<Props> = ({ formData, handleIdentityChang
                             value={formData.billingAddress} 
                             onChange={handleIdentityChange} 
                             placeholder="Alternate destination..." 
-                            className="h-9 text-xs font-bold bg-black/40"
+                            className="h-9 text-xs font-bold bg-surface-alt/40"
                         />
                     </div>
                 )}

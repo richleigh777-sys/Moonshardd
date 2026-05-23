@@ -24,7 +24,7 @@ interface OperativeItemProps {
 const getRankBadge = (rank: string) => {
     switch (rank) {
         case 'Visionary': return { color: 'text-purple-500', bg: 'bg-purple-500/10', border: 'border-purple-500/20', icon: Star };
-        case 'Catalyst': return { color: 'text-emerald-500', bg: 'bg-emerald-500/10', border: 'border-emerald-500/20', icon: Zap };
+        case 'Catalyst': return { color: 'text-status-success', bg: 'bg-emerald-500/10', border: 'border-emerald-500/20', icon: Zap };
         case 'Builder': return { color: 'text-blue-500', bg: 'bg-blue-500/10', border: 'border-blue-500/20', icon: Activity };
         default: return { color: 'text-text-muted', bg: 'bg-surface-alt', border: 'border-border-subtle', icon: UserIcon };
     }
@@ -93,11 +93,11 @@ export const OperativeItem: React.FC<OperativeItemProps> = React.memo(({
                         <div className="flex gap-1.5 opacity-0 group-hover:opacity-100 transition-all transform translate-y-1 group-hover:translate-y-0">
                              {!isMe && (
                                  <button onClick={() => onChat(u.id)} className="p-2 rounded-full bg-surface-alt hover:bg-accent-secondary/10 text-text-muted hover:text-accent-secondary transition-colors shadow-sm">
-                                     <MessageCircle size={14}/>
+                                     <MessageCircle size={16}/>
                                  </button>
                              )}
                              <button onClick={() => onEdit(u)} className="p-2 rounded-full bg-surface-alt hover:bg-surface-highlight text-text-muted hover:text-text-primary transition-colors shadow-sm">
-                                 <Settings size={14}/>
+                                 <Settings size={16}/>
                              </button>
                         </div>
                     </div>
@@ -106,10 +106,10 @@ export const OperativeItem: React.FC<OperativeItemProps> = React.memo(({
                     <div className="mb-3">
                         <h4 className="text-base font-bold text-text-primary leading-tight">{u.name}</h4>
                         <div className="flex items-center gap-2 mt-1">
-                            <span className={`text-[9px] font-bold px-2 py-0.5 rounded-full border flex items-center gap-1 ${rankStyle.bg} ${rankStyle.color} ${rankStyle.border}`}>
-                                <rankStyle.icon size={8} /> {analytics.rank}
+                            <span className={`text-xs font-bold px-2.5 py-1 rounded-full border flex items-center gap-1 ${rankStyle.bg} ${rankStyle.color} ${rankStyle.border}`}>
+                                <rankStyle.icon size={16} /> {analytics.rank}
                             </span>
-                            <span className="text-[10px] font-medium text-text-muted">{u.team}</span>
+                            <span className="text-xs font-medium text-text-muted">{u.team}</span>
                         </div>
                     </div>
 
@@ -117,9 +117,9 @@ export const OperativeItem: React.FC<OperativeItemProps> = React.memo(({
                     <div className="flex-1 mb-3 relative min-h-[40px]">
                         <div className="flex justify-between items-end mb-1">
                              <div>
-                                 <span className="text-[9px] font-bold text-text-muted uppercase tracking-wide">Daily Production</span>
+                                 <span className="text-xs font-bold text-text-muted  tracking-wide">Daily Production</span>
                                  <p className="text-lg font-bold text-text-primary num-font leading-none">${analytics.dailyRevenue.toLocaleString()}</p>
-                                 <p className="text-[8px] text-text-muted">Total: ${analytics.revenue.toLocaleString()}</p>
+                                 <p className="text-sm text-text-muted">Total: ${analytics.revenue.toLocaleString()}</p>
                              </div>
                              <div className="h-6 w-20">
                                 <OrganicSparkline data={analytics.trend} />
@@ -127,15 +127,15 @@ export const OperativeItem: React.FC<OperativeItemProps> = React.memo(({
                         </div>
                         <div className="flex gap-3 pt-2 border-t border-border-subtle">
                              <div>
-                                 <p className="text-[9px] text-text-muted font-medium mb-0.5 leading-none">Conn</p>
+                                 <p className="text-xs text-text-muted font-medium mb-0.5 leading-none">Conn</p>
                                  <p className="text-xs font-bold text-text-primary flex items-center gap-0.5">
-                                     <Zap size={10} className="text-amber-500 fill-current"/> {analytics.winRate}%
+                                     <Zap size={16} className="text-status-warning fill-current"/> {analytics.winRate}%
                                  </p>
                              </div>
                              <div>
-                                 <p className="text-[9px] text-text-muted font-medium mb-0.5 leading-none">Focus</p>
+                                 <p className="text-xs text-text-muted font-medium mb-0.5 leading-none">Focus</p>
                                  <p className="text-xs font-bold text-text-primary flex items-center gap-0.5">
-                                     <Clock size={10} className="text-blue-500"/> {hoursToday.toFixed(1)}h
+                                     <Clock size={16} className="text-blue-500"/> {hoursToday.toFixed(1)}h
                                  </p>
                              </div>
                         </div>
@@ -143,12 +143,14 @@ export const OperativeItem: React.FC<OperativeItemProps> = React.memo(({
 
                     {/* Footer Actions */}
                     <div className="grid grid-cols-2 gap-2 mt-auto">
-                        <button onClick={() => onOpenLedger(u)} className="py-1.5 rounded-lg bg-surface-alt hover:bg-surface-highlight text-[10px] font-bold text-text-secondary transition-colors flex items-center justify-center gap-1.5 group/btn">
-                            <FileText size={12} className="group-hover/btn:text-accent-primary"/> Ledger
+                        <button onClick={() => onOpenLedger(u)} className="py-1.5 rounded-lg bg-surface-alt hover:bg-surface-highlight text-xs font-bold text-text-secondary transition-colors flex items-center justify-center gap-1.5 group/btn">
+                            <FileText size={16} className="group-hover/btn:text-accent-primary"/> Ledger
                         </button>
-                        <button onClick={() => onGhost(u.id)} className="py-1.5 rounded-lg bg-surface-alt hover:bg-accent-secondary/10 text-[10px] font-bold text-text-secondary hover:text-accent-secondary transition-colors flex items-center justify-center gap-1.5 group/btn">
-                            <Eye size={12} className="group-hover/btn:text-accent-secondary"/> Assist
-                        </button>
+                        {(currentUser?.level || 0) >= 10 && (
+                            <button onClick={() => onGhost(u.id)} className="py-1.5 rounded-lg bg-surface-alt hover:bg-accent-secondary/10 text-xs font-bold text-text-secondary hover:text-accent-secondary transition-colors flex items-center justify-center gap-1.5 group/btn">
+                                <Eye size={16} className="group-hover/btn:text-accent-secondary"/> Assist
+                            </button>
+                        )}
                     </div>
                 </div>
             </div>
@@ -157,7 +159,7 @@ export const OperativeItem: React.FC<OperativeItemProps> = React.memo(({
 
     // --- LIST VIEW (The "Clean Row") ---
     return (
-        <div style={style} className="px-2 py-0.5">
+        <div style={style} className="px-2.5 py-1">
             <div className="group flex items-center justify-between p-2 rounded-2xl bg-surface-main border border-border-subtle hover:shadow-lg transition-all duration-300">
                 
                 {/* Left: Identity */}
@@ -171,10 +173,10 @@ export const OperativeItem: React.FC<OperativeItemProps> = React.memo(({
                     <div>
                         <h4 className="text-xs font-bold text-text-primary leading-none">{u.name}</h4>
                         <div className="flex items-center gap-1.5 mt-0.5">
-                            <span className={`text-[8px] font-bold px-1.5 py-0.5 rounded-full ${rankStyle.bg} ${rankStyle.color}`}>
+                            <span className={`text-sm font-bold px-3 py-1.5 rounded-full ${rankStyle.bg} ${rankStyle.color}`}>
                                 {analytics.rank}
                             </span>
-                            <span className="text-[9px] text-text-muted">{u.team}</span>
+                            <span className="text-xs text-text-muted">{u.team}</span>
                         </div>
                     </div>
                 </div>
@@ -182,25 +184,27 @@ export const OperativeItem: React.FC<OperativeItemProps> = React.memo(({
                 {/* Middle: Metrics */}
                 <div className="flex items-center gap-6 flex-1 justify-center">
                     <div className="text-center">
-                        <span className="block text-[8px] font-medium text-text-muted uppercase leading-none">Time</span>
-                        <span className="text-[11px] font-bold text-text-primary">{hoursToday.toFixed(1)}h</span>
+                        <span className="block text-sm font-medium text-text-muted  leading-none">Time</span>
+                        <span className="text-sm font-bold text-text-primary">{hoursToday.toFixed(1)}h</span>
                     </div>
                     <div className="text-center">
-                        <span className="block text-[8px] font-medium text-text-muted uppercase leading-none">Rate</span>
-                        <span className="text-[11px] font-bold text-text-primary">{analytics.winRate}%</span>
+                        <span className="block text-sm font-medium text-text-muted  leading-none">Rate</span>
+                        <span className="text-sm font-bold text-text-primary">{analytics.winRate}%</span>
                     </div>
                     <div className="text-right min-w-[70px]">
-                         <span className="block text-[8px] font-medium text-text-muted uppercase leading-none">Contrib</span>
+                         <span className="block text-sm font-medium text-text-muted  leading-none">Contrib</span>
                          <span className="text-sm font-bold text-emerald-600">${analytics.revenue.toLocaleString()}</span>
                     </div>
                 </div>
 
                 {/* Right: Actions */}
                 <div className="flex items-center gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity translate-x-2 group-hover:translate-x-0">
-                    <button onClick={() => onOpenLedger(u)} className="p-1.5 rounded-full hover:bg-surface-alt text-text-muted hover:text-text-primary transition-colors" title="View History"><FileText size={14}/></button>
-                    {!isMe && <button onClick={() => onChat(u.id)} className="p-1.5 rounded-full hover:bg-accent-secondary/10 text-text-muted hover:text-accent-secondary transition-colors" title="Message"><MessageCircle size={14}/></button>}
-                    <button onClick={() => onGhost(u.id)} className="p-1.5 rounded-full hover:bg-amber-500/10 text-text-muted hover:text-amber-500 transition-colors" title="Assist Mode"><Eye size={14}/></button>
-                    <button onClick={() => onEdit(u)} className="p-1.5 rounded-full hover:bg-surface-alt text-text-muted hover:text-text-primary transition-colors" title="Settings"><Settings size={14}/></button>
+                    <button onClick={() => onOpenLedger(u)} className="p-1.5 rounded-full hover:bg-surface-alt text-text-muted hover:text-text-primary transition-colors" title="View History"><FileText size={16}/></button>
+                    {!isMe && <button onClick={() => onChat(u.id)} className="p-1.5 rounded-full hover:bg-accent-secondary/10 text-text-muted hover:text-accent-secondary transition-colors" title="Message"><MessageCircle size={16}/></button>}
+                    {(currentUser?.level || 0) >= 10 && (
+                        <button onClick={() => onGhost(u.id)} className="p-1.5 rounded-full hover:bg-amber-500/10 text-text-muted hover:text-status-warning transition-colors" title="Assist Mode"><Eye size={16}/></button>
+                    )}
+                    <button onClick={() => onEdit(u)} className="p-1.5 rounded-full hover:bg-surface-alt text-text-muted hover:text-text-primary transition-colors" title="Manage Unit Profile"><Settings size={16}/></button>
                 </div>
             </div>
         </div>

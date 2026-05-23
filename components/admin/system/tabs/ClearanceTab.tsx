@@ -60,21 +60,21 @@ export const ClearanceTab: React.FC<ClearanceTabProps> = ({ config, onChange, is
 
     return (
         <section>
-            <SectionHeader icon={Lock} title="Clearance & Access Control" sub="Define Interface Visibility" color="text-amber-500" />
+            <SectionHeader icon={Lock} title="Clearance & Access Control" sub="Define Interface Visibility" color="text-status-warning" />
             <div className="space-y-8">
                 
                 {/* AGENT PERMISSIONS */}
                 <div className="space-y-4">
                     <div className="flex items-center gap-2 pb-2 border-b border-border-subtle">
-                        <UserCheck size={14} className="text-text-muted"/>
-                        <h5 className="text-xs font-black uppercase text-text-primary tracking-widest">Agent Terminals</h5>
+                        <UserCheck size={16} className="text-text-muted"/>
+                        <h5 className="text-xs font-[700]  text-text-primary tracking-widest">Agent Terminals</h5>
                     </div>
                     <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
                         {AGENT_TERMINALS.map(term => (
                             <div key={term.id} onClick={() => togglePermission('agent', term.id)} className={`p-3 rounded-xl border cursor-pointer transition-all flex items-center justify-between group ${config.permissions?.agent?.includes(term.id) ? 'bg-surface-main border-accent-primary/30 shadow-sm' : 'bg-surface-alt/40 border-border-subtle opacity-60'}`}>
-                                <span className="text-[10px] font-bold uppercase">{term.label}</span>
+                                <span className="text-xs font-bold ">{term.label}</span>
                                 <div className={`w-3 h-3 rounded-full border flex items-center justify-center ${config.permissions?.agent?.includes(term.id) ? 'bg-accent-primary border-accent-primary' : 'border-text-muted'}`}>
-                                    {config.permissions?.agent?.includes(term.id) && <Check size={8} className="text-white"/>}
+                                    {config.permissions?.agent?.includes(term.id) && <Check size={16} className="text-white"/>}
                                 </div>
                             </div>
                         ))}
@@ -84,15 +84,15 @@ export const ClearanceTab: React.FC<ClearanceTabProps> = ({ config, onChange, is
                 {/* MANAGER PERMISSIONS */}
                 <div className="space-y-4">
                     <div className="flex items-center gap-2 pb-2 border-b border-border-subtle">
-                        <Briefcase size={14} className="text-text-muted"/>
-                        <h5 className="text-xs font-black uppercase text-text-primary tracking-widest">Manager Terminals</h5>
+                        <Briefcase size={16} className="text-text-muted"/>
+                        <h5 className="text-xs font-[700]  text-text-primary tracking-widest">Manager Terminals</h5>
                     </div>
                     <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
                         {MANAGER_TERMINALS.map(term => (
                             <div key={term.id} onClick={() => togglePermission('manager', term.id)} className={`p-3 rounded-xl border cursor-pointer transition-all flex items-center justify-between group ${config.permissions?.manager?.includes(term.id) ? 'bg-surface-main border-indigo-500/30 shadow-sm' : 'bg-surface-alt/40 border-border-subtle opacity-60'}`}>
-                                <span className="text-[10px] font-bold uppercase">{term.label}</span>
+                                <span className="text-xs font-bold ">{term.label}</span>
                                 <div className={`w-3 h-3 rounded-full border flex items-center justify-center ${config.permissions?.manager?.includes(term.id) ? 'bg-indigo-500 border-indigo-500' : 'border-text-muted'}`}>
-                                    {config.permissions?.manager?.includes(term.id) && <Check size={8} className="text-white"/>}
+                                    {config.permissions?.manager?.includes(term.id) && <Check size={16} className="text-white"/>}
                                 </div>
                             </div>
                         ))}
@@ -100,9 +100,9 @@ export const ClearanceTab: React.FC<ClearanceTabProps> = ({ config, onChange, is
                 </div>
                 
                 <div className="p-4 bg-amber-500/10 border border-amber-500/20 rounded-2xl flex gap-3">
-                    <ShieldAlert size={18} className="text-amber-500 shrink-0"/>
+                    <ShieldAlert size={18} className="text-status-warning shrink-0"/>
                     <div>
-                        <p className="text-[10px] font-bold text-amber-500 uppercase tracking-widest mb-1">Security Directive</p>
+                        <p className="text-xs font-bold text-status-warning  tracking-widest mb-1">Security Directive</p>
                         <p className="text-xs text-amber-600/80 leading-relaxed">Changes to Clearance Levels propagate immediately. Active sessions may require a refresh to reflect new interface restrictions.</p>
                     </div>
                 </div>

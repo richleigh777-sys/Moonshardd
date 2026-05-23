@@ -88,39 +88,97 @@ export const ChatInput: React.FC<ChatInputProps> = ({
         return chips.slice(0, 3);
     }, [lastReceivedMessage]);
 
+    const [showSlashCommands, setShowSlashCommands] = React.useState(false);
+    
+    const slashCommands = [
+        { cmd: '/lead', desc: 'Share a lead card', text: '[LEAD: New Lead Transfer]\nName: \nPhone: \nStatus: \nNotes: ' },
+        { cmd: '/transfer', desc: 'Request transfer', text: 'I need to transfer a call right now. Lead ID: ' },
+        { cmd: '/stack', desc: 'Format sale for MS Teams', text: '[TEAMS_STACK: Sale Block]\nAgent: \nCustomer: \nProduct: $ \nPayment: ' },
+        { cmd: '/dnc', desc: 'Flag number as Do Not Call', text: '[DNC: Do Not Call Request]\nPhone: \nReason: ' },
+        { cmd: '/callback', desc: 'Schedule a callback', text: '[CALLBACK: Scheduled Callback]\nPhone: \nTime: \nNotes: ' },
+        { cmd: '/whisper', desc: 'Toggle internal protocol', action: () => setIsInternal(true) },
+        { cmd: '/price', desc: 'Send pricing snippet', text: 'Our standard B2C pricing starts at $49/mo.' }
+    ];
+
     const handleKeyDown = (e: React.KeyboardEvent) => {
         if (e.key === 'Enter' && !e.shiftKey) {
-            e.preventDefault();
-            handleSend();
+            if (showSlashCommands) {
+                // If slash commands menu is open, maybe don't send? For now let's just close it.
+                e.preventDefault();
+                setShowSlashCommands(false);
+            } else {
+                e.preventDefault();
+                handleSend();
+            }
         }
+    };
+
+    const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+        handleTyping(e);
+        const val = e.target.value;
+        if (val.startsWith('/')) {
+            setShowSlashCommands(true);
+        } else {
+            setShowSlashCommands(false);
+        }
+    };
+
+    const executeCommand = (cmd: any) => {
+        if (cmd.action) {
+            cmd.action();
+            setInput('');
+        } else if (cmd.text) {
+            setInput(cmd.text);
+            textareaRef.current?.focus();
+        }
+        setShowSlashCommands(false);
     };
 
     const bars = [4, 8, 12, 6, 10, 14, 8, 4, 12, 10, 6, 8, 14, 12, 4, 6, 10, 8, 12, 6];
 
     return (
-        <div className={`relative flex flex-col items-center w-full transition-all duration-500 ${isBlocked ? 'opacity-50 pointer-events-none grayscale' : ''}`}>
+        <div className={`relative flex flex-col items-center w-full transition-all duration-300 ${isBlocked ? 'opacity-50 pointer-events-none grayscale' : ''}`}>
             
             {/* Smart Suggestions Chips */}
-            {!propIsRecording && <div className="mb-2"><SmartChips chips={smartChips} onSelect={(text) => { setInput(text); sfx.playClick(); textareaRef.current?.focus(); }} /></div>}
+            {!propIsRecording && <div className="mb-2 w-full px-4"><SmartChips chips={smartChips} onSelect={(text) => { setInput(text); sfx.playClick(); textareaRef.current?.focus(); }} /></div>}
 
             {/* THE CAPSULE */}
-            <div className="relative w-full bg-transparent flex items-end p-2">
+            <div className="relative w-full bg-transparent flex items-end p-2 gap-2">
                 
                 <NeuralComposer show={showAI} isThinking={isThinking} onAction={() => {}} menuRef={React.createRef()} />
 
+                {/* Slash Commands Dropdown */}
+                {showSlashCommands && (
+                    <div className="absolute bottom-full left-0 w-full mb-2 bg-surface-alt border border-border-subtle rounded-lg shadow-xl overflow-hidden z-20">
+                        {slashCommands.filter(c => c.cmd.toLowerCase().startsWith(input.toLowerCase())).map((cmd, i) => (
+                            <button 
+                                key={i} 
+                                onClick={() => executeCommand(cmd)}
+                                className="w-full text-left px-4 py-2 hover:bg-surface-highlight flex items-center justify-between group transition-colors"
+                            >
+                                <span className="font-mono font-semibold text-accent-secondary group-hover:text-indigo-300">{cmd.cmd}</span>
+                                <span className="text-xs text-text-muted group-hover:text-text-primary">{cmd.desc}</span>
+                            </button>
+                        ))}
+                        {slashCommands.filter(c => c.cmd.toLowerCase().startsWith(input.toLowerCase())).length === 0 && (
+                            <div className="px-4 py-2 text-xs text-text-muted">No matching commands.</div>
+                        )}
+                    </div>
+                )}
+
                 {/* Context Banner (Reply/Edit) */}
-                <div className="absolute bottom-full left-0 w-full px-4 pb-2 pointer-events-none">
+                <div className="absolute bottom-full left-0 w-full px-4 pb-2 pointer-events-none z-10">
                     <ContextBanner replyTo={replyTo} editingMsg={editingMsg} onCancel={onCancelContext} />
                     {isInternal && (
-                        <div className="bg-amber-500 text-black text-[8px] font-black uppercase tracking-[0.2em] px-3 py-1 rounded-full w-fit mb-2 shadow-lg animate-in slide-in-from-bottom-2">
+                        <div className="bg-amber-500/20 text-amber-200 border border-status-warning/30 text-xs font-semibold px-3 py-1 rounded-md w-fit mb-2 shadow-sm pointer-events-auto">
                             Internal Protocol Active
                         </div>
                     )}
                 </div>
 
                 {/* LEFT: Tools Trigger */}
-                <div className="relative z-20 shrink-0 mb-1 flex items-center gap-2">
-                    <input 
+                <div className="relative z-20 shrink-0 mb-0.5 flex flex-col gap-2">
+                    <input autoComplete="off" data-lpignore="true" data-prevent-autofill="true" spellCheck={false} 
                         type="file" 
                         ref={fileInputRef} 
                         onChange={onAttach} 
@@ -129,42 +187,43 @@ export const ChatInput: React.FC<ChatInputProps> = ({
                     />
                     <button 
                         onClick={() => setIsMenuOpen(!isMenuOpen)} 
-                        className={`w-8 h-8 flex items-center justify-center rounded-lg transition-all shadow-lg ${isMenuOpen ? 'bg-white text-black rotate-45' : 'bg-white/5 text-slate-400 hover:text-white hover:bg-white/10 border border-white/5'}`}
+                        className={`w-8 h-8 flex items-center justify-center rounded-md transition-all ${isMenuOpen ? 'bg-gray-700 text-text-primary rotate-45' : 'bg-surface-main text-text-muted hover:text-text-primary hover:bg-surface-highlight'}`}
+                        title="Add attachment"
                     >
-                        <Plus size={16} />
+                        <Plus size={18} />
                     </button>
 
                     <button 
                         onClick={() => { setIsInternal(!isInternal); sfx.playClick(); }}
-                        className={`w-8 h-8 flex items-center justify-center rounded-lg transition-all border ${isInternal ? 'bg-amber-500 text-black border-amber-400 shadow-[0_0_15px_rgba(245,158,11,0.4)]' : 'bg-white/5 text-slate-500 border-white/5 hover:text-slate-300'}`}
+                        className={`w-8 h-8 flex items-center justify-center rounded-md transition-all ${isInternal ? 'bg-amber-500/20 text-status-warning' : 'bg-surface-main text-text-muted hover:text-text-primary hover:bg-surface-highlight'}`}
                         title="Toggle Internal Protocol"
                     >
-                        <Lock size={14} fill={isInternal ? "currentColor" : "none"} />
+                        <Lock size={16} fill={isInternal ? "currentColor" : "none"} />
                     </button>
                     
                     {/* Floating Tools Menu */}
                     {isMenuOpen && (
-                        <div className="absolute bottom-16 left-0 bg-slate-900/95 backdrop-blur-2xl border border-white/10 p-2.5 rounded-3xl shadow-[0_20px_40px_rgba(0,0,0,0.4)] flex flex-col gap-1.5 w-52 animate-in slide-in-from-bottom-4 zoom-in-95 origin-bottom-left z-50">
-                            <button onClick={() => { fileInputRef.current?.click(); setIsMenuOpen(false); }} className="flex items-center gap-3.5 p-3 hover:bg-white/5 rounded-2xl text-[13px] font-bold text-slate-300 hover:text-white transition-all text-left"><Paperclip size={18}/> Attach File</button>
-                            <button onClick={() => { onCreatePoll(); setIsMenuOpen(false); }} className="flex items-center gap-3.5 p-3 hover:bg-white/5 rounded-2xl text-[13px] font-bold text-slate-300 hover:text-white transition-all text-left"><BarChart2 size={18}/> Create Poll</button>
-                            <button onClick={() => { onShareLocation(); setIsMenuOpen(false); }} className="flex items-center gap-3.5 p-3 hover:bg-white/5 rounded-2xl text-[13px] font-bold text-slate-300 hover:text-white transition-all text-left"><MapPin size={18}/> Share Location</button>
-                            <div className="h-px bg-white/10 mx-3 my-1"></div>
-                            <button onClick={() => { setShowAI(!showAI); setIsMenuOpen(false); }} className="flex items-center gap-3.5 p-3 hover:bg-accent-primary/20 rounded-2xl text-[13px] font-bold text-accent-primary transition-all text-left"><Wand2 size={18}/> AI Assist</button>
+                        <div className="absolute bottom-20 left-0 bg-surface-alt border border-border-subtle p-2 rounded-lg shadow-xl flex flex-col gap-1 w-48 animate-in slide-in-from-bottom-2 zoom-in-95 origin-bottom-left z-50">
+                            <button onClick={() => { fileInputRef.current?.click(); setIsMenuOpen(false); }} className="flex items-center gap-3 px-3 py-2 hover:bg-surface-highlight rounded-md text-sm font-medium text-text-primary transition-all text-left"><Paperclip size={16}/> Attach File</button>
+                            <button onClick={() => { onCreatePoll(); setIsMenuOpen(false); }} className="flex items-center gap-3 px-3 py-2 hover:bg-surface-highlight rounded-md text-sm font-medium text-text-primary transition-all text-left"><BarChart2 size={16}/> Create Poll</button>
+                            <button onClick={() => { onShareLocation(); setIsMenuOpen(false); }} className="flex items-center gap-3 px-3 py-2 hover:bg-surface-highlight rounded-md text-sm font-medium text-text-primary transition-all text-left"><MapPin size={16}/> Location</button>
+                            <div className="h-px bg-gray-700 mx-2 my-1"></div>
+                            <button onClick={() => { setShowAI(!showAI); setIsMenuOpen(false); }} className="flex items-center gap-3 px-3 py-2 hover:bg-indigo-500/20 rounded-md text-sm font-medium text-accent-secondary transition-all text-left"><Wand2 size={16}/> AI Assist</button>
                         </div>
                     )}
                 </div>
 
                 {/* CENTER: Input Area */}
-                <div className="flex-1 min-w-0 mx-2 mb-1.5 relative">
+                <div className="flex-1 min-w-0 relative bg-surface-main rounded-lg p-1.5 flex items-end">
                     {isRecording ? (
-                        <div className="flex items-center gap-3 px-2 py-1.5 animate-in fade-in slide-in-from-left-4">
+                        <div className="flex items-center gap-3 px-3 py-2 animate-in fade-in slide-in-from-left-4 w-full">
                             <div className="flex items-center gap-2">
-                                <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>
-                                <span className="text-[11px] font-mono font-black text-red-500 uppercase tracking-widest">Recording</span>
+                                <div className="w-2.5 h-2.5 bg-red-500 rounded-full animate-pulse"></div>
+                                <span className="text-sm font-semibold text-status-error">Recording</span>
                             </div>
-                            <div className="h-4 w-px bg-white/10"></div>
-                            <span className="text-[11px] font-mono text-white/70">{formatDuration(recordTime)}</span>
-                            <div className="flex-1 flex items-center gap-1 overflow-hidden opacity-30">
+                            <div className="h-4 w-px bg-gray-600"></div>
+                            <span className="text-sm font-mono text-text-primary">{formatDuration(recordTime)}</span>
+                            <div className="flex-1 flex items-center gap-1 overflow-hidden opacity-50">
                                 {bars.map((h, i) => (
                                     <div key={i} className="w-0.5 bg-red-500 rounded-full" style={{ height: `${h}px` }}></div>
                                 ))}
@@ -174,59 +233,65 @@ export const ChatInput: React.FC<ChatInputProps> = ({
                         <textarea 
                             ref={textareaRef}
                             value={input} 
-                            onChange={handleTyping} 
+                            onChange={handleInputChange} 
                             onKeyDown={handleKeyDown}
                             placeholder={placeholder}
-                            className="w-full bg-transparent text-white px-2 py-1 text-xs font-medium outline-none placeholder:text-slate-500 resize-none custom-scrollbar leading-relaxed max-h-[120px]"
+                            className="w-full bg-transparent text-text-primary px-3 py-1.5 text-sm outline-none placeholder:text-text-muted resize-none custom-scrollbar leading-relaxed max-h-[200px]"
                             rows={1}
                             style={{ fontFamily: EMOJI_FONT }}
                         />
                     )}
+
+                    <div className="flex items-center mr-1 mb-0.5 shrink-0">
+                        {showEmoji ? (
+                            <button onClick={() => setShowEmoji(!showEmoji)} className="p-1.5 text-accent-secondary bg-indigo-500/20 rounded-md transition-colors"><Smile size={18}/></button>
+                        ) : (
+                            !isRecording && <button onClick={() => setShowEmoji(!showEmoji)} className="p-1.5 text-text-muted hover:text-text-primary transition-colors"><Smile size={18}/></button>
+                        )}
+                        
+                        {/* Emoji Picker Popover */}
+                        {showEmoji && (
+                            <div className="absolute bottom-full right-0 mb-4 z-50">
+                                <EmojiPicker onSelect={(e) => { insertText(e); setShowEmoji(false); }} onClose={() => setShowEmoji(false)} />
+                            </div>
+                        )}
+                    </div>
                 </div>
 
                 {/* RIGHT: Actions */}
-                <div className="flex items-center gap-1.5 mb-1">
-                    {!isRecording && <button onClick={() => setShowEmoji(!showEmoji)} className="p-1.5 text-slate-500 hover:text-yellow-400 transition-all hover:scale-110"><Smile size={16}/></button>}
-                    
+                <div className="shrink-0 flex items-center mb-1">
                     {isRecording ? (
                         <div className="flex items-center gap-1.5">
                             <button 
                                 onClick={cancelRecording}
-                                className="p-1.5 text-slate-500 hover:text-red-500 transition-all"
+                                className="p-2 text-text-muted hover:text-status-error hover:bg-surface-main rounded-md transition-all"
                                 title="Cancel Recording"
                             >
-                                <X size={16} />
+                                <X size={18} />
                             </button>
                             <button 
                                 onClick={stopRecording} 
-                                className="w-8 h-8 bg-red-500 hover:bg-red-600 text-white flex items-center justify-center rounded-lg shadow-xl shadow-red-500/30 transition-all hover:scale-110 active:scale-90"
+                                className="w-9 h-9 bg-red-500 hover:bg-red-600 text-text-primary flex items-center justify-center rounded-md shadow-sm transition-all"
                             >
-                                <Send size={14} className="ml-0.5" fill="currentColor"/>
+                                <Send size={16} className="ml-0.5" fill="currentColor"/>
                             </button>
                         </div>
                     ) : input.trim() ? (
                         <button 
                             onClick={handleSend} 
-                            className="w-8 h-8 bg-accent-primary hover:bg-accent-primary/90 text-white flex items-center justify-center rounded-lg shadow-xl shadow-accent-primary/30 transition-all hover:scale-110 active:scale-90"
+                            className="w-9 h-9 bg-indigo-500 hover:bg-indigo-600 text-text-primary flex items-center justify-center rounded-md shadow-sm transition-all"
                         >
-                            <Send size={14} className="ml-0.5" fill="currentColor"/>
+                            <Send size={16} className="ml-0.5" fill="currentColor"/>
                         </button>
                     ) : (
                         <button 
                             onClick={startRecording}
-                            className="w-8 h-8 bg-white/5 hover:bg-red-500/20 text-slate-400 hover:text-red-500 flex items-center justify-center rounded-lg transition-all hover:scale-110 active:scale-90 border border-white/5 hover:border-red-500/50 shadow-lg"
+                            className="w-9 h-9 bg-surface-main hover:bg-red-500/20 hover:text-status-error text-text-muted flex items-center justify-center rounded-md transition-all shadow-sm"
                         >
-                            <Mic size={16}/>
+                            <Mic size={18}/>
                         </button>
                     )}
                 </div>
-
-                {/* Emoji Picker Popover */}
-                {showEmoji && (
-                    <div className="absolute bottom-full right-0 mb-4 z-50">
-                        <EmojiPicker onSelect={(e) => { insertText(e); setShowEmoji(false); }} onClose={() => setShowEmoji(false)} />
-                    </div>
-                )}
             </div>
         </div>
     );

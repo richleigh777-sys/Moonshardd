@@ -12,9 +12,9 @@ interface Props {
 }
 
 const BREAK_TYPES = [
-    { id: 'lunch', label: 'Lunch Break', icon: Utensils, duration: '60m', color: 'text-emerald-500', bg: 'bg-emerald-500/10', border: 'border-emerald-500/20' },
+    { id: 'lunch', label: 'Lunch Break', icon: Utensils, duration: '60m', color: 'text-status-success', bg: 'bg-emerald-500/10', border: 'border-emerald-500/20' },
     { id: 'bio', label: 'Bio Break', icon: Zap, duration: '15m', color: 'text-blue-500', bg: 'bg-blue-500/10', border: 'border-blue-500/20' },
-    { id: 'meeting', label: 'Team Meeting', icon: Clock, duration: '30m', color: 'text-amber-500', bg: 'bg-amber-500/10', border: 'border-amber-500/20' },
+    { id: 'meeting', label: 'Team Meeting', icon: Clock, duration: '30m', color: 'text-status-warning', bg: 'bg-amber-500/10', border: 'border-amber-500/20' },
     { id: 'other', label: 'Personal / Other', icon: AlertCircle, duration: '?', color: 'text-text-muted', bg: 'bg-surface-alt', border: 'border-border-subtle' },
 ];
 
@@ -58,10 +58,10 @@ export const BreakControlModal: React.FC<Props> = ({ isOpen, onClose }) => {
                                         <Icon size={20} />
                                     </div>
                                     <div className="text-left">
-                                        <span className="block text-sm font-bold text-text-primary group-hover:text-emerald-500 transition-colors">
+                                        <span className="block text-sm font-bold text-text-primary group-hover:text-status-success transition-colors">
                                             {type.label}
                                         </span>
-                                        <span className="text-[10px] font-mono text-text-muted opacity-70">
+                                        <span className="text-xs font-mono text-text-muted opacity-70">
                                             Standard Duration: {type.duration}
                                         </span>
                                     </div>

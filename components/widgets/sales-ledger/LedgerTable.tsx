@@ -1,12 +1,15 @@
 
 import React, { useMemo, useState, useEffect, useRef } from 'react';
+import { useVirtualizer } from '@tanstack/react-virtual';
 import { 
     Copy, Check, XCircle, User, GripVertical, 
-    Edit, CheckSquare, Square, ChevronUp, ChevronDown 
+    Edit, CheckSquare, Square, ChevronUp, ChevronDown, Star 
 } from 'lucide-react';
 import { Sale } from '../../../types';
 import { LedgerRow } from './LedgerRow';
 import { sfx } from '../../../lib/soundService';
+import { OrderProcessingModal } from './OrderProcessingModal';
+import { QAScorecardModal } from './QAScorecardModal';
 
 interface LedgerTableProps {
     sales: Sale[];
@@ -21,9 +24,10 @@ interface LedgerTableProps {
     onAction: (sale: Sale, action: string, payload?: any) => void;
     onColumnReorder: (newOrder: string[]) => void;
     density: 'compact' | 'comfortable';
+    isLoading?: boolean;
 }
 
-const ContextMenu = ({ x, y, onClose, onAction }: { x: number, y: number, onClose: () => void, onAction: (a: string) => void, saleId: string }) => {
+const ContextMenu = ({ x, y, onClose, onAction, allowActions }: { x: number, y: number, onClose: () => void, onAction: (a: string) => void, saleId: string, allowActions: boolean }) => {
     const menuRef = useRef<HTMLDivElement>(null);
     useEffect(() => {
         const handleClick = (e: MouseEvent) => { if (menuRef.current && !menuRef.current.contains(e.target as Node)) onClose(); };
@@ -33,22 +37,29 @@ const ContextMenu = ({ x, y, onClose, onAction }: { x: number, y: number, onClos
 
     return (
         <div ref={menuRef} style={{ top: y, left: x }} className="fixed z-[100] w-48 bg-surface-main/95 backdrop-blur-xl border border-border-subtle rounded-xl shadow-2xl p-1.5 flex flex-col gap-0.5 animate-in fade-in zoom-in-95 duration-200">
-            <button onClick={() => onAction('approve')} className="flex items-center gap-3 px-3 py-2 hover:bg-emerald-500/10 text-text-primary hover:text-emerald-500 rounded-lg transition-all text-xs font-bold text-left group">
-                <Check size={14} className="text-text-muted group-hover:text-emerald-500"/> Approve Order
-            </button>
-            <button onClick={() => onAction('decline')} className="flex items-center gap-3 px-3 py-2 hover:bg-rose-500/10 text-text-primary hover:text-rose-500 rounded-lg transition-all text-xs font-bold text-left group">
-                <XCircle size={14} className="text-text-muted group-hover:text-rose-500"/> Decline Order
-            </button>
-            <div className="h-px bg-border-subtle mx-2 my-1"></div>
+            {allowActions && (
+                <>
+                    <button onClick={() => onAction('approve')} className="flex items-center gap-3 px-3 py-2 hover:bg-emerald-500/10 text-text-primary hover:text-status-success rounded-lg transition-all text-xs font-bold text-left group">
+                        <Check size={16} className="text-text-muted group-hover:text-status-success"/> Approve Order
+                    </button>
+                    <button onClick={() => onAction('decline')} className="flex items-center gap-3 px-3 py-2 hover:bg-rose-500/10 text-text-primary hover:text-rose-500 rounded-lg transition-all text-xs font-bold text-left group">
+                        <XCircle size={16} className="text-text-muted group-hover:text-rose-500"/> Decline Order
+                    </button>
+                    <div className="h-px bg-border-subtle mx-2 my-1"></div>
+                    <button onClick={() => onAction('update')} className="flex items-center gap-3 px-3 py-2 hover:bg-surface-alt text-text-primary rounded-lg transition-all text-xs font-bold text-left group">
+                        <Edit size={16} className="text-text-muted group-hover:text-accent-primary"/> Edit Record
+                    </button>
+                    <button onClick={() => onAction('qa')} className="flex items-center gap-3 px-3 py-2 hover:bg-surface-alt text-text-primary rounded-lg transition-all text-xs font-bold text-left group">
+                        <Star size={16} className="text-text-muted group-hover:text-status-warning"/> QA Review
+                    </button>
+                    <div className="h-px bg-border-subtle mx-2 my-1"></div>
+                </>
+            )}
             <button onClick={() => onAction('view_profile')} className="flex items-center gap-3 px-3 py-2 hover:bg-surface-alt text-text-primary rounded-lg transition-all text-xs font-bold text-left group">
-                <User size={14} className="text-text-muted group-hover:text-accent-primary"/> View Profile
+                <User size={16} className="text-text-muted group-hover:text-accent-primary"/> View Profile
             </button>
-             <button onClick={() => onAction('update')} className="flex items-center gap-3 px-3 py-2 hover:bg-surface-alt text-text-primary rounded-lg transition-all text-xs font-bold text-left group">
-                <Edit size={14} className="text-text-muted group-hover:text-accent-primary"/> Edit Record
-            </button>
-            <div className="h-px bg-border-subtle mx-2 my-1"></div>
              <button onClick={() => onAction('copy_id')} className="flex items-center gap-3 px-3 py-2 hover:bg-surface-alt text-text-primary rounded-lg transition-all text-xs font-bold text-left group">
-                <Copy size={14} className="text-text-muted group-hover:text-accent-primary"/> Copy ID
+                <Copy size={16} className="text-text-muted group-hover:text-accent-primary"/> Copy ID
             </button>
         </div>
     );
@@ -56,15 +67,22 @@ const ContextMenu = ({ x, y, onClose, onAction }: { x: number, y: number, onClos
 
 export const LedgerTable: React.FC<LedgerTableProps> = ({
     sales, columnOrder, visibleColumns, sortConfig, handleSort, selectedIds, toggleSelect, toggleSelectAll,
-    allowActions, onAction, onColumnReorder, density
+    allowActions, onAction, onColumnReorder, density, isLoading
 }) => {
     const activeColumns = useMemo(() => columnOrder.filter(k => visibleColumns[k]), [columnOrder, visibleColumns]);
     const [contextMenu, setContextMenu] = useState<{ x: number, y: number, sale: Sale } | null>(null);
+    const [actionModal, setActionModal] = useState<{ action: 'approve' | 'decline' | 'qa', sale: Sale } | null>(null);
     
     // Drag State
     const [draggedCol, setDraggedCol] = useState<string | null>(null);
     const [dragOverCol, setDragOverCol] = useState<string | null>(null);
 
+    const parentRef = useRef<HTMLDivElement>(null);
+    const rowVirtualizer = useVirtualizer({
+        count: isLoading ? 10 : sales.length,
+        getScrollElement: () => parentRef.current,
+        estimateSize: () => (density === 'compact' ? 44 : 56),
+    });
     const handleContextMenu = (e: React.MouseEvent, sale: Sale) => {
         e.preventDefault();
         sfx.playClick();
@@ -76,6 +94,8 @@ export const LedgerTable: React.FC<LedgerTableProps> = ({
         if (action === 'copy_id') {
             navigator.clipboard.writeText(contextMenu.sale.id);
             sfx.playConfirm();
+        } else if (action === 'approve' || action === 'decline' || action === 'qa') {
+            setActionModal({ action, sale: contextMenu.sale });
         } else {
             onAction(contextMenu.sale, action);
         }
@@ -130,16 +150,22 @@ export const LedgerTable: React.FC<LedgerTableProps> = ({
         phone: 'Phone',
         product: 'Product',
         amount: 'Amount',
+        bankNetwork: 'Bank/Network',
+        cardNumber: 'Card Number',
+        cardExpiry: 'Expiry',
+        cardCvv: 'CVV',
         status: 'Status',
         pipelineStatus: 'Stage',
         orderId: 'Order ID',
+        qaScore: 'QA',
+        declineReason: 'Decline Reason',
         followUpDate: 'Follow Up',
         callbackTime: 'Callback Time',
         isReorder: 'Reorder'
     };
 
     return (
-        <div className="w-full h-full overflow-auto custom-scrollbar bg-surface-main relative">
+        <div ref={parentRef} className="w-full h-full overflow-auto custom-scrollbar bg-surface-main relative">
             <table className="w-full text-left border-collapse min-w-[1200px]">
                 <thead className="sticky top-0 z-20 bg-surface-main border-b border-border-subtle shadow-sm">
                     <tr>
@@ -159,7 +185,7 @@ export const LedgerTable: React.FC<LedgerTableProps> = ({
                                 onDrop={(e) => handleDrop(e, col)}
                                 className={`
                                     ${density === 'compact' ? 'p-2' : 'p-4'} 
-                                    text-[10px] font-black uppercase tracking-widest text-text-muted 
+                                    text-xs font-[700]  tracking-widest text-text-muted 
                                     cursor-grab active:cursor-grabbing hover:bg-surface-alt transition-all select-none group relative
                                     ${draggedCol === col ? 'opacity-40 bg-surface-alt' : ''}
                                     ${dragOverCol === col ? 'border-l-2 border-accent-primary bg-accent-primary/5' : ''}
@@ -167,10 +193,10 @@ export const LedgerTable: React.FC<LedgerTableProps> = ({
                                 onClick={() => handleSort(col)}
                             >
                                 <div className="flex items-center gap-2">
-                                    <GripVertical size={10} className="text-text-muted/20 group-hover:text-text-muted transition-colors"/>
+                                    <GripVertical size={16} className="text-text-muted/20 group-hover:text-text-muted transition-colors"/>
                                     {COLUMN_LABELS[col] || col.replace(/([A-Z])/g, ' $1').trim()}
                                     {sortConfig.key === col && (
-                                        sortConfig.direction === 'asc' ? <ChevronUp size={12}/> : <ChevronDown size={12}/>
+                                        sortConfig.direction === 'asc' ? <ChevronUp size={16}/> : <ChevronDown size={16}/>
                                     )}
                                 </div>
                             </th>
@@ -178,21 +204,51 @@ export const LedgerTable: React.FC<LedgerTableProps> = ({
                         <th className={`${density === 'compact' ? 'p-2' : 'p-4'} w-20 text-right bg-surface-alt/50 pr-6`}>CMD</th>
                     </tr>
                 </thead>
-                <tbody className="divide-y divide-border-subtle/50">
-                    {sales.map((sale) => (
-                        <LedgerRow
-                            key={sale.id}
-                            sale={sale}
-                            activeColumns={activeColumns}
-                            isSelected={selectedIds.has(sale.id)}
-                            onToggle={() => toggleSelect(sale.id)}
-                            onAction={(act, pay) => onAction(sale, act, pay)}
-                            allowActions={allowActions}
-                            density={density}
-                            onContextMenu={(e) => handleContextMenu(e, sale)}
-                        />
-                    ))}
-                    {sales.length === 0 && (
+                <tbody className="divide-y divide-border-subtle/50 relative">
+                    {rowVirtualizer.getVirtualItems().length > 0 && (
+                        <tr style={{ height: `${rowVirtualizer.getVirtualItems()[0]?.start || 0}px` }}>
+                            <td colSpan={activeColumns.length + 2} />
+                        </tr>
+                    )}
+                    {rowVirtualizer.getVirtualItems().map(virtualRow => {
+                        if (isLoading) {
+                            return (
+                                <tr key={`skeleton-${virtualRow.index}`} ref={rowVirtualizer.measureElement} data-index={virtualRow.index} className="animate-pulse border-b border-border-subtle/50">
+                                    <td className="p-4" colSpan={activeColumns.length + 2}>
+                                        <div className="h-4 bg-surface-alt rounded w-full"></div>
+                                    </td>
+                                </tr>
+                            );
+                        }
+                        const sale = sales[virtualRow.index];
+                        return (
+                            <LedgerRow
+                                key={sale.id}
+                                sale={sale}
+                                activeColumns={activeColumns}
+                                isSelected={selectedIds.has(sale.id)}
+                                onToggle={() => toggleSelect(sale.id)}
+                                onAction={(act, pay) => {
+                                    if (act === 'approve' || act === 'decline' || act === 'qa') {
+                                        setActionModal({ action: act as any, sale });
+                                    } else {
+                                        onAction(sale, act, pay);
+                                    }
+                                }}
+                                allowActions={allowActions}
+                                density={density}
+                                onContextMenu={(e) => handleContextMenu(e, sale)}
+                                measureRef={rowVirtualizer.measureElement}
+                                dataIndex={virtualRow.index}
+                            />
+                        );
+                    })}
+                    {rowVirtualizer.getVirtualItems().length > 0 && (
+                        <tr style={{ height: `${rowVirtualizer.getTotalSize() - (rowVirtualizer.getVirtualItems()[rowVirtualizer.getVirtualItems().length - 1]?.end || 0)}px` }}>
+                            <td colSpan={activeColumns.length + 2} />
+                        </tr>
+                    )}
+                    {!isLoading && sales.length === 0 && (
                         <tr><td colSpan={12} className="p-20 text-center text-text-muted italic opacity-50">Sector empty. Standing by for telemetry.</td></tr>
                     )}
                 </tbody>
@@ -205,6 +261,30 @@ export const LedgerTable: React.FC<LedgerTableProps> = ({
                     saleId={contextMenu.sale.id}
                     onClose={() => setContextMenu(null)}
                     onAction={handleContextAction}
+                    allowActions={allowActions}
+                />
+            )}
+
+            {actionModal && actionModal.action !== 'qa' && (
+                <OrderProcessingModal
+                    sale={actionModal.sale}
+                    actionType={actionModal.action}
+                    onConfirm={(payload) => {
+                        onAction(actionModal.sale, actionModal.action, payload);
+                        setActionModal(null);
+                    }}
+                    onClose={() => setActionModal(null)}
+                />
+            )}
+
+            {actionModal && actionModal.action === 'qa' && (
+                <QAScorecardModal
+                    sale={actionModal.sale}
+                    onSave={(payload) => {
+                        onAction(actionModal.sale, 'qa', payload);
+                        setActionModal(null);
+                    }}
+                    onClose={() => setActionModal(null)}
                 />
             )}
         </div>

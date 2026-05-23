@@ -3,19 +3,15 @@ import { Check } from 'lucide-react';
 
 interface Props {
     formData: any;
-    financials: any;
     cart: any[];
-    cardStatus: string;
 }
 
-export const ValidationSummary: React.FC<Props> = ({ formData, financials, cart, cardStatus }) => {
+export const ValidationSummary: React.FC<Props> = ({ formData, cart }) => {
     const checks = [
-        { label: 'Identity', status: formData.fullName?.length > 3 },
-        { label: 'Comms', status: formData.phone?.length >= 14 },
-        { label: 'Target', status: formData.shippingAddress?.length > 10 },
-        { label: 'Payload', status: cart.length > 0 },
-        { label: 'Vault', status: cardStatus === 'valid' },
-        { label: 'Cipher', status: financials.cardCvv?.length >= 3 }
+        { label: 'Name', status: formData.fullName?.length > 3 },
+        { label: 'Phone', status: formData.phone?.length >= 14 },
+        { label: 'Address', status: formData.shippingAddress?.length > 10 },
+        { label: 'Cart', status: cart.length > 0 }
     ];
 
     const completedCount = checks.filter(c => c.status).length;
@@ -24,33 +20,39 @@ export const ValidationSummary: React.FC<Props> = ({ formData, financials, cart,
     const isReady = percent === 100;
 
     return (
-        <div className="space-y-4">
+        <div className="space-y-6">
             <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                    <div className={`w-2 h-2 rounded-full ${isReady ? 'bg-emerald-500 shadow-[0_0_8px_#10B981]' : 'bg-amber-500 animate-pulse'}`}></div>
-                    <span className="text-xs font-bold text-white uppercase tracking-wide">System Status</span>
+                <div className="flex items-center gap-3">
+                    <div className={`w-3 h-3 rounded-full ${isReady ? 'bg-emerald-400 shadow-[0_0_15px_rgba(52,211,153,0.8)]' : 'bg-amber-400 shadow-[0_0_15px_rgba(251,191,36,0.8)] animate-pulse'}`}></div>
+                    <span className="text-xs font-[700] text-text-primary  tracking-[0.2em] drop-shadow-sm">System Status</span>
                 </div>
-                <span className={`text-xs font-mono font-bold ${isReady ? 'text-emerald-500' : 'text-amber-500'}`}>
+                <span className={`text-sm font-mono font-[700] ${isReady ? 'text-status-success drop-shadow-[0_0_8px_rgba(52,211,153,0.5)]' : 'text-status-warning drop-shadow-[0_0_8px_rgba(251,191,36,0.5)]'}`}>
                     {percent}%
                 </span>
             </div>
 
-            <div className="h-1.5 w-full bg-white/5 rounded-full overflow-hidden">
+            <div className="h-2 w-full bg-surface-alt/50 rounded-full overflow-hidden border border-border-subtle">
                 <div 
-                    className={`h-full rounded-full transition-all duration-500 ${isReady ? 'bg-emerald-500' : 'bg-amber-500'}`}
+                    className={`h-full rounded-full transition-all duration-700 ease-out ${isReady ? 'bg-gradient-to-r from-emerald-500 to-emerald-400 shadow-[0_0_15px_rgba(52,211,153,0.8)]' : 'bg-gradient-to-r from-amber-500 to-amber-400 shadow-[0_0_15px_rgba(251,191,36,0.8)]'}`}
                     style={{ width: `${percent}%` }}
                 ></div>
             </div>
 
-            <div className="grid grid-cols-2 gap-2">
+            <div className="grid grid-cols-2 gap-3 pt-2">
                 {checks.map((check, i) => (
                     <div 
                         key={i} 
-                        className={`flex items-center gap-2 text-[10px] font-medium uppercase tracking-wide ${
-                            check.status ? 'text-emerald-500' : 'text-zinc-600'
+                        className={`flex items-center gap-3 text-xs font-[700]  tracking-widest ${
+                            check.status ? 'text-status-success' : 'text-zinc-600'
                         }`}
                     >
-                        {check.status ? <Check size={12} strokeWidth={3} /> : <div className="w-3 h-3 rounded-full border border-zinc-700"></div>}
+                        {check.status ? (
+                            <div className="w-5 h-5 rounded-full bg-emerald-500/20 border border-status-success/50 flex items-center justify-center shadow-[0_0_10px_rgba(52,211,153,0.2)]">
+                                <Check size={12} strokeWidth={3} className="drop-shadow-[0_0_5px_rgba(52,211,153,0.8)]" />
+                            </div>
+                        ) : (
+                            <div className="w-5 h-5 rounded-full border border-border-subtle bg-surface-alt/30"></div>
+                        )}
                         {check.label}
                     </div>
                 ))}

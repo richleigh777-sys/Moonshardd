@@ -25,13 +25,13 @@ export const TemporalHeatmap: React.FC<TemporalHeatmapProps> = ({ data }) => {
                         <Clock size={16} strokeWidth={2.5}/>
                     </div>
                     <div>
-                        <h4 className="text-xs font-black uppercase text-text-primary tracking-widest">Temporal Velocity</h4>
-                        <p className="text-[9px] text-text-muted font-bold uppercase tracking-wider">Revenue Density Map</p>
+                        <h4 className="text-xs font-[700]  text-text-primary tracking-widest">Temporal Velocity</h4>
+                        <p className="text-xs text-text-muted font-bold  tracking-wider">Revenue Density Map</p>
                     </div>
                 </div>
                 {hoveredCell && (
                     <div className="hidden md:flex items-center gap-2 animate-in fade-in slide-in-from-right-2">
-                        <span className="text-[9px] font-bold text-text-secondary uppercase">{hoveredCell.day} {hoveredCell.time}</span>
+                        <span className="text-xs font-bold text-text-secondary ">{hoveredCell.day} {hoveredCell.time}</span>
                         <Badge status="Approved">${hoveredCell.value.toLocaleString()}</Badge>
                     </div>
                 )}
@@ -45,7 +45,7 @@ export const TemporalHeatmap: React.FC<TemporalHeatmapProps> = ({ data }) => {
                     <div className="h-6"></div> {/* Spacer for Time Label Column */}
                     {DAYS.map(d => (
                         <div key={d} className="flex items-end justify-center pb-2">
-                            <span className="text-[9px] font-black uppercase text-text-muted tracking-wider">{d}</span>
+                            <span className="text-xs font-[700]  text-text-muted tracking-wider">{d}</span>
                         </div>
                     ))}
 
@@ -54,7 +54,7 @@ export const TemporalHeatmap: React.FC<TemporalHeatmapProps> = ({ data }) => {
                         <React.Fragment key={timeLabel}>
                             {/* Row Label */}
                             <div className="flex items-center justify-end pr-3">
-                                <span className="text-[9px] font-black uppercase text-text-muted tracking-widest writing-mode-vertical">{timeLabel}</span>
+                                <span className="text-xs font-[700]  text-text-muted tracking-widest writing-mode-vertical">{timeLabel}</span>
                             </div>
                             
                             {/* Cells */}

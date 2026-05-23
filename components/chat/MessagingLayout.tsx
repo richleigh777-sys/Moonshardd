@@ -1,17 +1,21 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { ChatWindow } from './ChatWindow';
 import { Button } from '../ui/Base';
 import { Modal } from '../ui/Modal';
 import { ChatEmptyState } from './ChatEmptyState';
 import { ChatSidebarLayout } from './ChatSidebarLayout';
 import { useMessagingLogic } from './hooks/useMessagingLogic';
+import { Search } from 'lucide-react';
 
 import { usePresence } from '../../hooks/usePresence';
 import { useSystem } from '../../hooks/useSystem';
+import { useCRM } from '../../hooks/useCRM';
 
 export const MessagingLayout: React.FC = () => {
   const { setToast } = useSystem();
+  const { users } = useCRM();
+  const [agentSearch, setAgentSearch] = useState('');
   const {
     currentUser, messages, activeChannelId, setActiveChannelId, setTyping,
     sendMessage, editMessage, deleteMessage, togglePin, addReaction, votePoll,
@@ -25,7 +29,7 @@ export const MessagingLayout: React.FC = () => {
   if (!currentUser) return null;
 
   return (
-    <div className="h-full w-full flex overflow-hidden bg-surface-alt relative text-text-primary transition-colors duration-500">
+    <div className="h-full w-full flex overflow-hidden bg-surface-main relative text-text-primary transition-colors duration-500">
         <ChatSidebarLayout 
             mobileView={mobileView}
             convos={convos}
@@ -35,7 +39,7 @@ export const MessagingLayout: React.FC = () => {
             setShowNewGroup={setShowNewGroup}
         />
         
-        <div className={`${mobileView === 'chat' ? 'flex' : 'hidden md:flex'} flex-1 flex-col relative z-10 bg-surface-alt`}>
+        <div className={`${mobileView === 'chat' ? 'flex' : 'hidden md:flex'} flex-1 flex-col relative z-10 bg-surface-main`}>
           {activeConversation ? (
             <ChatWindow 
               currentUser={currentUser} 
@@ -50,9 +54,9 @@ export const MessagingLayout: React.FC = () => {
               onPin={togglePin}
               onReaction={addReaction}
               onVote={votePoll}
-              onCreatePoll={() => setToast({ title: 'Polls', message: 'Poll interface initialized', type: 'info' })}
-              onShareLocation={() => setToast({ title: 'Location', message: 'GPS Uplink requested', type: 'info' })}
-              onStartCall={(type) => setToast({ title: 'Call Link', message: `Initializing ${type} uplink...`, type: 'info' })} 
+              onCreatePoll={() => setToast({ title: 'Polls', message: 'Poll interface opened.', type: 'info' })}
+              onShareLocation={() => setToast({ title: 'Location', message: 'Location sharing requested.', type: 'info' })}
+              onStartCall={(type) => setToast({ title: 'Call Link', message: `Initializing ${type} call...`, type: 'info' })} 
               searchQuery={searchQuery}
               onSearchChange={setSearchQuery}
               isMaximized={isMaximized}
@@ -64,10 +68,46 @@ export const MessagingLayout: React.FC = () => {
           )}
         </div>
 
-        <Modal isOpen={showNewGroup} onClose={() => setShowNewGroup(false)} title="Initialize Group Protocol">
-            <div className="space-y-6">
-                <input placeholder="Group Designation" className="w-full bg-surface-alt border border-border-subtle rounded-2xl p-4 text-sm font-bold outline-none focus:border-accent-primary transition-all" />
-                <Button variant="primary" className="w-full h-14 uppercase tracking-widest font-black text-xs" onClick={() => setShowNewGroup(false)}>Establish Channel</Button>
+        <Modal isOpen={showNewGroup} onClose={() => setShowNewGroup(false)} title="New Message">
+            <div className="space-y-4">
+                <div className="relative group">
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-text-muted transition-colors" />
+                    <input 
+                        autoComplete="off" 
+                        data-lpignore="true" 
+                        data-prevent-autofill="true" 
+                        spellCheck={false} 
+                        placeholder="Search agents..." 
+                        value={agentSearch}
+                        onChange={(e) => setAgentSearch(e.target.value)}
+                        className="w-full bg-surface-main text-text-primary border border-border-subtle rounded-lg pl-9 pr-3 py-2 text-sm font-semibold outline-none focus:border-indigo-500 transition-all placeholder:text-text-muted" 
+                    />
+                </div>
+                
+                <div className="max-h-[300px] overflow-y-auto space-y-1 custom-scrollbar">
+                    {users.filter(u => u.id !== currentUser?.id && u.name.toLowerCase().includes(agentSearch.toLowerCase())).map(u => {
+                        const channelId = [currentUser?.id, u.id].sort().join('_');
+                        return (
+                            <button 
+                                key={u.id}
+                                onClick={() => {
+                                    setActiveChannelId(channelId);
+                                    setShowNewGroup(false);
+                                    setMobileView('chat');
+                                }}
+                                className="w-full flex items-center gap-3 p-2 rounded-lg hover:bg-surface-alt transition-colors text-left"
+                            >
+                                <div className="h-8 w-8 rounded-full bg-surface-main border border-border-subtle flex items-center justify-center font-bold text-xs text-text-muted overflow-hidden">
+                                    {u.avatar ? <img src={u.avatar} className="w-full h-full object-cover" /> : u.name.charAt(0)}
+                                </div>
+                                <div className="flex-1">
+                                    <div className="text-sm font-bold text-text-primary">{u.name}</div>
+                                    <div className="text-xs text-text-muted">{u.role}</div>
+                                </div>
+                            </button>
+                        );
+                    })}
+                </div>
             </div>
         </Modal>
     </div>

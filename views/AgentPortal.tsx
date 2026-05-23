@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { PortalShell } from '../components/layout/PortalShell';
 import { Tabs } from '../components/ui/Tabs';
 import { EntryView } from './EntryView';
@@ -9,7 +9,13 @@ import { AgentTimeSheet } from '../components/modals/AgentTimeSheet';
 import { QuickCalculator } from '../components/widgets/QuickCalculator';
 import { Scratchpad } from '../components/widgets/Scratchpad';
 import { useAgentPortalLogic } from '../components/agent/hooks/useAgentPortalLogic';
+import { useCRM } from '../hooks/useCRM';
 import { AgentViewManager } from '../components/agent/AgentViewManager';
+
+// NEW COMPONENTS
+import { QuickSaleEntry } from '../components/Sales/QuickSaleEntry';
+import { ContextualHelp } from '../components/Common/ContextualHelp';
+import { BottomNav } from '../components/Layout/BottomNav';
 
 export const AgentPortal: React.FC = () => {
     const {
@@ -19,16 +25,100 @@ export const AgentPortal: React.FC = () => {
         isAllowed, mySales, myNotes, setToast
     } = useAgentPortalLogic();
 
+    const { dialerLists, customers } = useCRM();
+    const [showSaleModal, setShowSaleModal] = useState(false);
+
     const handleNextCall = () => {
-        const sorted = [...myNotes].sort((a, b) => (a.reminderAt || Infinity) - (b.reminderAt || Infinity));
+        // 1. Strict Priority: Urgent Callbacks & Protocols
+        const sorted = [...myNotes]
+            .filter(n => n.type === 'callback' || n.type === 'protocol')
+            .sort((a, b) => (a.reminderAt || Infinity) - (b.reminderAt || Infinity));
         const urgent = sorted[0];
-        if (urgent) {
+        
+        if (urgent && urgent.reminderAt && urgent.reminderAt < Date.now() + 3600000) {
             setView('enrollment');
-            // We could trigger a navigation with state, but for now we'll just set the view
-            // and maybe Dispatch an event that EnrollmentForm picks up.
             window.dispatchEvent(new CustomEvent('LOAD_LEAD', { detail: urgent }));
-            setToast({ title: 'Navigation Auto-Pilot', message: `Vectoring to next priority: ${urgent.customerName}`, type: 'info' });
+            setToast({ title: 'Navigation Auto-Pilot', message: `Priority Override: Vectoring to ${urgent.customerName}`, type: 'warning' });
+            return;
         }
+
+        // 2. Intelligence Engine: Lead Routing from Dialer Lists
+        if (dialerLists && dialerLists.length > 0) {
+            const activeList = dialerLists.sort((a, b) => b.uploadedAt - a.uploadedAt).find(l => l.status === 'Active' && l.dataUrl);
+            if (activeList && activeList.dataUrl) {
+                try {
+                    const csvText = decodeURIComponent(escape(atob(activeList.dataUrl)));
+                    const lines = csvText.split('\n').filter(r => r.trim().length > 0);
+                    if (lines.length > 1) {
+                        const headers = lines[0].split(',').map(h => h.replace(/^["']|["']$/g, '').trim());
+                        
+                        // Simulate Queue pointer: Pick a random lead from lower half to avoid collision (in lieu of backend locking)
+                        const rawRowIndex = Math.floor(Math.random() * (lines.length - 1)) + 1;
+                        const leadRow = lines[rawRowIndex].split(',').map(h => h.replace(/^["']|["']$/g, '').trim());
+
+                        // We map the active fields based on the system mapper
+                        const mapping = activeList.mapping || {};
+                        const leadRowMapped: any = {};
+                        
+                        Object.entries(mapping).forEach(([key, colName]) => {
+                            const idx = headers.indexOf(colName as string);
+                            if (idx >= 0) {
+                                leadRowMapped[key] = leadRow[idx];
+                            }
+                        });
+
+                        // Fallback heurustics if mapping is missing
+                        const phone = leadRowMapped.phone || leadRow[headers.findIndex(h => h.toLowerCase().includes('phone') || h.toLowerCase().includes('number'))] || '';
+                        const fName = leadRowMapped.firstName || leadRow[headers.findIndex(h => h.toLowerCase().includes('first') || h.toLowerCase() === 'name')] || 'Undisclosed';
+                        const lName = leadRowMapped.lastName || leadRow[headers.findIndex(h => h.toLowerCase().includes('last'))] || 'Lead';
+                        const customerName = leadRowMapped.customer || `${fName} ${lName}`.trim();
+                        
+                        // Construct the full address
+                        let finalAddress = leadRowMapped.address || '';
+                        if (leadRowMapped.city || leadRowMapped.state || leadRowMapped.zip) {
+                             if (!finalAddress.includes(leadRowMapped.city || '')) {
+                                 finalAddress = `${finalAddress}, ${leadRowMapped.city || ''}, ${leadRowMapped.state || ''} ${leadRowMapped.zip || ''}`.replace(/,\s*,/g, ',').replace(/^, /, '').trim();
+                             }
+                        }
+
+                        if (leadRow.length > 0) {
+                            setView('enrollment');
+                            window.dispatchEvent(new CustomEvent('LOAD_LEAD', { detail: {
+                                customerName: customerName,
+                                phone: phone,
+                                email: leadRowMapped.email || '',
+                                shippingAddress: finalAddress,
+                                ...leadRowMapped
+                            }}));
+                            setToast({ title: 'Dialer Queue Routed', message: `New prospect loaded from ${activeList.name}`, type: 'success' });
+                            return;
+                        }
+                    }
+                } catch (e) {
+                    console.error("Queue parsing failure", e);
+                }
+            }
+        }
+
+        // 3. Fallback: Orphaned CRM Leads (Prospects with no sales)
+        const orphans = customers?.filter(c => !c.salesHistory || c.salesHistory.length === 0);
+        if (orphans && orphans.length > 0) {
+            const rando = orphans[Math.floor(Math.random() * orphans.length)];
+            setView('enrollment');
+            window.dispatchEvent(new CustomEvent('LOAD_LEAD', { detail: { 
+                id: rando.id,
+                customerName: rando.fullName, 
+                phone: rando.phone, 
+                email: rando.email,
+                shippingAddress: rando.address || '',
+                dob: rando.dob,
+                medicalConditions: rando.tags 
+            } }));
+            setToast({ title: 'Cold Queue Activated', message: `Sourced orphaned lead: ${rando.fullName}`, type: 'info' });
+            return;
+        }
+
+        setToast({ title: 'Queue Exhausted', message: 'No more leads available in active lists or orphaned queue.', type: 'error' });
     };
 
     React.useEffect(() => {
@@ -78,13 +168,15 @@ export const AgentPortal: React.FC = () => {
                 notifications={notifications}
                 clearNotification={clearNotification}
             >
-                <div className="w-full h-full relative">
+                <div className="w-full min-h-full flex-1 relative flex flex-col pb-16 md:pb-0">
+                    <ContextualHelp />
+                    
                     {showCalculator && (
                         <div className="fixed top-24 right-6 z-[100] animate-in slide-in-from-top-4">
                             <QuickCalculator onClose={() => setShowCalculator(false)} />
                         </div>
                     )}
-                    
+
                     <Scratchpad isOpen={showScratchpad} onClose={() => setShowScratchpad(false)} />
                     
                     <AgentTimeSheet 
@@ -93,6 +185,14 @@ export const AgentPortal: React.FC = () => {
                         currentUser={currentUser}
                         attendance={attendance}
                         sales={sales}
+                    />
+
+                    <QuickSaleEntry
+                        isOpen={showSaleModal}
+                        onClose={() => setShowSaleModal(false)}
+                        onSuccess={() => {
+                            setView('dash');
+                        }}
                     />
 
                     <AgentViewManager 
@@ -106,6 +206,16 @@ export const AgentPortal: React.FC = () => {
                         setToast={setToast}
                         setView={setView}
                     />
+
+                    {/* Floating Action Button (Create Sale) */}
+                    <button
+                        onClick={() => setShowSaleModal(true)}
+                        className="fixed bottom-24 md:bottom-8 left-4 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-bold py-3 px-6 rounded-full shadow-lg hover:shadow-xl transition-all z-40"
+                    >
+                        ➕ NEW SALE
+                    </button>
+                    
+                    <BottomNav />
                 </div>
             </PortalShell>
         </Tabs>

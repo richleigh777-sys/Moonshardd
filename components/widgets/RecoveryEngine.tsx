@@ -101,26 +101,26 @@ export const RecoveryEngine = ({ sales, onAction }: Props) => {
       return (
         <Card variant="panel" className="h-full flex flex-col items-center justify-center p-8 opacity-50 border-dashed border-border-subtle bg-surface-alt/10">
             <div className="w-20 h-20 rounded-[2rem] bg-emerald-500/10 flex items-center justify-center mb-4 border border-emerald-500/20 shadow-sm">
-                <CheckCircle size={40} className="text-emerald-500" strokeWidth={1.5} />
+                <CheckCircle size={40} className="text-status-success" strokeWidth={1.5} />
             </div>
-            <h3 className="text-lg font-black text-text-primary uppercase tracking-[0.25em]">Peace of Mind</h3>
-            <p className="text-text-muted text-xs font-bold uppercase mt-1">Everyone is looked after.</p>
+            <h3 className="text-lg font-[700] text-text-primary  tracking-[0.25em]">Peace of Mind</h3>
+            <p className="text-text-muted text-xs font-bold  mt-1">Everyone is looked after.</p>
         </Card>
       );
   }
 
   return (
-    <Card variant="panel" className="flex flex-col h-full overflow-hidden p-0 relative border-white/5 bg-surface-main">
+    <Card variant="panel" className="flex flex-col h-full overflow-hidden p-0 relative border-border-subtle bg-surface-main">
         <div className="flex h-full">
             
             {/* LEFT SIDEBAR: LIST */}
             <div className="w-96 border-r border-border-subtle flex flex-col bg-surface-alt/10 shrink-0">
                 <div className="p-5 border-b border-border-subtle bg-surface-main/20 backdrop-blur-md sticky top-0 z-10 flex justify-between items-center">
                     <div>
-                        <h3 className="text-sm font-black uppercase text-accent-primary tracking-widest flex items-center gap-2">
+                        <h3 className="text-sm font-[700]  text-accent-primary tracking-widest flex items-center gap-2">
                             <Heart size={16} className="animate-pulse" fill="currentColor" /> Customer Care
                         </h3>
-                        <p className="text-[9px] font-bold text-text-muted uppercase tracking-wider mt-0.5">{rescueOps.length} Need Support</p>
+                        <p className="text-xs font-bold text-text-muted  tracking-wider mt-0.5">{rescueOps.length} Need Support</p>
                     </div>
                 </div>
                 <div className="flex-1 overflow-y-auto custom-scrollbar">
@@ -136,17 +136,17 @@ export const RecoveryEngine = ({ sales, onAction }: Props) => {
                                 <div className="flex justify-between items-start mb-2">
                                     <div className="min-w-0 pr-2">
                                         <span className={`font-bold text-sm block truncate ${isSelected ? 'text-text-primary' : 'text-text-secondary'}`}>{op.customer}</span>
-                                        <span className="text-[10px] font-mono text-text-muted block">{op.phone}</span>
+                                        <span className="text-xs font-mono text-text-muted block">{op.phone}</span>
                                     </div>
                                     <div className="flex flex-col items-end shrink-0">
-                                        <span className={`text-[9px] font-black uppercase px-2 py-0.5 rounded-lg border mb-1 ${isFresh ? 'text-emerald-500 border-emerald-500/30 bg-emerald-500/10' : 'text-amber-500 border-amber-500/30 bg-amber-500/10'}`}>
+                                        <span className={`text-xs font-[700]  px-2.5 py-1 rounded-lg border mb-1 ${isFresh ? 'text-status-success border-status-success/30 bg-emerald-500/10' : 'text-status-warning border-status-warning/30 bg-amber-500/10'}`}>
                                             {op.metrics.probability}% Chance
                                         </span>
                                     </div>
                                 </div>
                                 <div className={`flex justify-between items-center p-2 rounded-xl border border-border-subtle/50 ${op.adminLabel === 'High Risk' ? 'bg-status-error/5 border-status-error/20' : 'bg-surface-alt/40'}`}>
-                                    <span className="text-[9px] font-bold uppercase max-w-[120px] truncate flex items-center gap-1.5 text-text-muted">
-                                        <AlertTriangle size={10}/> {op.declineReason || 'Needs Check-in'}
+                                    <span className="text-xs font-bold  max-w-[120px] truncate flex items-center gap-1.5 text-text-muted">
+                                        <AlertTriangle size={16}/> {op.declineReason || 'Needs Check-in'}
                                     </span>
                                     <span className="text-xs font-mono font-bold text-text-primary tracking-tight">${Number(op.amount).toLocaleString()}</span>
                                 </div>
@@ -163,15 +163,15 @@ export const RecoveryEngine = ({ sales, onAction }: Props) => {
                         <div className="p-6 border-b border-border-subtle flex justify-between items-start bg-gradient-to-r from-surface-alt/10 to-transparent">
                             <div className="min-w-0 pr-4">
                                 <div className="flex items-center gap-3 mb-2 flex-wrap">
-                                    <h2 className="text-3xl font-black text-text-primary uppercase tracking-tighter italic truncate">{activeOp.customer}</h2>
+                                    <h2 className="text-3xl font-[700] text-text-primary  tracking-tighter italic truncate">{activeOp.customer}</h2>
                                     <div className={`w-3 h-3 rounded-full ${activeScript.isFresh ? 'bg-emerald-500 shadow-[0_0_10px_#10B981]' : 'bg-amber-500'} animate-pulse`}></div>
                                 </div>
                                 <div className="flex items-center gap-4 text-xs font-bold text-text-muted flex-wrap">
                                     <span className="flex items-center gap-1.5 text-text-primary bg-surface-alt/40 px-3 py-1 rounded-xl border border-border-subtle">
-                                        <ShieldCheck size={14}/> {activeScript.reason} Guide
+                                        <ShieldCheck size={16}/> {activeScript.reason} Guide
                                     </span>
                                     <span className="flex items-center gap-1.5 font-mono">
-                                        <Clock size={14}/> {Math.round(activeOp.metrics.hoursOld)}H ELAPSED
+                                        <Clock size={16}/> {Math.round(activeOp.metrics.hoursOld)}H ELAPSED
                                     </span>
                                 </div>
                             </div>
@@ -205,13 +205,13 @@ export const RecoveryEngine = ({ sales, onAction }: Props) => {
                                         <button
                                             key={id}
                                             onClick={() => { setActiveObjection(id as ObjectionType === activeObjection ? null : id as ObjectionType); sfx.playClick(); }}
-                                            className={`px-4 py-2.5 rounded-2xl border flex items-center gap-2 text-[10px] font-black uppercase tracking-wider transition-all whitespace-nowrap ${
+                                            className={`px-4 py-2.5 rounded-2xl border flex items-center gap-2 text-xs font-[700]  tracking-wider transition-all whitespace-nowrap ${
                                                 activeObjection === id 
                                                 ? `bg-accent-primary text-white border-accent-primary shadow-lg scale-105` 
                                                 : `bg-surface-main border-border-subtle text-text-muted hover:text-text-primary hover:bg-surface-alt`
                                             }`}
                                         >
-                                            <meta.icon size={12} className={activeObjection === id ? 'text-white' : meta.color} />
+                                            <meta.icon size={16} className={activeObjection === id ? 'text-white' : meta.color} />
                                             {meta.label}
                                         </button>
                                     ))}
@@ -220,19 +220,19 @@ export const RecoveryEngine = ({ sales, onAction }: Props) => {
                                 <div className="flex-1 overflow-y-auto p-8 custom-scrollbar">
                                     <div className="max-w-4xl mx-auto space-y-8">
                                         <div className="p-6 bg-surface-alt/30 rounded-[2rem] border border-border-subtle relative group hover:border-accent-primary/20 transition-all shadow-sm">
-                                            <div className="absolute -left-3 top-6 w-7 h-7 bg-surface-main border-2 border-accent-primary rounded-full flex items-center justify-center text-[11px] font-black text-accent-primary shadow-md z-10">1</div>
+                                            <div className="absolute -left-3 top-6 w-7 h-7 bg-surface-main border-2 border-accent-primary rounded-full flex items-center justify-center text-sm font-[700] text-accent-primary shadow-md z-10">1</div>
                                             <div className="flex items-center gap-2 mb-4 pb-2 border-b border-border-subtle/50">
-                                                <Activity size={14} className="text-accent-primary"/>
-                                                <span className="text-[10px] font-black uppercase tracking-[0.2em] text-accent-primary">Empathy & Care</span>
+                                                <Activity size={16} className="text-accent-primary"/>
+                                                <span className="text-xs font-[700]  tracking-[0.2em] text-accent-primary">Empathy & Care</span>
                                             </div>
                                             <div className="text-lg md:text-xl font-medium text-text-primary leading-relaxed tracking-wide" dangerouslySetInnerHTML={{__html: activeScript.hook}}></div>
                                         </div>
 
                                         <div className="p-6 bg-surface-alt/30 rounded-[2rem] border border-border-subtle relative group hover:border-emerald-500/20 transition-all shadow-sm">
-                                            <div className="absolute -left-3 top-6 w-7 h-7 bg-surface-main border-2 border-emerald-500 rounded-full flex items-center justify-center text-[11px] font-black text-emerald-500 shadow-md z-10">2</div>
+                                            <div className="absolute -left-3 top-6 w-7 h-7 bg-surface-main border-2 border-emerald-500 rounded-full flex items-center justify-center text-sm font-[700] text-status-success shadow-md z-10">2</div>
                                             <div className="flex items-center gap-2 mb-4 pb-2 border-b border-border-subtle/50">
-                                                <Activity size={14} className="text-emerald-500"/>
-                                                <span className="text-[10px] font-black uppercase tracking-[0.2em] text-emerald-500">The Solution</span>
+                                                <Activity size={16} className="text-status-success"/>
+                                                <span className="text-xs font-[700]  tracking-[0.2em] text-status-success">The Solution</span>
                                             </div>
                                             <div className="text-lg md:text-xl font-medium text-text-primary leading-relaxed tracking-wide" dangerouslySetInnerHTML={{__html: activeScript.fix}}></div>
                                         </div>
@@ -243,21 +243,21 @@ export const RecoveryEngine = ({ sales, onAction }: Props) => {
                                 <div className="p-6 border-t border-border-subtle bg-surface-alt/30 flex gap-4 shrink-0 backdrop-blur-xl">
                                     {dismissId === activeOp.id ? (
                                         <div className="flex-1 flex items-center justify-between bg-surface-main border border-border-subtle rounded-2xl px-6 animate-in slide-in-from-bottom-2 fade-in">
-                                            <span className="text-xs font-black text-text-muted uppercase tracking-wider">Close this file?</span>
+                                            <span className="text-xs font-[700] text-text-muted  tracking-wider">Close this file?</span>
                                             <div className="flex gap-3">
-                                                <Button variant="secondary" onClick={() => setDismissId(null)} className="h-10 text-[10px]">Back</Button>
-                                                <Button variant="danger" onClick={() => { onAction(activeOp, 'delete'); setDismissId(null); setSelectedOpId(null); }} className="h-10 text-[10px]">Confirm</Button>
+                                                <Button variant="secondary" onClick={() => setDismissId(null)} className="h-10 text-xs">Back</Button>
+                                                <Button variant="danger" onClick={() => { onAction(activeOp, 'delete'); setDismissId(null); setSelectedOpId(null); }} className="h-10 text-xs">Confirm</Button>
                                             </div>
                                         </div>
                                     ) : (
                                         <>
-                                            <Button variant="secondary" onClick={() => setDismissId(activeOp.id)} className="w-32 h-14 text-xs font-black uppercase tracking-widest text-text-muted">
+                                            <Button variant="secondary" onClick={() => setDismissId(activeOp.id)} className="w-32 h-14 text-xs font-[700]  tracking-widest text-text-muted">
                                                 <Archive size={18} className="mr-2"/> Archive
                                             </Button>
-                                            <Button variant="secondary" onClick={() => { setViewMode('schedule'); sfx.playClick(); }} className="w-40 h-14 text-xs font-black uppercase tracking-widest text-amber-600 border-amber-500/20">
+                                            <Button variant="secondary" onClick={() => { setViewMode('schedule'); sfx.playClick(); }} className="w-40 h-14 text-xs font-[700]  tracking-widest text-amber-600 border-amber-500/20">
                                                 <Calendar size={18} className="mr-2"/> Schedule
                                             </Button>
-                                            <Button variant="primary" onClick={() => { onAction(activeOp, 'resurrect'); if (activeScript.scriptId) logScriptUsage(activeScript.scriptId, 'win', Number(activeOp.amount)); }} className="flex-1 h-14 text-sm font-black uppercase tracking-[0.25em] shadow-xl shadow-accent-primary/20 bg-accent-primary">
+                                            <Button variant="primary" onClick={() => { onAction(activeOp, 'resurrect'); if (activeScript.scriptId) logScriptUsage(activeScript.scriptId, 'win', Number(activeOp.amount)); }} className="flex-1 h-14 text-sm font-[700]  tracking-[0.25em] shadow-xl shadow-accent-primary/20 bg-accent-primary">
                                                 <Heart size={20} className="mr-3" fill="currentColor" /> Friendly Re-Link
                                             </Button>
                                         </>
@@ -269,7 +269,7 @@ export const RecoveryEngine = ({ sales, onAction }: Props) => {
                 ) : (
                     <div className="flex flex-col items-center justify-center h-full text-text-muted opacity-40">
                         <Heart size={48} strokeWidth={1} className="mb-4" />
-                        <p className="text-xs font-bold uppercase">Select a profile to begin helping.</p>
+                        <p className="text-xs font-bold ">Select a profile to begin helping.</p>
                     </div>
                 )}
             </div>

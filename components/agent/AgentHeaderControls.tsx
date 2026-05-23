@@ -34,8 +34,8 @@ export const AgentHeaderControls: React.FC<AgentHeaderControlsProps> = ({
                 disabled={!hasPendingCallbacks}
             >
                 <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/10 to-white/0 -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
-                <Zap size={14} className={hasPendingCallbacks ? 'fill-current animate-pulse' : ''}/>
-                <span className="text-[10px] font-black uppercase tracking-[0.1em]">Next Call</span>
+                <Zap size={16} className={hasPendingCallbacks ? 'fill-current animate-pulse' : ''}/>
+                <span className="text-xs font-[700]  tracking-[0.1em]">Next Call</span>
             </button>
             <div className="w-px h-5 bg-border-subtle mx-1"></div>
         </>

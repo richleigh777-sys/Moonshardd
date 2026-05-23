@@ -76,13 +76,13 @@ export const RetentionView: React.FC<RetentionViewProps> = ({ sales, onLoadToEnr
           <div className="flex items-center gap-4 px-3">
               <div className="flex items-center gap-2 border-r border-border-subtle pr-4">
                   <div className="w-2 h-2 rounded-full bg-status-success animate-pulse"></div>
-                  <span className="text-[10px] font-black uppercase text-text-primary tracking-tight">Retention Pulse</span>
+                  <span className="text-xs font-[700]  text-text-primary tracking-tight">Retention Pulse</span>
               </div>
               
-              <div className="flex items-center gap-4 text-[9px] font-bold text-text-muted uppercase tracking-widest">
-                  <span className="flex items-center gap-1.5"><User size={12}/> {summary.total} Active</span>
-                  <span className="flex items-center gap-1.5 text-status-error"><Activity size={12}/> {summary.highRisk} Risk</span>
-                  <span className="flex items-center gap-1.5 text-accent-primary"><BarChart2 size={12}/> {summary.avgHealth}% Health</span>
+              <div className="flex items-center gap-4 text-xs font-bold text-text-muted  tracking-widest">
+                  <span className="flex items-center gap-1.5"><User size={16}/> {summary.total} Active</span>
+                  <span className="flex items-center gap-1.5 text-status-error"><Activity size={16}/> {summary.highRisk} Risk</span>
+                  <span className="flex items-center gap-1.5 text-accent-primary"><BarChart2 size={16}/> {summary.avgHealth}% Health</span>
               </div>
           </div>
 
@@ -91,7 +91,7 @@ export const RetentionView: React.FC<RetentionViewProps> = ({ sales, onLoadToEnr
                   <button
                     key={mode}
                     onClick={() => setFilterMode(mode)}
-                    className={`px-3 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-wider transition-all ${
+                    className={`px-3 py-1.5 rounded-lg text-xs font-[700]  tracking-wider transition-all ${
                         filterMode === mode 
                         ? 'bg-white text-accent-primary shadow-sm ring-1 ring-border-subtle' 
                         : 'text-text-muted hover:text-text-primary hover:bg-surface-main/50'
@@ -104,10 +104,10 @@ export const RetentionView: React.FC<RetentionViewProps> = ({ sales, onLoadToEnr
       </div>
 
       {/* 2. TACTICAL DATA GRID */}
-      <Card variant="panel" className="flex-1 overflow-hidden p-0 relative border-white/5">
+      <Card variant="panel" className="flex-1 overflow-hidden p-0 relative border-border-subtle">
         <div className="overflow-y-auto custom-scrollbar h-full bg-surface-alt/10">
             {/* Sticky Header */}
-            <div className="sticky top-0 bg-surface-main/95 backdrop-blur-md border-b border-border-subtle z-10 grid grid-cols-12 gap-4 px-6 py-3 text-[9px] font-black uppercase text-text-muted tracking-[0.2em] shadow-sm">
+            <div className="sticky top-0 bg-surface-main/95 backdrop-blur-md border-b border-border-subtle z-10 grid grid-cols-12 gap-4 px-6 py-3 text-xs font-[700]  text-text-muted tracking-[0.2em] shadow-sm">
                 <div className="col-span-3">Target Identity</div>
                 <div className="col-span-2 text-center">Health Meter</div>
                 <div className="col-span-3 text-center">Protocol Phase</div>
@@ -130,9 +130,9 @@ export const RetentionView: React.FC<RetentionViewProps> = ({ sales, onLoadToEnr
                                 <div className="min-w-0">
                                     <div className="flex items-center gap-2">
                                         <span className="font-bold text-xs text-text-primary truncate">{customer.customer}</span>
-                                        {isVIP && <Star size={10} fill="#EAB308" className="text-yellow-500 shrink-0" />}
+                                        {isVIP && <Star size={16} fill="#EAB308" className="text-yellow-500 shrink-0" />}
                                     </div>
-                                    <span className="text-[9px] text-text-muted font-mono whitespace-nowrap block mt-0.5">Active {daysSince} days</span>
+                                    <span className="text-xs text-text-muted font-mono whitespace-nowrap block mt-0.5">Active {daysSince} days</span>
                                 </div>
                             </div>
 
@@ -141,21 +141,21 @@ export const RetentionView: React.FC<RetentionViewProps> = ({ sales, onLoadToEnr
                                 <div className="w-full max-w-[100px] h-1.5 bg-surface-alt rounded-full overflow-hidden border border-border-subtle">
                                     <div className={`h-full ${statusColor}`} style={{ width: `${health}%` }}></div>
                                 </div>
-                                <span className="text-[9px] font-mono font-bold text-text-secondary">{health}% Vitality</span>
+                                <span className="text-xs font-mono font-bold text-text-secondary">{health}% Vitality</span>
                             </div>
 
                             {/* 3. Protocol */}
                             <div className="col-span-3 flex flex-col items-center justify-center">
-                                <div className={`flex items-center gap-1.5 font-black text-[10px] uppercase tracking-wider ${daysUntilNext < 0 ? 'text-status-error animate-pulse' : 'text-accent-primary'}`}>
-                                    {daysUntilNext < 0 ? <AlertTriangle size={10}/> : <Clock size={10}/>}
+                                <div className={`flex items-center gap-1.5 font-[700] text-xs  tracking-wider ${daysUntilNext < 0 ? 'text-status-error animate-pulse' : 'text-accent-primary'}`}>
+                                    {daysUntilNext < 0 ? <AlertTriangle size={16}/> : <Clock size={16}/>}
                                     <span className="truncate max-w-[140px]">{nextAction}</span>
                                 </div>
-                                <span className="text-[9px] text-text-muted font-medium mt-0.5">Due in {daysUntilNext} days</span>
+                                <span className="text-xs text-text-muted font-medium mt-0.5">Due in {daysUntilNext} days</span>
                             </div>
 
                             {/* 4. Value */}
                             <div className="col-span-2 text-right">
-                                <span className="text-sm font-black text-text-primary num-font tracking-tight">${Number(customer.amount).toLocaleString()}</span>
+                                <span className="text-sm font-[700] text-text-primary num-font tracking-tight">${Number(customer.amount).toLocaleString()}</span>
                             </div>
 
                             {/* 5. Actions */}
@@ -165,11 +165,11 @@ export const RetentionView: React.FC<RetentionViewProps> = ({ sales, onLoadToEnr
                                     className="p-2 rounded-lg bg-surface-alt text-text-muted hover:bg-accent-primary hover:text-white transition-all border border-border-subtle"
                                     title="Log Interaction"
                                 >
-                                    <PhoneOutgoing size={14} />
+                                    <PhoneOutgoing size={16} />
                                 </button>
                                 <button 
                                     onClick={() => onLoadToEnrollment && onLoadToEnrollment(customer)}
-                                    className="px-3 h-8 flex items-center justify-center rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white transition-all text-[9px] font-black uppercase tracking-widest shadow-sm hover:shadow-md"
+                                    className="px-3 h-8 flex items-center justify-center rounded-lg bg-emerald-500 hover:bg-emerald-600 text-white transition-all text-xs font-semibold shadow-sm hover:shadow-md"
                                 >
                                     Renew
                                 </button>
@@ -180,9 +180,9 @@ export const RetentionView: React.FC<RetentionViewProps> = ({ sales, onLoadToEnr
                 })}
                 
                 {filteredList.length === 0 && (
-                    <div className="flex flex-col items-center justify-center py-20 opacity-30">
+                    <div className="flex flex-col items-center justify-center py-20 opacity-50">
                         <ShieldCheck size={48} className="mb-4 text-text-muted" strokeWidth={1} />
-                        <p className="text-xs font-black uppercase tracking-[0.4em]">Sector Integrity Nominal</p>
+                        <p className="text-sm font-semibold text-text-muted">No customers found.</p>
                     </div>
                 )}
             </div>

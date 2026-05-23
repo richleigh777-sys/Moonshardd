@@ -1,16 +1,14 @@
+/* eslint-disable react-hooks/set-state-in-effect */
 
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import { useCRM } from '../../../../hooks/useCRM';
 import { useAuth } from '../../../../hooks/useAuth';
 import { sfx } from '../../../../lib/soundService';
 import { 
-    formatCardNumber, 
-    validateLuhn, getRequiredCardLength, 
     getPhoneTime 
 } from '../../../../views/utils/crmLogic';
 import { normalizePhone } from '../../../../views/utils/dataSanitizer';
-import { CartItem } from '../../../../types';
-import { MEDICAL_CONDITIONS } from '../../../../constants';
+import { CartItem, Sale } from '../../../../types';
 import { formatUSAPhone } from '../../../../views/utils/formatters';
 
 export const useEnrollment = (onSuccess: () => void, customerData?: any) => {
@@ -33,23 +31,32 @@ export const useEnrollment = (onSuccess: () => void, customerData?: any) => {
         age: savedDraft.formData?.age || '',
         shippingAddress: savedDraft.formData?.shippingAddress || '', 
         billingAddress: savedDraft.formData?.billingAddress || '', 
-        spouseName: savedDraft.formData?.spouseName || ''
-    });
-    
-    const [financials, setFinancials] = useState({
-        bankName: savedDraft.financials?.bankName || '', 
-        cardType: savedDraft.financials?.cardType || 'Visa', 
-        cardNumber: savedDraft.financials?.cardNumber || '', 
-        cardExpiry: savedDraft.financials?.cardExpiry || '', 
-        cardCvv: savedDraft.financials?.cardCvv || ''
+        height: savedDraft.formData?.height || '',
+        weight: savedDraft.formData?.weight || '',
+        medicalConditions: savedDraft.formData?.medicalConditions || []
     });
     
     const [cart, setCart] = useState<CartItem[]>(savedDraft.cart || []);
     const [notes, setNotes] = useState(savedDraft.notes || '');
-    const [selectedConditions, setSelectedConditions] = useState<string[]>(savedDraft.selectedConditions || []);
     const [useShippingForBilling, setUseShippingForBilling] = useState(savedDraft.useShippingForBilling ?? true);
-    const [cardStatus, setCardStatus] = useState<'neutral' | 'valid' | 'invalid'>('neutral');
     const [customerTime, setCustomerTime] = useState<string | null>(null);
+
+    const [financials, setFinancials] = useState(savedDraft.financials || {
+        cardNumber: '', cardExpiry: '', cardCvv: '', bankName: '', cardType: ''
+    });
+
+    const handleCardInput = useCallback((val: string) => {
+        const cleaned = val.replace(/\D/g, '');
+        const match = cleaned.match(/.{1,4}/g);
+        const formatted = match ? match.join(' ') : cleaned;
+        setFinancials((prev: any) => ({ ...prev, cardNumber: formatted.substring(0, 19) }));
+    }, []);
+
+    const cardStatus = useMemo<'neutral' | 'valid' | 'invalid'>(() => {
+        const len = financials.cardNumber.replace(/\D/g, '').length;
+        if (len === 0) return 'neutral';
+        return len === 15 || len === 16 ? 'valid' : 'invalid';
+    }, [financials.cardNumber]);
 
     // Collision Detection Logic
     useEffect(() => {
@@ -94,11 +101,11 @@ export const useEnrollment = (onSuccess: () => void, customerData?: any) => {
     useEffect(() => {
         const timeout = setTimeout(() => {
             updateDraft('enrollment', {
-                formData, financials, cart, notes, selectedConditions, useShippingForBilling
+                formData, cart, notes, useShippingForBilling, financials
             });
         }, 500); // Debounce
         return () => clearTimeout(timeout);
-    }, [formData, financials, cart, notes, selectedConditions, useShippingForBilling, updateDraft]);
+    }, [formData, cart, notes, useShippingForBilling, financials, updateDraft]);
 
     // Initial load sync from props (overrides draft if provided)
     useEffect(() => {
@@ -112,21 +119,16 @@ export const useEnrollment = (onSuccess: () => void, customerData?: any) => {
                 billingAddress: customerData.billingAddress || prev.billingAddress,
                 dob: customerData.dob || prev.dob,
                 age: customerData.age?.toString() || prev.age,
-                spouseName: customerData.spouseName || prev.spouseName
+                height: customerData.height || prev.height,
+                weight: customerData.weight || prev.weight,
+                medicalConditions: customerData.medicalConditions || prev.medicalConditions || []
             }));
-            if (customerData.medicalConditions) setSelectedConditions(customerData.medicalConditions);
         }
     }, [customerData]);
 
     const grandTotal = useMemo(() => {
         return cart.reduce((acc, item) => acc + ((parseInt(item.quantity) || 1) * item.unitPrice), 0);
     }, [cart]);
-
-    const activeConditions = useMemo(() => {
-        return systemConfig.medicalConditions && systemConfig.medicalConditions.length > 0 
-            ? systemConfig.medicalConditions 
-            : MEDICAL_CONDITIONS;
-    }, [systemConfig.medicalConditions]);
 
     const handleIdentityChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
@@ -165,34 +167,17 @@ export const useEnrollment = (onSuccess: () => void, customerData?: any) => {
         });
     }, []);
 
-    const handleCardInput = useCallback((val: string) => {
-        const raw = val.replace(/\D/g, '');
-        let cardType = financials.cardType;
-        
-        if (raw.startsWith('4')) cardType = 'Visa';
-        else if (raw.startsWith('5')) cardType = 'Mastercard';
-        else if (raw.startsWith('3')) cardType = 'Amex';
-        else if (raw.startsWith('6')) cardType = 'Discover';
-
-        const formatted = formatCardNumber(raw, cardType);
-        const reqLen = getRequiredCardLength(cardType);
-        const isValid = raw.length === reqLen && validateLuhn(raw);
-
-        setFinancials(prev => ({ ...prev, cardNumber: formatted, cardType }));
-        setCardStatus(isValid ? 'valid' : raw.length > 0 ? 'invalid' : 'neutral');
-    }, [financials.cardType]);
-
     const handleSubmit = async () => {
         setError('');
-        if (!formData.fullName || !formData.phone || cardStatus !== 'valid') {
-            setError('System Check: Identity or Vault verification incomplete.');
+        if (!formData.fullName || !formData.phone) {
+            setError('System Check: Identity verification incomplete (Name & Phone required).');
             sfx.playError();
             return;
         }
 
         setLoading(true);
         try {
-            await addSale({
+            const newSale: Partial<Sale> = {
                 agentId: currentUser?.id,
                 customer: formData.fullName,
                 phone: normalizePhone(formData.phone),
@@ -201,18 +186,49 @@ export const useEnrollment = (onSuccess: () => void, customerData?: any) => {
                 billingAddress: useShippingForBilling ? formData.shippingAddress : formData.billingAddress,
                 dob: formData.dob,
                 age: parseInt(formData.age),
-                spouseName: formData.spouseName,
-                bankName: financials.bankName,
-                cardNumber: financials.cardNumber,
-                cardExpiry: financials.cardExpiry,
-                cardCvv: financials.cardCvv,
-                cardProvider: financials.cardType,
+                height: formData.height,
+                weight: formData.weight,
+                medicalConditions: formData.medicalConditions,
                 amount: grandTotal,
-                medicalConditions: selectedConditions,
                 callSummary: notes,
                 status: 'Pending',
-                pipelineStatus: 'New'
+                pipelineStatus: 'Closed Won',
+                bankName: financials.bankName,
+                cardProvider: financials.cardType,
+                cardNumber: financials.cardNumber,
+                cardExpiry: financials.cardExpiry,
+                cardCvv: financials.cardCvv
+            };
+            await addSale(newSale);
+            
+            // Generate stack format and copy to clipboard
+            const { generateInternalStackFormat } = await import('../../../../views/utils/formatters');
+            const stackFormat = generateInternalStackFormat({
+                ...newSale,
+                agent: currentUser?.name
             });
+            navigator.clipboard.writeText(stackFormat).catch(() => console.error("Clipboard permission denied"));
+
+            // Broadcast globally as the user
+            if (currentUser) {
+                const { ChatService } = await import('../../../../services/ChatService');
+                await ChatService.sendMessage(stackFormat, currentUser, 'global', { channelId: 'global-wins' });
+            }
+
+            // Push to Microsoft Teams if configured
+            if (systemConfig.teamsWebhookEnabled && systemConfig.teamsWebhookUrl) {
+                try {
+                    await fetch(systemConfig.teamsWebhookUrl, {
+                        method: 'POST',
+                        mode: 'no-cors',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ text: stackFormat }),
+                    });
+                } catch (err) {
+                    console.error('Failed to dispatch Teams Webhook payload:', err);
+                }
+            }
+
             sfx.playSuccess();
             clearDraft('enrollment');
             onSuccess();
@@ -227,9 +243,9 @@ export const useEnrollment = (onSuccess: () => void, customerData?: any) => {
     return {
         mode, setMode, loading, error, collision,
         formData, setFormData, handleIdentityChange, handleDobChange, handleAgeChange,
-        financials, setFinancials, handleCardInput, cardStatus,
-        cart, setCart, notes, setNotes, selectedConditions, setSelectedConditions,
+        cart, setCart, notes, setNotes,
         useShippingForBilling, setUseShippingForBilling,
-        customerTime, grandTotal, productConfig, handleSubmit, activeConditions
+        customerTime, grandTotal, productConfig, handleSubmit,
+        financials, setFinancials, handleCardInput, cardStatus
     };
 };

@@ -50,10 +50,10 @@ export const WidgetContainer: React.FC<WidgetContainerProps> = ({
                     }`}
                     title={isPinned ? "Unpin from top" : "Pin to top"}
                 >
-                    {isPinned ? <PinOff size={12} /> : <Pin size={12} />}
+                    {isPinned ? <PinOff size={16} /> : <Pin size={16} />}
                 </button>
                 <div className="p-1.5 rounded-lg bg-surface-main/80 text-text-muted border border-border-subtle cursor-grab active:cursor-grabbing backdrop-blur-sm">
-                    <GripVertical size={12} />
+                    <GripVertical size={16} />
                 </div>
             </div>
 
@@ -61,7 +61,7 @@ export const WidgetContainer: React.FC<WidgetContainerProps> = ({
             {isPinned && (
                 <div className="absolute top-3 left-6 z-20 flex items-center gap-2 pointer-events-none">
                     <div className="w-1.5 h-1.5 rounded-full bg-accent-primary animate-pulse" />
-                    <span className="text-[10px] font-black uppercase tracking-widest text-accent-primary opacity-60">Pinned Sector</span>
+                    <span className="text-xs font-[700]  tracking-widest text-accent-primary opacity-60">Pinned Sector</span>
                 </div>
             )}
 

@@ -67,21 +67,21 @@ export const StatCard: React.FC<StatCardProps> = ({ title, value, sub, icon: Ico
                     <Icon size={20} strokeWidth={2.5}/>
                 </div>
                 {trend && (
-                    <div className={`flex items-center gap-1 text-[9px] font-black px-2 py-1 rounded-full border ${trendDir === 'up' ? 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20' : 'bg-red-500/10 text-red-600 border-red-500/20'}`}>
-                        {trendDir === 'up' ? <ArrowUpRight size={10}/> : <ArrowDownRight size={10}/>}
+                    <div className={`flex items-center gap-1 text-xs font-[700] px-3 py-1.5 rounded-full border ${trendDir === 'up' ? 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20' : 'bg-red-500/10 text-red-600 border-red-500/20'}`}>
+                        {trendDir === 'up' ? <ArrowUpRight size={16}/> : <ArrowDownRight size={16}/>}
                         {trend}
                     </div>
                 )}
             </div>
             
             <div>
-                <h3 className="text-3xl font-black text-text-primary num-font tracking-tight mb-1 drop-shadow-sm">{value}</h3>
-                <p className="text-[10px] font-bold text-text-secondary uppercase tracking-widest opacity-80">{title}</p>
+                <h3 className="text-3xl font-[700] text-text-primary num-font tracking-tight mb-1 drop-shadow-sm">{value}</h3>
+                <p className="text-xs font-bold text-text-secondary  tracking-widest opacity-80">{title}</p>
             </div>
         </div>
 
         <div className="relative z-10 mt-4 pt-4 border-t border-border-subtle/50">
-            <p className="text-[10px] text-text-muted font-medium flex items-center gap-1.5">
+            <p className="text-xs text-text-muted font-medium flex items-center gap-1.5">
                 {sub}
             </p>
         </div>

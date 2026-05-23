@@ -41,11 +41,11 @@ export const ScratchpadEditor: React.FC<ScratchpadEditorProps> = ({
                 </div>
                 <div className="h-5 w-px bg-border-subtle mx-1"></div>
                 <div className="flex gap-1">
-                    <button onClick={onToTask} className="flex items-center gap-2 px-3 py-1.5 bg-indigo-500/10 hover:bg-indigo-500 hover:text-white text-indigo-500 text-[10px] font-bold uppercase rounded-xl transition-all" title="Create Task">
-                        <CheckSquare size={14}/> To Task
+                    <button onClick={onToTask} className="flex items-center gap-2 px-3 py-1.5 bg-accent-secondary/10 hover:bg-indigo-500 hover:text-white text-accent-secondary text-xs font-bold  rounded-xl transition-all" title="Create Task">
+                        <CheckSquare size={16}/> To Task
                     </button>
-                    <button onClick={onSaveNote} disabled={isSaving} className="flex items-center gap-2 px-3 py-1.5 bg-accent-primary/10 hover:bg-accent-primary hover:text-white text-accent-primary text-[10px] font-black uppercase rounded-xl transition-all shadow-sm" title="Save to CRM">
-                        <Save size={14}/> Save
+                    <button onClick={onSaveNote} disabled={isSaving} className="flex items-center gap-2 px-3 py-1.5 bg-accent-primary/10 hover:bg-accent-primary hover:text-white text-accent-primary text-xs font-[700]  rounded-xl transition-all shadow-sm" title="Save to CRM">
+                        <Save size={16}/> Save
                     </button>
                 </div>
             </div>
@@ -56,9 +56,9 @@ export const ScratchpadEditor: React.FC<ScratchpadEditorProps> = ({
                     <button 
                         key={m.label} 
                         onClick={() => onInsert(m.text)}
-                        className={`px-3 py-1.5 border border-border-subtle rounded-xl text-[9px] font-bold uppercase tracking-wider text-text-secondary hover:text-accent-primary hover:border-accent-primary/30 hover:shadow-md transition-all whitespace-nowrap active:scale-95 flex items-center gap-1.5 group ${isGhostMode ? 'bg-surface-main/60' : 'bg-surface-main'}`}
+                        className={`px-3 py-1.5 border border-border-subtle rounded-xl text-xs font-bold  tracking-wider text-text-secondary hover:text-accent-primary hover:border-accent-primary/30 hover:shadow-md transition-all whitespace-nowrap active:scale-95 flex items-center gap-1.5 group ${isGhostMode ? 'bg-surface-main/60' : 'bg-surface-main'}`}
                     >
-                        <Hash size={10} className="text-text-muted group-hover:text-accent-primary/50"/>
+                        <Hash size={16} className="text-text-muted group-hover:text-accent-primary/50"/>
                         {m.label}
                     </button>
                 ))}
@@ -79,11 +79,11 @@ export const ScratchpadEditor: React.FC<ScratchpadEditorProps> = ({
             {/* Footer Status */}
             <div className={`px-4 py-2 border-t border-border-subtle flex justify-between items-center shrink-0 transition-colors ${isGhostMode ? 'bg-surface-alt/30' : 'bg-surface-alt/50'}`}>
                 <div className="flex items-center gap-2">
-                    <Terminal size={12} className="text-accent-primary opacity-50"/>
-                    <span className="text-[10px] font-mono text-text-muted font-bold">{content.length} chars</span>
+                    <Terminal size={16} className="text-accent-primary opacity-50"/>
+                    <span className="text-xs font-mono text-text-muted font-bold">{content.length} chars</span>
                 </div>
-                <span className="text-[9px] font-black uppercase tracking-widest text-emerald-500 opacity-80 flex items-center gap-1.5">
-                    <Ghost size={12} className={isGhostMode ? 'opacity-100' : 'opacity-20'}/> {isGhostMode ? 'Ghost Active' : 'Solid Mode'}
+                <span className="text-xs font-[700]  tracking-widest text-status-success opacity-80 flex items-center gap-1.5">
+                    <Ghost size={16} className={isGhostMode ? 'opacity-100' : 'opacity-20'}/> {isGhostMode ? 'Ghost Active' : 'Solid Mode'}
                 </span>
             </div>
         </div>

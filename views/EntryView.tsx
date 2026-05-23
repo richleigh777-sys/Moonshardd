@@ -33,14 +33,14 @@ export const EntryView: React.FC<EntryViewProps> = ({ onBack }) => {
                         <div className="p-1.5 bg-accent-primary rounded-lg text-white shadow-neon">
                             <Zap size={16} fill="currentColor"/>
                         </div>
-                        <h2 className="text-lg font-black uppercase tracking-tight text-text-primary">Focus Mode</h2>
+                        <h2 className="text-lg font-semibold text-text-primary">New Sale Entry</h2>
                     </div>
                 </div>
 
                 <div className="flex items-center gap-4">
-                    <div className="flex items-center gap-2 bg-emerald-500/10 border border-emerald-500/20 px-4 py-1.5 rounded-full">
-                        <CheckCircle size={14} className="text-emerald-500"/>
-                        <span className="text-xs font-bold text-emerald-600 uppercase tracking-wider">{successCount} Sessions Complete</span>
+                    <div className="flex items-center gap-2 bg-emerald-500/10 border border-emerald-500/20 px-3 py-1.5 rounded-lg">
+                        <CheckCircle size={16} className="text-status-success"/>
+                        <span className="text-sm font-semibold text-emerald-600">{successCount} Sales Completed</span>
                     </div>
                 </div>
             </div>

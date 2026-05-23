@@ -12,12 +12,27 @@ export default defineVitestConfig(({ mode }) => {
       },
       plugins: [react()],
       define: {
-        'process.env.API_KEY': JSON.stringify(env.GEMINI_API_KEY),
-        'process.env.GEMINI_API_KEY': JSON.stringify(env.GEMINI_API_KEY)
+        'process.env.GOOGLE_MAPS_PLATFORM_KEY': JSON.stringify(env.GOOGLE_MAPS_PLATFORM_KEY)
       },
       resolve: {
         alias: {
           '@': path.resolve(__dirname, '.'),
+        }
+      },
+      build: {
+        rollupOptions: {
+          output: {
+            manualChunks(id) {
+              if (id.includes('node_modules')) {
+                if (id.includes('lucide-react')) return 'vendor-lucide';
+                if (id.includes('@radix-ui')) return 'vendor-radix';
+                if (id.includes('recharts')) return 'vendor-charts';
+                if (id.includes('framer-motion') || id.includes('motion')) return 'vendor-motion';
+                if (id.includes('firebase')) return 'vendor-firebase';
+                return 'vendor';
+              }
+            }
+          }
         }
       }
     });

@@ -55,7 +55,7 @@ export const Modal = ({ isOpen, onClose, title, children, footer, type = 'defaul
       <div className={`relative w-full bg-surface-main border ${typeStyles[type]} ${isFull ? '' : 'rounded-2xl'} transform transition-all duration-200 flex flex-col ${isFull ? 'h-full' : 'max-h-[90vh]'} ${sizeStyles[size]} ${isOpen ? 'scale-100 translate-y-0' : 'scale-95 translate-y-4'}`}>
         
         <div className="flex items-center justify-between p-6 border-b border-border-subtle shrink-0">
-          <h3 className="text-xl font-black text-text-primary tracking-tight uppercase flex items-center gap-2">
+          <h3 className="text-xl font-[700] text-text-primary tracking-tight  flex items-center gap-2">
             {title}
           </h3>
           <button onClick={onClose} className="text-text-muted hover:text-text-primary transition-colors p-2 rounded-xl hover:bg-surface-alt">

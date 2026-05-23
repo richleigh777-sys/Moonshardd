@@ -32,9 +32,9 @@ export const useAdminPortalLogic = () => {
     
     const allowedTabs = useMemo(() => {
         if (isSuperAdmin) {
-            return ['overview', 'nexus', 'enrollment', 'pipeline', 'ledger', 'retention', 'roster', 'standings', 'intel', 'comms', 'scripts', 'catalog', 'system', 'sheets', 'payroll'];
+            return ['overview', 'nexus', 'enrollment', 'pipeline', 'ledger', 'retention', 'roster', 'standings', 'intel', 'comms', 'scripts', 'automation', 'catalog', 'system', 'sheets', 'payroll', 'dialer_data', 'audit'];
         } else {
-            const configuredPerms = systemConfig.permissions?.manager || ['overview', 'enrollment', 'pipeline', 'ledger', 'roster', 'payroll'];
+            const configuredPerms = systemConfig.permissions?.manager || ['overview', 'enrollment', 'pipeline', 'ledger', 'roster', 'payroll', 'audit'];
             return configuredPerms.filter(t => t !== 'nexus');
         }
     }, [isSuperAdmin, systemConfig.permissions?.manager]);
@@ -73,9 +73,16 @@ export const useAdminPortalLogic = () => {
                     sfx.playSuccess();
                     setToast({ title: 'Order Update', message: `Order ${newOrderId} Authorized`, type: 'success' });
                 } else if (action === 'decline') {
-                    await updateSaleStatus(sale.id, 'Declined', { declineReason: payload?.reason || 'Administrative Decline', dealStage: 'Lost' }, expectedUpdatedAt, originalData);
+                    const nextStatus = payload?.sendToRecovery ? 'Declined' : 'Cancelled'; 
+                    // 'Cancelled' skips the recovery engine (in this context we can treat it as permanently closed if they uncheck it)
+                    // If they want it in recovery engine, status needs to be Declined.
+                    await updateSaleStatus(sale.id, nextStatus as any, { declineReason: payload?.reason || 'Administrative Decline', dealStage: 'Lost' }, expectedUpdatedAt, originalData);
                     sfx.playDecline();
-                    setToast({ title: 'Order Update', message: 'Order Declined', type: 'warning' });
+                    setToast({ title: 'Order Update', message: 'Order Marked as Declined', type: 'warning' });
+                } else if (action === 'qa') {
+                    await updateSaleStatus(sale.id, sale.status, { qaScore: payload?.qaScore, qaNotes: payload?.qaNotes }, expectedUpdatedAt, originalData);
+                    sfx.playSuccess();
+                    setToast({ title: 'QA Update', message: 'Scorecard Saved', type: 'success' });
                 } else if (action === 'upload') {
                     await updateSale(sale.id, { audioUrl: payload.audioUrl }, expectedUpdatedAt, originalData);
                     if (payload.audioUrl === null) {
@@ -106,8 +113,8 @@ export const useAdminPortalLogic = () => {
                     }
                 }
                 setConflict(null);
-            } catch (err) {
-                if (err instanceof ConflictError) {
+            } catch (err: any) {
+                if (err && err.name === 'ConflictError') {
                     setConflict({
                         isOpen: true,
                         itemName: `Sale for ${sale.customer}`,

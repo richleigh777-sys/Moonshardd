@@ -25,12 +25,12 @@ export const AdminAnalytics: React.FC<AdminAnalyticsProps> = ({ sales = [] }) =>
             <div className="absolute inset-0 bg-gradient-to-r from-indigo-500/5 to-transparent pointer-events-none"></div>
             
             <div className="flex items-center gap-4 px-4 py-2 relative z-10">
-                <div className="p-3 bg-indigo-500/10 rounded-2xl text-indigo-500 border border-indigo-500/20 shadow-neon">
+                <div className="p-3 bg-accent-secondary/10 rounded-2xl text-accent-secondary border border-accent-secondary/20 shadow-neon">
                     <BarChart3 size={24} strokeWidth={2.5} />
                 </div>
                 <div>
-                    <h3 className="text-lg font-black uppercase tracking-tighter text-text-primary italic">Admin Intelligence</h3>
-                    <p className="text-[10px] font-bold text-text-muted uppercase tracking-widest flex items-center gap-1.5">
+                    <h3 className="text-lg font-[700]  tracking-tighter text-text-primary italic">Admin Intelligence</h3>
+                    <p className="text-xs font-bold text-text-muted  tracking-widest flex items-center gap-1.5">
                         <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
                         Live Metrics • {timeRange} View
                     </p>
@@ -42,7 +42,7 @@ export const AdminAnalytics: React.FC<AdminAnalyticsProps> = ({ sales = [] }) =>
                     <button
                         key={range}
                         onClick={() => setTimeRange(range)}
-                        className={`px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${
+                        className={`px-6 py-2.5 rounded-xl text-xs font-[700]  tracking-widest transition-all ${
                             timeRange === range 
                             ? 'bg-surface-main text-text-primary shadow-md ring-1 ring-border-subtle' 
                             : 'text-text-muted hover:text-text-secondary hover:bg-surface-main/50'
@@ -61,7 +61,7 @@ export const AdminAnalytics: React.FC<AdminAnalyticsProps> = ({ sales = [] }) =>
                 value={<KineticNumber value={metrics.totalRevenue} prefix="$" />}
                 sub="Gross Volume" 
                 icon={DollarSign} 
-                color="text-emerald-500" 
+                color="text-status-success" 
                 trend="+12.5%"
                 sparklineData={metrics.trends.revenue}
             />
@@ -70,7 +70,7 @@ export const AdminAnalytics: React.FC<AdminAnalyticsProps> = ({ sales = [] }) =>
                 value={<KineticNumber value={metrics.dealCount} />} 
                 sub={`${metrics.activeAgentCount} Agents Contributing`} 
                 icon={Layers} 
-                color="text-indigo-500" 
+                color="text-accent-secondary" 
                 sparklineData={metrics.trends.volume}
             />
             <StatCard 
@@ -78,7 +78,7 @@ export const AdminAnalytics: React.FC<AdminAnalyticsProps> = ({ sales = [] }) =>
                 value={`${metrics.conversionRate.toFixed(1)}%`} 
                 sub="Approval Efficiency" 
                 icon={Zap} 
-                color="text-amber-500" 
+                color="text-status-warning" 
             />
             <StatCard 
                 title="Average Order" 

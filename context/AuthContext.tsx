@@ -37,6 +37,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             tabManager.broadcast('LOGOUT_SYNC', { userId: currentUser.id });
         }
 
+        try {
+            const { getAuth, signOut } = await import('firebase/auth');
+            await signOut(getAuth());
+        } catch (e) {
+            console.error("Firebase signout error:", e);
+        }
+
         setCurrentUser(null);
         setOriginalAdmin(null);
         setSessionStartTime(null);
@@ -46,6 +53,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         localStorage.removeItem(SESSION_SIG_KEY);
         localStorage.removeItem(SESSION_START_KEY);
         localStorage.removeItem(GHOST_ORIGIN_KEY);
+        localStorage.removeItem('nexus_admin_sig_bkp');
 
         if (afkTimerRef.current) clearTimeout(afkTimerRef.current);
     }, [currentUser, resetTimerState]);
@@ -75,8 +83,19 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
                         const start = localStorage.getItem(SESSION_START_KEY);
                         if (start) setSessionStartTime(parseInt(start));
                     }
-                } catch { 
-                    setCurrentUser(null);
+                } catch (error: any) { 
+                    if (
+                        (error instanceof Error && (error.message.includes("client is offline") || error.message.includes("network") || error.message.includes("unavailable"))) ||
+                        error?.code === 'unavailable' || error?.code === 'failed-precondition'
+                    ) {
+                        console.warn("[Security] Client offline, skipping remote session verification. Using cached user.");
+                        const user = JSON.parse(stored);
+                        setCurrentUser(user);
+                        const start = localStorage.getItem(SESSION_START_KEY);
+                        if (start) setSessionStartTime(parseInt(start));
+                    } else {
+                        setCurrentUser(null);
+                    }
                 }
             }
         };
@@ -102,7 +121,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         resetTimerState();
         
         localStorage.setItem(SESSION_STORAGE_KEY, JSON.stringify(userWithLogin));
-        if (sig) localStorage.setItem(SESSION_SIG_KEY, sig);
+        if (sig) {
+            localStorage.setItem(SESSION_SIG_KEY, sig);
+        } else if (isGhost) {
+            const serverId = localStorage.getItem('nexus_server_id') || 'srv-001';
+            const tempSig = btoa(`${user.id}:${serverId}:${now}`);
+            localStorage.setItem(SESSION_SIG_KEY, tempSig);
+        }
         localStorage.setItem(SESSION_START_KEY, now.toString());
         await nexusGateway.update('users', user.id, { currentStatus: 'online', lastActive: now });
         resetAfk();

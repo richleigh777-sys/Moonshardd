@@ -22,7 +22,7 @@ export const useAgentPortalLogic = () => {
     const allowedTerminals = useMemo(() => {
         return systemConfig.permissions?.agent || [
             'dash', 'rhythm', 'comms', 'enrollment', 'pipeline', 'recovery', 'callbacks', 'contacts',
-            'ledger', 'payouts', 'standings', 'scripts', 'analytics'
+            'ledger', 'payouts', 'standings', 'scripts', 'analytics', 'dialer'
         ];
     }, [systemConfig.permissions]);
 

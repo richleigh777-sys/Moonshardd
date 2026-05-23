@@ -99,10 +99,10 @@ export const GodModePanel = () => {
     };
 
     const stats = useMemo(() => [
-        { label: 'Safety', val: systemConfig.maintenanceMode ? 'Locked' : 'Secure', icon: ShieldCheck, color: systemConfig.maintenanceMode ? 'text-status-error' : 'text-emerald-500' },
+        { label: 'Safety', val: systemConfig.maintenanceMode ? 'Locked' : 'Secure', icon: ShieldCheck, color: systemConfig.maintenanceMode ? 'text-status-error' : 'text-status-success' },
         { label: 'Cloud Mem', val: `${(memoryMap.reduce((acc, m) => acc + m.size, 0) / 1024).toFixed(0)} KB`, icon: Database, color: 'text-blue-500' },
         { label: 'Connections', val: `${users.filter(u => u.active).length} Active`, icon: Server, color: 'text-purple-500' },
-        { label: 'Heartbeat', val: 'Syncing', icon: Radio, color: 'text-amber-500' }
+        { label: 'Heartbeat', val: 'Syncing', icon: Radio, color: 'text-status-warning' }
     ], [systemConfig, memoryMap, users]);
 
     return (
@@ -111,8 +111,8 @@ export const GodModePanel = () => {
                 {stats.map((stat, i) => (
                     <Card key={i} variant="panel" className="p-3 flex items-center justify-between bg-surface-main group border-border-subtle transition-all">
                         <div>
-                            <p className="text-[9px] font-black uppercase text-text-muted tracking-widest mb-0.5">{stat.label}</p>
-                            <p className={`text-xs font-bold uppercase tracking-tight ${stat.color}`}>{stat.val}</p>
+                            <p className="text-xs font-[700]  text-text-muted tracking-widest mb-0.5">{stat.label}</p>
+                            <p className={`text-xs font-bold  tracking-tight ${stat.color}`}>{stat.val}</p>
                         </div>
                         <stat.icon size={18} className={`${stat.color} opacity-60 group-hover:scale-110 transition-transform`} />
                     </Card>
@@ -122,9 +122,9 @@ export const GodModePanel = () => {
             <div className="flex-1 flex flex-col md:flex-row gap-6 min-h-0">
                 {/* Console */}
                 <div className="w-full md:w-80 flex flex-col gap-4">
-                    <Card variant="refraction" className="flex-1 p-0 overflow-hidden bg-surface-main border-border-subtle shadow-2xl flex flex-col font-mono text-[10px] relative group border border-white/5">
+                    <Card variant="refraction" className="flex-1 p-0 overflow-hidden bg-surface-main border-border-subtle shadow-2xl flex flex-col font-mono text-xs relative group border border-border-subtle">
                         <div className="p-3 border-b border-border-subtle bg-surface-alt/20 flex items-center justify-between shrink-0 relative z-30">
-                            <span className="text-text-primary font-bold ml-1 flex items-center gap-2 tracking-widest"><Info size={12}/> SYSTEM CONSOLE</span>
+                            <span className="text-text-primary font-bold ml-1 flex items-center gap-2 tracking-widest"><Info size={16}/> SYSTEM CONSOLE</span>
                             <div className="flex gap-1.5">
                                 <div className="w-2 h-2 rounded-full bg-emerald-500/20 border border-emerald-500 animate-pulse"></div>
                             </div>
@@ -148,9 +148,9 @@ export const GodModePanel = () => {
                     
                     <Card variant="panel" className="p-4 border-border-subtle bg-surface-main shrink-0 shadow-lg">
                         <div className="flex flex-col gap-3">
-                            <Button onClick={handleOptimize} className="h-10 text-[10px] font-black uppercase tracking-widest bg-emerald-500/10 text-emerald-600 border-emerald-500/20 hover:bg-emerald-500/20"><Zap size={14} className="mr-2"/> Optimize Database</Button>
-                            <Button onClick={handleLoadTest} className="h-10 text-[10px] font-black uppercase tracking-widest bg-amber-500/10 text-amber-500 border-amber-500/20 hover:bg-amber-500/20"><Terminal size={14} className="mr-2"/> Fire Load Test</Button>
-                            <Button onClick={confirmReset ? performFactoryReset : handleResetToggle} className={`h-10 text-[10px] font-black uppercase tracking-widest border transition-all ${confirmReset ? 'bg-status-error text-white' : 'bg-surface-alt text-text-muted border-border-subtle'}`}>
+                            <Button onClick={handleOptimize} className="h-10 text-xs font-[700]  tracking-widest bg-emerald-500/10 text-emerald-600 border-emerald-500/20 hover:bg-emerald-500/20"><Zap size={16} className="mr-2"/> Optimize Database</Button>
+                            <Button onClick={handleLoadTest} className="h-10 text-xs font-[700]  tracking-widest bg-amber-500/10 text-status-warning border-amber-500/20 hover:bg-amber-500/20"><Terminal size={16} className="mr-2"/> Fire Load Test</Button>
+                            <Button onClick={confirmReset ? performFactoryReset : handleResetToggle} className={`h-10 text-xs font-[700]  tracking-widest border transition-all ${confirmReset ? 'bg-status-error text-white' : 'bg-surface-alt text-text-muted border-border-subtle'}`}>
                                 {confirmReset ? 'CONFIRM DELETION' : 'Factory Reset'}
                             </Button>
                         </div>
@@ -165,8 +165,8 @@ export const GodModePanel = () => {
                                 <Scan size={18} strokeWidth={2.5}/>
                             </div>
                             <div>
-                                <h3 className="text-sm font-bold uppercase text-text-primary tracking-tight">Data Health</h3>
-                                <p className="text-[9px] text-text-muted font-bold uppercase mt-0.5 tracking-widest">Storage Blocks</p>
+                                <h3 className="text-sm font-bold  text-text-primary tracking-tight">Data Health</h3>
+                                <p className="text-xs text-text-muted font-bold  mt-0.5 tracking-widest">Storage Blocks</p>
                             </div>
                         </div>
                     </div>
@@ -183,12 +183,12 @@ export const GodModePanel = () => {
                         {inspectTarget && (
                             <>
                                 <div className="px-4 py-3 border-b border-border-subtle flex justify-between items-center bg-surface-alt/50 backdrop-blur-md">
-                                    <span className="text-[10px] font-black text-text-primary uppercase tracking-widest flex items-center gap-2">
-                                        <FileJson size={14} className="text-accent-primary" /> {inspectTarget.toUpperCase()}
+                                    <span className="text-xs font-[700] text-text-primary  tracking-widest flex items-center gap-2">
+                                        <FileJson size={16} className="text-accent-primary" /> {inspectTarget.toUpperCase()}
                                     </span>
                                     <button className="p-1.5 hover:bg-surface-alt text-text-muted hover:text-text-primary transition-colors rounded-lg" onClick={() => setInspectTarget(null)}><X size={16}/></button>
                                 </div>
-                                <div className="flex-1 overflow-auto custom-scrollbar p-4 font-mono text-[10px] text-text-secondary bg-surface-main">
+                                <div className="flex-1 overflow-auto custom-scrollbar p-4 font-mono text-xs text-text-secondary bg-surface-main">
                                     <pre className="whitespace-pre-wrap break-all leading-relaxed opacity-90">
                                         {JSON.stringify(memoryMap.find(m => m.id === inspectTarget)?.data, null, 2)}
                                     </pre>

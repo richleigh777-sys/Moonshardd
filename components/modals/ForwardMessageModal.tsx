@@ -89,7 +89,7 @@ export const ForwardMessageModal: React.FC<ForwardMessageModalProps> = ({ isOpen
                 
                 {/* Header */}
                 <div className="p-4 border-b border-border-subtle flex justify-between items-center bg-surface-alt/50">
-                    <h3 className="text-sm font-black uppercase tracking-widest text-text-primary flex items-center gap-2">
+                    <h3 className="text-sm font-[700]  tracking-widest text-text-primary flex items-center gap-2">
                         <CornerUpRight size={16} className="text-accent-primary"/> Forward Message
                     </h3>
                     <button onClick={onClose} className="p-1.5 hover:bg-surface-highlight rounded-lg text-text-muted hover:text-text-primary transition-colors">
@@ -103,18 +103,18 @@ export const ForwardMessageModal: React.FC<ForwardMessageModalProps> = ({ isOpen
                     <div className="p-4 bg-surface-main border-b border-border-subtle shrink-0">
                         <div className="bg-surface-alt/40 p-3 rounded-xl border-l-4 border-accent-primary relative overflow-hidden">
                             <div className="flex items-center gap-2 mb-1.5">
-                                <div className="text-[10px] font-bold text-accent-primary uppercase tracking-widest opacity-90 flex items-center gap-1">
-                                    <MessageSquare size={10} />
+                                <div className="text-xs font-bold text-accent-primary  tracking-widest opacity-90 flex items-center gap-1">
+                                    <MessageSquare size={16} />
                                     {messageToForward.senderName}
                                 </div>
-                                <div className="text-[9px] text-text-muted font-mono">
+                                <div className="text-xs text-text-muted font-mono">
                                     {new Date(messageToForward.timestamp).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})}
                                 </div>
                             </div>
                             
                             {messageToForward.attachments && messageToForward.attachments.length > 0 && (
                                 <div className="flex items-center gap-2 mb-2 text-xs font-bold text-text-primary bg-surface-main/50 p-2 rounded-lg border border-border-subtle/50 w-fit">
-                                    <Paperclip size={12} className="text-accent-primary"/>
+                                    <Paperclip size={16} className="text-accent-primary"/>
                                     {messageToForward.attachments.length} Attachment{messageToForward.attachments.length > 1 ? 's' : ''}
                                 </div>
                             )}
@@ -126,7 +126,7 @@ export const ForwardMessageModal: React.FC<ForwardMessageModalProps> = ({ isOpen
 
                         {/* Comment Input */}
                         <div className="mt-3 relative">
-                            <input 
+                            <input autoComplete="off" data-lpignore="true" data-prevent-autofill="true" spellCheck={false} 
                                 className="w-full bg-surface-alt border border-border-subtle rounded-xl py-2.5 px-4 text-xs font-medium outline-none focus:border-accent-primary transition-all placeholder:text-text-muted/50"
                                 placeholder="Add a comment (optional)..."
                                 value={comment}
@@ -138,8 +138,8 @@ export const ForwardMessageModal: React.FC<ForwardMessageModalProps> = ({ isOpen
                     {/* Search */}
                     <div className="p-3 pb-0 shrink-0">
                         <div className="relative">
-                            <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted" />
-                            <input 
+                            <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted" />
+                            <input autoComplete="off" data-lpignore="true" data-prevent-autofill="true" spellCheck={false} 
                                 autoFocus
                                 placeholder="Search people or channels..." 
                                 className="w-full bg-surface-alt border border-border-subtle rounded-xl py-2.5 pl-9 pr-4 text-xs font-bold outline-none focus:border-accent-primary transition-all shadow-inner"
@@ -151,7 +151,7 @@ export const ForwardMessageModal: React.FC<ForwardMessageModalProps> = ({ isOpen
 
                     {/* List */}
                     <div className="flex-1 overflow-y-auto custom-scrollbar p-3 space-y-1">
-                        <p className="text-[9px] font-bold text-text-muted uppercase tracking-widest px-2 mb-2">Suggested Targets</p>
+                        <p className="text-xs font-bold text-text-muted  tracking-widest px-2 mb-2">Suggested Targets</p>
                         {targets.map(target => {
                             const isSent = sentIds.includes(target.id);
                             return (
@@ -167,17 +167,17 @@ export const ForwardMessageModal: React.FC<ForwardMessageModalProps> = ({ isOpen
                                 >
                                     <div className="flex items-center gap-3 min-w-0">
                                         <div className={`w-9 h-9 rounded-xl flex items-center justify-center text-text-secondary shrink-0 transition-transform group-hover:scale-105 ${
-                                            target.type === 'channel' ? 'bg-surface-alt border border-border-subtle' : 'bg-gradient-to-br from-indigo-500/10 to-purple-500/10 border border-indigo-500/20'
+                                            target.type === 'channel' ? 'bg-surface-alt border border-border-subtle' : 'bg-gradient-to-br from-indigo-500/10 to-purple-500/10 border border-accent-secondary/20'
                                         }`}>
                                             {target.type === 'channel' ? (
-                                                target.subType === 'private' ? <ShieldAlert size={14}/> : <Hash size={14}/>
+                                                target.subType === 'private' ? <ShieldAlert size={16}/> : <Hash size={16}/>
                                             ) : (
-                                                target.avatar ? <img src={target.avatar} className="w-full h-full rounded-xl object-cover"/> : <span className="font-black text-[10px]">{target.name.charAt(0)}</span>
+                                                target.avatar ? <img src={target.avatar} className="w-full h-full rounded-xl object-cover"/> : <span className="font-[700] text-xs">{target.name.charAt(0)}</span>
                                             )}
                                         </div>
                                         <div className="text-left min-w-0">
                                             <p className={`text-xs font-bold truncate ${isSent ? 'text-status-success' : 'text-text-primary'}`}>{target.name}</p>
-                                            <p className="text-[9px] text-text-muted uppercase tracking-wider truncate">{target.type === 'user' ? 'Agent' : 'Channel'}</p>
+                                            <p className="text-xs text-text-muted  tracking-wider truncate">{target.type === 'user' ? 'Agent' : 'Channel'}</p>
                                         </div>
                                     </div>
                                     
@@ -186,7 +186,7 @@ export const ForwardMessageModal: React.FC<ForwardMessageModalProps> = ({ isOpen
                                         ? 'bg-status-success text-white shadow-lg shadow-status-success/20' 
                                         : 'text-text-muted hover:bg-accent-primary hover:text-white opacity-0 group-hover:opacity-100'
                                     }`}>
-                                        {isSent ? <CheckCircle2 size={16} /> : <Send size={14} className={isSent ? '' : 'ml-0.5'} />}
+                                        {isSent ? <CheckCircle2 size={16} /> : <Send size={16} className={isSent ? '' : 'ml-0.5'} />}
                                     </div>
                                 </button>
                             );

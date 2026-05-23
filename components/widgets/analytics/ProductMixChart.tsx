@@ -16,66 +16,79 @@ export const ProductMixChart: React.FC<ProductMixChartProps> = ({ data }) => {
     const total = data.reduce((acc, curr) => acc + curr.value, 0);
 
     return (
-        <Card variant="panel" className="p-0 flex flex-col bg-surface-main border-border-subtle overflow-hidden shadow-sm min-h-[320px]">
-            <div className="p-5 border-b border-border-subtle flex justify-between items-center bg-surface-alt/20 backdrop-blur-md shrink-0">
-                <div className="flex items-center gap-3">
-                    <div className="p-1.5 bg-amber-500/10 rounded-lg text-amber-500">
-                        <PieChart size={16} strokeWidth={2.5}/>
+        <Card variant="panel" className="p-0 flex flex-col bg-surface-main/30 backdrop-blur-3xl border border-border-subtle hover:border-accent-primary/20 overflow-hidden rounded-2xl md:rounded-3xl shadow-panel transition-all group min-h-[320px] relative">
+            <div className="absolute top-0 right-0 w-32 h-32 bg-amber-500/5 blur-3xl rounded-full z-0 pointer-events-none"></div>
+            
+            <div className="p-4 lg:p-6 border-b border-border-subtle flex justify-between items-center bg-surface-main/60 backdrop-blur-sm shrink-0 relative z-10">
+                <div className="flex items-center gap-4">
+                    <div className="p-3 bg-amber-500/10 rounded-2xl text-status-warning border border-amber-500/20 shadow-inner group-hover:scale-110 transition-transform">
+                        <PieChart size={24} strokeWidth={2.5}/>
                     </div>
                     <div>
-                        <h4 className="text-xs font-black uppercase text-text-primary tracking-widest">Product Mix</h4>
-                        <p className="text-[9px] text-text-muted font-bold uppercase tracking-wider">Volume Distribution</p>
+                        <h4 className="text-xs font-[700]  text-text-primary tracking-[0.2em] flex items-center gap-2">Product Mix</h4>
+                        <p className="text-[10px] text-text-muted font-bold  tracking-widest mt-1 opacity-80">Volume Distribution</p>
                     </div>
                 </div>
             </div>
             
-            <div className="flex-1 p-4 min-h-0 relative flex flex-col md:flex-row items-center gap-4">
-                <div className="flex-1 h-full w-full min-h-[200px]">
+            <div className="flex-1 p-4 lg:p-6 min-h-0 relative flex flex-col md:flex-row items-center gap-6 z-10">
+                <div className="flex-1 h-full w-full min-h-[220px] relative">
                     <ChartFrame children={() => (
                         data.length > 0 ? (
                             <ResponsiveContainer width="100%" height="100%">
                                 <RePieChart>
+                                    <defs>
+                                        <filter id="pieGlow">
+                                            <feGaussianBlur stdDeviation="3" result="blur" />
+                                            <feComposite in="SourceGraphic" in2="blur" operator="over" />
+                                        </filter>
+                                    </defs>
                                     <Pie
                                         data={data}
                                         cx="50%"
                                         cy="50%"
-                                        innerRadius={60}
-                                        outerRadius={80}
-                                        paddingAngle={5}
+                                        innerRadius={70}
+                                        outerRadius={95}
+                                        paddingAngle={4}
                                         dataKey="value"
+                                        stroke="var(--color-surface-main)"
+                                        strokeWidth={2}
                                         onMouseEnter={(_, index) => setActiveIndex(index)}
                                         onMouseLeave={() => setActiveIndex(null)}
+                                        animationDuration={1500}
+                                        animationEasing="ease-out"
                                     >
                                         {data.map((entry, index) => (
                                             <Cell 
                                                 key={`cell-${index}`} 
                                                 fill={COLORS[index % COLORS.length]} 
-                                                stroke="rgba(0,0,0,0)"
                                                 className="transition-all duration-300 outline-none"
                                                 style={{
-                                                    filter: activeIndex === index ? 'drop-shadow(0 0 8px rgba(255,255,255,0.3))' : 'none',
-                                                    opacity: activeIndex !== null && activeIndex !== index ? 0.6 : 1
+                                                    filter: activeIndex === index ? 'url(#pieGlow)' : 'none',
+                                                    opacity: activeIndex !== null && activeIndex !== index ? 0.4 : 1,
+                                                    transform: activeIndex === index ? 'scale(1.05)' : 'scale(1)',
+                                                    transformOrigin: '50% 50%'
                                                 }}
                                             />
                                         ))}
                                     </Pie>
                                     <Tooltip 
-                                        contentStyle={{ backgroundColor: 'var(--color-surface-main)', borderColor: 'var(--color-border-subtle)', borderRadius: '12px', fontSize: '12px', fontWeight: 'bold' }}
-                                        itemStyle={{ color: 'var(--color-text-primary)' }}
+                                        contentStyle={{ backgroundColor: 'var(--color-surface-alt)', borderColor: 'var(--color-border-strong)', borderRadius: '12px', padding: '12px', boxShadow: '0 20px 40px -10px rgba(0,0,0,0.8)' }}
+                                        itemStyle={{ color: 'var(--color-text-primary)', fontSize: '14px', fontWeight: '900', fontFamily: 'var(--font-mono)' }}
                                     />
                                 </RePieChart>
                             </ResponsiveContainer>
                         ) : (
                             <div className="flex flex-col items-center justify-center h-full text-text-muted opacity-40">
                                 <PieChart size={32} className="mb-2"/>
-                                <p className="text-[10px] font-black uppercase tracking-widest">Data Insufficient</p>
+                                <p className="text-[10px] font-[700]  tracking-[0.2em]">Data Insufficient</p>
                             </div>
                         )
                     )} />
                 </div>
 
                 {/* Side Legend */}
-                <div className="w-full md:w-48 flex flex-col justify-center gap-2 pr-2">
+                <div className="w-full md:w-56 flex flex-col justify-center gap-2 pr-2">
                     {data.map((item, index) => {
                         const percent = total > 0 ? Math.round((item.value / total) * 100) : 0;
                         const isActive = activeIndex === index;
@@ -83,19 +96,19 @@ export const ProductMixChart: React.FC<ProductMixChartProps> = ({ data }) => {
                         return (
                             <div 
                                 key={item.name}
-                                className={`flex items-center justify-between p-2 rounded-xl transition-all ${isActive ? 'bg-surface-alt border border-border-subtle shadow-sm scale-105' : 'hover:bg-surface-alt/50 border border-transparent'}`}
+                                className={`flex items-center justify-between p-3 rounded-xl transition-all duration-300 ${isActive ? 'bg-surface-main border border-border-strong shadow-[0_0_20px_rgba(0,0,0,0.4)] scale-[1.02] ring-1 ring-white/5' : 'hover:bg-surface-main/50 border border-transparent'}`}
                                 onMouseEnter={() => setActiveIndex(index)}
                                 onMouseLeave={() => setActiveIndex(null)}
                             >
-                                <div className="flex items-center gap-2 min-w-0">
-                                    <div className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: COLORS[index % COLORS.length] }}></div>
-                                    <span className={`text-[10px] font-bold uppercase truncate ${isActive ? 'text-text-primary' : 'text-text-secondary'}`}>
+                                <div className="flex items-center gap-3 min-w-0">
+                                    <div className="w-2.5 h-2.5 rounded-full shrink-0 shadow-inner" style={{ backgroundColor: COLORS[index % COLORS.length] }}></div>
+                                    <span className={`text-[10px] font-[700]  truncate tracking-widest ${isActive ? 'text-text-primary' : 'text-text-secondary'}`}>
                                         {item.name}
                                     </span>
                                 </div>
-                                <div className="flex items-center gap-2">
-                                    <span className="text-[10px] font-mono text-text-muted">{percent}%</span>
-                                    <span className="text-xs font-black num-font text-text-primary">{item.value}</span>
+                                <div className="flex items-center gap-3">
+                                    <span className="text-[10px] font-mono font-bold text-text-muted opacity-80">{percent}%</span>
+                                    <span className={`text-sm font-[700] font-display tracking-tight ${isActive ? 'text-text-primary' : 'text-text-secondary'}`}>{item.value}</span>
                                 </div>
                             </div>
                         );

@@ -31,10 +31,10 @@ export const EmojiPicker: React.FC<EmojiPickerProps> = ({ onSelect, onClose, cla
       {/* Header */}
       <div className="flex items-center justify-between p-2.5 bg-surface-alt border-b border-border-subtle shrink-0">
         <div className="flex items-center gap-2">
-            <span className="text-[9px] font-black text-text-muted uppercase tracking-[0.2em] ml-1">Emoji Select</span>
+            <span className="text-xs font-[700] text-text-muted  tracking-[0.2em] ml-1">Emoji Select</span>
         </div>
         <button onClick={onClose} className="p-1 rounded-lg hover:bg-surface-highlight text-text-muted hover:text-text-primary transition-colors">
-          <X size={14} />
+          <X size={16} />
         </button>
       </div>
 

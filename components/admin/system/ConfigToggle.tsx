@@ -18,7 +18,7 @@ export const ConfigToggle: React.FC<ConfigToggleProps> = ({ label, active, onTog
         ${active 
             ? (danger 
                 ? 'bg-red-500/10 border-red-500/50 shadow-[0_0_20px_rgba(239,68,68,0.15)]' 
-                : 'bg-emerald-500/10 border-emerald-500/50 shadow-[0_0_20px_rgba(16,185,129,0.15)]') 
+                : 'bg-emerald-500/10 border-status-success/50 shadow-[0_0_20px_rgba(16,185,129,0.15)]') 
             : 'bg-surface-main/40 border-border-subtle hover:bg-surface-alt hover:border-border-subtle/80'}
     `} 
     onClick={(e) => { e.preventDefault(); onToggle(); sfx.playClick(); }}
@@ -37,10 +37,10 @@ export const ConfigToggle: React.FC<ConfigToggleProps> = ({ label, active, onTog
       </div>
       
       <div className="flex flex-col">
-        <span className={`font-black text-xs uppercase tracking-wider transition-colors ${active ? 'text-text-primary' : 'text-text-secondary'}`}>
+        <span className={`font-[700] text-xs  tracking-wider transition-colors ${active ? 'text-text-primary' : 'text-text-secondary'}`}>
             {label}
         </span>
-        {description && <span className="text-[10px] text-text-muted font-medium mt-1 opacity-80 leading-relaxed max-w-sm">{description}</span>}
+        {description && <span className="text-xs text-text-muted font-medium mt-1 opacity-80 leading-relaxed max-w-sm">{description}</span>}
       </div>
     </div>
     

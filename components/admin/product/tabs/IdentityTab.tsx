@@ -41,12 +41,12 @@ export const IdentityTab: React.FC<IdentityTabProps> = ({ formData, setFormData 
                 className="flex items-center gap-4 p-4 bg-surface-alt/30 rounded-2xl border border-border-subtle cursor-pointer hover:border-accent-primary/30 transition-all group" 
                 onClick={() => setFormData(prev => ({...prev, active: !prev.active}))}
             >
-                <div className={`p-3 rounded-xl transition-colors ${formData.active ? 'bg-emerald-500/10 text-emerald-500' : 'bg-surface-alt text-text-muted'}`}>
+                <div className={`p-3 rounded-xl transition-colors ${formData.active ? 'bg-emerald-500/10 text-status-success' : 'bg-surface-alt text-text-muted'}`}>
                     <Tag size={20}/>
                 </div>
                 <div className="flex-1">
                     <h4 className="text-sm font-bold text-text-primary group-hover:text-accent-primary transition-colors">Active Status</h4>
-                    <p className="text-[10px] text-text-muted uppercase tracking-wider">Visible in Agent Terminal</p>
+                    <p className="text-xs text-text-muted  tracking-wider">Visible in Agent Terminal</p>
                 </div>
                 <div className={`w-12 h-6 rounded-full relative transition-colors ${formData.active ? 'bg-emerald-500' : 'bg-slate-500/30'}`}>
                     <div className={`absolute top-1 w-4 h-4 rounded-full bg-white shadow-sm transition-all ${formData.active ? 'left-7' : 'left-1'}`}></div>

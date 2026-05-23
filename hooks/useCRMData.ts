@@ -24,6 +24,8 @@ export const useCRMData = (currentUser: User | null) => {
     const [scripts, setScripts] = useState<ScriptItem[]>([]);
     const [customSheets, setCustomSheets] = useState<any[]>([]);
     const [presence, setPresenceList] = useState<Presence[]>([]);
+    const [dataHealthReports, setDataHealthReports] = useState<any[]>([]);
+    const [dialerLists, setDialerLists] = useState<any[]>([]);
     const [systemConfig, setSystemConfig] = useState<SystemConfig>({ 
         shiftStart: "08:00", shiftEnd: "17:00", cutoffDay1: 15, cutoffDay2: 0,
         baseCommission: 15, breakDurationMinutes: 60, ecoMode: false, telephonyEnabled: false
@@ -37,6 +39,8 @@ export const useCRMData = (currentUser: User | null) => {
 
     const salesRef = useRef(sales);
     const tasksRef = useRef(tasks);
+    const usersRef = useRef(users);
+    const customersRef = useRef(customers);
 
     useEffect(() => {
         salesRef.current = sales;
@@ -45,6 +49,14 @@ export const useCRMData = (currentUser: User | null) => {
     useEffect(() => {
         tasksRef.current = tasks;
     }, [tasks]);
+
+    useEffect(() => {
+        usersRef.current = users;
+    }, [users]);
+    
+    useEffect(() => {
+        customersRef.current = customers;
+    }, [customers]);
 
     useEffect(() => {
         const config = validateConfig();
@@ -76,6 +88,8 @@ export const useCRMData = (currentUser: User | null) => {
                 setCallLogs([]);
                 setScripts([]);
                 setCustomSheets([]);
+                setDataHealthReports([]);
+                setDialerLists([]);
             };
             
             setTimeout(() => {
@@ -111,6 +125,7 @@ export const useCRMData = (currentUser: User | null) => {
             nexusGateway.subscribe('scripts', currentUser, (data: ScriptItem[]) => setScripts(data)),
             nexusGateway.subscribe('sheets', currentUser, (data: any[]) => setCustomSheets(data)),
             nexusGateway.subscribe('presence', currentUser, (data: Presence[]) => setPresenceList(data)),
+            nexusGateway.subscribe('dialer_lists', currentUser, (data: any[]) => setDialerLists(data)),
             nexusGateway.subscribe('systemConfig', currentUser, (data: any) => {
                 const configData = Array.isArray(data) ? data[0] : data;
                 if (configData) {
@@ -122,6 +137,7 @@ export const useCRMData = (currentUser: User | null) => {
                     else document.documentElement.classList.remove('eco-mode');
                 }
             }),
+            nexusGateway.subscribe('dataHealthReports', currentUser, (data: any[]) => setDataHealthReports(data)),
             nexusGateway.subscribe('config', currentUser, (data: ProductConfig[]) => {
                 if (data && data.length > 0) {
                     setProductConfig(prev => {
@@ -173,47 +189,105 @@ export const useCRMData = (currentUser: User | null) => {
     }, [currentUser]);
 
     const addSale = useCallback(async (saleData: Partial<Sale>) => {
+        // Commission Dispute Prevention: Check for recent sales with same phone
+        if (saleData.phone) {
+            const ONE_MONTH = 30 * 24 * 60 * 60 * 1000; // 30 days
+            const recentDuplicate = salesRef.current.find(s => 
+                s.phone === saleData.phone && 
+                s.status === 'Approved' && 
+                (Date.now() - s.timestamp) < ONE_MONTH
+            );
+            
+            if (recentDuplicate) {
+                 window.alert(`COMMISSION DISPUTE PREVENTION:\n\nThis lead was already closed by ${recentDuplicate.agent || 'another agent'} within the last 30 days. According to the Rules of Engagement (whoever logs the sale first gets it), you cannot claim this commission.`);
+                 return null;
+            }
+        }
+
         if (!window.confirm("Confirm Order Submission?")) return null;
-        const newSale = await nexusGateway.add('sales', saleData) as Sale;
-        
         try {
+            const newSale = await nexusGateway.add('sales', saleData) as Sale;
             await sendToGoogleSheet(newSale);
             // Trigger Protocols for new sales (usually pending)
             if (currentUser) {
                 const { triggerPostSaleProtocol } = await import('../lib/protocolService');
                 await triggerPostSaleProtocol(newSale, currentUser);
+                
+                await createNotification(
+                    'ALL_ADMINS',
+                    'admin',
+                    'workflow',
+                    'New Pending Sale',
+                    `Agent ${currentUser.name} submitted a new order for ${newSale.customer || 'a customer'} that requires review.`,
+                    { context: 'sale', recordId: newSale.id }
+                );
             }
+            return newSale;
         } catch (error) {
-            console.error("Failed to sync sale to Google Sheet/Protocol:", error);
+            console.error("Failed to add sale to database/sync:", error);
+            alert("Failed to submit order. Please check your connection.");
+            return null;
         }
-        return newSale;
     }, [currentUser]);
     
     const updateSaleStatus = useCallback(async (id: string, status: Sale['status'], details: Partial<Sale>, expectedUpdatedAt?: number, originalData?: Sale) => {
         if (!window.confirm(`Confirm status update to ${status}?`)) return;
-        await nexusGateway.update('sales', id, { status, ...details }, expectedUpdatedAt, originalData);
-        
-        const existingSale = salesRef.current.find(s => s.id === id);
-        if (existingSale) {
-            const updatedSale = { ...existingSale, status, ...details };
-            await sendToGoogleSheet(updatedSale);
+        try {
+            await nexusGateway.update('sales', id, { status, ...details }, expectedUpdatedAt, originalData);
             
-            // Trigger protocols when status changes (e.g. to Approved or Declined)
-            if (currentUser) {
-                const { triggerPostSaleProtocol } = await import('../lib/protocolService');
-                await triggerPostSaleProtocol(updatedSale, currentUser);
+            const existingSale = salesRef.current.find(s => s.id === id);
+            if (existingSale) {
+                const updatedSale = { ...existingSale, status, ...details };
+                await sendToGoogleSheet(updatedSale);
+                
+                // Notify Agent
+                if (status === 'Approved' || status === 'Declined' || status === 'Cancelled') {
+                    await createNotification(
+                        updatedSale.agentId, 
+                        'agent', 
+                        'workflow', 
+                        `Deal ${status}`, 
+                        `Your deal for ${updatedSale.customer} was ${status === 'Approved' ? 'Approved' : 'Declined'}.${details.declineReason ? ` Reason: ${details.declineReason}` : ''}`,
+                        { context: 'sale', recordId: updatedSale.id }
+                    );
+                }
+
+                // Trigger protocols when status changes (e.g. to Approved or Declined)
+                if (currentUser) {
+                    const { triggerPostSaleProtocol } = await import('../lib/protocolService');
+                    await triggerPostSaleProtocol(updatedSale, currentUser);
+                }
             }
+        } catch (error) {
+            console.error("Sale status update failed", error);
+            if (error && (error as any).name === 'ConflictError') {
+                throw error; // Let Admin portal handle ConflictError
+            }
+            alert("Failed to update status. Please log out and back in if this persists.");
         }
     }, [currentUser]);
 
     const updateSale = useCallback(async (id: string, updates: Partial<Sale>, expectedUpdatedAt?: number, originalData?: Sale) => {
         if (!window.confirm("Save changes to this record?")) return;
-        await nexusGateway.update('sales', id, updates, expectedUpdatedAt, originalData);
+        try {
+            await nexusGateway.update('sales', id, updates, expectedUpdatedAt, originalData);
+        } catch (error) {
+            console.error("Sale update failed", error);
+            if (error && (error as any).name === 'ConflictError') {
+                throw error;
+            }
+            alert("Failed to save changes. Please try again.");
+        }
     }, []);
 
     const deleteSale = useCallback(async (id: string) => {
         if (!window.confirm("⚠️ PERMANENT DELETE ⚠️\n\nAre you sure you want to purge this record?")) return;
-        await nexusGateway.delete('sales', id);
+        try {
+            await nexusGateway.delete('sales', id);
+        } catch (error) {
+            console.error("Sale delete failed", error);
+            alert("Failed to delete record. Please check your connection.");
+        }
     }, []);
     
     const bulkDeleteSales = useCallback(async (ids: string[]) => {
@@ -248,10 +322,33 @@ export const useCRMData = (currentUser: User | null) => {
     const addTask = useCallback(async (task: Partial<Task>) => await nexusGateway.add('tasks', task), []);
     const updateTaskStatus = useCallback(async (id: string, status: 'completed') => await nexusGateway.update('tasks', id, { status }), []);
 
+    async function reassignOrphanedLeads(fromAgentId: string, toAgentId: string, _team: string) {
+        // Scan for customers that are not closed, and assigned to this agent
+        const activeCustomers = customersRef.current.filter(c => c.agentId === fromAgentId && c.status !== 'Client');
+        for (const c of activeCustomers) {
+            await nexusGateway.update('customers', c.id, { agentId: toAgentId });
+        }
+        return activeCustomers.length;
+    }
+
     const updateUser = useCallback(async (id: string, data: Partial<User>) => {
         // Confirmation handled in UI (OperativeRoster)
+        const userWasActive = usersRef.current.find(u => u.id === id)?.active;
         await nexusGateway.update('users', id, data);
-    }, []);
+        
+        // Orphaned Callback Guard
+        if (userWasActive && data.active === false && currentUser) {
+            // Re-assign all of their pending/callback leads
+            const targetPoolTeam = currentUser.team || 'General';
+            const orphanCount = await reassignOrphanedLeads(id, currentUser.id, targetPoolTeam);
+            if (orphanCount > 0) {
+               window.dispatchEvent(new CustomEvent('SYSTEM_INTEGRATION_LOG', {
+                   detail: { action: 'LEAD_REASSIGNMENT', data: `${orphanCount} callbacks ripped from terminated unit ${id} and given to TL ${currentUser.id}` }
+               }));
+            }
+        }
+    }, [currentUser]);
+
     const addUser = useCallback(async (data: Partial<User>) => {
         // Confirmation handled in UI (OperativeRoster)
         await nexusGateway.add('users', { ...data, active: true });
@@ -267,10 +364,9 @@ export const useCRMData = (currentUser: User | null) => {
     }, []);
 
     const sendDirective = useCallback(async (d: Partial<TacticalDirective>) => {
-        if (!window.confirm("Broadcast this directive to all active terminals?")) return;
         await nexusGateway.add('directives', { ...d, id: `dir-${Date.now()}`, timestamp: Date.now() });
     }, []);
-    const logAttendance = useCallback(async (agentId: string, agentName: string, type: string, reason?: string) => {
+    const logAttendance = useCallback(async (agentId: string, agentName: string, type: string, reason?: string, duration?: number) => {
         const docData: any = { 
             agentId, 
             agentName, 
@@ -278,9 +374,8 @@ export const useCRMData = (currentUser: User | null) => {
             id: `att-${Date.now()}`, 
             timestamp: Date.now() 
         };
-        if (reason !== undefined) {
-            docData.reason = reason;
-        }
+        if (reason !== undefined) docData.reason = reason;
+        if (duration !== undefined) docData.duration = duration;
         await nexusGateway.add('attendance', docData);
     }, []);
     const logAudit = useCallback(async (entry: Partial<AuditEntry>) => {
@@ -343,18 +438,131 @@ export const useCRMData = (currentUser: User | null) => {
     const updateCustomer = useCallback(async (id: string, updates: Partial<Customer>, expectedUpdatedAt?: number, originalData?: Customer) => await nexusGateway.update('customers', id, updates, expectedUpdatedAt, originalData), []);
     const deleteCustomer = useCallback(async (id: string) => await nexusGateway.delete('customers', id), []);
 
+    const addDialerList = useCallback(async (data: Partial<any>) => await nexusGateway.add('dialer_lists', data), []);
+
     const updatePresence = useCallback(async (p: Partial<Presence>) => await nexusGateway.updatePresence(p), []);
     const clearPresence = useCallback(async (uid: string, rid?: string) => await nexusGateway.clearPresence(uid, rid), []);
 
+    const isSuperAdmin = (currentUser?.level || 0) >= 10;
+    
+    // Core filtering
+    const fUsers = useMemo(() => {
+        if (!currentUser || isSuperAdmin) return users;
+        return users.filter(u => u.id === currentUser.id || u.managerId === currentUser.id || (u.team && currentUser.team && u.team === currentUser.team));
+    }, [users, currentUser, isSuperAdmin]);
+
+    const validIds = useMemo(() => new Set(fUsers.map(u => u.id)), [fUsers]);
+
+    const fSales = useMemo(() => isSuperAdmin ? sales : sales.filter(s => validIds.has(s.agentId)), [sales, isSuperAdmin, validIds]);
+    const fNotes = useMemo(() => isSuperAdmin ? notes : notes.filter(n => validIds.has(n.agentId || '')), [notes, isSuperAdmin, validIds]);
+    const fTasks = useMemo(() => isSuperAdmin ? tasks : tasks.filter(t => validIds.has(t.targetAgentId || '')), [tasks, isSuperAdmin, validIds]);
+    const fAuditLogs = useMemo(() => isSuperAdmin ? auditLogs : auditLogs.filter(a => validIds.has(a.agentId || '')), [auditLogs, isSuperAdmin, validIds]);
+    const fAttendance = useMemo(() => isSuperAdmin ? attendance : attendance.filter(a => validIds.has(a.agentId || '')), [attendance, isSuperAdmin, validIds]);
+    
+    const executeDataHealthAction = useCallback(async (reportId: string, actionId: string) => {
+        const report = dataHealthReports.find(r => r.id === reportId);
+        if (!report) return;
+        const action = report.actions.find((a: any) => a.id === actionId);
+        if (!action) return;
+        
+        try {
+            if (action.type === 'flag_user') {
+                await nexusGateway.update('users', action.targetId, { active: false, status: 'inactive' });
+            } else if (action.type === 'merge_contact') {
+                const targetCustomer = customers.find(c => c.id === action.targetId);
+                const mergeIntoCustomer = customers.find(c => c.id === action.metadata?.mergeIntoId);
+                
+                if (targetCustomer && mergeIntoCustomer) {
+                    await nexusGateway.update('customers', mergeIntoCustomer.id, {
+                        ltv: (mergeIntoCustomer.ltv || 0) + (targetCustomer.ltv || 0)
+                    });
+                    await nexusGateway.delete('customers', targetCustomer.id);
+                }
+            }
+
+            const updatedApproved = [...(report.approvedActions || []), action.id];
+            const newStatus = updatedApproved.length === report.actions.length ? 'approved' : 'partially_approved';
+            await nexusGateway.update('dataHealthReports', report.id, { 
+                approvedActions: updatedApproved,
+                status: newStatus 
+            });
+        } catch (e) {
+            console.error("Action execution failed", e);
+        }
+    }, [dataHealthReports, customers]);
+
+    const executeFullDataHealthReport = useCallback(async (reportId: string) => {
+        const report = dataHealthReports.find(r => r.id === reportId);
+        if (!report || report.status === 'approved') return;
+        
+        // Very basic bulk execution for demo purposes
+        for (const action of report.actions) {
+            if (!report.approvedActions?.includes(action.id)) {
+                if (action.type === 'flag_user') {
+                    await nexusGateway.update('users', action.targetId, { active: false, status: 'inactive' });
+                } else if (action.type === 'merge_contact') {
+                    const targetCustomer = customers.find(c => c.id === action.targetId);
+                    const mergeIntoCustomer = customers.find(c => c.id === action.metadata?.mergeIntoId);
+                    if (targetCustomer && mergeIntoCustomer) {
+                        await nexusGateway.delete('customers', targetCustomer.id);
+                    }
+                }
+            }
+        }
+
+        await nexusGateway.update('dataHealthReports', report.id, { 
+            approvedActions: report.actions.map((a: any) => a.id),
+            status: 'approved',
+            executionTime: Date.now()
+        });
+    }, [dataHealthReports, customers]);
+
+    const undoDataHealthAction = useCallback(async (reportId: string, actionId: string) => {
+        const report = dataHealthReports.find(r => r.id === reportId);
+        if (!report) return;
+        const action = report.actions.find((a: any) => a.id === actionId);
+        if (!action) return;
+        
+        try {
+            if (action.type === 'flag_user') {
+                await nexusGateway.update('users', action.targetId, { active: true, status: 'active' });
+            } 
+            // merge_contact cannot be safely undone purely client side without preserving state, keeping simple
+
+            const updatedApproved = report.approvedActions?.filter((id: string) => id !== action.id) || [];
+            const newStatus = updatedApproved.length === 0 ? 'undone' : 'partially_approved';
+            
+            await nexusGateway.update('dataHealthReports', report.id, { 
+                approvedActions: updatedApproved,
+                status: newStatus 
+            });
+        } catch (e) {
+            console.error("Action undo failed", e);
+        }
+    }, [dataHealthReports]);
+
+    // Notifications Filtering
+    const fNotifications = useMemo(() => {
+        if (!currentUser) return [];
+        return notifications.filter(n => {
+            if (n.recipientId === currentUser.id) return true;
+            if (n.roleTarget === 'all') return true;
+            if (n.roleTarget === 'admin' && isSuperAdmin) return true;
+            if (n.recipientId === 'ALL_ADMINS' && currentUser.level >= 5) return true;
+            return false;
+        });
+    }, [notifications, currentUser, isSuperAdmin]);
+
     return useMemo(() => ({
-        sales, users, customers, accounts, notes, tasks, leaderboard,
-        productConfig, auditLogs, attendance, directives, messages, channels,
-        notifications, callLogs, scripts, customSheets, health, systemConfig, presence,
+        sales: fSales, users: fUsers, customers, accounts, notes: fNotes, tasks: fTasks, leaderboard,
+        productConfig, auditLogs: fAuditLogs, attendance: fAttendance, directives, messages, channels,
+        notifications: fNotifications, callLogs, scripts, customSheets, health, systemConfig, presence, dataHealthReports, dialerLists,
         
         addSale, updateSaleStatus, updateSale, deleteSale, bulkDeleteSales, bulkUpdateSales, importSales,
+        executeDataHealthAction, executeFullDataHealthReport, undoDataHealthAction,
         addCustomer, updateCustomer, deleteCustomer,
         addNote, updateNote, deleteNote, addTask, updateTaskStatus,
-        updateUser, addUser, updateProductConfig, updateSystemConfig,
+        updateUser, addUser, addDialerList, updateProductConfig, updateSystemConfig,
         sendDirective, logAttendance, logAudit, runDiagnostic, testUplink,
         clearNotification, 
         sendMessage, updateMessage, deleteMessage, markMessageAsSeen,
@@ -364,13 +572,14 @@ export const useCRMData = (currentUser: User | null) => {
         addSheet, removeSheet, updateSheet, updateSheetCell,
         updatePresence, clearPresence
     }), [
-        sales, users, customers, accounts, notes, tasks, leaderboard,
-        productConfig, auditLogs, attendance, directives, messages, channels,
-        notifications, callLogs, scripts, customSheets, health, systemConfig, presence,
+        fSales, fUsers, customers, accounts, fNotes, fTasks, leaderboard,
+        productConfig, fAuditLogs, fAttendance, directives, messages, channels,
+        fNotifications, callLogs, scripts, customSheets, health, systemConfig, presence, dataHealthReports, dialerLists,
         addSale, updateSaleStatus, updateSale, deleteSale, bulkDeleteSales, bulkUpdateSales, importSales,
+        executeDataHealthAction, executeFullDataHealthReport, undoDataHealthAction,
         addCustomer, updateCustomer, deleteCustomer,
         addNote, updateNote, deleteNote, addTask, updateTaskStatus,
-        updateUser, addUser, updateProductConfig, updateSystemConfig,
+        updateUser, addUser, addDialerList, updateProductConfig, updateSystemConfig,
         sendDirective, logAttendance, logAudit, runDiagnostic, testUplink,
         clearNotification, sendMessage, updateMessage, deleteMessage, markMessageAsSeen,
         updateChannel, createChannel, leaveChannel, addToChannel,

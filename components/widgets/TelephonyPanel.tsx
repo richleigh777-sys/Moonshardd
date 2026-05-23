@@ -146,7 +146,7 @@ export const TelephonyPanel = () => {
             <PanelFrame title="ViciDial Link" status="OFFLINE">
                 <div className="h-full flex flex-col items-center justify-center opacity-40">
                     <PhoneOff size={32} className="text-text-muted mb-3" />
-                    <p className="text-[10px] font-black uppercase text-text-muted tracking-widest">Module Disabled</p>
+                    <p className="text-xs font-[700]  text-text-muted tracking-widest">Module Disabled</p>
                 </div>
             </PanelFrame>
         );
@@ -155,7 +155,7 @@ export const TelephonyPanel = () => {
     return (
         <PanelFrame 
             title="ViciDial Uplink" 
-            headerAction={<div className="text-[10px] font-bold text-emerald-500">{status === 'INCALL' ? 'ACTIVE CHANNEL' : 'STANDBY'}</div>}
+            headerAction={<div className="text-xs font-bold text-status-success">{status === 'INCALL' ? 'ACTIVE CHANNEL' : 'STANDBY'}</div>}
             status={status === 'DISCONNECTED' ? 'OFFLINE' : status === 'INCALL' ? 'ACTIVE' : 'IDLE'}
         >
             <div className="relative h-full p-6 flex flex-col items-center justify-center">
@@ -163,14 +163,14 @@ export const TelephonyPanel = () => {
                 {status === 'DISCONNECTED' ? (
                     // DISCONNECTED STATE
                     <div className="w-full max-w-[200px] text-center space-y-6">
-                         <div className={`w-20 h-20 rounded-full border-2 flex items-center justify-center mx-auto shadow-xl ${error ? 'bg-red-500/10 border-red-500/30 text-red-500' : 'bg-surface-alt border-border-subtle text-text-muted'}`}>
+                         <div className={`w-20 h-20 rounded-full border-2 flex items-center justify-center mx-auto shadow-xl ${error ? 'bg-red-500/10 border-status-error/30 text-status-error' : 'bg-surface-alt border-border-subtle text-text-muted'}`}>
                             {error ? <AlertCircle size={32} /> : <Radio size={32} />}
                         </div>
-                        {error && <div className="text-[10px] font-mono text-red-400 bg-red-500/10 p-2 rounded border border-red-500/20">{error}</div>}
+                        {error && <div className="text-xs font-mono text-status-error bg-red-500/10 p-2 rounded border border-red-500/20">{error}</div>}
                         <button 
                             onClick={handleLink}
                             disabled={isConnecting}
-                            className="w-full py-3 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-black uppercase tracking-widest shadow-lg transition-all active:scale-95 disabled:opacity-50"
+                            className="w-full py-3 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-[700]  tracking-widest shadow-lg transition-all active:scale-95 disabled:opacity-50"
                         >
                             {isConnecting ? 'Handshaking...' : error ? 'Retry Uplink' : 'Initialize'}
                         </button>
@@ -179,12 +179,12 @@ export const TelephonyPanel = () => {
                 ) : status === 'INCALL' ? (
                     // ACTIVE CALL STATE
                     <div className="w-full flex flex-col items-center animate-in zoom-in duration-300">
-                        <div className="flex items-center gap-2 mb-2 text-[9px] font-black uppercase tracking-widest text-text-muted bg-surface-alt px-3 py-1 rounded-full border border-border-subtle">
-                            <Globe size={10} /> {callInfo?.region}
+                        <div className="flex items-center gap-2 mb-2 text-xs font-[700]  tracking-widest text-text-muted bg-surface-alt px-3 py-1 rounded-full border border-border-subtle">
+                            <Globe size={16} /> {callInfo?.region}
                         </div>
-                        <h3 className="text-3xl font-mono font-black text-text-primary mb-2 tracking-wider">{callInfo?.number}</h3>
-                        <p className="text-[10px] font-bold text-emerald-500 uppercase tracking-widest mb-6 flex items-center gap-2">
-                            <Clock size={10}/> {formatTime(duration)}
+                        <h3 className="text-3xl font-mono font-[700] text-text-primary mb-2 tracking-wider">{callInfo?.number}</h3>
+                        <p className="text-xs font-bold text-status-success  tracking-widest mb-6 flex items-center gap-2">
+                            <Clock size={16}/> {formatTime(duration)}
                         </p>
                         
                         <div className="w-full mb-8">
@@ -194,7 +194,7 @@ export const TelephonyPanel = () => {
                         <div className="flex gap-6">
                             <button 
                                 onClick={() => { setIsMuted(!isMuted); sfx.playClick(); }}
-                                className={`p-4 rounded-2xl border transition-all ${isMuted ? 'bg-red-500/20 border-red-500 text-red-500' : 'bg-surface-alt border-border-subtle text-text-primary hover:bg-surface-highlight'}`}
+                                className={`p-4 rounded-2xl border transition-all ${isMuted ? 'bg-red-500/20 border-red-500 text-status-error' : 'bg-surface-alt border-border-subtle text-text-primary hover:bg-surface-highlight'}`}
                             >
                                 {isMuted ? <MicOff size={24} /> : <Mic size={24} />}
                             </button>
@@ -221,7 +221,7 @@ export const TelephonyPanel = () => {
                     // IDLE / PAUSED STATE
                     <div className="w-full space-y-6 px-4">
                          <div className="flex justify-center mb-4">
-                             <div className={`w-24 h-24 rounded-full flex items-center justify-center border-4 ${status === 'PAUSED' ? 'border-amber-500/30 bg-amber-500/10 text-amber-500' : 'border-emerald-500/30 bg-emerald-500/10 text-emerald-500'}`}>
+                             <div className={`w-24 h-24 rounded-full flex items-center justify-center border-4 ${status === 'PAUSED' ? 'border-status-warning/30 bg-amber-500/10 text-status-warning' : 'border-status-success/30 bg-emerald-500/10 text-status-success'}`}>
                                  <User size={32} />
                              </div>
                          </div>
@@ -231,19 +231,19 @@ export const TelephonyPanel = () => {
                                 className={`py-4 rounded-xl border flex flex-col items-center justify-center gap-2 transition-all ${status === 'PAUSED' ? 'bg-amber-500 text-black border-amber-400 font-bold' : 'bg-surface-alt border-border-subtle text-text-muted hover:text-text-primary hover:bg-surface-highlight'}`}
                             >
                                 {status === 'PAUSED' ? <Radio size={18} className="animate-pulse"/> : <Radio size={18}/>}
-                                <span className="text-[10px] uppercase tracking-wider">{status === 'PAUSED' ? 'Resume' : 'Pause'}</span>
+                                <span className="text-xs  tracking-wider">{status === 'PAUSED' ? 'Resume' : 'Pause'}</span>
                             </button>
                             <button 
                                 onClick={() => { setShowKeypad(true); sfx.playClick(); }}
                                 className="py-4 rounded-xl border border-border-subtle bg-surface-alt text-text-muted hover:text-text-primary hover:bg-surface-highlight transition-all flex flex-col items-center justify-center gap-2"
                             >
                                 <Grid size={18} />
-                                <span className="text-[10px] uppercase tracking-wider">Keypad</span>
+                                <span className="text-xs  tracking-wider">Keypad</span>
                             </button>
                          </div>
                          <button 
                              onClick={handleDisconnect}
-                             className="w-full py-2 text-[9px] font-black uppercase text-red-500/50 hover:text-red-500 transition-colors"
+                             className="w-full py-2 text-xs font-[700]  text-status-error/50 hover:text-status-error transition-colors"
                          >
                              Terminate Link
                          </button>

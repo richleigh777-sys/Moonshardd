@@ -64,27 +64,27 @@ export const PriorityActions: React.FC<PriorityActionsProps> = ({ callbacks, tog
                             className="p-1.5 rounded-lg hover:bg-surface-alt text-text-muted hover:text-text-primary transition-colors"
                             title="Sort List"
                         >
-                            <ListFilter size={14} />
+                            <ListFilter size={16} />
                         </button>
                         {/* Sort Dropdown */}
                         <div className="absolute right-0 top-full mt-2 w-32 bg-surface-main border border-border-subtle rounded-xl shadow-xl p-1 z-20 opacity-0 group-hover:opacity-100 pointer-events-none group-hover:pointer-events-auto transition-all transform origin-top-right scale-95 group-hover:scale-100">
                             <button 
                                 onClick={() => setSortMode('priority')}
-                                className={`w-full text-left px-3 py-2 text-[10px] font-bold uppercase rounded-lg flex items-center gap-2 ${sortMode === 'priority' ? 'bg-accent-primary/10 text-accent-primary' : 'text-text-secondary hover:bg-surface-alt'}`}
+                                className={`w-full text-left px-3 py-2 text-xs font-bold  rounded-lg flex items-center gap-2 ${sortMode === 'priority' ? 'bg-accent-primary/10 text-accent-primary' : 'text-text-secondary hover:bg-surface-alt'}`}
                             >
-                                <Sparkles size={12}/> Smart Sort
+                                <Sparkles size={16}/> Smart Sort
                             </button>
                             <button 
                                 onClick={() => setSortMode('date-asc')}
-                                className={`w-full text-left px-3 py-2 text-[10px] font-bold uppercase rounded-lg flex items-center gap-2 ${sortMode === 'date-asc' ? 'bg-accent-primary/10 text-accent-primary' : 'text-text-secondary hover:bg-surface-alt'}`}
+                                className={`w-full text-left px-3 py-2 text-xs font-bold  rounded-lg flex items-center gap-2 ${sortMode === 'date-asc' ? 'bg-accent-primary/10 text-accent-primary' : 'text-text-secondary hover:bg-surface-alt'}`}
                             >
-                                <ArrowUp size={12}/> Date (Oldest)
+                                <ArrowUp size={16}/> Date (Oldest)
                             </button>
                             <button 
                                 onClick={() => setSortMode('date-desc')}
-                                className={`w-full text-left px-3 py-2 text-[10px] font-bold uppercase rounded-lg flex items-center gap-2 ${sortMode === 'date-desc' ? 'bg-accent-primary/10 text-accent-primary' : 'text-text-secondary hover:bg-surface-alt'}`}
+                                className={`w-full text-left px-3 py-2 text-xs font-bold  rounded-lg flex items-center gap-2 ${sortMode === 'date-desc' ? 'bg-accent-primary/10 text-accent-primary' : 'text-text-secondary hover:bg-surface-alt'}`}
                             >
-                                <ArrowDown size={12}/> Date (Newest)
+                                <ArrowDown size={16}/> Date (Newest)
                             </button>
                         </div>
                     </div>
@@ -107,19 +107,19 @@ export const PriorityActions: React.FC<PriorityActionsProps> = ({ callbacks, tog
                             <div className="flex justify-between items-start mb-2">
                                 <div>
                                     <h4 className="font-bold text-sm text-text-primary">{task.customerName || 'Unknown'}</h4>
-                                    <p className="text-[10px] font-mono text-text-secondary mt-0.5">{task.phone}</p>
+                                    <p className="text-xs font-mono text-text-secondary mt-0.5">{task.phone}</p>
                                 </div>
                                 <div className="text-right">
                                     <Badge status={isUrgent ? 'High' : 'Mid'} className="scale-90 origin-right">
                                         {isUrgent ? 'Priority' : 'Scheduled'}
                                     </Badge>
-                                    <p className="text-[9px] font-mono text-text-muted mt-1">{task.time}</p>
+                                    <p className="text-xs font-mono text-text-muted mt-1">{task.time}</p>
                                 </div>
                             </div>
                             
                             <div className="flex items-center gap-2 mb-3 bg-surface-alt/50 p-2 rounded-lg">
-                                {isUrgent ? <AlertTriangle size={12} className="text-status-error"/> : <Clock size={12} className="text-text-muted"/>}
-                                <p className="text-[10px] text-text-secondary line-clamp-1 italic">
+                                {isUrgent ? <AlertTriangle size={16} className="text-status-error"/> : <Clock size={16} className="text-text-muted"/>}
+                                <p className="text-xs text-text-secondary line-clamp-1 italic">
                                     {task.reason || task.content}
                                 </p>
                             </div>
@@ -127,17 +127,17 @@ export const PriorityActions: React.FC<PriorityActionsProps> = ({ callbacks, tog
                             <div className="flex gap-2">
                                 <Button 
                                     variant="primary" 
-                                    className="flex-1 h-8 text-[10px] font-bold"
+                                    className="flex-1 h-8 text-xs font-bold"
                                     onClick={() => window.location.href = `tel:${task.phone}`}
                                 >
-                                    <Phone size={12}/> Call
+                                    <Phone size={16}/> Call
                                 </Button>
                                 
                                 {isConfirming ? (
                                     <div className="flex gap-1 animate-in slide-in-from-right-2 fade-in duration-300">
                                         <Button 
                                             variant="danger" 
-                                            className="h-8 px-3 text-[9px] font-black uppercase tracking-widest hover:scale-105 active:scale-95 transition-all shadow-md shadow-red-500/20"
+                                            className="h-8 px-3 text-xs font-[700]  tracking-widest hover:scale-105 active:scale-95 transition-all shadow-md shadow-red-500/20"
                                             onClick={() => handleActionClick(task.id)}
                                         >
                                             Confirm
@@ -147,7 +147,7 @@ export const PriorityActions: React.FC<PriorityActionsProps> = ({ callbacks, tog
                                             className="h-8 w-8 p-0 hover:bg-surface-highlight transition-colors"
                                             onClick={() => setConfirmingId(null)}
                                         >
-                                            <X size={14}/>
+                                            <X size={16}/>
                                         </Button>
                                     </div>
                                 ) : (
@@ -156,7 +156,7 @@ export const PriorityActions: React.FC<PriorityActionsProps> = ({ callbacks, tog
                                         className="h-8 w-8 p-0 text-text-muted hover:text-status-success hover:border-status-success hover:bg-status-success/10 transition-all duration-300 group/check"
                                         onClick={() => handleActionClick(task.id)}
                                     >
-                                        <Check size={14} className="group-hover/check:scale-125 group-hover/check:rotate-12 transition-transform duration-300 ease-out" strokeWidth={3} />
+                                        <Check size={16} className="group-hover/check:scale-125 group-hover/check:rotate-12 transition-transform duration-300 ease-out" strokeWidth={3} />
                                     </Button>
                                 )}
                             </div>

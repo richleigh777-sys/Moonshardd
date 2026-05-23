@@ -6,7 +6,7 @@ import { useSystem } from '../../../hooks/useSystem';
 import { useLedgerData, useLedgerLayout } from './hooks';
 import { useImportLogic } from './useImportLogic';
 
-const ITEMS_PER_PAGE = 50;
+const ITEMS_PER_PAGE = 1000;
 
 export const useSalesLedgerUI = (sales: Sale[], onImport?: (data: any) => Promise<number>, onBulkAction?: (ids: string[], action: string, payload?: any) => void) => {
     const { bulkUpdateSales, bulkDeleteSales } = useCRM();

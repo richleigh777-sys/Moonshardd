@@ -53,10 +53,10 @@ export const AddContactModal: React.FC<AddContactModalProps> = ({ isOpen, onClos
         <Modal isOpen={isOpen} onClose={onClose} title="Add New Contact">
             <form onSubmit={handleSubmit} className="space-y-4">
                 <div className="space-y-2">
-                    <label className="text-xs font-bold uppercase text-text-muted">Full Name</label>
+                    <label className="text-xs font-bold  text-text-muted">Full Name</label>
                     <div className="relative">
                         <User size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted"/>
-                        <input 
+                        <input autoComplete="off" data-lpignore="true" data-prevent-autofill="true" spellCheck={false} 
                             value={formData.name}
                             onChange={e => setFormData({...formData, name: e.target.value})}
                             className="w-full bg-surface-alt border border-border-subtle rounded-xl py-2 pl-10 pr-4 text-sm focus:border-accent-primary outline-none"
@@ -67,10 +67,10 @@ export const AddContactModal: React.FC<AddContactModalProps> = ({ isOpen, onClos
                 </div>
 
                 <div className="space-y-2">
-                    <label className="text-xs font-bold uppercase text-text-muted">Phone Number</label>
+                    <label className="text-xs font-bold  text-text-muted">Phone Number</label>
                     <div className="relative">
                         <Phone size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted"/>
-                        <input 
+                        <input autoComplete="off" data-lpignore="true" data-prevent-autofill="true" spellCheck={false} 
                             value={formData.phone}
                             onChange={e => setFormData({...formData, phone: e.target.value})}
                             className="w-full bg-surface-alt border border-border-subtle rounded-xl py-2 pl-10 pr-4 text-sm focus:border-accent-primary outline-none"
@@ -81,10 +81,10 @@ export const AddContactModal: React.FC<AddContactModalProps> = ({ isOpen, onClos
                 </div>
 
                 <div className="space-y-2">
-                    <label className="text-xs font-bold uppercase text-text-muted">Email Address</label>
+                    <label className="text-xs font-bold  text-text-muted">Email Address</label>
                     <div className="relative">
                         <Mail size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted"/>
-                        <input 
+                        <input autoComplete="off" data-lpignore="true" data-prevent-autofill="true" spellCheck={false} 
                             value={formData.email}
                             onChange={e => setFormData({...formData, email: e.target.value})}
                             className="w-full bg-surface-alt border border-border-subtle rounded-xl py-2 pl-10 pr-4 text-sm focus:border-accent-primary outline-none"
@@ -95,10 +95,10 @@ export const AddContactModal: React.FC<AddContactModalProps> = ({ isOpen, onClos
                 </div>
 
                 <div className="space-y-2">
-                    <label className="text-xs font-bold uppercase text-text-muted">Address</label>
+                    <label className="text-xs font-bold  text-text-muted">Address</label>
                     <div className="relative">
                         <MapPin size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted"/>
-                        <input 
+                        <input autoComplete="off" data-lpignore="true" data-prevent-autofill="true" spellCheck={false} 
                             value={formData.address}
                             onChange={e => setFormData({...formData, address: e.target.value})}
                             className="w-full bg-surface-alt border border-border-subtle rounded-xl py-2 pl-10 pr-4 text-sm focus:border-accent-primary outline-none"

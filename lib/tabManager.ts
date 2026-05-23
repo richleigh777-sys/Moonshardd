@@ -59,6 +59,11 @@ class TabCoordinator {
             case 'LOGOUT_SYNC':
                 this.emit('LOGOUT_SYNC', msg.payload);
                 break;
+            case 'REFRESH_DATA':
+                this.emit('REFRESH_DATA', msg.payload);
+                // Also trigger app-wide refresh
+                window.dispatchEvent(new CustomEvent('REFRESH_DATA', { detail: msg.payload }));
+                break;
             case 'LEADER_CHANGE':
                 if (msg.payload.isLeader) {
                     this._isLeader = false;

@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/set-state-in-effect */
 
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { 
@@ -277,10 +278,10 @@ export const Scratchpad: React.FC<ScratchpadProps> = ({ isOpen, onClose }) => {
                         <List size={16} />
                     </button>
                     <div onMouseDown={(e) => e.stopPropagation()} className="flex flex-col min-w-[120px]">
-                        <h3 className="text-sm font-black uppercase tracking-widest text-text-primary flex items-center gap-2">
+                        <h3 className="text-sm font-[700]  tracking-widest text-text-primary flex items-center gap-2">
                             {getSheetTitle(activeSheet.content)}
                         </h3>
-                        <p className="text-[9px] font-bold text-text-muted uppercase tracking-wider flex items-center gap-1">
+                        <p className="text-xs font-bold text-text-muted  tracking-wider flex items-center gap-1">
                             <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
                             {sheets.length} Active Sheet{sheets.length !== 1 ? 's' : ''}
                         </p>

@@ -48,9 +48,9 @@ export const CRMProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         });
     }, []);
 
-    const logAttendanceWrapper = useCallback(async (type: string, reason?: string) => {
+    const logAttendanceWrapper = useCallback(async (type: string, reason?: string, duration?: number) => {
         if (!currentUser) return;
-        await dataHook.logAttendance(currentUser.id, currentUser.name, type, reason);
+        await dataHook.logAttendance(currentUser.id, currentUser.name, type, reason, duration);
     }, [currentUser, dataHook]);
 
     const logAuditWrapper = useCallback(async (entry: Partial<AuditEntry>) => {

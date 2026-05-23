@@ -5,11 +5,11 @@ import { PortalShell } from '../components/layout/PortalShell';
 import { Tabs } from '../components/ui/Tabs';
 import { Scratchpad } from '../components/widgets/Scratchpad';
 import { QuickCalculator } from '../components/widgets/QuickCalculator';
-import { SystemTicker } from '../components/admin/SystemTicker';
 import { AdminSidebarContent } from '../components/admin/AdminSidebarContent';
 import { AdminViewManager } from '../components/admin/AdminViewManager';
 import { useAdminPortalLogic } from '../components/admin/hooks/useAdminPortalLogic';
 import { ConflictDialog } from '../components/ui/ConflictDialog';
+import { OmniSearch } from '../components/admin/OmniSearch';
 
 interface AdminPortalProps {
     onGhostLogin: (userId: string) => void;
@@ -64,8 +64,7 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({ onGhostLogin }) => {
                 sidebarContent={<AdminSidebarContent isAllowed={isAllowed} />} 
                 headerContent={
                     <div className="flex items-center gap-2">
-                        <SystemTicker />
-                        <div className="h-6 w-px bg-border-subtle mx-1"></div>
+                        <OmniSearch />
                         <button 
                             onClick={() => setShowCalculator(!showCalculator)} 
                             className={`p-2 rounded-xl transition-all ${showCalculator ? 'bg-accent-primary text-white shadow-lg shadow-accent-primary/20' : 'text-text-secondary hover:bg-surface-highlight'}`} 
@@ -85,7 +84,7 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({ onGhostLogin }) => {
                 notifications={notifications} 
                 clearNotification={clearNotification}
             >
-                <div className="w-full h-full relative">
+                <div className="w-full min-h-full flex flex-col flex-1 relative">
                     {showCalculator && (
                         <div className="fixed top-24 right-6 z-[100]">
                             <QuickCalculator onClose={() => setShowCalculator(false)} />

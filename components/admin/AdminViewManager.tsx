@@ -5,7 +5,6 @@ import { PipelineBoard } from '../pipeline/PipelineBoard';
 import { RetentionView } from '../../views/RetentionView';
 import { SalesLedger } from '../widgets/SalesLedger';
 import { PayrollManager } from './dashboard/financials/PayrollManager';
-import { CustomSheets } from '../widgets/CustomSheets';
 import { OperativeRoster } from './OperativeRoster';
 import { TeamLeaderboard } from '../widgets/TeamLeaderboard';
 import { MessagingLayout } from '../chat/MessagingLayout';
@@ -15,6 +14,8 @@ import { AdminAnalytics } from '../widgets/AdminAnalytics';
 import { PerformanceCenter } from '../widgets/PerformanceCenter';
 import { SystemConfigPanel } from './SystemConfigPanel';
 import { GodModePanel } from '../widgets/GodModePanel';
+import { DialerDataListManager } from './DialerDataListManager';
+import { CRMAuditDashboard } from './CRMAuditDashboard';
 import { sfx } from '../../lib/soundService';
 import { User, Sale, Note, SystemConfig, ProductConfig, SystemHealth, ToastMessage } from '../../types';
 
@@ -65,6 +66,7 @@ export const AdminViewManager: React.FC<AdminTerminalManagerProps> = ({
                         health={health} 
                         onRunDiagnostics={runDiagnostic} 
                         onTestUplink={testUplink}
+                        onGhostLogin={onGhostLogin}
                     />
                 </TabContent>
             )}
@@ -94,11 +96,11 @@ export const AdminViewManager: React.FC<AdminTerminalManagerProps> = ({
                 </TabContent>
             )}
             {isAllowed('payroll') && <TabContent value="payroll" className="h-full"><PayrollManager /></TabContent>}
-            {isAllowed('sheets') && <TabContent value="sheets" className="h-full"><CustomSheets /></TabContent>}
             {isAllowed('roster') && <TabContent value="roster" className="w-full h-full"><OperativeRoster users={users} sales={sales} onUpdateUser={updateUser} onAddUser={addUser} onGhostLogin={onGhostLogin}/></TabContent>}
-            {isAllowed('standings') && <TabContent value="standings" className="w-full h-full"><TeamLeaderboard currentUserName={currentUser?.name || 'Admin'} currentUserRole="admin" currentUserTeam="All"/></TabContent>}
+            {isAllowed('standings') && <TabContent value="standings" className="w-full h-full"><TeamLeaderboard currentUserName={currentUser?.name || 'Admin'} currentUserRole="admin" currentUserTeam={currentUser.team || 'All'} currentUserLevel={currentUser.level} /></TabContent>}
             {isAllowed('comms') && <TabContent value="comms" className="w-full h-full"><MessagingLayout /></TabContent>}
             {isAllowed('scripts') && <TabContent value="scripts" className="w-full h-full"><ScriptManager /></TabContent>}
+            {isAllowed('dialer_data') && <TabContent value="dialer_data" className="w-full h-full"><DialerDataListManager /></TabContent>}
             {isAllowed('catalog') && <TabContent value="catalog" className="w-full h-full"><ProductManager configForm={productConfig} setConfigForm={updateProductConfig} onSave={updateProductConfig} /></TabContent>}
             {isAllowed('intel') && (
                 <TabContent value="intel" className="w-full h-full flex flex-col gap-6">
@@ -106,6 +108,7 @@ export const AdminViewManager: React.FC<AdminTerminalManagerProps> = ({
                     <PerformanceCenter sales={sales} currentUser={currentUser!} attendance={[]} users={users} />
                 </TabContent>
             )}
+            {isAllowed('audit') && <TabContent value="audit" className="w-full h-full"><CRMAuditDashboard users={users} sales={sales} notes={notes} /></TabContent>}
             {isAllowed('system') && <TabContent value="system" className="w-full h-full"><SystemConfigPanel config={systemConfig} onUpdate={updateSystemConfig} sales={sales} notes={notes} /></TabContent>}
             {isAllowed('nexus') && <TabContent value="nexus" className="w-full h-full"><GodModePanel /></TabContent>}
         </>

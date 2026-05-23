@@ -11,9 +11,9 @@ interface MetricCardProps {
 }
 
 const MetricCard: React.FC<MetricCardProps> = ({ label, value, icon: Icon, color, trend }) => (
-    <div className="bg-surface-main p-6 rounded-2xl border border-border-subtle shadow-sm flex items-start justify-between group hover:shadow-md transition-all duration-300">
+    <div className="bg-surface-main p-6 rounded-2xl shadow-panel flex items-start justify-between group hover:shadow-md transition-all duration-300">
         <div>
-            <p className="text-text-muted text-xs font-medium mb-1 uppercase tracking-wide">{label}</p>
+            <p className="text-text-muted text-xs font-medium mb-1  tracking-wide">{label}</p>
             <div className="text-2xl font-bold text-text-primary tracking-tight">
                 {value}
             </div>

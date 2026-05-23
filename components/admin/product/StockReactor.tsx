@@ -22,14 +22,14 @@ export const StockReactor: React.FC<StockReactorProps> = ({ stock, volume, maxSt
 
     return (
         <div className="mt-5 pt-4 border-t border-border-subtle/50 relative z-10 space-y-3">
-            <div className="flex justify-between items-center text-[9px] font-bold uppercase tracking-wider">
+            <div className="flex justify-between items-center text-xs font-bold  tracking-wider">
                 <div className="flex flex-col">
                     <span className="text-text-muted mb-0.5">Stock Level</span>
-                    <span className={`${stock < 10 ? 'text-red-500' : 'text-text-primary'} font-black`}>{stock} Units</span>
+                    <span className={`${stock < 10 ? 'text-status-error' : 'text-text-primary'} font-[700]`}>{stock} Units</span>
                 </div>
                 <div className="flex flex-col items-end">
                     <span className="text-text-muted mb-0.5">Velocity</span>
-                    <span className="text-indigo-500 font-black flex items-center gap-1"><Zap size={8} fill="currentColor"/> {volume}</span>
+                    <span className="text-accent-secondary font-[700] flex items-center gap-1"><Zap size={16} fill="currentColor"/> {volume}</span>
                 </div>
             </div>
             

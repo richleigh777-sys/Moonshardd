@@ -37,9 +37,9 @@ export const RosterHeader: React.FC<RosterHeaderProps> = ({
                     <div className="flex items-center gap-2 mt-1">
                         <span className="text-xs font-medium text-text-secondary">{totalUsers} Total</span>
                         <div className="h-1 w-1 rounded-full bg-text-muted/30"></div>
-                        <div className="flex items-center gap-1.5 px-1.5 py-0.5 bg-emerald-500/10 rounded-full border border-emerald-500/20">
+                        <div className="flex items-center gap-1.5 px-3 py-1.5 bg-emerald-500/10 rounded-full border border-emerald-500/20">
                             <div className="w-1 h-1 rounded-full bg-emerald-500 animate-pulse"></div>
-                            <span className="text-[10px] font-bold text-emerald-600">{onlineCount} Online</span>
+                            <span className="text-xs font-bold text-emerald-600">{onlineCount} Online</span>
                         </div>
                     </div>
                 </div>
@@ -47,8 +47,8 @@ export const RosterHeader: React.FC<RosterHeaderProps> = ({
             
             <div className="flex flex-wrap items-center gap-2 w-full xl:w-auto">
                 <div className="relative group flex-1 md:min-w-[180px]">
-                    <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted group-focus-within:text-accent-primary transition-colors" />
-                    <input 
+                    <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted group-focus-within:text-accent-primary transition-colors" />
+                    <input autoComplete="off" data-lpignore="true" data-prevent-autofill="true" spellCheck={false} 
                         value={searchTerm}
                         onChange={e => setSearchTerm(e.target.value)}
                         placeholder="Search..." 
@@ -62,13 +62,13 @@ export const RosterHeader: React.FC<RosterHeaderProps> = ({
                         onClick={() => setViewMode('grid')}
                         className={`p-1.5 rounded-full transition-all ${viewMode === 'grid' ? 'bg-surface-main text-accent-primary shadow-sm' : 'text-text-muted hover:text-text-primary'}`}
                     >
-                        <LayoutGrid size={14} />
+                        <LayoutGrid size={16} />
                     </button>
                     <button 
                         onClick={() => setViewMode('list')}
                         className={`p-1.5 rounded-full transition-all ${viewMode === 'list' ? 'bg-surface-main text-accent-primary shadow-sm' : 'text-text-muted hover:text-text-primary'}`}
                     >
-                        <List size={14} />
+                        <List size={16} />
                     </button>
                 </div>
 
@@ -77,12 +77,12 @@ export const RosterHeader: React.FC<RosterHeaderProps> = ({
                         <select 
                             value={filterTeam} 
                             onChange={(e) => setFilterTeam(e.target.value)}
-                            className="bg-transparent text-[10px] font-bold text-text-secondary outline-none cursor-pointer hover:text-text-primary transition-all pl-2 pr-6 py-1.5 appearance-none"
+                            className="bg-transparent text-xs font-bold text-text-secondary outline-none cursor-pointer hover:text-text-primary transition-all pl-2 pr-6 py-1.5 appearance-none"
                         >
                             <option value="All">All Teams</option>
                             {uniqueTeams.map(t => <option key={t} value={t}>{t}</option>)}
                         </select>
-                        <Filter size={10} className="absolute right-2 top-1/2 -translate-y-1/2 text-text-muted pointer-events-none"/>
+                        <Filter size={16} className="absolute right-2 top-1/2 -translate-y-1/2 text-text-muted pointer-events-none"/>
                     </div>
                     
                     <div className="w-px h-4 bg-border-subtle"></div>
@@ -91,19 +91,19 @@ export const RosterHeader: React.FC<RosterHeaderProps> = ({
                         <select 
                             value={sortMode}
                             onChange={(e) => setSortMode(e.target.value as SortMode)}
-                            className="bg-transparent text-[10px] font-bold text-text-secondary outline-none cursor-pointer hover:text-text-primary transition-all pl-2 pr-6 py-1.5 appearance-none"
+                            className="bg-transparent text-xs font-bold text-text-secondary outline-none cursor-pointer hover:text-text-primary transition-all pl-2 pr-6 py-1.5 appearance-none"
                         >
                             <option value="revenue">Contribution</option>
                             <option value="winRate">Rank</option>
                             <option value="status">Status</option>
                             <option value="name">Name</option>
                         </select>
-                        <ArrowUpDown size={10} className="absolute right-2 top-1/2 -translate-y-1/2 text-text-muted pointer-events-none"/>
+                        <ArrowUpDown size={16} className="absolute right-2 top-1/2 -translate-y-1/2 text-text-muted pointer-events-none"/>
                     </div>
                 </div>
 
                 <Button onClick={onAddUser} variant="primary" className="h-8 px-4 rounded-full text-xs font-bold shadow-lg shadow-accent-primary/20 bg-accent-primary hover:brightness-110">
-                    <UserPlus size={14} className="mr-1.5"/> Invite
+                    <UserPlus size={16} className="mr-1.5"/> Invite
                 </Button>
             </div>
         </div>

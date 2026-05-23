@@ -7,7 +7,7 @@ export const ChatSystem: React.FC<{ isOpen: boolean; onClose: () => void }> = ({
     if (!isOpen) return null;
 
     return (
-        <div className="fixed inset-0 z-[200] flex bg-black/60 backdrop-blur-xl p-0 md:p-8 lg:p-12 animate-in fade-in duration-300">
+        <div className="fixed inset-0 z-[200] flex bg-surface-alt backdrop-blur-xl p-0 md:p-8 lg:p-12 animate-in fade-in duration-300">
             {/* Close trigger on backdrop */}
             <div className="absolute inset-0 z-0" onClick={onClose}></div>
             

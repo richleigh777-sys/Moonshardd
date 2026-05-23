@@ -1,10 +1,11 @@
 {
-  "name": "Remix: Remix: Remix: Nexus CRM OS",
-  "description": "A high-performance, cloud-synced CRM dashboard for sales agents and administrators featuring real-time analytics, pipeline tracking, and role-based access control.",
+  "name": "Braveheart CRM OS",
+  "description": "An ultra-efficient, distraction-free CRM acting as a pure sales engine for agents with automated Teams formatting, pipeline tracking, and RBAC.",
   "requestFramePermissions": [
     "camera",
     "microphone",
     "geolocation",
     "display-capture"
-  ]
+  ],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
 }

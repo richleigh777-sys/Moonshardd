@@ -21,7 +21,7 @@ interface OperativeRowProps {
 
 const getRank = (revenue: number): { label: string, color: string } => {
     if (revenue >= 50000) return { label: 'S-Class', color: 'text-purple-400' };
-    if (revenue >= 25000) return { label: 'A-Class', color: 'text-emerald-400' };
+    if (revenue >= 25000) return { label: 'A-Class', color: 'text-status-success' };
     if (revenue >= 10000) return { label: 'B-Class', color: 'text-blue-400' };
     return { label: 'C-Class', color: 'text-slate-400' };
 };
@@ -62,54 +62,66 @@ export const OperativeRow: React.FC<OperativeRowProps> = React.memo(({
                 </div>
                 <div className="min-w-0">
                     <div className="flex items-center gap-2">
-                        <h4 className="text-sm font-black uppercase tracking-tight text-text-primary truncate">{u.name}</h4>
-                        {isAdmin && <Shield size={10} className="text-indigo-500 fill-indigo-500/20"/>}
+                        <h4 className="text-sm font-[700]  tracking-tight text-text-primary truncate">{u.name}</h4>
+                        {isAdmin && <Shield size={16} className="text-accent-secondary fill-indigo-500/20"/>}
                     </div>
                     <div className="flex items-center gap-2 mt-0.5">
-                        <Badge status="Mid" className="px-1.5 py-0 h-4 text-[8px] font-black opacity-80 uppercase tracking-wider">{u.team || 'ALPHA'}</Badge>
-                        <code className="text-[8px] font-mono text-text-muted tracking-tighter opacity-70">{u.id}</code>
+                        <Badge status="Mid" className="px-1.5 py-0 h-4 text-sm font-[700] opacity-80  tracking-wider">{u.team || 'ALPHA'}</Badge>
+                        <code className="text-sm font-mono text-text-muted tracking-tighter opacity-70">{u.id}</code>
                     </div>
                 </div>
             </div>
 
             {/* 2. Status */}
             <div className="col-span-2 text-center relative z-10">
-                <span className={`inline-flex items-center gap-1.5 px-2 py-1 rounded-lg border text-[9px] font-black uppercase tracking-wider ${
-                    u.currentStatus === 'online' ? 'bg-emerald-500/5 text-emerald-500 border-emerald-500/20' : 
-                    u.currentStatus === 'break' ? 'bg-amber-500/5 text-amber-500 border-amber-500/20' : 
+                <span className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border text-xs font-[700]  tracking-wider ${
+                    u.currentStatus === 'online' ? 'bg-emerald-500/5 text-status-success border-emerald-500/20' : 
+                    u.currentStatus === 'break' ? 'bg-amber-500/5 text-status-warning border-amber-500/20' : 
                     'bg-surface-alt text-text-muted border-border-subtle'
                 }`}>
                     {u.currentStatus || 'OFFLINE'}
                 </span>
             </div>
 
-            {/* 3. Uptime */}
+            {/* 3. Metrics/Uptime */}
             <div className="col-span-2 relative z-10">
-                <div className="flex items-center gap-2">
-                    <div className="p-1.5 bg-surface-alt rounded-lg text-text-muted border border-border-subtle"><Clock size={12}/></div>
-                    <div className="flex flex-col">
-                        <span className="text-[10px] font-mono font-bold text-text-primary">{hoursToday.toFixed(1)}h</span>
-                        <span className="text-[8px] text-text-muted uppercase tracking-wider opacity-60">Daily</span>
+                <div className="flex flex-col gap-1.5 justify-center h-full">
+                    <div className="flex items-center justify-between">
+                        <span className="text-[10px] font-[700]  text-text-muted tracking-widest flex items-center gap-1"><Clock size={10}/> Uptime</span>
+                        <span className="text-xs font-mono font-bold text-text-primary">{hoursToday.toFixed(1)}h</span>
                     </div>
+                    {u.dailyQuota ? (
+                        <div className="flex items-center justify-between">
+                            <span className="text-[10px] font-[700]  text-text-muted tracking-widest flex items-center gap-1">Quota</span>
+                            <span className={`text-[10px] font-mono font-bold px-1.5 py-0.5 rounded ${analytics.revenue >= u.dailyQuota ? 'bg-emerald-500/10 text-status-success border border-emerald-500/20' : 'bg-surface-alt text-status-warning border border-border-subtle'}`}>
+                                {Math.round((analytics.revenue / u.dailyQuota) * 100)}%
+                            </span>
+                        </div>
+                    ) : (
+                        <div className="flex items-center justify-between">
+                            <span className="text-[10px] font-[700]  text-text-muted tracking-widest opacity-0">Spacer</span>
+                            <span className="text-[10px] font-mono opacity-0">0%</span>
+                        </div>
+                    )}
                 </div>
             </div>
 
             {/* 4. Performance Metrics */}
             <div className="col-span-2 relative z-10">
                 <div className="flex flex-col gap-1.5">
-                    <div className="flex justify-between items-center text-[9px] font-black uppercase">
+                    <div className="flex justify-between items-center text-xs font-[700] ">
                         <span className="text-text-muted">Revenue</span>
-                        <span className="text-emerald-500 font-mono">${analytics.revenue.toLocaleString()}</span>
+                        <span className="text-status-success font-mono">${analytics.revenue.toLocaleString()}</span>
                     </div>
-                    <div className="h-1.5 w-full bg-surface-alt rounded-full overflow-hidden border border-white/5">
+                    <div className="h-1.5 w-full bg-surface-alt rounded-full overflow-hidden border border-border-subtle">
                         <div 
                             className={`h-full bg-gradient-to-r from-indigo-500 to-accent-primary transition-all duration-1000`} 
                             style={{ width: `${Math.max(5, performancePct)}%` }}
                         ></div>
                     </div>
-                    <div className="flex justify-between items-center text-[8px] font-bold text-text-muted uppercase">
+                    <div className="flex justify-between items-center text-sm font-bold text-text-muted ">
                         <span className={rank.color}>{rank.label}</span>
-                        <span className="text-amber-500 flex items-center gap-0.5"><Zap size={8} fill="currentColor"/> {analytics.winRate}%</span>
+                        <span className="text-status-warning flex items-center gap-0.5"><Zap size={16} fill="currentColor"/> {analytics.winRate}%</span>
                     </div>
                 </div>
             </div>
@@ -118,33 +130,35 @@ export const OperativeRow: React.FC<OperativeRowProps> = React.memo(({
             <div className="col-span-2 flex justify-end gap-1.5 pr-2 relative z-20">
                 <button 
                     onClick={() => onOpenLedger(u)}
-                    className="h-8 w-8 flex items-center justify-center bg-surface-alt hover:bg-emerald-500/10 text-text-muted hover:text-emerald-500 border border-border-subtle hover:border-emerald-500/30 rounded-xl transition-all shadow-sm group/btn"
+                    className="h-8 w-8 flex items-center justify-center bg-surface-alt hover:bg-emerald-500/10 text-text-muted hover:text-status-success border border-border-subtle hover:border-status-success/30 rounded-xl transition-all shadow-sm group/btn"
                     title="View Ledger"
                 >
-                    <FileSpreadsheet size={14} className="group-hover/btn:scale-110 transition-transform"/>
+                    <FileSpreadsheet size={16} className="group-hover/btn:scale-110 transition-transform"/>
                 </button>
                 {!isMe && (
                     <button 
                         onClick={() => onChat(u.id)}
-                        className="h-8 w-8 flex items-center justify-center bg-surface-alt hover:bg-indigo-500/10 text-text-muted hover:text-indigo-400 border border-border-subtle hover:border-indigo-400/30 rounded-xl transition-all shadow-sm group/btn"
+                        className="h-8 w-8 flex items-center justify-center bg-surface-alt hover:bg-accent-secondary/10 text-text-muted hover:text-accent-secondary border border-border-subtle hover:border-accent-secondary/30 rounded-xl transition-all shadow-sm group/btn"
                         title="Message"
                     >
-                        <MessageSquare size={14} className="group-hover/btn:scale-110 transition-transform"/>
+                        <MessageSquare size={16} className="group-hover/btn:scale-110 transition-transform"/>
+                    </button>
+                )}
+                {(currentUser?.level || 0) >= 10 && (
+                    <button 
+                        onClick={() => onGhost(u.id)} 
+                        className="h-8 w-8 flex items-center justify-center bg-surface-alt hover:bg-amber-500/10 text-text-muted hover:text-status-warning border border-border-subtle hover:border-status-warning/30 rounded-xl transition-all shadow-sm group/btn"
+                        title="Impersonate User"
+                    >
+                        <Ghost size={16} className="group-hover/btn:scale-110 transition-transform"/>
                     </button>
                 )}
                 <button 
-                    onClick={() => onGhost(u.id)} 
-                    className="h-8 w-8 flex items-center justify-center bg-surface-alt hover:bg-amber-500/10 text-text-muted hover:text-amber-500 border border-border-subtle hover:border-amber-500/30 rounded-xl transition-all shadow-sm group/btn"
-                    title="Impersonate User"
-                >
-                    <Ghost size={14} className="group-hover/btn:scale-110 transition-transform"/>
-                </button>
-                <button 
                     onClick={() => onEdit(u)} 
                     className="h-8 w-8 flex items-center justify-center bg-surface-alt hover:bg-accent-primary text-text-muted hover:text-white border border-border-subtle rounded-xl transition-all shadow-sm group/btn"
-                    title="Configure"
+                    title="Manage Unit Profile"
                 >
-                    <Sliders size={14} className="group-hover/btn:scale-110 transition-transform"/>
+                    <Sliders size={16} className="group-hover/btn:scale-110 transition-transform"/>
                 </button>
             </div>
         </div>

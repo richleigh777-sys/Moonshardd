@@ -23,16 +23,16 @@ export const PipelineVelocityChart: React.FC<{ sales: Sale[] }> = ({ sales }) =>
     <Card variant="panel" className="h-full p-6 border-border-subtle bg-surface-main shadow-soft flex flex-col relative overflow-hidden group">
       <div className="flex items-center justify-between mb-4 pb-3 border-b border-border-subtle relative z-10">
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-indigo-500/10 rounded-xl text-indigo-500 border border-indigo-500/20 shadow-sm">
+            <div className="p-2 bg-accent-secondary/10 rounded-xl text-accent-secondary border border-accent-secondary/20 shadow-sm">
                 <Layers size={18} strokeWidth={2.5}/>
             </div>
             <div>
-                <h3 className="text-xs font-black uppercase text-text-primary tracking-widest">Pipeline Velocity</h3>
-                <p className="text-[9px] text-text-muted font-bold uppercase tracking-wider mt-0.5">Throughput by Day</p>
+                <h3 className="text-xs font-[700]  text-text-primary tracking-widest">Pipeline Velocity</h3>
+                <p className="text-xs text-text-muted font-bold  tracking-wider mt-0.5">Throughput by Day</p>
             </div>
           </div>
-          <div className="text-[9px] font-black text-indigo-500 uppercase tracking-widest flex items-center gap-1 bg-indigo-500/5 px-2 py-1 rounded border border-indigo-500/10">
-              <Activity size={10} className="animate-pulse"/> Live
+          <div className="text-xs font-[700] text-accent-secondary  tracking-widest flex items-center gap-1 bg-indigo-500/5 px-3 py-1.5 rounded border border-indigo-500/10">
+              <Activity size={16} className="animate-pulse"/> Live
           </div>
       </div>
 
@@ -56,8 +56,8 @@ export const PipelineVelocityChart: React.FC<{ sales: Sale[] }> = ({ sales }) =>
                         if (active && payload && payload.length) {
                             return (
                                 <div className="bg-surface-main border border-border-subtle px-3 py-2 rounded-xl shadow-xl flex flex-col items-center">
-                                    <span className="text-[9px] font-black uppercase text-text-muted tracking-widest mb-1">{label}</span>
-                                    <span className="text-lg font-black text-indigo-500 num-font">{payload[0].value} <span className="text-[9px] text-text-secondary">Deals</span></span>
+                                    <span className="text-xs font-[700]  text-text-muted tracking-widest mb-1">{label}</span>
+                                    <span className="text-lg font-[700] text-accent-secondary num-font">{payload[0].value} <span className="text-xs text-text-secondary">Deals</span></span>
                                 </div>
                             );
                         }

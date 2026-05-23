@@ -7,7 +7,7 @@ export const useAgentStats = (sales: Sale[], user: User | null, config: SystemCo
     return useMemo(() => {
         if (!user) return null;
 
-        const mySales = sales.filter(s => s.agentId === user.id);
+        const mySales = sales.filter(s => s.agentId === user.id).sort((a, b) => b.timestamp - a.timestamp);
         const approved = mySales.filter(s => s.status === 'Approved');
         const declined = mySales.filter(s => s.status === 'Declined');
         const pending = mySales.filter(s => s.status === 'Pending');

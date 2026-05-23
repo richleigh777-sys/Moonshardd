@@ -1,10 +1,10 @@
+/* eslint-disable react-hooks/set-state-in-effect */
 import React, { useState, useEffect, useRef } from 'react';
-import { Clock, Bell, Check, Plus, Timer, Calendar, RefreshCw, HeartPulse, StickyNote } from 'lucide-react';
+import { Clock, Bell, Check, Plus, Timer, Calendar, RefreshCw, StickyNote } from 'lucide-react';
 import { Card, Input, Button } from '../../components/ui/Base';
 import { formatUSAPhone } from '../../views/utils/crmLogic'; 
 import { User, Note } from '../../types';
 import { sfx } from '../../lib/soundService';
-import { MEDICAL_CONDITIONS } from '../../constants';
 
 interface CallbackFormProps {
     onAddNote: (note: Partial<Note>) => Promise<void>;
@@ -20,7 +20,6 @@ export const CallbackForm: React.FC<CallbackFormProps> = ({ onAddNote, currentUs
         notes: '',
         agentNotes: ''
     });
-    const [selectedConditions, setSelectedConditions] = useState<string[]>([]);
 
     const [targetTimestamp, setTargetTimestamp] = useState<number | null>(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -37,9 +36,6 @@ export const CallbackForm: React.FC<CallbackFormProps> = ({ onAddNote, currentUs
                 name: initialData.name || prev.name,
                 phone: initialData.phone || prev.phone,
             }));
-            if (initialData.medicalConditions) {
-                setSelectedConditions(initialData.medicalConditions);
-            }
         }
     }, [initialData]);
 
@@ -90,12 +86,6 @@ export const CallbackForm: React.FC<CallbackFormProps> = ({ onAddNote, currentUs
         setTargetTimestamp(prev => (prev && prev > Date.now() ? prev : Date.now()) + ms);
     };
 
-    const toggleCondition = (condition: string) => {
-        setSelectedConditions(prev => 
-            prev.includes(condition) ? prev.filter(c => c !== condition) : [...prev, condition]
-        );
-    };
-
     const reasons = [
         "Package Update", "Driving / Busy", "No Funds Available", "Wants to Think",
         "Spouse Approval", "Researching Competitor", "Disconnected / No Answer", "Declined Recovery"
@@ -124,8 +114,7 @@ export const CallbackForm: React.FC<CallbackFormProps> = ({ onAddNote, currentUs
                 time: targetDate.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}),
                 timestamp: targetTimestamp,
                 createdAt: Date.now(),
-                priority: 'High',
-                medicalConditions: selectedConditions
+                priority: 'High'
             });
             
             sfx.playSuccess();
@@ -135,7 +124,6 @@ export const CallbackForm: React.FC<CallbackFormProps> = ({ onAddNote, currentUs
                 if (!initialData) {
                     setFormData({ name: '', phone: '', reason: 'Package Update', notes: '', agentNotes: '' });
                     setTargetTimestamp(null);
-                    setSelectedConditions([]);
                 }
                 notifiedRef.current = false;
             }, 2500);
@@ -150,16 +138,16 @@ export const CallbackForm: React.FC<CallbackFormProps> = ({ onAddNote, currentUs
             
             <div className="p-5 border-b border-border-subtle bg-surface-alt/50 flex justify-between items-center shrink-0 backdrop-blur-md">
                 <div className="flex items-center gap-3">
-                    <div className="p-2.5 bg-amber-500/10 rounded-xl text-amber-500 border border-amber-500/20 shadow-neon">
+                    <div className="p-2.5 bg-amber-500/10 rounded-xl text-status-warning border border-amber-500/20 shadow-neon">
                         <Timer size={20} strokeWidth={2.5} className={targetTimestamp ? 'animate-pulse' : ''} />
                     </div>
                     <div>
-                        <h3 className="text-base font-black text-text-primary uppercase tracking-tight italic">Recovery Link</h3>
-                        <p className="text-[9px] text-text-muted font-black uppercase tracking-[0.25em]">Lead Scheduler v5.0</p>
+                        <h3 className="text-base font-[700] text-text-primary  tracking-tight italic">Recovery Link</h3>
+                        <p className="text-xs text-text-muted font-[700]  tracking-[0.25em]">Lead Scheduler v5.0</p>
                     </div>
                 </div>
                 {countdownText && (
-                    <div className="px-3 py-1.5 bg-amber-500 text-black rounded-lg font-black text-[10px] uppercase tracking-widest shadow-lg animate-in zoom-in">
+                    <div className="px-3 py-1.5 bg-amber-500 text-black rounded-lg font-[700] text-xs  tracking-widest shadow-lg animate-in zoom-in">
                         {countdownText}
                     </div>
                 )}
@@ -168,7 +156,7 @@ export const CallbackForm: React.FC<CallbackFormProps> = ({ onAddNote, currentUs
             <div className="flex-1 overflow-y-auto custom-scrollbar p-5 space-y-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-1.5">
-                        <label className="text-[9px] font-black uppercase text-text-muted tracking-widest ml-1">Client Identity</label>
+                        <label className="text-xs font-[700]  text-text-muted tracking-widest ml-1">Client Identity</label>
                         <Input 
                             value={formData.name} 
                             onChange={e => setFormData({...formData, name: e.target.value})} 
@@ -177,7 +165,7 @@ export const CallbackForm: React.FC<CallbackFormProps> = ({ onAddNote, currentUs
                         />
                     </div>
                     <div className="space-y-1.5">
-                        <label className="text-[9px] font-black uppercase text-text-muted tracking-widest ml-1">Phone Line</label>
+                        <label className="text-xs font-[700]  text-text-muted tracking-widest ml-1">Phone Line</label>
                         <Input 
                             value={formData.phone} 
                             onChange={e => setFormData({...formData, phone: formatUSAPhone(e.target.value)})} 
@@ -190,21 +178,21 @@ export const CallbackForm: React.FC<CallbackFormProps> = ({ onAddNote, currentUs
 
                 {/* TEMPORAL OFFSET */}
                 <div className="space-y-3">
-                    <label className="text-[9px] font-black uppercase text-text-muted tracking-widest ml-1 flex items-center gap-2">
-                        <Clock size={12} className="text-amber-500" /> Offset Interval (Additive)
+                    <label className="text-xs font-[700]  text-text-muted tracking-widest ml-1 flex items-center gap-2">
+                        <Clock size={16} className="text-status-warning" /> Offset Interval (Additive)
                     </label>
                     <div className="grid grid-cols-4 gap-2">
-                        <button type="button" onClick={() => addTime(1800000)} className="h-10 bg-surface-alt hover:bg-amber-500 hover:text-black border border-border-subtle rounded-lg text-[9px] font-black uppercase tracking-widest transition-all active:scale-95 shadow-sm">30m</button>
-                        <button type="button" onClick={() => addTime(3600000)} className="h-10 bg-surface-alt hover:bg-amber-500 hover:text-black border border-border-subtle rounded-lg text-[9px] font-black uppercase tracking-widest transition-all active:scale-95 shadow-sm">1h</button>
-                        <button type="button" onClick={() => addTime(86400000)} className="h-10 bg-surface-alt hover:bg-amber-500 hover:text-black border border-border-subtle rounded-lg text-[9px] font-black uppercase tracking-widest transition-all active:scale-95 shadow-sm">1d</button>
-                        <button type="button" onClick={() => addTime(604800000)} className="h-10 bg-surface-alt hover:bg-amber-500 hover:text-black border border-border-subtle rounded-lg text-[9px] font-black uppercase tracking-widest transition-all active:scale-95 shadow-sm">1w</button>
+                        <button type="button" onClick={() => addTime(1800000)} className="h-10 bg-surface-alt hover:bg-amber-500 hover:text-black border border-border-subtle rounded-lg text-xs font-[700]  tracking-widest transition-all active:scale-95 shadow-sm">30m</button>
+                        <button type="button" onClick={() => addTime(3600000)} className="h-10 bg-surface-alt hover:bg-amber-500 hover:text-black border border-border-subtle rounded-lg text-xs font-[700]  tracking-widest transition-all active:scale-95 shadow-sm">1h</button>
+                        <button type="button" onClick={() => addTime(86400000)} className="h-10 bg-surface-alt hover:bg-amber-500 hover:text-black border border-border-subtle rounded-lg text-xs font-[700]  tracking-widest transition-all active:scale-95 shadow-sm">1d</button>
+                        <button type="button" onClick={() => addTime(604800000)} className="h-10 bg-surface-alt hover:bg-amber-500 hover:text-black border border-border-subtle rounded-lg text-xs font-[700]  tracking-widest transition-all active:scale-95 shadow-sm">1w</button>
                     </div>
                     {targetTimestamp && (
                         <div className="flex items-center justify-between p-3 bg-amber-500/5 border border-amber-500/20 rounded-xl animate-in slide-in-from-top-1">
                             <div className="flex items-center gap-3">
-                                <Calendar size={16} className="text-amber-500" />
+                                <Calendar size={16} className="text-status-warning" />
                                 <div>
-                                    <p className="text-[10px] font-black text-text-muted uppercase tracking-widest">Scheduled Window</p>
+                                    <p className="text-xs font-[700] text-text-muted  tracking-widest">Scheduled Window</p>
                                     <p className="text-xs font-bold text-text-primary num-font">
                                         {new Date(targetTimestamp).toLocaleDateString()} @ {new Date(targetTimestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                                     </p>
@@ -215,32 +203,9 @@ export const CallbackForm: React.FC<CallbackFormProps> = ({ onAddNote, currentUs
                     )}
                 </div>
 
-                {/* MEDICAL CONDITIONS */}
-                <div className="space-y-3">
-                    <label className="text-[9px] font-black uppercase text-text-muted tracking-widest ml-1 flex items-center gap-2">
-                        <HeartPulse size={12} className="text-status-error" /> Medical Profiling
-                    </label>
-                    <div className="flex flex-wrap gap-2">
-                        {MEDICAL_CONDITIONS.map(condition => (
-                            <button
-                                key={condition}
-                                type="button"
-                                onClick={() => toggleCondition(condition)}
-                                className={`px-2 py-1 rounded-md text-[9px] font-bold border transition-all ${
-                                    selectedConditions.includes(condition)
-                                    ? 'bg-status-error/20 border-status-error text-status-error shadow-sm'
-                                    : 'bg-surface-alt border-border-subtle text-text-muted hover:border-text-secondary'
-                                }`}
-                            >
-                                {condition}
-                            </button>
-                        ))}
-                    </div>
-                </div>
-
                 <div className="space-y-4">
                     <div className="space-y-1.5">
-                        <label className="text-[9px] font-black uppercase text-text-muted tracking-widest ml-1">Callback Protocol</label>
+                        <label className="text-xs font-[700]  text-text-muted tracking-widest ml-1">Callback Protocol</label>
                         <select 
                             className="bg-surface-alt border border-border-subtle text-text-primary p-3 h-11 text-xs font-bold w-full outline-none rounded-xl focus:border-amber-500 transition-all cursor-pointer shadow-inner"
                             value={formData.reason}
@@ -250,8 +215,8 @@ export const CallbackForm: React.FC<CallbackFormProps> = ({ onAddNote, currentUs
                         </select>
                     </div>
                     <div className="space-y-1.5">
-                        <label className="text-[9px] font-black uppercase text-text-muted tracking-widest ml-1 flex items-center gap-1.5">
-                            <StickyNote size={10} /> Agent Notes
+                        <label className="text-xs font-[700]  text-text-muted tracking-widest ml-1 flex items-center gap-1.5">
+                            <StickyNote size={16} /> Agent Notes
                         </label>
                         <textarea 
                             className="bg-surface-alt border border-border-subtle text-text-primary p-3 text-xs font-medium w-full outline-none rounded-xl focus:border-amber-500 transition-all resize-none h-20 shadow-inner"
@@ -268,7 +233,7 @@ export const CallbackForm: React.FC<CallbackFormProps> = ({ onAddNote, currentUs
                     variant="primary" 
                     onClick={handleSubmit}
                     disabled={isSubmitting || !formData.name || !formData.phone || !targetTimestamp || isSuccess} 
-                    className={`w-full h-14 text-[10px] font-black uppercase tracking-[0.25em] shadow-lg transition-all duration-300 relative overflow-hidden group/btn ${
+                    className={`w-full h-14 text-xs font-[700]  tracking-[0.25em] shadow-lg transition-all duration-300 relative overflow-hidden group/btn ${
                         isSuccess ? 'bg-status-success' : 'bg-amber-600 hover:bg-amber-500 shadow-amber-500/20'
                     }`}
                 >
@@ -285,7 +250,7 @@ export const CallbackForm: React.FC<CallbackFormProps> = ({ onAddNote, currentUs
                             <Bell size={16} /> SAVE CALLBACK PROTOCOL
                         </div>
                     )}
-                    <div className="absolute inset-0 bg-white/10 translate-x-[-100%] group-hover/btn:translate-x-[100%] transition-transform duration-1000 ease-in-out pointer-events-none"></div>
+                    <div className="absolute inset-0 bg-surface-highlight translate-x-[-100%] group-hover/btn:translate-x-[100%] transition-transform duration-1000 ease-in-out pointer-events-none"></div>
                 </Button>
             </div>
         </Card>

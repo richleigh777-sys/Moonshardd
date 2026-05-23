@@ -70,15 +70,15 @@ export const LogisticsModal: React.FC<LogisticsModalProps> = ({ isOpen, onClose,
                             <carrierInfo.icon size={32} className={carrierInfo.color} />
                         </div>
                         <div>
-                            <h3 className="text-2xl font-black text-text-primary tracking-tight">{carrierInfo.name}</h3>
+                            <h3 className="text-2xl font-[700] text-text-primary tracking-tight">{carrierInfo.name}</h3>
                             <p className="text-sm font-mono font-bold text-text-muted mt-1 tracking-wider">{sale.trackingId || 'NO_ID_ASSIGNED'}</p>
                         </div>
                     </div>
 
                     <div className="flex flex-col items-end gap-2 relative z-10">
-                        <div className={`px-4 py-1.5 rounded-lg border text-xs font-black uppercase tracking-widest ${
-                            sale.deliveryStatus === 'Delivered' ? 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20' : 
-                            sale.deliveryStatus === 'Out for Delivery' ? 'bg-amber-500/10 text-amber-500 border-amber-500/20 animate-pulse' :
+                        <div className={`px-4 py-1.5 rounded-lg border text-xs font-[700]  tracking-widest ${
+                            sale.deliveryStatus === 'Delivered' ? 'bg-emerald-500/10 text-status-success border-emerald-500/20' : 
+                            sale.deliveryStatus === 'Out for Delivery' ? 'bg-amber-500/10 text-status-warning border-amber-500/20 animate-pulse' :
                             'bg-surface-main text-text-muted border-border-subtle'
                         }`}>
                             {sale.deliveryStatus || 'Pending Scan'}
@@ -88,9 +88,9 @@ export const LogisticsModal: React.FC<LogisticsModalProps> = ({ isOpen, onClose,
                                 href={getTrackingLink(sale.trackingId)} 
                                 target="_blank" 
                                 rel="noreferrer" 
-                                className="text-[10px] font-bold text-accent-primary hover:underline flex items-center gap-1 bg-surface-main px-3 py-1 rounded-full border border-border-subtle"
+                                className="text-xs font-bold text-accent-primary hover:underline flex items-center gap-1 bg-surface-main px-3 py-1 rounded-full border border-border-subtle"
                             >
-                                <Signal size={10} className="animate-pulse" /> Live Global Tracking
+                                <Signal size={16} className="animate-pulse" /> Live Global Tracking
                             </a>
                         )}
                     </div>
@@ -101,7 +101,7 @@ export const LogisticsModal: React.FC<LogisticsModalProps> = ({ isOpen, onClose,
                     <Card className="p-5 border-border-subtle bg-surface-main h-full">
                         <div className="flex items-center gap-2 mb-4 pb-2 border-b border-border-subtle">
                             <RefreshCw size={16} className="text-accent-primary" />
-                            <h4 className="text-xs font-black uppercase text-text-primary tracking-widest">Manual Override</h4>
+                            <h4 className="text-xs font-[700]  text-text-primary tracking-widest">Manual Override</h4>
                         </div>
                         <div className="space-y-2">
                             <button onClick={() => handleUpdate('Label Created')} className="w-full flex items-center justify-between p-3 rounded-xl hover:bg-surface-alt border border-transparent hover:border-border-subtle transition-all group">
@@ -109,28 +109,28 @@ export const LogisticsModal: React.FC<LogisticsModalProps> = ({ isOpen, onClose,
                                     <div className="w-2 h-2 rounded-full bg-slate-400"></div>
                                     <span className="text-xs font-bold text-text-muted group-hover:text-text-primary">Label Created</span>
                                 </div>
-                                {sale.deliveryStatus === 'Label Created' && <CheckCircle size={14} className="text-emerald-500"/>}
+                                {sale.deliveryStatus === 'Label Created' && <CheckCircle size={16} className="text-status-success"/>}
                             </button>
                             <button onClick={() => handleUpdate('In Transit')} className="w-full flex items-center justify-between p-3 rounded-xl hover:bg-surface-alt border border-transparent hover:border-border-subtle transition-all group">
                                 <div className="flex items-center gap-3">
                                     <div className="w-2 h-2 rounded-full bg-blue-500"></div>
                                     <span className="text-xs font-bold text-text-muted group-hover:text-text-primary">In Transit</span>
                                 </div>
-                                {sale.deliveryStatus === 'In Transit' && <CheckCircle size={14} className="text-emerald-500"/>}
+                                {sale.deliveryStatus === 'In Transit' && <CheckCircle size={16} className="text-status-success"/>}
                             </button>
-                            <button onClick={() => handleUpdate('Out for Delivery')} className="w-full flex items-center justify-between p-3 rounded-xl hover:bg-surface-alt border border-border-subtle hover:border-amber-500/30 transition-all group">
+                            <button onClick={() => handleUpdate('Out for Delivery')} className="w-full flex items-center justify-between p-3 rounded-xl hover:bg-surface-alt border border-border-subtle hover:border-status-warning/30 transition-all group">
                                 <div className="flex items-center gap-3">
                                     <div className="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></div>
                                     <span className="text-xs font-bold text-text-muted group-hover:text-text-primary">Out for Delivery</span>
                                 </div>
-                                {sale.deliveryStatus === 'Out for Delivery' && <CheckCircle size={14} className="text-emerald-500"/>}
+                                {sale.deliveryStatus === 'Out for Delivery' && <CheckCircle size={16} className="text-status-success"/>}
                             </button>
                             <button onClick={() => handleUpdate('Delivered')} className="w-full flex items-center justify-between p-3 rounded-xl bg-emerald-500/5 hover:bg-emerald-500/10 border border-emerald-500/20 transition-all group">
                                 <div className="flex items-center gap-3">
                                     <div className="w-2 h-2 rounded-full bg-emerald-500"></div>
                                     <span className="text-xs font-bold text-emerald-600">Delivered</span>
                                 </div>
-                                {sale.deliveryStatus === 'Delivered' && <CheckCircle size={14} className="text-emerald-500"/>}
+                                {sale.deliveryStatus === 'Delivered' && <CheckCircle size={16} className="text-status-success"/>}
                             </button>
                         </div>
                     </Card>
@@ -143,9 +143,9 @@ export const LogisticsModal: React.FC<LogisticsModalProps> = ({ isOpen, onClose,
                         <div className="flex items-center justify-between mb-4 pb-2 border-b border-border-subtle relative z-10">
                             <div className="flex items-center gap-2">
                                 <Clock size={16} className="text-text-muted" />
-                                <h4 className="text-xs font-black uppercase text-text-primary tracking-widest">Event Log</h4>
+                                <h4 className="text-xs font-[700]  text-text-primary tracking-widest">Event Log</h4>
                             </div>
-                            <span className="text-[8px] font-black uppercase text-amber-500 bg-amber-500/10 px-2 py-0.5 rounded border border-amber-500/20 tracking-wider">Internal Projection</span>
+                            <span className="text-sm font-[700]  text-status-warning bg-amber-500/10 px-2.5 py-1 rounded border border-amber-500/20 tracking-wider">Internal Projection</span>
                         </div>
                         <div className="flex-1 overflow-y-auto custom-scrollbar relative pl-2 z-10">
                             <div className="absolute left-[5px] top-2 bottom-2 w-px bg-border-subtle"></div>
@@ -154,8 +154,8 @@ export const LogisticsModal: React.FC<LogisticsModalProps> = ({ isOpen, onClose,
                                     <div key={i} className="relative pl-6">
                                         <div className={`absolute left-0 top-1.5 w-2.5 h-2.5 rounded-full border-2 border-surface-main ${i === 0 ? 'bg-emerald-500 ring-4 ring-emerald-500/10' : 'bg-text-muted'}`}></div>
                                         <p className={`text-xs font-bold ${i === 0 ? 'text-text-primary' : 'text-text-muted'}`}>{event.status}</p>
-                                        <p className="text-[10px] text-text-muted opacity-80">{event.location}</p>
-                                        <p className="text-[9px] font-mono text-text-muted/60 mt-0.5">{event.time}</p>
+                                        <p className="text-xs text-text-muted opacity-80">{event.location}</p>
+                                        <p className="text-xs font-mono text-text-muted/60 mt-0.5">{event.time}</p>
                                     </div>
                                 ))}
                             </div>
@@ -169,7 +169,7 @@ export const LogisticsModal: React.FC<LogisticsModalProps> = ({ isOpen, onClose,
                         <Button 
                             variant="primary" 
                             onClick={() => window.open(getTrackingLink(sale.trackingId!), '_blank')}
-                            icon={<ExternalLink size={14}/>}
+                            icon={<ExternalLink size={16}/>}
                             className="bg-accent-primary hover:bg-accent-primary/90 text-white shadow-lg shadow-accent-primary/20"
                         >
                             Track on ParcelsApp

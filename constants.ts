@@ -1,6 +1,6 @@
 
 import { User, ProductConfig, PipelineStage, ObjectionType } from './types';
-import { ShieldAlert, CreditCard, UserX, Smartphone, DollarSign, Users, AlertTriangle, HelpCircle, PhoneOff, Zap, MapPin, Search, XCircle } from 'lucide-react';
+import { ShieldAlert, CreditCard, UserX, Smartphone, DollarSign, Users, AlertTriangle, HelpCircle, PhoneOff, Zap, MapPin, Search, XCircle, RefreshCw } from 'lucide-react';
 
 export const SYSTEM_ADMIN_ID = 'sys_root';
 
@@ -12,25 +12,37 @@ export const CORE_BASIS = {
 };
 
 export const PIPELINE_STAGES: PipelineStage[] = [
-  'New', 
-  'Callback Scheduled', 
-  'Contacted – No Answer' , 
-  'Contacted – Interested', 
-  'Contacted – Not Now', 
-  'Declined', 
-  'Reorder Candidate', 
-  'Closed'
+  'New Order', 
+  'Reorder', 
+  'Retention' , 
+  'Referral', 
+  'Winback'
 ];
 
 export const STAGE_PROBABILITIES: Record<PipelineStage, number> = {
-    'New': 10,
-    'Callback Scheduled': 20,
-    'Contacted – No Answer': 15,
-    'Contacted – Not Now': 5,
-    'Contacted – Interested': 50,
-    'Declined': 0, // Unless resurrected
-    'Reorder Candidate': 75,
-    'Closed': 100
+    'New Order': 100,
+    'Reorder': 100,
+    'Retention': 80,
+    'Referral': 90,
+    'Winback': 40,
+    'Cold Lead': 10,
+    'Pitching': 30,
+    'Rebuttal': 40,
+    'Closed Won': 100,
+    'Closed Lost': 0
+};
+
+export const STAGE_STYLES: Record<PipelineStage, { color: string, bg: string, label: string, icon: any }> = {
+    'New Order': { color: 'text-emerald-400', bg: 'bg-emerald-500/10', label: 'New Orders', icon: Zap },
+    'Reorder': { color: 'text-blue-400', bg: 'bg-blue-500/10', label: 'Reorders', icon: Zap },
+    'Retention': { color: 'text-amber-400', bg: 'bg-amber-500/10', label: 'Retention Check', icon: ShieldAlert },
+    'Referral': { color: 'text-purple-400', bg: 'bg-purple-500/10', label: 'Referrals', icon: Users },
+    'Winback': { color: 'text-rose-400', bg: 'bg-rose-500/10', label: 'Winbacks', icon: RefreshCw },
+    'Cold Lead': { color: 'text-slate-400', bg: 'bg-slate-500/10', label: 'Cold Leads', icon: Users },
+    'Pitching': { color: 'text-cyan-400', bg: 'bg-cyan-500/10', label: 'Pitching', icon: Zap },
+    'Rebuttal': { color: 'text-orange-400', bg: 'bg-orange-500/10', label: 'Rebuttals', icon: ShieldAlert },
+    'Closed Won': { color: 'text-emerald-500', bg: 'bg-emerald-500/10', label: 'Closed Won', icon: Zap },
+    'Closed Lost': { color: 'text-red-500', bg: 'bg-red-500/10', label: 'Closed Lost', icon: XCircle }
 };
 
 export const RESCUE_SCRIPTS: Record<string, string> = {

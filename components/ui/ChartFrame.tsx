@@ -66,9 +66,9 @@ export function ChartFrame({
           {children({ ready: true })}
         </div>
       ) : (
-        <div className="absolute inset-0 flex flex-col items-center justify-center bg-surface-alt/5 backdrop-blur-[1px] rounded-xl border border-white/5">
+        <div className="absolute inset-0 flex flex-col items-center justify-center bg-surface-alt/5 backdrop-blur-[1px] rounded-xl border border-border-subtle">
           <div className="w-6 h-6 border-2 border-accent-primary border-t-transparent rounded-full animate-spin opacity-40 mb-2"></div>
-          <span className="text-[9px] font-black uppercase tracking-[0.2em] text-text-muted opacity-50">Calibrating Nexus...</span>
+          <span className="text-xs font-[700]  tracking-[0.2em] text-text-muted opacity-50">Calibrating Nexus...</span>
         </div>
       )}
     </div>

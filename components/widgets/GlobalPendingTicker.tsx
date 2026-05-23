@@ -70,7 +70,7 @@ export const GlobalPendingTicker: React.FC = () => {
                 </div>
                 <div className="flex flex-col justify-center">
                     <span className="text-xs font-bold text-text-primary leading-none">System</span>
-                    <span className="text-[10px] font-medium text-accent-primary leading-none mt-1">Pulse Online</span>
+                    <span className="text-xs font-medium text-accent-primary leading-none mt-1">Pulse Online</span>
                 </div>
             </div>
 
@@ -82,20 +82,20 @@ export const GlobalPendingTicker: React.FC = () => {
                         {/* ITEM CONTENT */}
                         {item.type === 'sale' ? (
                             <div className="flex items-center gap-3 bg-status-warning/10 px-4 py-1.5 rounded-full border border-status-warning/20">
-                                <Trophy size={14} className="text-status-warning" fill="currentColor" />
+                                <Trophy size={16} className="text-status-warning" fill="currentColor" />
                                 <div className="flex flex-col justify-center">
                                     <span className="text-xs font-bold text-status-warning">
                                         {item.text}
                                     </span>
                                 </div>
-                                <DollarSign size={14} className="text-status-warning" />
+                                <DollarSign size={16} className="text-status-warning" />
                             </div>
                         ) : (
                             <div className="flex items-center gap-3">
                                 <div className={`p-1.5 rounded-md ${
                                     item.type === 'alert' ? 'bg-status-error/10 text-status-error' : 'bg-status-info/10 text-status-info'
                                 }`}>
-                                    {item.type === 'alert' ? <AlertTriangle size={12} /> : <Radio size={12} />}
+                                    {item.type === 'alert' ? <AlertTriangle size={16} /> : <Radio size={16} />}
                                 </div>
                                 <div className="flex flex-col justify-center">
                                     <span className={`text-xs font-medium ${
@@ -108,11 +108,11 @@ export const GlobalPendingTicker: React.FC = () => {
                         )}
 
                         {/* Metadata / Separator */}
-                        <span className="text-[10px] font-medium text-text-muted px-1.5">
+                        <span className="text-xs font-medium text-text-muted px-1.5">
                             {item.time}
                         </span>
                         
-                        <div className="text-text-muted/30 text-[10px] ml-2">•</div>
+                        <div className="text-text-muted/30 text-xs ml-2">•</div>
                     </div>
                 ))}
             </div>

@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&family=Outfit:wght@400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -7,47 +7,88 @@
 @layer base {
   :root {
     --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
-    --font-display: "Outfit", sans-serif;
+    --font-display: "Inter", sans-serif;
     --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
 
-    /* Premium Emerald & Slate Theme */
-    --color-surface-main: 0 0% 100%; /* Pure White */
-    --color-surface-alt: 210 20% 98%; /* Slate-50 */
-    --color-surface-highlight: 210 20% 96%; /* Slate-100 */
+    /* Icy Blue Light Mode */
+    --color-surface-main: 210 40% 98%; /* Icy White Panel */
+    --color-surface-alt: 210 30% 94%; /* Icy Blue Canvas */
+    --color-surface-highlight: 210 25% 88%;
     
-    --color-accent-primary: 160 84% 39%; /* Emerald-600 */
-    --color-accent-secondary: 217 91% 60%; /* Blue-500 */
+    --color-accent-primary: 210 85% 50%; /* Deep Icy Blue */
+    --color-accent-secondary: 190 90% 50%; /* Cyan */
     
-    --color-text-primary: 215 25% 10%; /* Slate-950 (High Contrast) */
-    --color-text-secondary: 215 16% 25%; /* Slate-800 */
-    --color-text-muted: 215 14% 45%; /* Slate-500 */
+    --color-text-primary: 210 30% 15%; /* Deep slate blue/black */
+    --color-text-secondary: 210 20% 35%;
+    --color-text-muted: 210 10% 50%;
     
-    --color-border-subtle: 214 32% 91%; /* Slate-200 */
-    --color-border-strong: 213 27% 84%; /* Slate-300 */
+    --color-border-subtle: 210 20% 86%;
+    --color-border-strong: 210 20% 76%;
 
-    --shadow-panel: 0 1px 3px 0 rgba(0, 0, 0, 0.05), 0 1px 2px 0 rgba(0, 0, 0, 0.03);
-    --shadow-float: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -2px rgba(0, 0, 0, 0.04);
+    /* Status Colors (Light) */
+    --color-status-success: 160 100% 40%;
+    --color-status-warning: 40 100% 50%;
+    --color-status-error: 350 100% 55%;
+    --color-status-info: 210 100% 55%;
+
+    /* Generic component overrides */
+    --color-blue-500: var(--color-status-info);
+    --color-emerald-400: 160 100% 45%;
+    --color-emerald-500: var(--color-status-success);
+    --color-emerald-600: 160 100% 30%;
+    --color-amber-400: 40 100% 60%;
+    --color-amber-500: var(--color-status-warning);
+    --color-red-400: 350 100% 65%;
+    --color-red-500: var(--color-status-error);
+    --color-indigo-500: var(--color-accent-secondary);
+
+    /* Icy Blue Shadows for Light Mode */
+    --shadow-panel: 0 8px 30px rgba(50, 70, 90, 0.06), 0 2px 4px rgba(50, 70, 90, 0.04);
+    --shadow-float: 0 20px 40px rgba(50, 70, 90, 0.1), 0 4px 12px rgba(50, 70, 90, 0.06);
   }
 
   html.dark, .dark {
-    /* Premium Midnight Slate */
-    --color-surface-main: 222 47% 4%; /* Near Pure Black */
-    --color-surface-alt: 222 47% 8%; /* Slate-900-ish */
-    --color-surface-highlight: 217 33% 15%; /* Slate-800 */
+    /* Obsidian & Ethereal Frost - Ultra-Premium Executive UI */
+    --color-surface-main: 220 5% 6%;       /* #0F1012 - Graphite Glass */
+    --color-surface-alt: 220 5% 2%;        /* #050506 - Deep Obsidian */
+    --color-surface-highlight: 220 5% 10%; /* #18191C - Frost Layer */
     
-    --color-accent-primary: 160 84% 45%; /* Emerald-500 */
-    --color-accent-secondary: 217 91% 65%; /* Blue-400 */
+    --color-accent-primary: 185 100% 50%;  /* #00FFFF Electric Cyan */
+    --color-accent-secondary: 265 100% 65%;/* #9D4EDD Vivid Amethyst */
     
-    --color-text-primary: 210 40% 98%; /* White/Slate-50 (High Contrast) */
-    --color-text-secondary: 215 20% 85%; /* Slate-200 */
-    --color-text-muted: 215 15% 65%; /* Slate-400 */
+    --color-text-primary: 0 0% 100%;       /* Pure White */
+    --color-text-secondary: 220 5% 75%;    /* Clean Frost Silver */
+    --color-text-muted: 220 5% 45%;        /* Dimmed Slate */
     
-    --color-border-subtle: 217 33% 18%; /* Slate-800-ish */
-    --color-border-strong: 217 33% 25%; /* Slate-700-ish */
+    --color-border-subtle: 220 5% 14%;     /* Thin glass borders */
+    --color-border-strong: 220 5% 25%;     /* Stronger contrast lines */
+    
+    /* Cyber-Pro Status Colors */
+    --color-status-success: 150 100% 45%;  /* Emerald Frost */
+    --color-status-warning: 35 100% 60%;   /* Solar Amber */
+    --color-status-error: 345 100% 55%;    /* Neon Crimson */
+    --color-status-info: 210 100% 65%;     /* Glacial Blue */
+
+    /* Generic component overrides */
+    --color-blue-500: var(--color-status-info);
+    --color-emerald-400: 150 100% 55%;
+    --color-emerald-500: var(--color-status-success);
+    --color-emerald-600: 150 100% 35%;
+    --color-amber-400: 35 100% 70%;
+    --color-amber-500: var(--color-status-warning);
+    --color-red-400: 345 100% 65%;
+    --color-red-500: var(--color-status-error);
+    --color-indigo-500: var(--color-accent-secondary);
+
+    /* Ultra-luxe Glass Shadows */
+    --shadow-panel: 0 20px 40px -15px rgba(0, 0, 0, 0.9), 0 0 0 1px rgba(255, 255, 255, 0.04) inset, 0 10px 25px rgba(0,0,0,0.4);
+    --shadow-float: 0 30px 60px -20px rgba(0,0,0,1), 0 0 0 1px rgba(255, 255, 255, 0.08) inset, 0 20px 40px rgba(0, 229, 255, 0.03);
   }
 
   html {
-    @apply antialiased h-full overflow-hidden text-[13px] 2xl:text-[14px];
+    @apply antialiased h-full overflow-hidden text-[14px] 2xl:text-[15px] font-medium leading-normal tracking-normal;
+    text-rendering: optimizeLegibility;
+    -moz-osx-font-smoothing: grayscale;
   }
 
   body {
@@ -70,52 +111,47 @@
   }
 
   ::selection {
-    @apply bg-transparent;
+    @apply bg-accent-primary/30 text-white;
   }
 
   h1, h2, h3, h4, h5, h6 {
-    @apply font-display tracking-tight font-semibold text-text-primary;
+    @apply font-display tracking-tight font-bold text-text-primary;
   }
 }
 
 @layer components {
   .custom-scrollbar::-webkit-scrollbar {
-    @apply w-1.5 h-1.5;
+    @apply w-1 h-1;
   }
   .custom-scrollbar::-webkit-scrollbar-track {
     @apply bg-transparent;
   }
   .custom-scrollbar::-webkit-scrollbar-thumb {
-    @apply bg-border-strong/50 rounded-full hover:bg-border-strong transition-colors;
+    @apply bg-border-strong/30 rounded hover:bg-border-strong/60 transition-colors;
   }
 
   .glass-panel {
-    @apply bg-white border border-border-subtle shadow-panel rounded-2xl;
+    @apply bg-surface-main/80 shadow-panel rounded-3xl border border-white/5;
+    backdrop-filter: blur(30px) saturate(150%);
   }
 
   .tech-grid {
-    background-image: linear-gradient(rgba(0,0,0,0.02) 1px, transparent 1px), linear-gradient(90deg, rgba(0,0,0,0.02) 1px, transparent 1px);
-    background-size: 20px 20px;
+    background-image: 
+      linear-gradient(to right, rgba(255, 255, 255, 0.015) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(255, 255, 255, 0.015) 1px, transparent 1px);
+    background-size: 32px 32px;
   }
 }
 
 @layer utilities {
   @keyframes pulse-slow {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.7; }
+    0%, 100% { opacity: 1; filter: brightness(1); }
+    50% { opacity: 0.8; filter: brightness(1.2); }
   }
 
   .animate-pulse-slow {
-    animation: pulse-slow 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    animation: pulse-slow 4s cubic-bezier(0.4, 0, 0.6, 1) infinite;
   }
 
-  /* Watermark Overlay (Subtle) */
-  .security-overlay {
-    pointer-events: none;
-    position: fixed;
-    inset: 0;
-    z-index: 9999;
-    opacity: 0.03;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200' viewBox='0 0 100 100'%3E%3Ctext x='10' y='50' font-family='sans-serif' font-size='6' fill='black' transform='rotate(-45 50 50)'%3EESTATE NEXUS SECURE%3C/text%3E%3C/svg%3E");
-  }
+
 }

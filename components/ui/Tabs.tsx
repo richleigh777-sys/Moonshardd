@@ -88,16 +88,16 @@ export const TabTrigger: React.FC<TabTriggerProps> = ({ value, children, classNa
 
   const isActive = context.activeTab === value;
   
-  const verticalStyles = `w-full ${isCollapsed ? 'px-0 justify-center' : 'px-3 justify-start'} py-1.5 flex items-center gap-2.5 text-[11px] font-bold transition-all duration-200 hover:translate-x-1 active:scale-95 rounded-lg mb-0.5 ${
+  const verticalStyles = `w-full ${isCollapsed ? 'px-0 justify-center' : 'px-3 justify-start'} py-2.5 flex items-center gap-3 text-sm font-semibold transition-all duration-200 hover:translate-x-1 outline-none rounded-xl mb-1 group relative ${
     isActive 
-      ? 'bg-accent-primary/10 text-accent-primary shadow-sm shadow-accent-primary/10 border border-accent-primary/20' 
-      : 'text-white/70 hover:bg-white/5 hover:text-white border border-transparent'
+      ? 'bg-accent-primary/10 text-accent-primary shadow-[inset_0_0_10px_rgba(0,0,0,0.1)] border border-accent-primary/20' 
+      : 'text-text-secondary hover:bg-surface-highlight hover:text-text-primary border border-transparent'
   }`;
 
-  const horizontalStyles = `px-3 py-1.5 flex items-center gap-2 text-[11px] font-bold transition-all duration-200 border-b-2 active:scale-95 ${
+  const horizontalStyles = `px-4 py-2 flex items-center gap-2 text-sm font-semibold transition-all duration-200 border-b-2 outline-none ${
     isActive 
-      ? 'border-accent-primary text-accent-primary' 
-      : 'border-transparent text-text-muted hover:text-text-primary hover:border-border-subtle'
+      ? 'border-accent-primary text-accent-primary bg-accent-primary/5' 
+      : 'border-transparent text-text-muted hover:text-text-primary hover:border-border-subtle hover:bg-surface-highlight/50'
   }`;
 
   const handleClick = () => {
@@ -113,7 +113,7 @@ export const TabTrigger: React.FC<TabTriggerProps> = ({ value, children, classNa
       title={title || (typeof children === 'string' ? children : '')}
     >
       {icon && (
-          <span className={`${isActive ? (context.orientation === 'vertical' ? 'text-accent-primary' : 'text-accent-primary') + ' scale-110' : (context.orientation === 'vertical' ? 'text-white/50 group-hover:text-accent-secondary' : 'text-text-muted group-hover:text-text-primary')} transition-transform shrink-0`}>
+          <span className={`${isActive ? 'text-accent-primary scale-110' : 'text-text-muted group-hover:text-accent-secondary'} transition-transform shrink-0`}>
               {icon}
           </span>
       )}

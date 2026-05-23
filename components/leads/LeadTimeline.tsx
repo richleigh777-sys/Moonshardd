@@ -51,7 +51,7 @@ export const LeadTimeline: React.FC<LeadTimelineProps> = ({ notes, callLogs, pho
         return (
             <div className="py-12 text-center opacity-30">
                 <Clock size={32} className="mx-auto mb-3" />
-                <p className="text-[10px] font-black uppercase tracking-widest text-text-muted">No interactions logged</p>
+                <p className="text-xs font-[700]  tracking-widest text-text-muted">No interactions logged</p>
             </div>
         );
     }
@@ -70,17 +70,17 @@ export const LeadTimeline: React.FC<LeadTimelineProps> = ({ notes, callLogs, pho
                     <div className="space-y-2">
                         <div className="flex items-center justify-between">
                             <div className="flex items-center gap-2">
-                                <span className="text-[10px] font-black text-text-primary uppercase tracking-tight">{event.title}</span>
+                                <span className="text-xs font-[700] text-text-primary  tracking-tight">{event.title}</span>
                                 {event.status && (
-                                    <span className={`text-[8px] font-bold px-1.5 py-0.5 rounded ${
-                                        event.status === 'Connected' ? 'bg-emerald-500/10 text-emerald-500 border border-emerald-500/20' :
-                                        'bg-red-500/10 text-red-500 border border-red-500/20'
+                                    <span className={`text-sm font-bold px-3 py-1.5 rounded ${
+                                        event.status === 'Connected' ? 'bg-emerald-500/10 text-status-success border border-emerald-500/20' :
+                                        'bg-red-500/10 text-status-error border border-red-500/20'
                                     }`}>
                                         {event.status}
                                     </span>
                                 )}
                             </div>
-                            <span className="text-[9px] font-medium text-text-muted">
+                            <span className="text-xs font-medium text-text-muted">
                                 {new Date(event.timestamp).toLocaleDateString()} @ {new Date(event.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                             </span>
                         </div>
@@ -89,8 +89,8 @@ export const LeadTimeline: React.FC<LeadTimelineProps> = ({ notes, callLogs, pho
                             <p className="text-xs text-text-secondary leading-relaxed">
                                 {event.content}
                             </p>
-                            <div className="mt-2 flex items-center gap-1.5 text-[8px] font-bold text-text-muted uppercase">
-                                <StickyNote size={10} />
+                            <div className="mt-2 flex items-center gap-1.5 text-sm font-bold text-text-muted ">
+                                <StickyNote size={16} />
                                 Logged by {event.agentName}
                             </div>
                         </div>

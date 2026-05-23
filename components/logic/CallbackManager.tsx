@@ -171,9 +171,9 @@ export const CallbackManager: React.FC = () => {
                     <div className="p-4 relative z-10">
                         {/* Header */}
                         <div className="flex justify-between items-start mb-3">
-                            <div className="flex items-center gap-2 text-red-500 bg-red-500/10 px-2 py-1 rounded border border-red-500/20">
-                                <AlertCircle size={12} />
-                                <span className="text-[10px] font-bold uppercase tracking-wide">Callback Due</span>
+                            <div className="flex items-center gap-2 text-status-error bg-red-500/10 px-3 py-1.5 rounded border border-red-500/20">
+                                <AlertCircle size={16} />
+                                <span className="text-xs font-bold  tracking-wide">Callback Due</span>
                             </div>
                             
                             <div className="flex items-center gap-1">
@@ -183,14 +183,14 @@ export const CallbackManager: React.FC = () => {
                                         className="p-1.5 hover:bg-surface-alt rounded-md text-text-muted hover:text-text-primary transition-colors" 
                                         title="Silence Audio"
                                     >
-                                        <Bell size={14} className="animate-bounce text-red-500" />
+                                        <Bell size={16} className="animate-bounce text-status-error" />
                                     </button>
                                 )}
                                 <button 
                                     onClick={() => handleDismiss(alert.id)} 
                                     className="p-1.5 hover:bg-surface-alt rounded-md text-text-muted hover:text-text-primary transition-colors"
                                 >
-                                    <X size={14} />
+                                    <X size={16} />
                                 </button>
                             </div>
                         </div>
@@ -202,7 +202,7 @@ export const CallbackManager: React.FC = () => {
                                 <p className="font-mono font-medium text-text-secondary">{alert.phone}</p>
                                 <div className="h-3 w-px bg-border-subtle"></div>
                                 <span className="text-xs font-medium text-text-muted flex items-center gap-1">
-                                    <Clock size={12}/> {alert.reason}
+                                    <Clock size={16}/> {alert.reason}
                                 </span>
                             </div>
                         </div>
@@ -212,14 +212,14 @@ export const CallbackManager: React.FC = () => {
                             <div className="flex bg-surface-alt p-1 rounded-lg border border-border-subtle">
                                 <button 
                                     onClick={() => handleSnooze(alert.id, 10)}
-                                    className="flex-1 rounded text-[10px] font-bold uppercase text-text-muted hover:text-text-primary hover:bg-surface-main transition-all flex items-center justify-center gap-1"
+                                    className="flex-1 rounded text-xs font-bold  text-text-muted hover:text-text-primary hover:bg-surface-main transition-all flex items-center justify-center gap-1"
                                 >
-                                    <BellOff size={10} /> +10m
+                                    <BellOff size={16} /> +10m
                                 </button>
                                 <div className="w-px bg-border-subtle my-1 mx-1"></div>
                                 <button 
                                     onClick={() => handleSnooze(alert.id, 60)}
-                                    className="flex-1 rounded text-[10px] font-bold uppercase text-text-muted hover:text-text-primary hover:bg-surface-main transition-all flex items-center justify-center gap-1"
+                                    className="flex-1 rounded text-xs font-bold  text-text-muted hover:text-text-primary hover:bg-surface-main transition-all flex items-center justify-center gap-1"
                                 >
                                     +1h
                                 </button>
@@ -228,9 +228,9 @@ export const CallbackManager: React.FC = () => {
                             <Button 
                                 onClick={() => handleEngage(alert)}
                                 variant="primary"
-                                className="h-9 text-xs font-bold uppercase tracking-wide flex items-center justify-center gap-2"
+                                className="h-9 text-xs font-bold  tracking-wide flex items-center justify-center gap-2"
                             >
-                                <Phone size={14} /> 
+                                <Phone size={16} /> 
                                 Call Now
                             </Button>
                         </div>

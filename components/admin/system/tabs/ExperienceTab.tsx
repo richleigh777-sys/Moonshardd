@@ -34,8 +34,8 @@ export const ExperienceTab: React.FC<ExperienceTabProps> = ({ config, onChange }
                     <div className="flex items-center gap-3">
                         <div className="p-2 rounded-xl bg-surface-main border border-border-subtle text-text-muted"><Layout size={16}/></div>
                         <div>
-                            <span className="font-semibold text-xs block text-text-primary uppercase tracking-wide">Visual Doctrine</span>
-                            <span className="text-[10px] text-text-muted font-medium mt-1 block opacity-70">Enforce global theme policy.</span>
+                            <span className="font-semibold text-xs block text-text-primary  tracking-wide">Visual Doctrine</span>
+                            <span className="text-xs text-text-muted font-medium mt-1 block opacity-70">Enforce global theme policy.</span>
                         </div>
                     </div>
                     <div className="flex bg-surface-main p-1 rounded-lg border border-border-subtle">
@@ -43,7 +43,7 @@ export const ExperienceTab: React.FC<ExperienceTabProps> = ({ config, onChange }
                             <button 
                                 key={t}
                                 onClick={() => onChange('enforceTheme', t)}
-                                className={`px-3 py-1.5 rounded-md text-[9px] font-black uppercase transition-all ${config.enforceTheme === t ? 'bg-accent-primary text-white shadow-sm' : 'text-text-muted hover:text-text-primary'}`}
+                                className={`px-3 py-1.5 rounded-md text-xs font-[700]  transition-all ${config.enforceTheme === t ? 'bg-accent-primary text-white shadow-sm' : 'text-text-muted hover:text-text-primary'}`}
                             >
                                 {t}
                             </button>

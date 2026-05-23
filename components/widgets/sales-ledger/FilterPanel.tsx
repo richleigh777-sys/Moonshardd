@@ -60,15 +60,15 @@ export const FilterPanel: React.FC<FilterPanelProps> = React.memo(({ filters, se
                 {/* TOP ROW: Presets & Reset */}
                 <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-border-subtle/50 pb-4">
                     <div className="flex items-center gap-2 overflow-x-auto scrollbar-hide w-full sm:w-auto">
-                        <span className="text-[10px] font-black uppercase text-text-muted tracking-widest mr-2 flex items-center gap-1.5 shrink-0">
-                            <Bookmark size={12} className="text-accent-primary"/> Smart Views
+                        <span className="text-xs font-[700]  text-text-muted tracking-widest mr-2 flex items-center gap-1.5 shrink-0">
+                            <Bookmark size={16} className="text-accent-primary"/> Smart Views
                         </span>
                         {PRESETS.map(preset => (
                             <button
                                 key={preset.label}
                                 onClick={() => applyPreset(preset)}
                                 className={`
-                                    px-3 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-wide border transition-all whitespace-nowrap
+                                    px-3 py-1.5 rounded-lg text-xs font-bold  tracking-wide border transition-all whitespace-nowrap
                                     ${activePreset === preset.label 
                                         ? 'bg-accent-primary text-white border-accent-primary shadow-lg shadow-accent-primary/20' 
                                         : 'bg-surface-alt text-text-muted border-border-subtle hover:text-text-primary hover:border-accent-primary/30'}
@@ -81,97 +81,167 @@ export const FilterPanel: React.FC<FilterPanelProps> = React.memo(({ filters, se
                     
                     <button 
                         onClick={() => { onReset(); setActivePreset(null); }}
-                        className="flex items-center gap-2 text-[10px] font-black uppercase text-text-muted hover:text-status-error transition-colors px-3 py-1.5 hover:bg-surface-alt rounded-lg"
+                        className="flex items-center gap-2 text-xs font-[700]  text-text-muted hover:text-status-error transition-colors px-3 py-1.5 hover:bg-surface-alt rounded-lg"
                     >
-                        <RotateCcw size={12}/> Reset Filters
+                        <RotateCcw size={16}/> Reset Filters
                     </button>
                 </div>
 
                 {/* MIDDLE ROW: Core Filters */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div className="flex flex-col gap-6">
                     
-                    {/* Status */}
-                    <div className="space-y-1.5">
-                        <label className="text-[9px] font-black uppercase text-text-muted tracking-widest ml-1 flex items-center gap-1.5">
-                            <Layers size={10}/> Status
-                        </label>
-                        <div className="relative group">
-                            <select 
-                                value={filters.status} 
-                                onChange={e => handleChange('status', e.target.value)}
-                                className="w-full bg-surface-alt/50 border border-border-subtle rounded-xl px-3 py-2.5 text-xs font-bold text-text-primary outline-none focus:border-accent-primary transition-all appearance-none cursor-pointer hover:bg-surface-alt"
-                            >
-                                <option value="All">Global View</option>
-                                <option value="Approved">Verified Wins</option>
-                                <option value="Pending">Processing</option>
-                                <option value="Declined">Rejected</option>
-                                <option value="Cancelled">Voided</option>
-                            </select>
-                            <Filter size={12} className="absolute right-3 top-1/2 -translate-y-1/2 text-text-muted pointer-events-none group-hover:text-accent-primary transition-colors"/>
+                    {/* SECTION 1: Time & Value Data */}
+                    <div className="bg-surface-alt/20 p-4 rounded-2xl border border-border-subtle/50 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                        {/* Date Range */}
+                        <div className="space-y-1.5 sm:col-span-2">
+                            <label className="text-xs font-[700] text-text-muted tracking-widest ml-1 flex items-center gap-1.5">
+                                <Calendar size={16}/> Timeline
+                            </label>
+                            <div className="flex gap-3">
+                                 <div className="flex-1 relative">
+                                    <input autoComplete="off" data-lpignore="true" data-prevent-autofill="true" spellCheck={false} 
+                                        type="date" 
+                                        value={filters.startDate} 
+                                        onChange={e => handleChange('startDate', e.target.value)}
+                                        className="w-full bg-surface-main border border-border-subtle rounded-xl px-3 py-2.5 text-xs font-bold text-text-primary outline-none focus:border-accent-primary transition-all shadow-sm"
+                                    />
+                                 </div>
+                                 <div className="flex-1 relative">
+                                    <input autoComplete="off" data-lpignore="true" data-prevent-autofill="true" spellCheck={false} 
+                                        type="date" 
+                                        value={filters.endDate} 
+                                        onChange={e => handleChange('endDate', e.target.value)}
+                                        className="w-full bg-surface-main border border-border-subtle rounded-xl px-3 py-2.5 text-xs font-bold text-text-primary outline-none focus:border-accent-primary transition-all shadow-sm"
+                                    />
+                                 </div>
+                            </div>
+                        </div>
+
+                        {/* Amount */}
+                        <div className="space-y-1.5">
+                            <label className="text-xs font-[700] text-text-muted tracking-widest ml-1 flex items-center gap-1.5">
+                                <Tag size={16}/> Value Range
+                            </label>
+                            <div className="flex gap-2">
+                                 <div className="flex-1 relative">
+                                    <input autoComplete="off" data-lpignore="true" data-prevent-autofill="true" spellCheck={false} 
+                                        type="number" 
+                                        placeholder="Min"
+                                        value={filters.minAmount} 
+                                        onChange={e => handleChange('minAmount', e.target.value)}
+                                        className="w-full bg-surface-main border border-border-subtle rounded-xl px-3 py-2.5 text-xs font-bold text-text-primary outline-none focus:border-accent-primary transition-all [&::-webkit-inner-spin-button]:appearance-none shadow-sm"
+                                    />
+                                 </div>
+                                 <div className="flex-1 relative">
+                                    <input autoComplete="off" data-lpignore="true" data-prevent-autofill="true" spellCheck={false} 
+                                        type="number"
+                                        placeholder="Max" 
+                                        value={filters.maxAmount} 
+                                        onChange={e => handleChange('maxAmount', e.target.value)}
+                                        className="w-full bg-surface-main border border-border-subtle rounded-xl px-3 py-2.5 text-xs font-bold text-text-primary outline-none focus:border-accent-primary transition-all [&::-webkit-inner-spin-button]:appearance-none shadow-sm"
+                                    />
+                                 </div>
+                            </div>
+                        </div>
+
+                        {/* Reorder Amount */}
+                        <div className="space-y-1.5">
+                            <label className="text-xs font-[700] text-text-muted tracking-widest ml-1 flex items-center gap-1.5">
+                                <RotateCcw size={16}/> Frequency
+                            </label>
+                            <div className="relative group">
+                                <select 
+                                    value={filters.reorderCount} 
+                                    onChange={e => handleChange('reorderCount', e.target.value)}
+                                    className="w-full bg-surface-main border border-border-subtle rounded-xl px-3 py-2.5 text-xs font-bold text-text-primary outline-none focus:border-accent-primary transition-all appearance-none cursor-pointer hover:bg-surface-alt shadow-sm"
+                                >
+                                    <option value="All">Any Frequency</option>
+                                    <option value="1+">Multiple Times</option>
+                                    <option value="2+">3+ Orders</option>
+                                    <option value="3+">4+ Orders</option>
+                                </select>
+                                <Filter size={16} className="absolute right-4 top-1/2 -translate-y-1/2 text-text-muted pointer-events-none group-hover:text-accent-primary transition-colors"/>
+                            </div>
                         </div>
                     </div>
 
-                    {/* Agent */}
-                    <div className="space-y-1.5">
-                        <label className="text-[9px] font-black uppercase text-text-muted tracking-widest ml-1 flex items-center gap-1.5">
-                            <User size={10}/> Operator
-                        </label>
-                        <div className="relative group">
-                            <select 
-                                value={filters.agent} 
-                                onChange={e => handleChange('agent', e.target.value)}
-                                className="w-full bg-surface-alt/50 border border-border-subtle rounded-xl px-3 py-2.5 text-xs font-bold text-text-primary outline-none focus:border-accent-primary transition-all appearance-none cursor-pointer hover:bg-surface-alt"
-                            >
-                                <option value="All">All Personnel</option>
-                                {agents.map((a: string) => <option key={a} value={a}>{a}</option>)}
-                            </select>
-                            <Search size={12} className="absolute right-3 top-1/2 -translate-y-1/2 text-text-muted pointer-events-none group-hover:text-accent-primary transition-colors"/>
+                    {/* SECTION 2: Classifications */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                        {/* Status */}
+                        <div className="space-y-1.5">
+                            <label className="text-xs font-[700] text-text-muted tracking-widest ml-1 flex items-center gap-1.5">
+                                <Layers size={16}/> Status
+                            </label>
+                            <div className="relative group">
+                                <select 
+                                    value={filters.status} 
+                                    onChange={e => handleChange('status', e.target.value)}
+                                    className="w-full bg-surface-alt/50 border border-border-subtle rounded-xl px-3 py-2.5 text-xs font-bold text-text-primary outline-none focus:border-accent-primary transition-all appearance-none cursor-pointer hover:bg-surface-alt"
+                                >
+                                    <option value="All">Global View</option>
+                                    <option value="Approved">Verified Wins</option>
+                                    <option value="Pending">Processing</option>
+                                    <option value="Declined">Rejected</option>
+                                    <option value="Cancelled">Voided</option>
+                                </select>
+                                <Filter size={16} className="absolute right-4 top-1/2 -translate-y-1/2 text-text-muted pointer-events-none group-hover:text-accent-primary transition-colors"/>
+                            </div>
+                        </div>
+
+                        {/* Agent */}
+                        <div className="space-y-1.5">
+                            <label className="text-xs font-[700] text-text-muted tracking-widest ml-1 flex items-center gap-1.5">
+                                <User size={16}/> Operator
+                            </label>
+                            <div className="relative group">
+                                <select 
+                                    value={filters.agent} 
+                                    onChange={e => handleChange('agent', e.target.value)}
+                                    className="w-full bg-surface-alt/50 border border-border-subtle rounded-xl px-3 py-2.5 text-xs font-bold text-text-primary outline-none focus:border-accent-primary transition-all appearance-none cursor-pointer hover:bg-surface-alt"
+                                >
+                                    <option value="All">All Personnel</option>
+                                    {agents.map((a: string) => <option key={a} value={a}>{a}</option>)}
+                                </select>
+                                <Search size={16} className="absolute right-4 top-1/2 -translate-y-1/2 text-text-muted pointer-events-none group-hover:text-accent-primary transition-colors"/>
+                            </div>
+                        </div>
+
+                        {/* Product */}
+                        <div className="space-y-1.5">
+                            <label className="text-xs font-[700] text-text-muted tracking-widest ml-1 flex items-center gap-1.5">
+                                <Tag size={16}/> Asset Class
+                            </label>
+                            <div className="relative group">
+                                <select 
+                                    value={filters.product} 
+                                    onChange={e => handleChange('product', e.target.value)}
+                                    className="w-full bg-surface-alt/50 border border-border-subtle rounded-xl px-3 py-2.5 text-xs font-bold text-text-primary outline-none focus:border-accent-primary transition-all appearance-none cursor-pointer hover:bg-surface-alt"
+                                >
+                                    <option value="All">Entire Catalog</option>
+                                    {products.map((p: string) => <option key={p} value={p}>{p}</option>)}
+                                </select>
+                                <Filter size={16} className="absolute right-4 top-1/2 -translate-y-1/2 text-text-muted pointer-events-none group-hover:text-accent-primary transition-colors"/>
+                            </div>
+                        </div>
+                        
+                        {/* Win Back */}
+                        <div className="space-y-1.5">
+                            <label className="text-xs font-[700] text-text-muted tracking-widest ml-1 flex items-center gap-1.5">
+                                <Bookmark size={16}/> Opportunity Mode
+                            </label>
+                            <div className="relative group">
+                                <select 
+                                    value={filters.winback} 
+                                    onChange={e => handleChange('winback', e.target.value)}
+                                    className="w-full bg-surface-alt/50 border border-border-subtle rounded-xl px-3 py-2.5 text-xs font-bold text-text-primary outline-none focus:border-accent-primary transition-all appearance-none cursor-pointer hover:bg-surface-alt"
+                                >
+                                    <option value="All">All Leads</option>
+                                    <option value="True">Win Back (Inactive {">"}45 Days)</option>
+                                </select>
+                                <Filter size={16} className="absolute right-4 top-1/2 -translate-y-1/2 text-text-muted pointer-events-none group-hover:text-accent-primary transition-colors"/>
+                            </div>
                         </div>
                     </div>
-
-                    {/* Product */}
-                    <div className="space-y-1.5">
-                        <label className="text-[9px] font-black uppercase text-text-muted tracking-widest ml-1 flex items-center gap-1.5">
-                            <Tag size={10}/> Asset Class
-                        </label>
-                        <div className="relative group">
-                            <select 
-                                value={filters.product} 
-                                onChange={e => handleChange('product', e.target.value)}
-                                className="w-full bg-surface-alt/50 border border-border-subtle rounded-xl px-3 py-2.5 text-xs font-bold text-text-primary outline-none focus:border-accent-primary transition-all appearance-none cursor-pointer hover:bg-surface-alt"
-                            >
-                                <option value="All">Entire Catalog</option>
-                                {products.map((p: string) => <option key={p} value={p}>{p}</option>)}
-                            </select>
-                            <Filter size={12} className="absolute right-3 top-1/2 -translate-y-1/2 text-text-muted pointer-events-none group-hover:text-accent-primary transition-colors"/>
-                        </div>
-                    </div>
-
-                    {/* Date Range */}
-                    <div className="space-y-1.5">
-                        <label className="text-[9px] font-black uppercase text-text-muted tracking-widest ml-1 flex items-center gap-1.5">
-                            <Calendar size={10}/> Timeline
-                        </label>
-                        <div className="flex gap-2">
-                             <div className="flex-1 relative">
-                                <input 
-                                    type="date" 
-                                    value={filters.startDate} 
-                                    onChange={e => handleChange('startDate', e.target.value)}
-                                    className="w-full bg-surface-alt/50 border border-border-subtle rounded-xl px-2 py-2.5 text-[10px] font-bold text-text-primary outline-none focus:border-accent-primary transition-all"
-                                />
-                             </div>
-                             <div className="flex-1 relative">
-                                <input 
-                                    type="date" 
-                                    value={filters.endDate} 
-                                    onChange={e => handleChange('endDate', e.target.value)}
-                                    className="w-full bg-surface-alt/50 border border-border-subtle rounded-xl px-2 py-2.5 text-[10px] font-bold text-text-primary outline-none focus:border-accent-primary transition-all"
-                                />
-                             </div>
-                        </div>
-                    </div>
-
                 </div>
                 
                 {/* BOTTOM ROW: Quick Dates */}
@@ -180,7 +250,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = React.memo(({ filters, se
                          <button 
                             key={dr.label}
                             onClick={() => applyDateRange(dr.days)}
-                            className="px-2 py-1 bg-surface-alt/30 hover:bg-surface-alt border border-border-subtle rounded text-[9px] font-mono font-bold text-text-muted hover:text-text-primary transition-all"
+                            className="px-3 py-1.5 bg-surface-alt/30 hover:bg-surface-alt border border-border-subtle rounded text-xs font-mono font-bold text-text-muted hover:text-text-primary transition-all"
                          >
                              {dr.label}
                          </button>

@@ -40,18 +40,18 @@ export const GeoIntelWidget: React.FC<GeoIntelProps> = ({ geoData }) => {
                         <Globe size={18} strokeWidth={2.5}/>
                     </div>
                     <div>
-                        <h4 className="text-xs font-black uppercase text-text-primary tracking-widest">Geographic Intel</h4>
-                        <p className="text-[9px] font-bold text-text-muted uppercase tracking-wider">{safeData.totalUniqueLocations} Active Zones</p>
+                        <h4 className="text-xs font-[700]  text-text-primary tracking-widest">Geographic Intel</h4>
+                        <p className="text-xs font-bold text-text-muted  tracking-wider">{safeData.totalUniqueLocations} Active Zones</p>
                     </div>
                 </div>
                 <div className="flex gap-2">
                     <div className="flex gap-1 bg-surface-main p-1 rounded-lg border border-border-subtle shadow-inner">
-                        <button onClick={() => setViewType('list')} className={`p-1.5 rounded transition-all ${viewType === 'list' ? 'bg-surface-alt text-text-primary shadow-sm' : 'text-text-muted hover:text-text-primary'}`}><List size={12}/></button>
-                        <button onClick={() => setViewType('grid')} className={`p-1.5 rounded transition-all ${viewType === 'grid' ? 'bg-surface-alt text-text-primary shadow-sm' : 'text-text-muted hover:text-text-primary'}`}><Grid3X3 size={12}/></button>
+                        <button onClick={() => setViewType('list')} className={`p-1.5 rounded transition-all ${viewType === 'list' ? 'bg-surface-alt text-text-primary shadow-sm' : 'text-text-muted hover:text-text-primary'}`}><List size={16}/></button>
+                        <button onClick={() => setViewType('grid')} className={`p-1.5 rounded transition-all ${viewType === 'grid' ? 'bg-surface-alt text-text-primary shadow-sm' : 'text-text-muted hover:text-text-primary'}`}><Grid3X3 size={16}/></button>
                     </div>
                     <div className="flex gap-1 bg-surface-main p-1 rounded-lg border border-border-subtle shadow-inner">
-                        <button onClick={() => setGeoMode('State')} className={`px-2 py-1 text-[8px] font-black uppercase rounded transition-all ${geoMode === 'State' ? 'bg-blue-500 text-white shadow-sm' : 'text-text-muted hover:bg-surface-alt'}`}>State</button>
-                        <button onClick={() => setGeoMode('City')} className={`px-2 py-1 text-[8px] font-black uppercase rounded transition-all ${geoMode === 'City' ? 'bg-blue-500 text-white shadow-sm' : 'text-text-muted hover:bg-surface-alt'}`}>City</button>
+                        <button onClick={() => setGeoMode('State')} className={`px-3 py-1.5 text-sm font-[700]  rounded transition-all ${geoMode === 'State' ? 'bg-blue-500 text-white shadow-sm' : 'text-text-muted hover:bg-surface-alt'}`}>State</button>
+                        <button onClick={() => setGeoMode('City')} className={`px-3 py-1.5 text-sm font-[700]  rounded transition-all ${geoMode === 'City' ? 'bg-blue-500 text-white shadow-sm' : 'text-text-muted hover:bg-surface-alt'}`}>City</button>
                     </div>
                 </div>
             </div>
@@ -61,14 +61,14 @@ export const GeoIntelWidget: React.FC<GeoIntelProps> = ({ geoData }) => {
                 {(!dataList || dataList.length === 0) ? (
                     <div className="flex flex-col items-center justify-center h-full text-text-muted opacity-50 pb-4">
                         <MapPin size={24} className="mb-2"/>
-                        <p className="text-[10px] font-black uppercase tracking-widest">No Location Data</p>
+                        <p className="text-xs font-[700]  tracking-widest">No Location Data</p>
                     </div>
                 ) : viewType === 'grid' && geoMode === 'State' ? (
                     <div className="grid grid-cols-10 gap-1.5 h-full content-start">
                         {US_STATES.map(code => (
                             <div 
                                 key={code} 
-                                className={`aspect-square rounded border flex items-center justify-center text-[8px] font-black cursor-default transition-all hover:scale-110 ${getIntensityColor(code)}`}
+                                className={`aspect-square rounded border flex items-center justify-center text-sm font-[700] cursor-default transition-all hover:scale-110 ${getIntensityColor(code)}`}
                                 title={code}
                             >
                                 {code}
@@ -86,14 +86,14 @@ export const GeoIntelWidget: React.FC<GeoIntelProps> = ({ geoData }) => {
                                     <div className="flex-1 mr-4">
                                         <div className="flex justify-between mb-1">
                                             <div className="flex items-center gap-2">
-                                                <span className={`text-[9px] font-black w-4 text-center ${index < 3 ? 'text-accent-primary' : 'text-text-muted'}`}>
+                                                <span className={`text-xs font-[700] w-4 text-center ${index < 3 ? 'text-accent-primary' : 'text-text-muted'}`}>
                                                     #{index + 1}
                                                 </span>
-                                                <span className="text-[10px] font-bold text-text-primary uppercase tracking-wide truncate">
+                                                <span className="text-xs font-bold text-text-primary  tracking-wide truncate">
                                                     {item.name || 'Unknown Zone'}
                                                 </span>
                                             </div>
-                                            <span className="text-[9px] font-mono font-bold text-text-secondary">
+                                            <span className="text-xs font-mono font-bold text-text-secondary">
                                                 {item.count}
                                             </span>
                                         </div>

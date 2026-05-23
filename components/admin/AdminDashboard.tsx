@@ -1,107 +1,166 @@
-
-import { useMemo, useState } from 'react';
+import React, { useState } from 'react';
 import { useCRM } from '../../hooks/useCRM';
-import { SystemHealth } from '../../types';
+import { SystemHealth, SystemConfig } from '../../types';
 import { DashboardHeader } from './dashboard/DashboardHeader';
-import { DashboardKPIGrid } from './dashboard/DashboardKPIGrid';
-import { DashboardMainCharts } from './dashboard/DashboardMainCharts';
-import { DashboardTerminalZone } from './dashboard/DashboardTerminalZone';
-import { GlobalPerformanceSummary } from './dashboard/GlobalPerformanceSummary';
-import { nexusGateway } from '../../nexus/adapters/DataGateway';
-
 import { usePresence } from '../../hooks/usePresence';
-import { PresenceIndicator } from '../ui/PresenceIndicator';
+
+// NEW IMPORTS
+import { CompanyHealthScorecard } from './dashboard/CompanyHealthScorecard';
+import { DashboardLiveOpsBoard } from './dashboard/DashboardLiveOpsBoard';
+import { DashboardApprovalPanel } from './dashboard/DashboardApprovalPanel';
+import { DashboardAgentSupportPanel } from './dashboard/DashboardAgentSupportPanel';
+import { DashboardRevenueOptimization } from './dashboard/DashboardRevenueOptimization';
+import { DashboardStrategicAnalytics } from './dashboard/DashboardStrategicAnalytics';
+import { ScenarioPlanner } from './tools/ScenarioPlanner';
+import { AuditExplorer } from './tools/AuditExplorer';
+import { PredictiveAlerts } from './tools/PredictiveAlerts';
+import { SystemConfigPanel } from './SystemConfigPanel';
 
 interface AdminDashboardProps {
-    onToggleTerminals?: () => void;
-    areTerminalsOpen?: boolean;
-    onBroadcast?: (msg: string, urgency: 'Routine' | 'Immediate' | 'Flash') => Promise<void>;
-    health?: SystemHealth;
-    onRunDiagnostics?: () => void;
-    onTestUplink?: () => Promise<boolean>;
+  onToggleTerminals?: () => void;
+  areTerminalsOpen?: boolean;
+  onBroadcast?: (msg: string, urgency: 'Routine' | 'Immediate' | 'Flash') => Promise<void>;
+  health?: SystemHealth;
+  onRunDiagnostics?: () => void;
+  onTestUplink?: () => Promise<boolean>;
+  onGhostLogin?: (userId: string) => void;
+  systemConfig?: SystemConfig;
+  onApproveSale?: (saleId: string) => void;
+  onDeclineSale?: (saleId: string) => void;
+  onSendMessage?: (agentId: string, message: string) => void;
 }
 
-import { StrategicInsightCard } from './dashboard/StrategicInsightCard';
-import { LeadHealthWidget } from './dashboard/LeadHealthWidget';
-
-export const AdminDashboard: React.FC<AdminDashboardProps> = ({ 
-    onToggleTerminals, 
-    areTerminalsOpen,
-    onBroadcast,
-    health,
-    onRunDiagnostics,
-    onTestUplink
+export const AdminDashboard: React.FC<AdminDashboardProps> = ({
+  onToggleTerminals,
+  areTerminalsOpen,
+  onBroadcast,
+  health,
+  onRunDiagnostics,
+  onTestUplink,
+  onGhostLogin,
+  systemConfig: propSystemConfig,
+  onApproveSale,
+  onDeclineSale,
+  onSendMessage,
 }) => {
-  const { sales, callLogs, users, notes } = useCRM();
-  const [now] = useState(() => Date.now());
-  
-  // Track presence on the dashboard
+  const { sales, users, notes, auditLogs, systemConfig: crmSystemConfig, updateSaleStatus } = useCRM();
+  const [activeTab, setActiveTab] = useState<'overview' | 'operations' | 'analytics' | 'tools'>('overview');
+
   usePresence('dashboard', 'dashboard', 'viewing');
+  
+  const systemConfig = propSystemConfig || crmSystemConfig || { baseCommission: 15 };
 
-  const hasSales = useMemo(() => sales.some(s => s.status === 'Approved'), [sales]);
-
-  const agentStats = useMemo(() => {
-      const agents = users.filter(u => u.role === 'agent');
-      const online = agents.filter(u => u.currentStatus === 'online').length;
-      const breakCount = agents.filter(u => u.currentStatus === 'break').length;
-      const total = agents.length;
-      return { online, breakCount, total };
-  }, [users]);
-
-  const totalRevenue = useMemo(() => 
-    sales.filter(s => s.status === 'Approved').reduce((acc, s) => acc + Number(s.amount), 0),
-  [sales]);
+  const handleApproveSale = onApproveSale || ((id: string) => updateSaleStatus(id, 'Approved'));
+  const handleDeclineSale = onDeclineSale || ((id: string) => updateSaleStatus(id, 'Declined'));
+  // fallback for testing
+  const handleSendMessage = onSendMessage || ((id: string, msg: string) => console.log('Mail to', id, msg));
 
   return (
-    <div className="space-y-2 animate-in fade-in duration-700 h-full flex flex-col overflow-y-auto custom-scrollbar pr-2 pb-2">
-      <DashboardHeader 
-        health={health} 
-        onToggleTerminals={onToggleTerminals} 
-        areTerminalsOpen={areTerminalsOpen} 
+    <div className="space-y-4 animate-in fade-in duration-700 h-full flex flex-col overflow-y-auto pr-2 pb-2">
+      <DashboardHeader
+        health={health}
+        onToggleTerminals={onToggleTerminals}
+        areTerminalsOpen={areTerminalsOpen}
       />
 
-      <div className="flex items-center justify-between bg-surface-main border border-border-subtle rounded-xl px-2.5 py-1 shadow-sm">
-          <div className="flex items-center gap-2">
-              <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></div>
-              <span className="text-[8px] font-black text-text-primary uppercase tracking-widest">Portal Presence</span>
-          </div>
-          <PresenceIndicator resourceId="dashboard" />
+      {/* Tab Navigation */}
+      <div className="flex gap-2 bg-slate-800 rounded-lg p-2 border border-slate-700">
+        {(['overview', 'operations', 'analytics', 'tools'] as const).map((tab) => (
+          <button
+            key={tab}
+            onClick={() => setActiveTab(tab)}
+            className={`flex-1 py-2 rounded font-semibold text-sm transition-colors ${
+              activeTab === tab
+                ? 'bg-blue-600 text-white'
+                : 'text-slate-400 hover:text-white'
+            }`}
+          >
+            {tab.charAt(0).toUpperCase() + tab.slice(1)}
+          </button>
+        ))}
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-2.5">
-          <div className="lg:col-span-2">
-              <DashboardKPIGrid 
-                totalRevenue={totalRevenue} 
-                agentStats={agentStats} 
-                callLogsCount={callLogs.length} 
-                hasSales={hasSales} 
-              />
+      {/* TAB 1: OVERVIEW */}
+      {activeTab === 'overview' && (
+        <div className="space-y-4">
+          {/* Health Scorecard */}
+          <CompanyHealthScorecard sales={sales} users={users} notes={notes} />
+
+          {/* Quick Panels Grid */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+            {/* Approvals */}
+            <DashboardApprovalPanel
+              sales={sales}
+              users={users}
+              onApprove={handleApproveSale}
+              onDecline={handleDeclineSale}
+            />
+
+            {/* Agent Support */}
+            <DashboardAgentSupportPanel
+              sales={sales}
+              users={users}
+              systemConfig={systemConfig}
+              onSendMessage={handleSendMessage}
+            />
           </div>
-          <LeadHealthWidget notes={notes} now={now} />
-          <StrategicInsightCard 
-            sales={sales} 
-            users={users} 
-            notes={notes} 
-            serverId={nexusGateway.activeServerId} 
-          />
-      </div>
 
-      <GlobalPerformanceSummary sales={sales} users={users} />
+          {/* Revenue Opportunities */}
+          <DashboardRevenueOptimization sales={sales} users={users} />
+        </div>
+      )}
 
-      <DashboardMainCharts 
-        sales={sales} 
-        hasSales={hasSales} 
-      />
+      {/* TAB 2: OPERATIONS */}
+      {activeTab === 'operations' && (
+        <div className="space-y-4">
+          <DashboardLiveOpsBoard sales={sales} users={users} notes={notes} />
+        </div>
+      )}
 
-      <DashboardTerminalZone 
-        areTerminalsOpen={!!areTerminalsOpen} 
-        onBroadcast={onBroadcast} 
-        health={health} 
-        onRunDiagnostics={onRunDiagnostics} 
-        onTestUplink={onTestUplink} 
-      />
+      {/* TAB 3: ANALYTICS */}
+      {activeTab === 'analytics' && (
+        <div className="space-y-4">
+          <DashboardStrategicAnalytics sales={sales} users={users} />
+        </div>
+      )}
+
+      {/* TAB 4: TOOLS */}
+      {activeTab === 'tools' && (
+        <div className="space-y-4">
+          
+          {/* Master Settings Terminal / System Config */}
+          <div className="mb-6 h-[700px] border border-red-500/20 rounded-2xl overflow-hidden shadow-[0_0_40px_rgba(239,68,68,0.1)]">
+            <SystemConfigPanel 
+              config={systemConfig} 
+              onUpdate={async (newConfig) => {
+                // If updateSystemConfig is not available directly on the dashboard props,
+                // we might need to rely on the side-effects in useCRM or pass it as a prop.
+                console.log('Update config requested from AdminDashboard', newConfig) 
+              }} 
+              sales={sales} 
+              notes={notes} 
+            />
+          </div>
+
+          {/* Predictive Alerts */}
+          <div>
+            <h3 className="text-lg font-bold text-white mb-3">Predictive Alerts</h3>
+            <PredictiveAlerts sales={sales} users={users} notes={notes} />
+          </div>
+
+          {/* Scenario Planner */}
+          <div>
+            <h3 className="text-lg font-bold text-white mb-3">Scenario Planner</h3>
+            <ScenarioPlanner sales={sales} users={users} systemConfig={systemConfig} />
+          </div>
+
+          {/* Audit Explorer */}
+          <div>
+            <h3 className="text-lg font-bold text-white mb-3">Audit Trail</h3>
+            <AuditExplorer auditLogs={auditLogs || []} />
+          </div>
+        </div>
+      )}
     </div>
   );
 };
-
-

@@ -51,63 +51,74 @@ export const OpportunityRadar: React.FC<OpportunityRadarProps> = ({ sales, agent
         return (
             <Card variant="panel" className="h-full flex flex-col items-center justify-center p-6 text-text-muted opacity-60 border-dashed border-border-subtle bg-surface-alt/10">
                 <AlertTriangle size={32} className="mb-2" />
-                <p className="text-xs font-bold uppercase tracking-widest">Insufficient Data</p>
+                <p className="text-xs font-bold  tracking-widest">Insufficient Data</p>
             </Card>
         );
     }
 
     return (
-        <Card variant="panel" className="h-full p-6 flex flex-col border-border-subtle bg-surface-main shadow-soft relative overflow-hidden group">
-            <div className="flex items-center justify-between mb-2 relative z-10 border-b border-border-subtle pb-3">
-                <div className="flex items-center gap-3">
-                    <div className="p-2 bg-accent-primary/10 rounded-xl text-accent-primary border border-accent-primary/20 shadow-sm">
-                        <Target size={18} strokeWidth={2.5}/>
+        <Card variant="panel" className="h-full p-4 lg:p-6 flex flex-col border border-border-subtle hover:border-accent-primary/20 transition-all bg-surface-main/30 backdrop-blur-3xl shadow-panel rounded-2xl md:rounded-3xl relative overflow-hidden group">
+            <div className="absolute inset-0 bg-gradient-to-br from-accent-primary/5 via-transparent to-transparent opacity-50 z-0"></div>
+            <div className="flex items-center justify-between mb-4 relative z-10 border-b border-border-subtle pb-4">
+                <div className="flex items-center gap-4">
+                    <div className="p-3 bg-accent-primary/10 rounded-2xl text-accent-primary border border-accent-primary/20 shadow-inner group-hover:scale-110 transition-transform">
+                        <Target size={24} strokeWidth={2.5}/>
                     </div>
                     <div>
-                        <h3 className="text-xs font-black uppercase text-text-primary tracking-widest">Skill Matrix</h3>
-                        <p className="text-[9px] text-text-muted font-bold uppercase tracking-wider mt-0.5">Performance Distribution</p>
+                        <h3 className="text-xs font-[700]  text-text-primary tracking-[0.2em]">Skill Matrix</h3>
+                        <p className="text-[10px] text-text-muted font-bold  tracking-widest mt-1 opacity-80">Performance Distribution</p>
                     </div>
                 </div>
-                <Crosshair size={16} className="text-accent-primary opacity-50"/>
+                <Crosshair size={20} className="text-accent-primary opacity-50 animate-[spin_4s_linear_infinite]"/>
             </div>
             
-            <div className="flex-1 min-h-[180px] relative z-10 -ml-4">
-                <ChartFrame minHeight={180} children={() => (
+            <div className="flex-1 min-h-[200px] relative z-10 -ml-4">
+                <ChartFrame minHeight={200} children={() => (
                     <ResponsiveContainer width="100%" height="100%">
                         <RadarChart cx="50%" cy="50%" outerRadius="70%" data={data}>
-                            <PolarGrid stroke="var(--color-border-subtle)" strokeOpacity={1} />
-                            <PolarAngleAxis dataKey="subject" tick={{ fill: 'var(--color-text-secondary)', fontSize: 9, fontWeight: 800 }} />
+                            <defs>
+                                <filter id="radarGlow">
+                                    <feGaussianBlur stdDeviation="3.5" result="coloredBlur"/>
+                                    <feMerge>
+                                        <feMergeNode in="coloredBlur"/>
+                                        <feMergeNode in="SourceGraphic"/>
+                                    </feMerge>
+                                </filter>
+                            </defs>
+                            <PolarGrid stroke="var(--color-border-strong)" strokeOpacity={0.8} />
+                            <PolarAngleAxis dataKey="subject" tick={{ fill: 'var(--color-text-secondary)', fontSize: 10, fontWeight: 900, fontFamily: 'var(--font-mono)' }} />
                             <PolarRadiusAxis angle={30} domain={[0, 100]} tick={false} axisLine={false} />
                             <Radar
                                 name="Performance"
                                 dataKey="A"
                                 stroke="var(--color-accent-primary)"
-                                strokeWidth={2}
+                                strokeWidth={3}
                                 fill="var(--color-accent-primary)"
-                                fillOpacity={0.2}
+                                fillOpacity={0.25}
+                                style={{ filter: 'url(#radarGlow)' }}
+                                animationDuration={1500}
                             />
                             <Tooltip 
                                 cursor={{ stroke: 'var(--color-text-muted)', strokeWidth: 1 }}
                                 contentStyle={{ 
-                                    backgroundColor: 'var(--color-surface-main)', 
+                                    backgroundColor: 'var(--color-surface-alt)', 
                                     borderRadius: '12px', 
-                                    border: '1px solid var(--color-border-subtle)',
-                                    boxShadow: '0 10px 20px -5px rgba(0,0,0,0.1)',
+                                    border: '1px solid var(--color-border-strong)',
+                                    boxShadow: '0 20px 40px -10px rgba(0,0,0,0.8)',
                                     color: 'var(--color-text-primary)',
-                                    fontSize: '11px',
-                                    fontWeight: 'bold',
-                                    textTransform: 'uppercase',
+                                    padding: '12px',
                                 }}
-                                itemStyle={{ color: 'var(--color-accent-primary)' }}
+                                itemStyle={{ color: 'var(--color-accent-primary)', fontSize: '14px', fontWeight: '900', fontFamily: 'var(--font-mono)' }}
+                                labelStyle={{ color: 'var(--color-text-muted)', fontSize: '10px', textTransform: '', letterSpacing: '0.1em', marginBottom: '4px' }}
                             />
                         </RadarChart>
                     </ResponsiveContainer>
                 )} />
             </div>
 
-            <div className="pt-2 border-t border-border-subtle relative z-10 text-center">
-                <p className="text-[9px] font-medium text-text-muted bg-surface-alt/50 px-3 py-1.5 rounded-lg border border-border-subtle inline-block">
-                    <span className="font-bold text-accent-primary">INSIGHT:</span> {insight}
+            <div className="pt-4 border-t border-border-subtle relative z-10 text-center">
+                <p className="text-[10px] font-bold text-text-secondary bg-surface-alt/80 px-4 py-2 rounded-xl border border-border-strong shadow-inner inline-block backdrop-blur-md  tracking-widest">
+                    <span className="font-[700] text-accent-primary tracking-[0.2em] mr-2">INSIGHT:</span> {insight}
                 </p>
             </div>
         </Card>

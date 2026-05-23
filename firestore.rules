@@ -1,13 +1,206 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    function isAllowed() {
-      // By checking request.time, we trick the linter while keeping the gate open for custom auth
-      return request.time != null;
+    
+    // Helper functions
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    function getUserId() {
+      return request.auth.token.email.replace('@.*', '');
+    }
+    
+    function isSysRoot() {
+      return isAuthenticated() && request.auth.token.email == 'sys_root@moonshard.local';
+    }
+    
+    function userBelongsToServer(serverId) {
+      return exists(/databases/$(database)/documents/servers/$(serverId)/users/$(getUserId())) ||
+             request.auth.token.email.matches('.*@' + serverId + '\\.local');
+    }
+    
+    function isServerAdmin(serverId) {
+      let userDoc = get(/databases/$(database)/documents/servers/$(serverId)/users/$(getUserId()));
+      return (userDoc.exists && userDoc.data.role == 'admin') || 
+             request.auth.token.email.matches('admin.*@' + serverId + '\\.local');
+    }
+    
+    function isAgentInServer(serverId) {
+      return userBelongsToServer(serverId);
+    }
+    
+    function isOwnSale(agentId) {
+      return getUserId() == agentId;
+    }
+    
+    function isValidSale(data) {
+      return data.serverId != null &&
+             data.agentId != null &&
+             data.amount > 0 &&
+             data.status in ['Pending', 'Approved', 'Declined', 'Cancelled', 'Rescue In Progress'] &&
+             data.amount < 100000; // Max sale amount
+    }
+    
+    // ROOT: Server configuration
+    match /servers/{serverId} {
+      allow read: if isSysRoot() || (isAuthenticated() && userBelongsToServer(serverId));
+      allow write: if isSysRoot() || (isAuthenticated() && isServerAdmin(serverId));
+      allow create: if isSysRoot(); // Admins/Root can create via backend or seed
+    }
+    
+    // USERS: Scoped to server
+    match /servers/{serverId}/users/{userId} {
+      allow read: if isSysRoot() || (isAuthenticated() && userBelongsToServer(serverId));
+      allow write: if isSysRoot() || (isAuthenticated() && isServerAdmin(serverId));
+      allow update: if isSysRoot() || (isAuthenticated() && (userId == getUserId() || isServerAdmin(serverId)));
+      allow create: if isSysRoot() || (isAuthenticated() && isServerAdmin(serverId));
+    }
+    
+    // SALES: Agent access control
+    match /servers/{serverId}/sales/{saleId} {
+      allow read: if isSysRoot() || (isAuthenticated() && isAgentInServer(serverId));
+      allow create: if isSysRoot() || (
+                       isAuthenticated() && 
+                       isAgentInServer(serverId) &&
+                       request.resource.data.agentId == getUserId() &&
+                       isValidSale(request.resource.data)
+                     );
+      allow update: if isSysRoot() || (
+                       isAuthenticated() && 
+                       isAgentInServer(serverId) &&
+                       (isOwnSale(resource.data.agentId) || isServerAdmin(serverId)) &&
+                       isValidSale(request.resource.data)
+                     );
+      allow delete: if isSysRoot() || (isAuthenticated() && isServerAdmin(serverId));
+    }
+    
+    // CUSTOMERS: Scoped read/write
+    match /servers/{serverId}/customers/{customerId} {
+      allow read: if isSysRoot() || (isAuthenticated() && isAgentInServer(serverId));
+      allow write: if isSysRoot() || (isAuthenticated() && isAgentInServer(serverId));
+    }
+    
+    // NOTES: Agent-specific access
+    match /servers/{serverId}/notes/{noteId} {
+      allow read: if isSysRoot() || (isAuthenticated() && isAgentInServer(serverId));
+      allow create: if isSysRoot() || (
+                       isAuthenticated() && 
+                       isAgentInServer(serverId) &&
+                       request.resource.data.agentId == getUserId()
+                     );
+      allow update: if isSysRoot() || (
+                       isAuthenticated() && 
+                       (getUserId() == resource.data.agentId || isServerAdmin(serverId))
+                     );
     }
 
+    // AUDIT: Read-only (immutable via client, backend can write)
+    match /servers/{serverId}/audit/{auditId} {
+      allow read: if isSysRoot() || (isAuthenticated() && isServerAdmin(serverId));
+      allow write: if isSysRoot() || (isAuthenticated() && userBelongsToServer(serverId));
+      allow delete: if false; // Immutable
+    }
+    
+    // SCRIPTS
+    match /servers/{serverId}/scripts/{scriptId} {
+      allow read: if isSysRoot() || (isAuthenticated() && isAgentInServer(serverId));
+      allow write: if isSysRoot() || (isAuthenticated() && isAgentInServer(serverId));
+    }
+
+    // MESSAGES
+    match /servers/{serverId}/messages/{messageId} {
+      allow read: if isSysRoot() || (isAuthenticated() && isAgentInServer(serverId));
+      allow write: if isSysRoot() || (isAuthenticated() && isAgentInServer(serverId));
+    }
+
+    // PRESENCE
+    match /servers/{serverId}/presence/{presenceId} {
+      allow read: if isSysRoot() || (isAuthenticated() && isAgentInServer(serverId));
+      allow write: if isSysRoot() || (isAuthenticated() && isAgentInServer(serverId));
+    }
+    
+    // TASKS
+    match /servers/{serverId}/tasks/{taskId} {
+      allow read: if isSysRoot() || (isAuthenticated() && isAgentInServer(serverId));
+      allow write: if isSysRoot() || (isAuthenticated() && isAgentInServer(serverId));
+    }
+    
+    // SYSTEM CONFIG
+    match /servers/{serverId}/systemConfig/{configId} {
+      allow read: if isSysRoot() || (isAuthenticated() && isAgentInServer(serverId));
+      allow write: if isSysRoot() || (isAuthenticated() && isServerAdmin(serverId));
+    }
+
+    // CHANNELS
+    match /servers/{serverId}/channels/{channelId} {
+      allow read: if isSysRoot() || (isAuthenticated() && isAgentInServer(serverId));
+      allow write: if isSysRoot() || (isAuthenticated() && isServerAdmin(serverId));
+    }
+
+    // ACCOUNTS
+    match /servers/{serverId}/accounts/{accountId} {
+      allow read: if isSysRoot() || (isAuthenticated() && isAgentInServer(serverId));
+      allow write: if isSysRoot() || (isAuthenticated() && isAgentInServer(serverId));
+    }
+
+    // LEADERBOARD
+    match /servers/{serverId}/leaderboard/{statsId} {
+      allow read: if isSysRoot() || (isAuthenticated() && isAgentInServer(serverId));
+      allow write: if isSysRoot() || (isAuthenticated() && isServerAdmin(serverId));
+    }
+
+    // ATTENDANCE
+    match /servers/{serverId}/attendance/{recordId} {
+      allow read: if isSysRoot() || (isAuthenticated() && isAgentInServer(serverId));
+      allow write: if isSysRoot() || (isAuthenticated() && isAgentInServer(serverId));
+    }
+
+    // DIRECTIVES
+    match /servers/{serverId}/directives/{directiveId} {
+      allow read: if isSysRoot() || (isAuthenticated() && isAgentInServer(serverId));
+      allow write: if isSysRoot() || (isAuthenticated() && isServerAdmin(serverId));
+    }
+
+    // NOTIFICATIONS
+    match /servers/{serverId}/notifications/{notificationId} {
+      allow read: if isSysRoot() || (isAuthenticated() && isAgentInServer(serverId));
+      allow write: if isSysRoot() || (isAuthenticated() && isAgentInServer(serverId));
+    }
+
+    // CALLLOGS
+    match /servers/{serverId}/callLogs/{logId} {
+      allow read: if isSysRoot() || (isAuthenticated() && isAgentInServer(serverId));
+      allow write: if isSysRoot() || (isAuthenticated() && isAgentInServer(serverId));
+    }
+
+    // SHEETS (Scratchpad)
+    match /servers/{serverId}/sheets/{sheetId} {
+      allow read: if isSysRoot() || (isAuthenticated() && isAgentInServer(serverId));
+      allow write: if isSysRoot() || (isAuthenticated() && isAgentInServer(serverId));
+    }
+
+    // DIALER LISTS
+    match /servers/{serverId}/dialer_lists/{listId} {
+      allow read: if isSysRoot() || (isAuthenticated() && isAgentInServer(serverId));
+      allow write: if isSysRoot() || (isAuthenticated() && isServerAdmin(serverId));
+    }
+
+    // DATA HEALTH REPORTS
+    match /servers/{serverId}/dataHealthReports/{reportId} {
+      allow read: if isSysRoot() || (isAuthenticated() && isServerAdmin(serverId));
+      allow write: if isSysRoot() || (isAuthenticated() && isServerAdmin(serverId));
+    }
+
+    // PRODUCT CONFIG
+    match /servers/{serverId}/config/{configId} {
+      allow read: if isSysRoot() || (isAuthenticated() && isAgentInServer(serverId));
+      allow write: if isSysRoot() || (isAuthenticated() && isServerAdmin(serverId));
+    }
+
+    // Deny everything else
     match /{document=**} {
-      allow read, write: if isAllowed();
+      allow read, write: if false;
     }
   }
 }

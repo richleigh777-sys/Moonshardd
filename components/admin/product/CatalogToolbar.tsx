@@ -41,17 +41,17 @@ export const CatalogToolbar: React.FC<CatalogToolbarProps> = ({
                         <Package size={24} strokeWidth={2.5}/>
                     </div>
                     <div>
-                        <h3 className="text-xl font-black uppercase italic text-text-primary">Master <span className="text-accent-primary">Catalog</span></h3>
+                        <h3 className="text-xl font-[700]  italic text-text-primary">Master <span className="text-accent-primary">Catalog</span></h3>
                         <div className="flex items-center gap-3 mt-1">
-                            <span className="text-[10px] font-black text-text-muted uppercase tracking-[0.2em]">{totalItems} SKUs Active</span>
+                            <span className="text-xs font-[700] text-text-muted  tracking-[0.2em]">{totalItems} SKUs Active</span>
                         </div>
                     </div>
                 </div>
 
                 <div className="flex flex-wrap items-center gap-3 w-full xl:w-auto">
                     <div className="relative group flex-1 xl:flex-none xl:min-w-[240px]">
-                        <Search size={14} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-text-muted group-focus-within:text-accent-primary transition-colors" />
-                        <input 
+                        <Search size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-text-muted group-focus-within:text-accent-primary transition-colors" />
+                        <input autoComplete="off" data-lpignore="true" data-prevent-autofill="true" spellCheck={false} 
                             value={searchTerm}
                             onChange={e => onSearchChange(e.target.value)}
                             placeholder="Search SKU..." 
@@ -79,7 +79,7 @@ export const CatalogToolbar: React.FC<CatalogToolbarProps> = ({
                     <select 
                         value={sortMode}
                         onChange={(e) => onSortChange(e.target.value as SortOption)}
-                        className="h-11 bg-surface-main border border-border-subtle rounded-xl px-3 text-[10px] font-black uppercase outline-none focus:border-accent-primary cursor-pointer hover:bg-surface-alt transition-colors"
+                        className="h-11 bg-surface-main border border-border-subtle rounded-xl px-3 text-xs font-[700]  outline-none focus:border-accent-primary cursor-pointer hover:bg-surface-alt transition-colors"
                     >
                         <option value="name">Name (A-Z)</option>
                         <option value="price-high">Price (High)</option>
@@ -89,7 +89,7 @@ export const CatalogToolbar: React.FC<CatalogToolbarProps> = ({
                     </select>
 
                     <Button onClick={onToggleBulk} variant="secondary" className="h-11 px-4" title="Bulk Actions"><SlidersHorizontal size={18}/></Button>
-                    <Button onClick={onAddProduct} variant="primary" className="h-11 px-6 text-[10px] font-black uppercase tracking-[0.2em] shadow-lg shadow-accent-primary/20">
+                    <Button onClick={onAddProduct} variant="primary" className="h-11 px-6 text-xs font-[700]  tracking-[0.2em] shadow-lg shadow-accent-primary/20">
                         <Plus size={16} className="mr-2"/> New SKU
                     </Button>
                 </div>
@@ -102,7 +102,7 @@ export const CatalogToolbar: React.FC<CatalogToolbarProps> = ({
                         key={cat}
                         onClick={() => onCategoryChange(cat)}
                         className={`
-                            px-4 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-wider border transition-all whitespace-nowrap
+                            px-4 py-1.5 rounded-lg text-xs font-[700]  tracking-wider border transition-all whitespace-nowrap
                             ${activeCategory === cat 
                                 ? 'bg-accent-primary text-white border-accent-primary shadow-md' 
                                 : 'bg-surface-main text-text-muted border-border-subtle hover:text-text-primary hover:border-accent-primary/30'}

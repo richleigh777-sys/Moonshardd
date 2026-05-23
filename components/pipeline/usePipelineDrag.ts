@@ -44,15 +44,14 @@ export const usePipelineDrag = (
                 } else {
                     // Smart Status Update Logic
                     let newStatus: Sale['status'] = 'Pending';
-                    if (stage === 'Closed') newStatus = 'Approved';
-                    else if (stage === 'Declined') newStatus = 'Declined';
+                    if (stage === 'Closed Won') newStatus = 'Approved';
                     else if (sale.status === 'Rescue In Progress') newStatus = 'Pending';
                     else if (sale.status === 'Cancelled') newStatus = 'Pending';
 
                     updateSaleStatus(saleId, newStatus, { pipelineStatus: stage });
                 }
                 
-                if (stage === 'Closed') {
+                if (stage === 'Closed Won') {
                     sfx.playSuccess();
                     triggerMoneyRain();
                     setToast({ title: 'Pipeline', message: `Deal Closed! Great work.`, type: 'success' });

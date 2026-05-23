@@ -91,21 +91,21 @@ export const ScriptManager: React.FC = () => {
                         <BookOpen size={24} strokeWidth={2.5}/>
                     </div>
                     <div>
-                        <h2 className="text-xl font-black text-text-primary uppercase tracking-tighter">Protocol <span className="text-accent-primary">Library</span></h2>
-                        <div className="flex items-center gap-2 mt-0.5">
-                            <span className="text-[9px] font-bold text-text-muted uppercase tracking-widest bg-surface-alt px-2 py-0.5 rounded border border-border-subtle">
+                        <h2 className="text-xl font-bold text-text-primary tracking-tight">Script Library</h2>
+                        <div className="flex items-center gap-2 mt-1">
+                            <span className="text-xs font-semibold text-text-muted bg-surface-alt px-2.5 py-1 rounded-md border border-border-subtle">
                                 {scripts.length} Active Scripts
                             </span>
-                            <span className="text-[9px] font-mono text-emerald-500 flex items-center gap-1">
-                                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
-                                LIVE SYNC
+                            <span className="text-xs font-medium text-status-success flex items-center gap-1.5">
+                                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                                Synced
                             </span>
                         </div>
                     </div>
                 </div>
                 
-                <Button onClick={handleCreateNew} variant="primary" className="relative z-10 h-10 text-[10px] font-black uppercase tracking-[0.2em] shadow-lg shadow-accent-primary/20">
-                    <Plus size={14} className="mr-2"/> New Protocol
+                <Button onClick={handleCreateNew} variant="primary" className="relative z-10 h-10 text-sm font-semibold shadow-sm">
+                    <Plus size={16} className="mr-1.5"/> New Script
                 </Button>
             </Card>
 
@@ -133,12 +133,12 @@ export const ScriptManager: React.FC = () => {
                     />
                 ) : (
                     <Card variant="panel" className="flex-1 flex flex-col p-0 border-border-subtle bg-surface-main relative overflow-hidden">
-                        <div className="flex-1 flex flex-col items-center justify-center text-text-muted opacity-50 p-12 text-center">
-                            <div className="w-24 h-24 bg-surface-alt rounded-full flex items-center justify-center mb-6 animate-pulse border border-border-subtle">
-                                <Database size={48} strokeWidth={1} />
+                        <div className="flex-1 flex flex-col items-center justify-center text-text-muted opacity-60 p-12 text-center">
+                            <div className="w-20 h-20 bg-surface-alt rounded-full flex items-center justify-center mb-6 border border-border-subtle">
+                                <BookOpen size={32} strokeWidth={1.5} />
                             </div>
-                            <h3 className="text-2xl font-black uppercase tracking-[0.2em] text-text-secondary">System Ready</h3>
-                            <p className="text-xs font-medium mt-2">Select a protocol from the databank or initialize a new entry.</p>
+                            <h3 className="text-xl font-semibold text-text-secondary">Ready to Edit</h3>
+                            <p className="text-sm font-medium mt-2 max-w-xs">Select a script from the library or create a new one to begin editing.</p>
                         </div>
                     </Card>
                 )}

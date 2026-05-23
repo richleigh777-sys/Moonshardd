@@ -49,11 +49,11 @@ export const DiagnosticOverlay: React.FC<DiagnosticOverlayProps> = ({ onComplete
 
     return (
         <div className="absolute inset-0 z-50 bg-black/90 backdrop-blur-xl flex flex-col p-6 animate-in fade-in duration-200">
-            <div className="flex items-center gap-2 text-emerald-500 mb-4 border-b border-white/10 pb-2">
+            <div className="flex items-center gap-2 text-status-success mb-4 border-b border-border-subtle pb-2">
                 <Terminal size={16} />
-                <span className="text-xs font-black uppercase tracking-[0.2em]">Running Diagnostics</span>
+                <span className="text-xs font-[700]  tracking-[0.2em]">Running Diagnostics</span>
             </div>
-            <div ref={logContainerRef} className="flex-1 overflow-y-auto font-mono text-[10px] space-y-1.5 text-emerald-400/90 custom-scrollbar">
+            <div ref={logContainerRef} className="flex-1 overflow-y-auto font-mono text-xs space-y-1.5 text-status-success/90 custom-scrollbar">
                 {diagnosticLog.map((line, i) => (
                     <div key={i} className="animate-in slide-in-from-left-2 duration-100">
                         <span className="opacity-50 mr-2">{'>'}</span>{line}

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useAuth } from './useAuth';
 import { useSystem } from '../hooks/useSystem';
 import { useCRM } from './useCRM';
@@ -88,10 +88,17 @@ export const useAppInitialization = () => {
         }
     }, [currentUser, view, setView, logAttendance, logAudit]);
 
+    const handleExitGhostMode = useCallback(() => {
+        exitGhostMode();
+        if (originalAdmin) {
+            setView(originalAdmin.role === 'admin' ? 'admin_dashboard' : 'agent_dashboard');
+        }
+    }, [exitGhostMode, originalAdmin, setView]);
+
     return {
         currentUser,
         originalAdmin,
-        exitGhostMode,
+        exitGhostMode: handleExitGhostMode,
         view,
         setView,
         toast,

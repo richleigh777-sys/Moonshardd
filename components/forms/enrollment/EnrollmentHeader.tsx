@@ -29,21 +29,21 @@ export const EnrollmentHeader: React.FC<EnrollmentHeaderProps> = ({
     };
 
     return (
-        <div className="bg-[#09090b] text-white px-6 py-4 border-b border-white/5 flex justify-between items-center shrink-0 z-20 relative">
+        <div className="bg-transparent text-text-primary px-6 md:px-8 py-5 flex justify-between items-center shrink-0 z-20 relative">
             
-            <div className="flex items-center gap-6">
-                <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center shadow-lg shadow-indigo-500/20">
-                        <LayoutTemplate className="w-4 h-4 text-white" strokeWidth={2.5} />
+            <div className="flex items-center gap-6 md:gap-10">
+                <div className="flex items-center gap-4">
+                    <div className="w-12 h-12 bg-gradient-to-br from-indigo-500 to-accent-primary rounded-xl flex items-center justify-center shadow-[0_0_20px_rgba(99,102,241,0.4)] border border-border-strong">
+                        <LayoutTemplate className="w-6 h-6 text-text-primary drop-shadow-md" strokeWidth={2} />
                     </div>
                     <div>
-                        <h2 className="text-sm font-bold text-white tracking-tight">Nexus Prime</h2>
-                        <div className="flex items-center gap-2">
-                            <span className="flex items-center gap-1 text-[10px] font-medium text-emerald-500">
-                                <Lock size={10} /> Secure
+                        <h2 className="text-sm font-[700] text-text-primary tracking-[0.2em] ">Nexus Prime</h2>
+                        <div className="flex items-center gap-3 mt-1 text-[10px] font-bold  tracking-widest">
+                            <span className="flex items-center gap-1.5 text-status-success">
+                                <Lock size={12} /> Secure
                             </span>
                             {customerTime && (
-                                <span className="text-[10px] text-zinc-500 font-medium border-l border-white/10 pl-2">
+                                <span className="text-text-muted border-l border-border-subtle pl-3">
                                     {customerTime} Local
                                 </span>
                             )}
@@ -52,44 +52,47 @@ export const EnrollmentHeader: React.FC<EnrollmentHeaderProps> = ({
                 </div>
                 
                 {/* Mode Switcher */}
-                <div className="bg-white/5 p-1 rounded-lg flex gap-1">
+                <div className="bg-surface-main/50 backdrop-blur-md p-1.5 rounded-xl flex gap-1 border border-border-subtle shadow-inner">
                     <button 
                         onClick={() => { setMode('order'); sfx.playClick(); }}
-                        className={`px-3 py-1.5 rounded-md text-[11px] font-semibold transition-all flex items-center gap-1.5 ${mode === 'order' ? 'bg-white/10 text-white shadow-sm' : 'text-zinc-500 hover:text-zinc-300'}`}
+                        className={`px-4 py-2 rounded-lg text-xs font-[700]  tracking-widest transition-all flex items-center gap-2 ${mode === 'order' ? 'bg-gradient-to-r from-indigo-500/20 to-accent-primary/20 text-text-primary shadow-[0_0_15px_rgba(99,102,241,0.3)] border border-border-subtle' : 'text-text-muted hover:text-text-primary hover:bg-surface-highlight/50'}`}
                     >
                         Order
                     </button>
                     <button 
                         onClick={() => { setMode('callback'); sfx.playClick(); }}
-                        className={`px-3 py-1.5 rounded-md text-[11px] font-semibold transition-all flex items-center gap-1.5 ${mode === 'callback' ? 'bg-white/10 text-white shadow-sm' : 'text-zinc-500 hover:text-zinc-300'}`}
+                        className={`px-4 py-2 rounded-lg text-xs font-[700]  tracking-widest transition-all flex items-center gap-2 ${mode === 'callback' ? 'bg-gradient-to-r from-indigo-500/20 to-accent-primary/20 text-text-primary shadow-[0_0_15px_rgba(99,102,241,0.3)] border border-border-subtle' : 'text-text-muted hover:text-text-primary hover:bg-surface-highlight/50'}`}
                     >
                         Callback
                     </button>
                 </div>
             </div>
 
-            <div className="flex items-center gap-6">
+            <div className="flex items-center gap-6 md:gap-8">
                 {/* Session Timer */}
-                <div className="hidden xl:flex items-center gap-2 px-3 py-1.5 rounded-lg bg-white/5 border border-white/5">
-                    <Timer size={14} className={seconds > 300 ? 'text-amber-500' : 'text-zinc-500'} />
-                    <span className={`text-xs font-mono font-medium ${seconds > 300 ? 'text-amber-500' : 'text-zinc-400'}`}>{formatTime(seconds)}</span>
+                <div className="hidden xl:flex flex-col items-end">
+                    <span className="text-[10px] font-[700] text-text-muted  tracking-[0.2em] mb-1">Session</span>
+                    <div className="flex items-center gap-2">
+                        <Timer size={14} className={seconds > 300 ? 'text-status-warning' : 'text-accent-secondary'} />
+                        <span className={`text-xs font-mono font-bold ${seconds > 300 ? 'text-status-warning max-w-[50px]' : 'text-text-primary'}`}>{formatTime(seconds)}</span>
+                    </div>
                 </div>
 
                 {/* Total Display */}
-                <div className="flex flex-col items-end border-l border-white/10 pl-6">
-                    <span className="text-[10px] font-medium text-zinc-500 uppercase tracking-wider mb-0.5">Total Amount</span>
+                <div className="flex flex-col items-end border-l border-border-subtle pl-6 md:pl-8">
+                    <span className="text-[10px] font-[700] text-text-muted  tracking-[0.2em] mb-0.5">Total Amount</span>
                     <div className="flex items-baseline gap-1">
-                        <span className="text-sm font-medium text-zinc-500">$</span>
-                        <p className="text-2xl font-bold text-white tracking-tight">
+                        <span className="text-sm font-bold text-accent-primary">$</span>
+                        <p className="text-3xl font-[700] text-text-primary tracking-tighter drop-shadow-sm">
                             {grandTotal.toLocaleString(undefined, {minimumFractionDigits: 2})}
                         </p>
                     </div>
                 </div>
 
-                <div className="h-8 w-px bg-white/10 mx-2"></div>
+                <div className="h-10 w-px bg-gradient-to-b from-transparent via-white/10 to-transparent mx-2"></div>
 
-                <button onClick={onCancel} className="p-2 hover:bg-white/5 rounded-lg text-zinc-500 hover:text-white transition-colors">
-                    <X size={20} />
+                <button onClick={onCancel} className="w-12 h-12 flex items-center justify-center hover:bg-red-500/10 hover:border-status-error/30 border border-transparent rounded-2xl text-text-muted hover:text-status-error transition-all group">
+                    <X size={24} className="group-hover:rotate-90 transition-transform duration-300" />
                 </button>
             </div>
         </div>

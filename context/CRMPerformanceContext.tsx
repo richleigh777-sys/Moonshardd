@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/set-state-in-effect */
 
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { useAuth } from '../hooks/useAuth';
@@ -15,6 +16,38 @@ export const CRMPerformanceProvider: React.FC<{ children: React.ReactNode }> = (
         return saved ? parseInt(saved) : null;
     });
     const [shiftDuration, setShiftDuration] = useState(0);
+
+    // Sync state with cross-device database records
+    useEffect(() => {
+        if (!currentUser) {
+            if (isClockedIn) setIsClockedIn(false);
+            if (currentSessionStart) setCurrentSessionStart(null);
+            if (shiftDuration > 0) setShiftDuration(0);
+            return;
+        }
+
+        const todayStart = new Date().setHours(0,0,0,0);
+        const myAttendanceToday = crm.attendance
+            .filter(a => a.agentId === currentUser.id && a.timestamp >= todayStart && (a.type === 'CLOCK_IN' || a.type === 'CLOCK_OUT'))
+            .sort((a, b) => b.timestamp - a.timestamp);
+
+        if (myAttendanceToday.length > 0) {
+            const latest = myAttendanceToday[0];
+            if (latest.type === 'CLOCK_IN' && !isClockedIn) {
+                setIsClockedIn(true);
+                setCurrentSessionStart(latest.timestamp);
+                localStorage.setItem('isClockedIn', 'true');
+                localStorage.setItem('sessionStart', latest.timestamp.toString());
+            } else if (latest.type === 'CLOCK_OUT' && isClockedIn) {
+                setIsClockedIn(false);
+                setCurrentSessionStart(null);
+                setShiftDuration(0);
+                localStorage.removeItem('isClockedIn');
+                localStorage.removeItem('sessionStart');
+            }
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [currentUser, crm.attendance]);
 
     useEffect(() => {
         let interval: any;
@@ -39,16 +72,20 @@ export const CRMPerformanceProvider: React.FC<{ children: React.ReactNode }> = (
     }, [currentUser, crm]);
 
     const clockOut = useCallback(async () => {
-        if (!currentUser) return;
+        if (!currentUser || !currentSessionStart) return;
+        
+        // Compute exact duration right now to prevent tick skew
+        const finalDuration = Math.floor((Date.now() - currentSessionStart) / 1000);
+        
         setIsClockedIn(false);
-        const duration = shiftDuration;
-        await crm.logAttendance('CLOCK_OUT');
-        await crm.logAudit({ action: 'CLOCK_OUT', details: `Shift Ended. Duration: ${Math.round(duration / 60)}m`, module: 'AUTH' });
+        await crm.logAttendance('CLOCK_OUT', 'Shift End', finalDuration);
+        await crm.logAudit({ action: 'CLOCK_OUT', details: `Shift Ended. Duration: ${Math.round(finalDuration / 60)}m`, module: 'AUTH' });
+        
         setCurrentSessionStart(null);
         setShiftDuration(0);
         localStorage.removeItem('isClockedIn');
         localStorage.removeItem('sessionStart');
-    }, [currentUser, crm, shiftDuration]);
+    }, [currentUser, crm, currentSessionStart]);
 
     const performance = useMemo(() => {
         if (!crm.users.length) return { leaderboard: [], topPerformers: [], wallOfShame: [], myStats: null };

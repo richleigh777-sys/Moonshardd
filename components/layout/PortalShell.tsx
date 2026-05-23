@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
-  Sun, Moon, LogOut, Bell, Coffee, Play, Shield, Server, ChevronDown, Menu, X as CloseIcon
+  Sun, Moon, LogOut, Bell, Coffee, Play, Server, ChevronDown, Menu, X as CloseIcon, LayoutGrid, Terminal
 } from 'lucide-react';
 import { User, AppNotification } from '../../types';
 import { useAuth, useTimer } from '../../hooks/useAuth';
@@ -33,7 +33,7 @@ export const PortalShell: React.FC<PortalShellProps> = ({
     const { currentUser: user, logout } = useAuth();
     const { isOnBreak, onToggleBreak, workTimeSeconds } = useTimer();
     const { isClockedIn, clockIn, clockOut } = usePerformance();
-    const { theme, toggleTheme, activeServer, serverList, switchServer } = useSystem();
+    const { theme, toggleTheme, activeServer, serverList, switchServer, setToast } = useSystem();
     const { attendance, sales } = useCRM();
 
     const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(true);
@@ -42,6 +42,22 @@ export const PortalShell: React.FC<PortalShellProps> = ({
     const [isBreakModalOpen, setIsBreakModalOpen] = useState(false);
     const [isServerSwitcherOpen, setIsServerSwitcherOpen] = useState(false);
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+    useEffect(() => {
+        const handleDlpAlert = (e: any) => {
+            if ((user?.level || user?.accessLevel || 0) >= 10 && e.detail?.type === 'EXCESSIVE_REVEAL') {
+                setToast({
+                    title: 'DLP Alert',
+                    message: `${e.detail.user} revealed > 20 records in an hour.`,
+                    type: 'error'
+                });
+                sfx.playError();
+            }
+        };
+
+        window.addEventListener('DLP_ALERT', handleDlpAlert);
+        return () => window.removeEventListener('DLP_ALERT', handleDlpAlert);
+    }, [user, setToast]);
 
     const handleClockIn = () => {
         clockIn();
@@ -63,7 +79,7 @@ export const PortalShell: React.FC<PortalShellProps> = ({
     if (!user) return null;
 
     return (
-        <div className="h-full w-full flex bg-surface-alt text-text-primary transition-all duration-500 relative font-sans overflow-hidden">
+        <div className="h-full w-full flex bg-surface-alt text-text-primary transition-all duration-500 relative font-sans overflow-hidden p-0 lg:p-2 gap-2">
             
             {/* OVERLAYS */}
             {!isClockedIn && user.role === 'agent' && <ShiftOverlay />}
@@ -91,7 +107,7 @@ export const PortalShell: React.FC<PortalShellProps> = ({
                             animate={{ opacity: 1 }}
                             exit={{ opacity: 0 }}
                             onClick={() => setIsMobileMenuOpen(false)}
-                            className="fixed inset-0 z-[150] bg-black/60 backdrop-blur-sm lg:hidden"
+                            className="fixed inset-0 z-[150] bg-surface-alt backdrop-blur-sm lg:hidden"
                         />
                         <motion.aside 
                             initial={{ x: '-100%' }}
@@ -102,12 +118,12 @@ export const PortalShell: React.FC<PortalShellProps> = ({
                         >
                             <div className="h-20 flex items-center justify-between px-6 border-b border-border-subtle">
                                 <div className="flex items-center gap-3">
-                                    <div className="w-8 h-8 rounded-lg bg-accent-primary flex items-center justify-center text-white">
-                                        <Shield size={16} fill="currentColor" />
+                                    <div className="w-8 h-8 rounded-lg bg-accent-primary flex items-center justify-center text-surface-alt">
+                                        <Terminal size={16} fill="currentColor" />
                                     </div>
-                                    <span className="font-black uppercase tracking-tighter">Nexus OS</span>
+                                    <span className="font-[700]  tracking-tighter">Nexus OS</span>
                                 </div>
-                                <button onClick={() => setIsMobileMenuOpen(false)} className="p-2 text-text-muted hover:text-text-primary transition-colors">
+                                <button onClick={() => setIsMobileMenuOpen(false)} className="p-2 text-text-muted">
                                     <CloseIcon size={20} />
                                 </button>
                             </div>
@@ -115,9 +131,9 @@ export const PortalShell: React.FC<PortalShellProps> = ({
                                 {sidebarContent}
                             </nav>
                             <div className="p-4 border-t border-border-subtle">
-                                <button onClick={handleLogout} className="w-full p-3 flex items-center gap-3 text-rose-600 bg-rose-500/10 border border-rose-500/20 rounded-lg font-bold hover:bg-rose-500/20 transition-colors">
-                                    <LogOut size={18} />
-                                    <span>Log Out</span>
+                                <button onClick={handleLogout} className="w-full p-4 flex items-center gap-4 text-status-error bg-red-500/5 hover:bg-red-500/10 transition-colors rounded-xl font-bold">
+                                    <LogOut size={20} />
+                                    <span>Log Out Session</span>
                                 </button>
                             </div>
                         </motion.aside>
@@ -125,61 +141,62 @@ export const PortalShell: React.FC<PortalShellProps> = ({
                 )}
             </AnimatePresence>
 
-            {/* DESKTOP SIDEBAR */}
+            {/* DESKTOP SIDEBAR - FLOATING PANEL DESIGN */}
             <aside 
                 onMouseEnter={() => setIsSidebarCollapsed(false)}
                 onMouseLeave={() => setIsSidebarCollapsed(true)}
                 className={`
-                    hidden lg:flex fixed inset-y-0 left-0 z-[100] transition-all duration-300 ease-out flex-col shrink-0
-                    bg-slate-950 border-r border-white/5 text-white
-                    ${isSidebarCollapsed ? 'w-16' : 'w-56 shadow-xl'}
+                    hidden lg:flex z-[100] transition-all duration-300 ease-out flex-col shrink-0
+                    bg-surface-main border border-border-subtle rounded-2xl shadow-sm relative
+                    ${isSidebarCollapsed ? 'w-[72px]' : 'w-[260px]'}
                 `}
             >
-                <div className="h-16 flex items-center justify-center shrink-0 border-b border-white/5">
-                    <div className="w-8 h-8 flex items-center justify-center rounded-lg bg-accent-primary text-white cursor-pointer hover:scale-105 transition-transform shadow-lg shadow-accent-primary/20">
-                        <Shield size={16} fill="currentColor" />
+                <div className="h-20 flex items-center justify-center shrink-0 border-b border-border-subtle relative">
+                    <div className="w-10 h-10 flex items-center justify-center rounded-xl bg-accent-primary text-white cursor-pointer hover:scale-[1.05] transition-transform shadow-sm relative z-10" onClick={() => setIsTimeSheetOpen(true)}>
+                        <LayoutGrid size={20} strokeWidth={2} />
                     </div>
                 </div>
 
-                <nav className="flex-1 px-2 py-4 space-y-1 overflow-y-auto custom-scrollbar text-white/80">
+                <nav className="flex-1 px-4 py-6 space-y-1 overflow-y-auto custom-scrollbar relative z-10">
                     {sidebarContent}
                 </nav>
 
-                <div className="p-2 border-t border-white/5 bg-black/20">
-                    <button onClick={handleLogout} className="w-full p-2.5 flex items-center gap-3 text-white/70 hover:text-white hover:bg-white/5 transition-all rounded-lg" title="Log Out">
-                        <LogOut size={18} />
-                        {!isSidebarCollapsed && <span className="text-xs font-bold">Log Out</span>}
+                <div className="p-3 border-t border-border-subtle bg-surface-alt/40 rounded-b-2xl">
+                    <button onClick={handleLogout} className="w-full p-3 flex items-center justify-center gap-3 text-text-muted hover:text-text-primary transition-all rounded-xl hover:bg-surface-highlight border border-transparent hover:border-border-strong group">
+                        <LogOut size={18} className="group-hover:text-status-error transition-colors" />
+                        {!isSidebarCollapsed && <span className="text-sm font-semibold">Log Out</span>}
                     </button>
                 </div>
             </aside>
 
-            {/* MAIN CONTENT AREA */}
-            <main className={`flex-1 flex flex-col min-w-0 transition-all duration-300 ${isSidebarCollapsed ? 'lg:ml-16' : 'lg:ml-56'} h-full overflow-hidden bg-surface-alt`}>
+            {/* MAIN CONTENT WORKSPACE */}
+            <main className={`flex-1 flex flex-col min-w-0 transition-all duration-300 overflow-hidden bg-surface-main lg:rounded-2xl lg:border lg:border-border-subtle shadow-sm relative`}>
                 
                 {/* HEADER */}
-                <header className="h-16 px-4 md:px-6 flex items-center justify-between bg-surface-main border-b border-border-subtle shrink-0 z-[50] shadow-sm">
-                    <div className="flex items-center gap-3 md:gap-4 min-w-0">
+                <header className="h-20 px-8 flex items-center justify-between bg-transparent border-b border-border-subtle shrink-0 z-[50]">
+                    <div className="flex items-center gap-4">
                         <button 
                             onClick={() => setIsMobileMenuOpen(true)}
-                            className="p-1.5 -ml-1 text-text-muted hover:text-text-primary lg:hidden transition-colors"
-                            aria-label="Toggle menu"
+                            className="p-2 -ml-2 text-text-muted hover:text-text-primary lg:hidden transition-colors"
                         >
-                            <Menu size={20} />
+                            <Menu size={24} />
                         </button>
 
-                        <h1 className="text-sm md:text-base font-black text-text-primary truncate uppercase tracking-tight">{title}</h1>
+                        <div className="flex items-center gap-3">
+                            <LayoutGrid size={20} className="text-accent-secondary hidden sm:block opacity-50" />
+                            <h1 className="text-xl font-bold text-text-primary tracking-tight">{title}</h1>
+                        </div>
                         
                         {activeServer && (
-                            <div className="relative">
+                            <div className="relative ml-2">
                                 <button 
                                     onClick={() => user.accessLevel >= 10 && setIsServerSwitcherOpen(!isServerSwitcherOpen)}
-                                    className={`flex items-center gap-2 px-3 py-1.5 bg-surface-highlight border border-border-subtle rounded-lg transition-all text-xs font-bold ${user.accessLevel >= 10 ? 'hover:border-accent-primary/50 cursor-pointer' : 'cursor-not-allowed opacity-50'}`}
-                                    disabled={user.accessLevel < 10}
+                                    className={`flex items-center gap-2.5 px-3 py-1.5 bg-surface-alt hover:bg-surface-highlight border border-border-strong rounded-lg transition-all ${user.accessLevel >= 10 ? 'cursor-pointer' : 'cursor-default'}`}
                                 >
-                                    <Server size={12} className="text-text-muted" />
-                                    <span className="text-[10px] font-black uppercase text-text-secondary hidden sm:inline">{activeServer.name}</span>
-                                    {user.accessLevel >= 10 && <ChevronDown size={10} className={`text-text-muted transition-transform ${isServerSwitcherOpen ? 'rotate-180' : ''}`} />}
-                                    <div className="w-1.5 h-1.5 rounded-full bg-emerald-500"></div>
+                                    <Server size={14} className="text-accent-primary" />
+                                    <span className="text-xs font-bold text-text-primary font-mono tracking-wider hidden sm:inline">{activeServer.name}</span>
+                                    {user.accessLevel >= 10 && <ChevronDown size={14} className={`text-text-muted transition-transform duration-200 ${isServerSwitcherOpen ? 'rotate-180' : ''}`} />}
+                                    <div className="w-1.5 h-1.5 rounded-full bg-status-success shadow-[0_0_8px_var(--color-status-success)] animate-pulse"></div>
                                 </button>
 
                                 <AnimatePresence>
@@ -187,24 +204,24 @@ export const PortalShell: React.FC<PortalShellProps> = ({
                                         <>
                                             <div className="fixed inset-0 z-40" onClick={() => setIsServerSwitcherOpen(false)} />
                                             <motion.div 
-                                                initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                                                initial={{ opacity: 0, y: 5, scale: 0.98 }}
                                                 animate={{ opacity: 1, y: 0, scale: 1 }}
-                                                exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                                                className="absolute top-full left-0 mt-2 w-56 bg-surface-main border border-border-strong shadow-float rounded-lg z-50 overflow-hidden"
+                                                exit={{ opacity: 0, y: 5, scale: 0.98 }}
+                                                className="absolute top-full left-0 mt-3 w-64 bg-surface-main border border-border-strong shadow-float rounded-xl z-50 overflow-hidden"
                                             >
-                                                <div className="p-3 border-b border-border-subtle bg-surface-alt/30">
-                                                    <p className="text-[10px] font-black uppercase tracking-widest text-text-muted">Switch Node</p>
+                                                <div className="p-3 border-b border-border-subtle bg-surface-alt/50">
+                                                    <p className="text-xs font-semibold text-text-muted">Available Servers</p>
                                                 </div>
-                                                <div className="max-h-64 overflow-y-auto custom-scrollbar">
+                                                <div className="max-h-64 overflow-y-auto custom-scrollbar p-1.5 space-y-1">
                                                     {serverList.map(server => (
                                                         <button
                                                             key={server.id}
                                                             onClick={() => handleSwitchServer(server.id)}
-                                                            className={`w-full px-4 py-3 flex items-center justify-between hover:bg-surface-highlight transition-colors ${activeServer.id === server.id ? 'bg-surface-highlight' : ''}`}
+                                                            className={`w-full px-3 py-2.5 rounded-lg flex items-center justify-between hover:bg-surface-highlight transition-all ${activeServer.id === server.id ? 'bg-accent-primary/10 text-accent-primary ring-1 ring-accent-primary/30' : 'text-text-secondary'}`}
                                                         >
                                                             <div className="flex items-center gap-3">
                                                                 <Server size={14} />
-                                                                <span className="text-xs font-bold">{server.name}</span>
+                                                                <span className="text-sm font-bold">{server.name}</span>
                                                             </div>
                                                             {activeServer.id === server.id && <div className="w-1.5 h-1.5 rounded-full bg-accent-primary" />}
                                                         </button>
@@ -218,43 +235,41 @@ export const PortalShell: React.FC<PortalShellProps> = ({
                         )}
                     </div>
 
-                    <div className="flex items-center gap-2 md:gap-4 flex-shrink-0">
+                    <div className="flex items-center gap-4 md:gap-6">
                         {headerContent}
 
-                        <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-3">
                             {!isClockedIn ? (
                                 <button 
                                     onClick={handleClockIn}
-                                    className="flex items-center gap-2 px-3 md:px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg font-bold text-xs transition-all shadow-lg shadow-emerald-600/30 hover:shadow-emerald-600/50"
-                                    title="Clock in to start your shift"
+                                    className="flex items-center gap-2.5 px-5 py-2 hover:bg-emerald-500/10 text-status-success rounded-lg font-semibold text-sm transition-all border border-emerald-500/20"
                                 >
-                                    <Play size={14} fill="currentColor" />
+                                    <Play size={16} fill="currentColor" />
                                     <span className="hidden sm:inline">Clock In</span>
                                 </button>
                             ) : (
-                                <div className="flex items-center gap-1 md:gap-2 p-1 bg-surface-highlight border border-border-subtle rounded-lg">
+                                <div className="flex items-center gap-1.5 p-1 bg-surface-main border border-border-strong rounded-xl">
                                     <div 
-                                        className="px-2 md:px-3 py-1.5 bg-surface-main border border-border-subtle rounded-md cursor-pointer hover:bg-surface-alt transition-colors"
+                                        className="px-3 py-1 bg-surface-alt border border-border-subtle rounded-lg cursor-pointer hover:bg-surface-highlight transition-colors flex flex-col justify-center"
                                         onClick={() => setIsTimeSheetOpen(true)}
-                                        title="View timesheet"
                                     >
-                                        <span className={`text-xs font-mono font-bold ${isOnBreak ? 'text-amber-500' : 'text-emerald-500'}`}>
+                                        <span className={`text-[10px] font-semibold mb-0.5 opacity-60 ${isOnBreak ? 'text-status-warning' : 'text-text-primary'}`}>Duration</span>
+                                        <span className={`text-sm md:text-base font-mono font-bold tracking-tight leading-none ${isOnBreak ? 'text-status-warning' : 'text-text-primary'}`}>
                                             {formatTimer(workTimeSeconds)}
                                         </span>
                                     </div>
                                     <button 
                                         onClick={() => onToggleBreak()} 
-                                        className={`flex items-center gap-2 px-2 md:px-3 py-1.5 rounded-md font-bold text-[10px] uppercase tracking-wider transition-all ${isOnBreak ? 'bg-emerald-600 text-white' : 'bg-amber-600 text-white'}`}
-                                        title={isOnBreak ? 'Resume work' : 'Take a break'}
+                                        className={`flex items-center gap-2 px-4 py-2 rounded-lg font-semibold text-sm transition-all border ${isOnBreak ? 'bg-status-success text-surface-alt border-status-success shadow-md shadow-status-success/20 hover:brightness-110' : 'bg-surface-main text-text-primary border-border-subtle hover:bg-surface-highlight'}`}
                                     >
                                         {isOnBreak ? (
                                             <>
-                                                <Play size={12} fill="currentColor"/>
+                                                <Play size={16} fill="currentColor"/>
                                                 <span className="hidden sm:inline">Resume</span>
                                             </>
                                         ) : (
                                             <>
-                                                <Coffee size={12}/>
+                                                <Coffee size={16}/>
                                                 <span className="hidden sm:inline">Break</span>
                                             </>
                                         )}
@@ -263,35 +278,27 @@ export const PortalShell: React.FC<PortalShellProps> = ({
                             )}
                         </div>
                         
-                        <div className="hidden md:block w-px h-6 bg-border-subtle mx-1"></div>
+                        <div className="hidden md:block w-px h-8 bg-border-strong mx-2"></div>
 
-                        <button 
-                          onClick={toggleTheme} 
-                          className="hidden md:flex p-2.5 text-text-muted hover:text-text-primary hover:bg-surface-highlight transition-all rounded-lg" 
-                          title={`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`}
-                          aria-label={`Theme: ${theme}`}
-                        >
-                            {theme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
-                        </button>
-                        
-                        <button 
-                          onClick={() => setIsNotificationPanelOpen(!isNotificationPanelOpen)} 
-                          className="p-2.5 text-text-muted hover:text-text-primary hover:bg-surface-highlight transition-all rounded-lg relative" 
-                          title="Notifications"
-                          aria-label={`Notifications: ${notifications.length} unread`}
-                        >
-                            <Bell size={20} />
-                            {notifications.length > 0 && (
-                                <span className="absolute top-2 right-2 w-2.5 h-2.5 bg-rose-500 border-2 border-surface-main rounded-full animate-pulse"></span>
-                            )}
-                        </button>
+                        <div className="flex items-center gap-1">
+                            <button onClick={toggleTheme} className="hidden md:flex p-2.5 items-center justify-center text-text-muted hover:text-text-primary hover:bg-surface-highlight transition-all rounded-lg border border-transparent hover:border-border-subtle">
+                                {theme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
+                            </button>
+                            
+                            <button onClick={() => setIsNotificationPanelOpen(!isNotificationPanelOpen)} className="p-2.5 flex items-center justify-center text-text-muted hover:text-text-primary hover:bg-surface-highlight transition-all relative rounded-lg border border-transparent hover:border-border-subtle">
+                                <Bell size={20} />
+                                {notifications.length > 0 && (
+                                    <span className="absolute top-2 right-2 w-2 h-2 bg-status-error border-2 border-surface-main rounded-full animate-ping"></span>
+                                )}
+                            </button>
+                        </div>
                     </div>
                 </header>
 
-                {/* WORKSPACE */}
-                <div className="flex-1 overflow-hidden relative bg-surface-alt">
+                {/* WORKSPACE (Dataroom) */}
+                <div className="flex-1 overflow-hidden relative bg-surface-alt/20">
                     <div className="absolute inset-0 overflow-y-auto overflow-x-hidden custom-scrollbar">
-                        <div className="max-w-[1800px] mx-auto w-full flex flex-col min-h-full p-3 md:p-4">
+                        <div className="w-full min-h-full flex flex-col p-3 md:p-4 lg:p-6">
                             {children}
                         </div>
                     </div>

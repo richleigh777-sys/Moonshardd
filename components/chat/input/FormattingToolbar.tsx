@@ -28,11 +28,11 @@ export const FormattingToolbar: React.FC<FormattingToolbarProps> = ({ onFormat }
                     className="p-1.5 rounded hover:bg-surface-alt text-text-muted hover:text-text-primary transition-colors"
                     title={tool.label}
                 >
-                    <tool.icon size={14} strokeWidth={2.5} />
+                    <tool.icon size={16} strokeWidth={2.5} />
                 </button>
             ))}
             <div className="flex-1"></div>
-            <span className="text-[9px] font-mono text-text-muted opacity-50 uppercase tracking-wider">Markdown</span>
+            <span className="text-xs font-mono text-text-muted opacity-50  tracking-wider">Markdown</span>
         </div>
     );
 };

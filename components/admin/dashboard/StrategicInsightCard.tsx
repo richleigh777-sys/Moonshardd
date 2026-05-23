@@ -5,10 +5,7 @@ import { Card } from '../../ui/Base';
 import { db } from '../../../lib/firebase';
 import { handleFirestoreError, OperationType } from '../../../lib/firebaseUtils';
 import { Sale, User, Note } from '../../../types';
-import { GoogleGenAI, Type } from "@google/genai";
 import { addDoc, collection } from 'firebase/firestore';
-
-const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 
 interface StrategicInsightCardProps {
     sales: Sale[];
@@ -52,37 +49,39 @@ export const StrategicInsightCard: React.FC<StrategicInsightCardProps> = ({ sale
                 topAgents: users.slice(0, 3).map(u => u.name)
             };
 
-            const response = await ai.models.generateContent({
-                model: "gemini-1.5-flash",
-                contents: `
-                    Act as a Senior CRM Data Scientist. Analyze this high-density snapshot of sales and interaction data.
+            const res = await fetch('/api/gemini/generateContent', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    contents: `Act as a Senior CRM Data Scientist. Analyze this high-density snapshot of sales and interaction data.
                     
-                    Data Snapshot:
-                    ${JSON.stringify(dataSummary)}
-                    
-                    Evaluation Parameters:
-                    1. Health Score (0-100) based on revenue, resolution speed, and retention.
-                    2. 3 Key Findings: Focus on bottlenecks in resolution or retention opportunities.
-                    3. Strategic Pivot: One high-impact move (e.g. "Focus on re-engagement for LTV growth").
-                    4. Risk Factor: Identify the most dangerous trend (e.g. "Response times are exceeding 30 mins").
-                `,
-                config: {
-                    responseMimeType: "application/json",
-                    responseSchema: {
-                        type: Type.OBJECT,
-                        properties: {
-                            healthScore: { type: Type.NUMBER },
-                            keyFindings: { type: Type.ARRAY, items: { type: Type.STRING } },
-                            strategicPivot: { type: Type.STRING },
-                            riskFactor: { type: Type.STRING }
-                        },
-                        required: ['healthScore', 'keyFindings', 'strategicPivot', 'riskFactor']
+Data Snapshot:
+${JSON.stringify(dataSummary)}
+
+Evaluation Parameters:
+1. Health Score (0-100) based on revenue, resolution speed, and retention.
+2. 3 Key Findings: Focus on bottlenecks in resolution or retention opportunities.
+3. Strategic Pivot: One high-impact move (e.g. "Focus on re-engagement for LTV growth").
+4. Risk Factor: Identify the most dangerous trend (e.g. "Response times are exceeding 30 mins").`,
+                    config: {
+                        responseMimeType: "application/json",
+                        responseSchema: {
+                            type: "OBJECT",
+                            properties: {
+                                healthScore: { type: "NUMBER" },
+                                keyFindings: { type: "ARRAY", items: { type: "STRING" } },
+                                strategicPivot: { type: "STRING" },
+                                riskFactor: { type: "STRING" }
+                            },
+                            required: ['healthScore', 'keyFindings', 'strategicPivot', 'riskFactor']
+                        }
                     }
-                }
+                })
             });
 
-            if (response.text) {
-                setInsight(JSON.parse(response.text.trim()));
+            const data = await res.json();
+            if (data.text) {
+                setInsight(JSON.parse(data.text.trim()));
             }
         } catch (error) {
             console.error("Insight generation failed:", error);
@@ -113,29 +112,31 @@ export const StrategicInsightCard: React.FC<StrategicInsightCardProps> = ({ sale
 
 
     return (
-        <Card variant="panel" className="p-4 space-y-4 bg-gradient-to-br from-surface-main to-surface-alt border-border-subtle shadow-xl relative overflow-hidden group">
+        <Card variant="panel" className="p-4 md:p-6 space-y-4 md:space-y-6 bg-surface-main/30 backdrop-blur-3xl shadow-panel relative overflow-hidden group border border-border-strong rounded-2xl md:rounded-3xl hover:border-accent-primary/20 transition-all">
+            <div className="absolute inset-0 bg-gradient-to-br from-accent-primary/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity z-0"></div>
+            
             <div className="flex items-center justify-between relative z-10">
-                <div className="flex items-center gap-2">
-                    <div className="p-2 bg-accent-primary/10 rounded-xl text-accent-primary">
-                        <Sparkles size={18} />
+                <div className="flex items-center gap-3 md:gap-4">
+                    <div className="p-2 md:p-3 bg-accent-primary/10 rounded-xl md:rounded-2xl text-accent-primary border border-accent-primary/20 shadow-inner group-hover:scale-110 transition-transform">
+                        <Sparkles size={20} strokeWidth={2.5}/>
                     </div>
                     <div>
-                        <h3 className="text-xs font-black uppercase tracking-widest text-text-primary">Strategic Intelligence</h3>
-                        <p className="text-[9px] font-bold text-text-muted uppercase">Real-time pipeline analysis</p>
+                        <h3 className="text-sm font-[700]  tracking-[0.2em] text-text-primary drop-shadow-sm">Strategic Intelligence</h3>
+                        <p className="text-[10px] font-[700] text-text-muted  tracking-widest mt-0.5">Real-time pipeline analysis</p>
                     </div>
                 </div>
                 <div className="flex gap-2">
                     <button 
                         onClick={() => setShowHistory(!showHistory)}
-                        className="p-1.5 text-text-muted hover:text-text-primary transition-colors"
+                        className="p-2 bg-surface-main/80 backdrop-blur-md rounded-xl text-text-muted hover:text-text-primary hover:border-accent-primary/30 border border-border-strong shadow-inner transition-all hover:scale-105"
                         title="View History"
                     >
-                        <History size={14} />
+                        <History size={16} />
                     </button>
                     {!insight && !loading && (
                         <button 
                             onClick={generateInsights}
-                            className="px-3 py-1.5 bg-text-primary text-surface-main rounded-lg text-[9px] font-black uppercase tracking-widest hover:brightness-110 transition-all active:scale-95"
+                            className="px-4 py-2 bg-text-primary text-surface-main rounded-xl text-[10px] font-[700]  tracking-widest hover:brightness-110 shadow-[0_0_15px_rgba(255,255,255,0.1)] transition-all active:scale-95 border border-transparent"
                         >
                             Generate Report
                         </button>
@@ -144,67 +145,69 @@ export const StrategicInsightCard: React.FC<StrategicInsightCardProps> = ({ sale
             </div>
 
             {loading && (
-                <div className="py-8 text-center space-y-3 animate-pulse">
-                    <TrendingUp size={32} className="mx-auto text-accent-primary animate-bounce" />
-                    <p className="text-[10px] font-black uppercase tracking-[0.2em] text-text-primary">Scanning Sales Ledger...</p>
+                <div className="py-12 text-center space-y-4 animate-pulse relative z-10">
+                    <div className="w-16 h-16 rounded-full bg-accent-primary/10 flex items-center justify-center mx-auto border border-accent-primary/30 shadow-[0_0_30px_rgba(var(--color-accent-primary),0.2)]">
+                        <TrendingUp size={32} className="text-accent-primary animate-bounce shadow-accent-primary/50" />
+                    </div>
+                    <p className="text-xs font-[700]  tracking-[0.3em] text-text-primary drop-shadow-sm">Scanning Sales Ledger</p>
                 </div>
             )}
 
             {insight && (
                 <div className="space-y-6 animate-in fade-in zoom-in-95 duration-500 relative z-10">
-                    <div className="flex items-center justify-between bg-surface-main/50 p-4 rounded-2xl border border-border-subtle">
+                    <div className="flex items-center justify-between bg-surface-main/60 p-4 md:p-5 rounded-2xl border border-border-strong shadow-inner backdrop-blur-md group-hover:border-accent-primary/20 transition-colors">
                         <div className="space-y-1">
-                            <p className="text-[9px] font-black text-text-muted uppercase tracking-wider">Health Score</p>
-                            <p className={`text-3xl font-black ${insight.healthScore > 70 ? 'text-emerald-500' : 'text-amber-500'}`}>
+                            <p className="text-[10px] font-[700] text-text-muted  tracking-[0.2em]">Health Score</p>
+                            <p className={`text-4xl font-[700] font-display tracking-tight drop-shadow-sm ${insight.healthScore > 70 ? 'text-status-success shadow-emerald-500/20' : 'text-status-warning shadow-amber-500/20'}`}>
                                 {insight.healthScore}%
                             </p>
                         </div>
-                        <div className="w-12 h-12 rounded-full border-4 border-surface-highlight flex items-center justify-center relative">
+                        <div className="w-16 h-16 rounded-full border border-border-strong bg-surface-alt/50 flex items-center justify-center relative shadow-inner">
                             <div 
-                                className={`absolute inset-0 rounded-full border-4 border-t-transparent ${insight.healthScore > 70 ? 'border-emerald-500' : 'border-amber-500'}`}
+                                className={`absolute inset-0 rounded-full border-[3px] border-l-transparent border-b-transparent ${insight.healthScore > 70 ? 'border-emerald-500 drop-shadow-[0_0_5px_rgba(16,185,129,0.5)]' : 'border-amber-500 drop-shadow-[0_0_5px_rgba(245,158,11,0.5)]'}`}
                                 style={{ transform: `rotate(${insight.healthScore * 3.6}deg)` }}
                             ></div>
-                            <CheckCircle2 size={16} className={insight.healthScore > 70 ? 'text-emerald-500' : 'text-amber-500'} />
+                            <CheckCircle2 size={24} strokeWidth={2.5} className={insight.healthScore > 70 ? 'text-status-success' : 'text-status-warning'} />
                         </div>
                     </div>
 
-                    <div className="space-y-3">
-                        <p className="text-[9px] font-black text-text-muted uppercase tracking-widest flex items-center gap-2">
+                    <div className="space-y-3 p-1">
+                        <p className="text-[10px] font-[700] text-text-muted  tracking-[0.2em] flex items-center gap-2">
                              Key Performance Indicators
                         </p>
                         <div className="space-y-2">
                             {insight.keyFindings.map((f: string, i: number) => (
-                                <div key={i} className="flex gap-2 p-2.5 bg-surface-main/30 border border-border-subtle/50 rounded-xl group-hover:border-accent-primary/20 transition-colors">
-                                    <div className="w-1 h-1 bg-accent-primary rounded-full mt-1.5 shrink-0"></div>
-                                    <p className="text-[10px] font-medium text-text-secondary leading-relaxed">{f}</p>
+                                <div key={i} className="flex gap-3 p-3 lg:p-4 bg-surface-main/40 border border-border-strong rounded-xl group-hover:border-accent-primary/20 transition-all hover:bg-surface-main/60 shadow-inner">
+                                    <div className="w-1.5 h-1.5 bg-accent-primary shadow-[0_0_5px_var(--color-accent-primary)] rounded-full mt-2 shrink-0"></div>
+                                    <p className="text-xs font-[700] text-text-primary leading-relaxed opacity-90">{f}</p>
                                 </div>
                             ))}
                         </div>
                     </div>
 
-                    <div className="p-3.5 bg-accent-primary/5 border border-accent-primary/10 rounded-2xl">
-                        <div className="flex items-center justify-between mb-1">
-                            <p className="text-[9px] font-black text-accent-primary uppercase tracking-widest">Strategic Pivot</p>
+                    <div className="p-4 md:p-5 bg-accent-primary/5 border border-accent-primary/20 rounded-2xl shadow-[0_0_15px_rgba(var(--color-accent-primary),0.05)] backdrop-blur-sm">
+                        <div className="flex items-center justify-between mb-2">
+                            <p className="text-[10px] font-[700] text-accent-primary shadow-accent-primary/20  tracking-[0.2em]">Strategic Pivot</p>
                             <button 
                                 onClick={broadcastToWarRoom}
                                 disabled={isBroadcasting}
-                                className="flex items-center gap-1.5 text-[8px] font-black uppercase text-accent-primary hover:brightness-110 disabled:opacity-50"
+                                className="flex items-center gap-1.5 text-[10px] bg-accent-primary/10 px-3 py-1.5 rounded-lg border border-accent-primary/30 font-[700]  text-accent-primary hover:bg-accent-primary hover:text-surface-main transition-colors disabled:opacity-50"
                             >
-                                <Megaphone size={10} />
+                                <Megaphone size={14} />
                                 Broadcast
                             </button>
                         </div>
-                        <p className="text-[10px] font-bold text-text-primary italic">"{insight.strategicPivot}"</p>
+                        <p className="text-xs md:text-sm font-[700] text-text-primary italic opacity-90">"{insight.strategicPivot}"</p>
                     </div>
 
-                    <div className="flex items-center gap-2 text-[9px] font-black text-red-500/60 uppercase group-hover:text-red-500 transition-colors">
-                        <AlertCircle size={12} />
+                    <div className="flex items-center gap-2 text-[10px] font-[700] text-rose-500/80  px-4 py-3 bg-rose-500/5 border border-rose-500/20 rounded-xl">
+                        <AlertCircle size={16} />
                         Risk: {insight.riskFactor}
                     </div>
 
                     <button 
                         onClick={() => setInsight(null)}
-                        className="w-full py-2 border border-border-subtle rounded-xl text-[8px] font-black uppercase text-text-muted hover:text-text-primary transition-all"
+                        className="w-full py-3 bg-surface-main/80 backdrop-blur-md border border-border-strong shadow-inner hover:border-text-muted hover:text-text-primary rounded-xl text-[10px] font-[700]  text-text-muted transition-all active:scale-[0.98]"
                     >
                         Reset Analysis
                     </button>
@@ -212,9 +215,9 @@ export const StrategicInsightCard: React.FC<StrategicInsightCardProps> = ({ sale
             )}
 
             {!insight && !loading && sales.length === 0 && (
-                <div className="py-12 text-center opacity-30">
-                    <TrendingUp size={48} className="mx-auto mb-4" />
-                    <p className="text-xs font-black uppercase tracking-widest">Awaiting Transaction Data</p>
+                <div className="py-16 text-center opacity-40 relative z-10 flex flex-col items-center">
+                    <TrendingUp size={48} className="mb-4 text-text-muted drop-shadow-sm" />
+                    <p className="text-xs font-[700]  tracking-[0.3em] text-text-muted">Awaiting Transaction Data</p>
                 </div>
             )}
         </Card>

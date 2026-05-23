@@ -34,15 +34,15 @@ export const CutoffTracker = () => {
                         <CalendarClock size={20} strokeWidth={2.5}/>
                     </div>
                     <div>
-                        <p className="text-[10px] font-black uppercase tracking-widest text-text-muted mb-0.5">{status.label}</p>
-                        <h4 className="text-sm font-black text-text-primary flex items-center gap-1">
-                            {status.daysLeft} Days Left <span className="text-text-muted font-medium text-[10px]">until {status.deadline}</span>
+                        <p className="text-xs font-[700]  tracking-widest text-text-muted mb-0.5">{status.label}</p>
+                        <h4 className="text-sm font-[700] text-text-primary flex items-center gap-1">
+                            {status.daysLeft} Days Left <span className="text-text-muted font-medium text-xs">until {status.deadline}</span>
                         </h4>
                     </div>
                 </div>
                 
                 <div className="text-right hidden sm:block">
-                    <p className="text-[10px] font-bold text-text-secondary">{Math.round(status.progress)}% Complete</p>
+                    <p className="text-xs font-bold text-text-secondary">{Math.round(status.progress)}% Complete</p>
                 </div>
             </div>
         </Card>

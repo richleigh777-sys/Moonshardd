@@ -29,32 +29,32 @@ export const ProductSKUCard: React.FC<Props> = ({ product, volume, onToggle, onE
                         <Package size={18} strokeWidth={2.5}/>
                     </div>
                     <div>
-                        <h5 className="font-bold text-sm text-text-primary uppercase tracking-tight">{product.name}</h5>
-                        <p className="text-[9px] font-black uppercase text-text-muted tracking-widest">{product.category || 'GENERAL'} • {product.sku || 'NO-SKU'}</p>
+                        <h5 className="font-bold text-sm text-text-primary  tracking-tight">{product.name}</h5>
+                        <p className="text-xs font-[700]  text-text-muted tracking-widest">{product.category || 'GENERAL'} • {product.sku || 'NO-SKU'}</p>
                     </div>
                 </div>
 
                 <div className="flex items-center gap-8">
                     <div className="text-right">
-                        <p className="text-[9px] font-black uppercase text-text-muted tracking-widest mb-0.5">Price</p>
-                        <p className="text-sm font-black num-font text-text-primary">${product.price}</p>
+                        <p className="text-xs font-[700]  text-text-muted tracking-widest mb-0.5">Price</p>
+                        <p className="text-sm font-[700] num-font text-text-primary">${product.price}</p>
                     </div>
                     <div className="text-right">
-                        <p className="text-[9px] font-black uppercase text-text-muted tracking-widest mb-0.5">Stock</p>
-                        <p className={`text-sm font-black num-font ${health === 'CRITICAL' ? 'text-red-500' : 'text-text-primary'}`}>{product.stock || 0}</p>
+                        <p className="text-xs font-[700]  text-text-muted tracking-widest mb-0.5">Stock</p>
+                        <p className={`text-sm font-[700] num-font ${health === 'CRITICAL' ? 'text-status-error' : 'text-text-primary'}`}>{product.stock || 0}</p>
                     </div>
                     <div className="text-right hidden md:block">
-                        <p className="text-[9px] font-black uppercase text-text-muted tracking-widest mb-0.5">Margin</p>
-                        <p className="text-sm font-black num-font text-emerald-500">{margin}%</p>
+                        <p className="text-xs font-[700]  text-text-muted tracking-widest mb-0.5">Margin</p>
+                        <p className="text-sm font-[700] num-font text-status-success">{margin}%</p>
                     </div>
                 </div>
 
                 <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                    <button onClick={() => onDuplicate(product)} className="p-2 hover:bg-blue-500/10 hover:text-blue-500 rounded-lg text-text-muted transition-colors"><Copy size={14}/></button>
-                    <button onClick={() => onEdit(product)} className="p-2 hover:bg-accent-primary/10 hover:text-accent-primary rounded-lg text-text-muted transition-colors"><Edit3 size={14}/></button>
-                    <button onClick={() => onToggle(product.id)} className={`p-2 rounded-lg transition-colors ${product.active ? 'hover:bg-amber-500/10 hover:text-amber-500 text-text-muted' : 'text-text-muted hover:text-emerald-500'}`}><Power size={14}/></button>
+                    <button onClick={() => onDuplicate(product)} className="p-2 hover:bg-blue-500/10 hover:text-blue-500 rounded-lg text-text-muted transition-colors"><Copy size={16}/></button>
+                    <button onClick={() => onEdit(product)} className="p-2 hover:bg-accent-primary/10 hover:text-accent-primary rounded-lg text-text-muted transition-colors"><Edit3 size={16}/></button>
+                    <button onClick={() => onToggle(product.id)} className={`p-2 rounded-lg transition-colors ${product.active ? 'hover:bg-amber-500/10 hover:text-status-warning text-text-muted' : 'text-text-muted hover:text-status-success'}`}><Power size={16}/></button>
                     <div className="w-px h-4 bg-border-subtle mx-1"></div>
-                    <button onClick={() => onDelete(product.id)} className="p-2 hover:bg-red-500/10 hover:text-red-500 rounded-lg text-text-muted transition-colors"><Trash2 size={14}/></button>
+                    <button onClick={() => onDelete(product.id)} className="p-2 hover:bg-red-500/10 hover:text-status-error rounded-lg text-text-muted transition-colors"><Trash2 size={16}/></button>
                 </div>
             </div>
         );
@@ -68,16 +68,16 @@ export const ProductSKUCard: React.FC<Props> = ({ product, volume, onToggle, onE
             {/* Hover Actions */}
             <div className="absolute top-4 right-4 flex gap-1 opacity-0 group-hover:opacity-100 transition-all z-20 translate-x-2 group-hover:translate-x-0">
                 <button onClick={() => onDuplicate(product)} className="p-2 rounded-xl bg-surface-alt hover:bg-blue-500/10 text-text-muted hover:text-blue-500 border border-border-subtle shadow-sm transition-all" title="Clone SKU">
-                    <Copy size={12}/>
+                    <Copy size={16}/>
                 </button>
-                <button onClick={() => onToggle(product.id)} className="p-2 rounded-xl bg-surface-alt hover:bg-amber-500/10 text-text-muted hover:text-amber-500 border border-border-subtle shadow-sm transition-all" title={product.active ? 'Deactivate' : 'Activate'}>
-                    <Power size={12}/>
+                <button onClick={() => onToggle(product.id)} className="p-2 rounded-xl bg-surface-alt hover:bg-amber-500/10 text-text-muted hover:text-status-warning border border-border-subtle shadow-sm transition-all" title={product.active ? 'Deactivate' : 'Activate'}>
+                    <Power size={16}/>
                 </button>
                 <button onClick={() => onEdit(product)} className="p-2 bg-surface-alt hover:bg-accent-primary/10 rounded-xl text-text-muted hover:text-accent-primary border border-border-subtle shadow-sm transition-all" title="Edit SKU">
-                    <Edit3 size={12}/>
+                    <Edit3 size={16}/>
                 </button>
-                <button onClick={() => onDelete(product.id)} className="p-2 bg-surface-alt hover:bg-red-500/10 rounded-xl text-text-muted hover:text-red-500 border border-border-subtle shadow-sm transition-all" title="Delete SKU">
-                    <Trash2 size={12}/>
+                <button onClick={() => onDelete(product.id)} className="p-2 bg-surface-alt hover:bg-red-500/10 rounded-xl text-text-muted hover:text-status-error border border-border-subtle shadow-sm transition-all" title="Delete SKU">
+                    <Trash2 size={16}/>
                 </button>
             </div>
 
@@ -87,18 +87,18 @@ export const ProductSKUCard: React.FC<Props> = ({ product, volume, onToggle, onE
                         <Package size={18} strokeWidth={2.5}/>
                     </div>
                     {health !== 'OPTIMAL' && (
-                        <div className={`px-2 py-0.5 rounded text-[8px] font-black uppercase tracking-wider border flex items-center gap-1 ${health === 'CRITICAL' ? 'bg-red-500/10 text-red-500 border-red-500/20' : 'bg-amber-500/10 text-amber-500 border-amber-500/20'}`}>
-                            <AlertTriangle size={8}/> {health}
+                        <div className={`px-2.5 py-1 rounded text-sm font-[700]  tracking-wider border flex items-center gap-1 ${health === 'CRITICAL' ? 'bg-red-500/10 text-status-error border-red-500/20' : 'bg-amber-500/10 text-status-warning border-amber-500/20'}`}>
+                            <AlertTriangle size={16}/> {health}
                         </div>
                     )}
                 </div>
 
                 <div>
-                    <p className="text-[9px] font-black uppercase text-text-muted tracking-widest mb-1 truncate opacity-70">{product.category || 'GENERAL'}</p>
-                    <h5 className="font-black text-text-primary text-base uppercase tracking-tight italic truncate pr-8 leading-tight">{product.name}</h5>
+                    <p className="text-xs font-[700]  text-text-muted tracking-widest mb-1 truncate opacity-70">{product.category || 'GENERAL'}</p>
+                    <h5 className="font-[700] text-text-primary text-base  tracking-tight italic truncate pr-8 leading-tight">{product.name}</h5>
                     <div className="flex items-center gap-2 mt-2">
-                        <span className="text-xl font-black text-text-primary num-font">${product.price}</span>
-                        <span className={`text-[9px] font-bold uppercase px-1.5 py-0.5 rounded border ${margin > 50 ? 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20' : margin < 20 ? 'bg-red-500/10 text-red-500 border-red-500/20' : 'bg-blue-500/10 text-blue-500 border-blue-500/20'}`}>
+                        <span className="text-xl font-[700] text-text-primary num-font">${product.price}</span>
+                        <span className={`text-xs font-bold  px-3 py-1.5 rounded border ${margin > 50 ? 'bg-emerald-500/10 text-status-success border-emerald-500/20' : margin < 20 ? 'bg-red-500/10 text-status-error border-red-500/20' : 'bg-blue-500/10 text-blue-500 border-blue-500/20'}`}>
                             {margin}% Margin
                         </span>
                     </div>

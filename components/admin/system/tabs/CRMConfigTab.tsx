@@ -29,7 +29,7 @@ export const CRMConfigTab: React.FC<CRMConfigTabProps> = ({ config, onChange }) 
                 icon={Database} 
                 title="CRM Intelligence & Automation" 
                 sub="Manage your customer relationship capabilities" 
-                color="text-emerald-500" 
+                color="text-status-success" 
             />
 
             <div className="space-y-6">
@@ -70,8 +70,8 @@ export const CRMConfigTab: React.FC<CRMConfigTabProps> = ({ config, onChange }) 
                             <Share2 size={18} />
                         </div>
                         <div>
-                            <h4 className="text-sm font-black uppercase tracking-tight text-text-primary">External Data Sync</h4>
-                            <p className="text-[10px] font-medium text-text-muted">Broadcast CRM data to external spreadsheets</p>
+                            <h4 className="text-sm font-[700]  tracking-tight text-text-primary">External Data Sync</h4>
+                            <p className="text-xs font-medium text-text-muted">Broadcast CRM data to external spreadsheets</p>
                         </div>
                     </div>
 
@@ -86,18 +86,18 @@ export const CRMConfigTab: React.FC<CRMConfigTabProps> = ({ config, onChange }) 
                         
                         {crm.enableGoogleSheetSync && (
                             <div className="p-4 bg-surface-main border border-border-subtle rounded-2xl animate-in slide-in-from-top-2">
-                                <p className="text-[9px] font-black text-text-muted uppercase mb-3">Sync Parameters</p>
+                                <p className="text-xs font-[700] text-text-muted  mb-3">Sync Parameters</p>
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                     <div className="space-y-1">
-                                        <label className="text-[8px] font-black text-text-muted uppercase ml-1">Spreadsheet ID</label>
-                                        <input 
+                                        <label className="text-sm font-[700] text-text-muted  ml-1">Spreadsheet ID</label>
+                                        <input autoComplete="off" data-lpignore="true" data-prevent-autofill="true" spellCheck={false} 
                                             type="text" 
                                             placeholder="1x..." 
                                             className="w-full h-10 px-4 bg-surface-alt border border-border-subtle rounded-xl text-xs font-mono"
                                         />
                                     </div>
                                     <div className="space-y-1">
-                                        <label className="text-[8px] font-black text-text-muted uppercase ml-1">Export Interval</label>
+                                        <label className="text-sm font-[700] text-text-muted  ml-1">Export Interval</label>
                                         <select className="w-full h-10 px-4 bg-surface-alt border border-border-subtle rounded-xl text-xs font-bold appearance-none">
                                             <option>Real-time</option>
                                             <option>Hourly</option>

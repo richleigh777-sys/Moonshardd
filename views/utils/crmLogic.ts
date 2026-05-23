@@ -14,6 +14,49 @@ export const formatUSAPhone = (val: string) => {
   return !x[2] ? x[1] : `(${x[1]}) ${x[2]}${x[3] ? '-' + x[3] : ''}`;
 };
 
+export const parseFullAddress = (fullAddress: string) => {
+    if (!fullAddress) return { street: '', apt: '', city: '', state: '', zip: '' };
+    let street = fullAddress;
+    let apt = '';
+    let city = '';
+    let state = '';
+    let zip = '';
+
+    // Extract Unit/Apt
+    const aptMatch = fullAddress.match(/(?:\s+|,)\s*(?:Apt|Unit|Ste|Suite|#|Apartment)\s*\.?\s*([\w\d-]+)/i);
+    if (aptMatch) {
+       apt = aptMatch[1];
+    }
+
+    // Attempt to match US format: Street, City, State Zip
+    const match = fullAddress.match(/(.*?)(?:,\s*|\s+)([^,]+?)(?:,\s*|\s+)([A-Za-z]{2})\s+(\d{5}(?:-\d{4})?)$/);
+    if (match) {
+        street = match[1].trim();
+        city = match[2].trim();
+        state = match[3].trim().toUpperCase();
+        zip = match[4].trim();
+    } else {
+        // Fallback: match at least state and zip at the end
+        const match2 = fullAddress.match(/(.*?)\s+([A-Za-z]{2})\s+(\d{5}(?:-\d{4})?)$/);
+        if (match2) {
+            zip = match2[3].trim();
+            state = match2[2].trim().toUpperCase();
+            const remaining = match2[1].trim();
+            const cityMatch = remaining.match(/(.*?)(?:,\s*|\s+)([^,\s]+)$/);
+            if (cityMatch) {
+                street = cityMatch[1].trim();
+                city = cityMatch[2].trim();
+                // strip trailing comma from street
+                street = street.replace(/,$/, '').trim();
+            } else {
+                street = remaining.replace(/,$/, '').trim();
+            }
+        }
+    }
+
+    return { street, apt, city, state, zip };
+};
+
 export const formatCardNumber = (val: string, cardType?: string) => {
   const digits = val.replace(/\D/g, '');
   if (cardType === 'Amex') {

@@ -89,7 +89,7 @@ export const MessageContextMenu: React.FC<MessageContextMenuProps> = ({
                         <div className="w-px h-6 bg-border-subtle mx-1"></div>
                         <button 
                             onClick={(e) => { e.stopPropagation(); setShowEmojiPicker(!showEmojiPicker); }}
-                            className={`w-8 h-8 flex items-center justify-center rounded-lg transition-all ${showEmojiPicker ? 'bg-accent-primary text-white' : 'hover:bg-surface-main text-text-muted hover:text-text-primary'}`}
+                            className={`w-8 h-8 flex items-center justify-center rounded-lg transition-all ${showEmojiPicker ? 'bg-accent-primary text-text-primary' : 'hover:bg-surface-main text-text-muted hover:text-text-primary'}`}
                         >
                             <Plus size={16}/>
                         </button>
@@ -136,7 +136,7 @@ const MenuItem = ({ icon: Icon, label, onClick, color = "text-text-primary hover
         onClick={onClick}
         className={`w-full flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-bold transition-all group ${color}`}
     >
-        <Icon size={14} className="opacity-70 group-hover:opacity-100 group-hover:scale-110 transition-transform" />
+        <Icon size={16} className="opacity-70 group-hover:opacity-100 group-hover:scale-110 transition-transform" />
         {label}
     </button>
 );

@@ -16,7 +16,7 @@ export const LoginInput: React.FC<LoginInputProps> = ({
                 <Icon size={18} strokeWidth={isActive ? 2 : 1.5} />
             </div>
         )}
-        <input 
+        <input autoComplete="off" data-lpignore="true" data-prevent-autofill="true" spellCheck={false} 
             {...props}
             className={`
                 w-full bg-surface-alt/50 border border-border-subtle rounded-xl 

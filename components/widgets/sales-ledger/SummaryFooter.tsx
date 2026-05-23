@@ -15,17 +15,17 @@ interface SummaryFooterProps {
 export const SummaryFooter: React.FC<SummaryFooterProps> = React.memo(({ 
     count, approved, pending, total, currentPage, totalPages, onPageChange 
 }) => (
-    <div className="bg-surface-alt/80 border-t border-border-subtle p-3 flex justify-between items-center text-[10px] font-bold uppercase tracking-widest text-text-muted backdrop-blur-md sticky bottom-0 z-20">
+    <div className="bg-surface-alt/80 border-t border-border-subtle p-3 flex justify-between items-center text-xs font-bold  tracking-widest text-text-muted backdrop-blur-md sticky bottom-0 z-20">
         
         {/* Stats */}
         <div className="flex gap-4 items-center">
             <span>Rows: {count}</span>
-            <span className="text-emerald-500">Approved: {approved}</span>
-            <span className="text-amber-500">Pending: {pending}</span>
+            <span className="text-status-success">Approved: {approved}</span>
+            <span className="text-status-warning">Pending: {pending}</span>
             <div className="w-px h-3 bg-border-subtle mx-1"></div>
             <div className="flex gap-2 items-center text-text-primary">
                 <span>Total Volume:</span>
-                <span className="text-sm font-black num-font">${total.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</span>
+                <span className="text-sm font-[700] num-font">${total.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</span>
             </div>
         </div>
 
@@ -38,14 +38,14 @@ export const SummaryFooter: React.FC<SummaryFooterProps> = React.memo(({
                     disabled={currentPage === 1}
                     className="p-1.5 rounded-lg border border-border-subtle hover:bg-surface-main disabled:opacity-30 disabled:cursor-not-allowed transition-all"
                 >
-                    <ChevronLeft size={14} />
+                    <ChevronLeft size={16} />
                 </button>
                 <button 
                     onClick={() => onPageChange(currentPage + 1)}
                     disabled={currentPage === totalPages}
                     className="p-1.5 rounded-lg border border-border-subtle hover:bg-surface-main disabled:opacity-30 disabled:cursor-not-allowed transition-all"
                 >
-                    <ChevronRight size={14} />
+                    <ChevronRight size={16} />
                 </button>
             </div>
         </div>

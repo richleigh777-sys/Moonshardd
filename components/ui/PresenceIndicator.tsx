@@ -41,7 +41,7 @@ export const PresenceIndicator: React.FC<PresenceIndicatorProps> = ({
                             exit={{ opacity: 0, x: 10 }}
                             className="relative group"
                         >
-                            <div className={`w-6 h-6 rounded-full border-2 border-surface-main flex items-center justify-center text-[10px] font-black shadow-sm transition-transform hover:scale-110 cursor-help ${
+                            <div className={`w-6 h-6 rounded-full border-2 border-surface-main flex items-center justify-center text-xs font-[700] shadow-sm transition-transform hover:scale-110 cursor-help ${
                                 p.action === 'editing' 
                                     ? 'bg-status-warning text-white' 
                                     : 'bg-accent-primary text-white'
@@ -50,7 +50,7 @@ export const PresenceIndicator: React.FC<PresenceIndicatorProps> = ({
                             </div>
                             
                             {/* Tooltip */}
-                            <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2 py-1 bg-surface-alt border border-border-subtle rounded text-[9px] font-bold text-text-primary whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-50 shadow-xl">
+                            <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-1.5 bg-surface-alt border border-border-subtle rounded text-xs font-bold text-text-primary whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-50 shadow-xl">
                                 {p.userName} is {p.action === 'editing' ? 'editing' : 'viewing'}
                             </div>
                             
@@ -67,7 +67,7 @@ export const PresenceIndicator: React.FC<PresenceIndicatorProps> = ({
             </div>
             
             {showText && (
-                <span className="text-[10px] font-bold text-text-muted animate-pulse">
+                <span className="text-xs font-bold text-text-muted animate-pulse">
                     {activeUsers.length} {activeUsers.length === 1 ? 'other user' : 'other users'} active
                 </span>
             )}

@@ -3,7 +3,7 @@ import {
     Sale, User, Note, Task, SystemHealth, ProductConfig, 
     AuditEntry, AttendanceRecord, TacticalDirective, 
     AppNotification, SystemConfig, ChatMessage, ScriptItem, 
-    ChatChannel, Customer, Account, Presence 
+    ChatChannel, Customer, Account, Presence, DialerDataList
 } from '../types';
 
 export type CRMContextType = {
@@ -25,6 +25,8 @@ export type CRMContextType = {
     scripts: ScriptItem[];
     customSheets: any[];
     presence: Presence[];
+    dataHealthReports: any[];
+    dialerLists: DialerDataList[];
     health: SystemHealth;
     addSale: (saleData: Partial<Sale>) => Promise<Sale>;
     updateSaleStatus: (id: string, status: Sale['status'], details: Partial<Sale>, expectedUpdatedAt?: number, originalData?: Sale) => Promise<void>;
@@ -32,6 +34,9 @@ export type CRMContextType = {
     deleteSale: (id: string) => Promise<void>;
     bulkDeleteSales: (ids: string[]) => Promise<void>;
     bulkUpdateSales: (ids: string[], updates: Partial<Sale>) => Promise<void>;
+    executeDataHealthAction: (reportId: string, actionId: string) => Promise<void>;
+    executeFullDataHealthReport: (reportId: string) => Promise<void>;
+    undoDataHealthAction: (reportId: string, actionId: string) => Promise<void>;
     importSales: (data: Partial<Sale>[]) => Promise<number>;
     addCustomer: (customer: Partial<Customer>) => Promise<void>;
     updateCustomer: (id: string, updates: Partial<Customer>, expectedUpdatedAt?: number, originalData?: Customer) => Promise<void>;
@@ -43,10 +48,11 @@ export type CRMContextType = {
     updateTaskStatus: (id: string, status: 'completed') => Promise<void>;
     updateUser: (id: string, data: Partial<User>) => Promise<void>;
     addUser: (data: Partial<User>) => Promise<void>;
+    addDialerList: (data: Partial<DialerDataList>) => Promise<void>;
     updateProductConfig: (config: ProductConfig) => Promise<void>;
     updateSystemConfig: (config: any) => Promise<void>;
     sendDirective: (d: Partial<TacticalDirective>) => Promise<void>;
-    logAttendance: (type: string, reason?: string) => Promise<void>;
+    logAttendance: (type: string, reason?: string, duration?: number) => Promise<void>;
     logAudit: (entry: Partial<AuditEntry>) => Promise<void>;
     runDiagnostic: () => void;
     testUplink: () => Promise<any>;

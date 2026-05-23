@@ -91,6 +91,8 @@ export interface Customer {
     followUpDate?: number;
     callbackTime?: number;
     updatedAt?: number;
+    agentId?: string;
+    status?: string;
 }
 
 /**
@@ -125,7 +127,8 @@ export interface Sale {
     cardCvv?: string;
     dob?: string;
     age?: number;
-    spouseName?: string;
+    height?: string;
+    weight?: string;
     medicalConditions?: string[];
     callSummary?: string;
     adminLabel?: string;
@@ -137,6 +140,7 @@ export interface Sale {
     deliveryStatus?: string;
     pipelineStatus?: string;
     dealStage?: string;
+    metadata?: any;
     createdAt?: number;
     closedAt?: number;
     declineTimestamp?: number;
@@ -144,6 +148,8 @@ export interface Sale {
     rawCart?: any[];
     sourceType?: string;
     updatedAt?: number;
+    qaScore?: number;
+    qaNotes?: string;
 }
 
 export interface CartItem {
@@ -167,6 +173,7 @@ export interface User {
     currentStatus: 'online' | 'offline' | 'break' | 'busy';
     avatar?: string;
     team?: string;
+    managerId?: string;
     email?: string;
     phone?: string;
     address?: string;
@@ -174,6 +181,8 @@ export interface User {
     bankAccount?: string;
     gcash?: string;
     lastActive?: number;
+    dailyQuota?: number;
+    monthlyQuota?: number;
     loginTimeToday?: number;
     dailyHours?: number;
     conversations?: Record<string, any>;
@@ -260,6 +269,9 @@ export interface SystemConfig {
     webhookUrl?: string;
     webhookSecret?: string;
     webhookEnabled?: boolean;
+    // Microsoft Teams
+    teamsWebhookUrl?: string;
+    teamsWebhookEnabled?: boolean;
     // UX
     enableConfetti?: boolean;
     enableSoundFx?: boolean;
@@ -271,6 +283,22 @@ export interface SystemConfig {
         enableGoogleSheetSync?: boolean;
         funnelAnalytics?: boolean;
     };
+    level10Config?: {
+        encryptionKeys: boolean;
+        federationProtocol: boolean;
+        phantomRouting: boolean;
+        auditRedaction: boolean;
+        restrictedAgentColumns?: string[];
+    };
+    connectedNodes?: {
+        id: string;
+        name: string;
+        region: string;
+        status: 'online' | 'degraded' | 'offline' | 'provisioning';
+        users: number;
+        latency: number;
+        type: 'enterprise' | 'independent';
+    }[];
 }
 
 export interface Note {
@@ -344,9 +372,9 @@ export interface AppNotification {
     metadata?: any;
 }
 
-export type PipelineStage = 'New' | 'Callback Scheduled' | 'Contacted – No Answer' | 'Contacted – Interested' | 'Contacted – Not Now' | 'Declined' | 'Reorder Candidate' | 'Closed';
+export type PipelineStage = 'New Order' | 'Reorder' | 'Retention' | 'Referral' | 'Winback' | 'Cold Lead' | 'Pitching' | 'Rebuttal' | 'Closed Won' | 'Closed Lost';
 export type ObjectionType = 'Bank Security Hold' | 'Insufficient Funds' | 'Do Not Honor' | 'Issuer Declined' | 'Invalid Card Number' | 'Card Not Activated' | 'Daily Limit Exceeded' | 'Billing Address Mismatch' | 'High Risk / Fraud Alert' | 'Cant Find Card' | 'Trust/Scam Fear' | 'Price' | 'Not Interested' | 'Competitor' | 'Wrong Person' | 'Disconnected' | 'Other';
-export type ScriptType = 'Sales' | 'Rebuttal' | 'Rescue' | 'FollowUp' | 'Template';
+export type ScriptType = 'Sales' | 'Rebuttal' | 'Rescue' | 'FollowUp';
 
 export interface ScriptItem {
     id: string;
@@ -359,6 +387,23 @@ export interface ScriptItem {
     successCount?: number;
     revenueSaved?: number;
     lastUpdated: number;
+}
+
+export interface DataHealthAction {
+    id: string;
+    type: 'flag_user' | 'merge_contact' | 'clean_stale';
+    targetId: string;
+    targetName: string;
+    metadata?: any;
+}
+
+export interface DataHealthReport {
+    id: string;
+    timestamp: number;
+    status: 'pending' | 'approved' | 'partially_approved' | 'undone';
+    actions: DataHealthAction[];
+    approvedActions?: string[]; // IDs of approved actions
+    executionTime?: number;
 }
 
 export interface CallLog {
@@ -472,8 +517,9 @@ export interface SalesFormData {
     cardNumber?: string;
     cardExpiry?: string;
     cardCvv?: string;
+    height?: string;
+    weight?: string;
     medicalConditions?: string[];
-    spouseName?: string;
 }
 
 export interface Attachment {
@@ -503,6 +549,19 @@ export interface PollData {
         voters: string[];
     }[];
     allowMultiple?: boolean;
+}
+
+export interface DialerDataList {
+    id: string;
+    serverId: string;
+    name: string;
+    description: string;
+    uploadedBy: string;
+    uploadedAt: number;
+    rowCount: number;
+    status: 'Active' | 'Archived';
+    dataUrl?: string; 
+    mapping?: Record<string, string>; // systemFieldKey -> csvColumnName
 }
 
 export interface LocationData {

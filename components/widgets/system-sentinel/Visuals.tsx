@@ -14,7 +14,7 @@ export const UptimeDisplay = React.memo(() => {
         const sec = s % 60;
         return `${h}h ${m}m ${sec}s`;
     };
-    return <span className="font-mono text-emerald-500 font-bold tracking-tight">{format(uptime)}</span>;
+    return <span className="font-mono text-status-success font-bold tracking-tight">{format(uptime)}</span>;
 });
 
 export const LatencyGraph = () => {

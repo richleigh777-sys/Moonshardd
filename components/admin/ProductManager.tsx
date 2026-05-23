@@ -108,7 +108,7 @@ export const ProductManager: React.FC<Props> = ({ configForm, setConfigForm, onS
             
             <SupplyChainHUD stats={productLogic.stats} />
 
-            <Card variant="panel" className="flex-1 flex flex-col overflow-hidden rounded-2xl p-0 border-white/5 bg-surface-main shadow-2xl relative">
+            <Card variant="panel" className="flex-1 flex flex-col overflow-hidden rounded-2xl p-0 border-border-subtle bg-surface-main shadow-2xl relative">
                 
                 <CatalogToolbar 
                     totalItems={configForm.products.length}
@@ -162,15 +162,15 @@ export const ProductManager: React.FC<Props> = ({ configForm, setConfigForm, onS
                 <div className="p-2.5 border-t border-border-subtle bg-surface-alt/50 shrink-0 backdrop-blur-md flex justify-between items-center px-4">
                     <div className="flex items-center gap-4">
                         <div className="flex items-center gap-1.5">
-                            <ShieldCheck size={12} className="text-emerald-500" />
-                            <span className="text-[8px] font-black uppercase text-text-muted tracking-widest leading-none">Security: Verified</span>
+                            <ShieldCheck size={16} className="text-status-success" />
+                            <span className="text-sm font-[700]  text-text-muted tracking-widest leading-none">Security: Verified</span>
                         </div>
                         <div className="flex items-center gap-1.5">
-                            <Activity size={12} className="text-indigo-500" />
-                            <span className="text-[8px] font-black uppercase text-text-muted tracking-widest leading-none">Load: Optimal</span>
+                            <Activity size={16} className="text-accent-secondary" />
+                            <span className="text-sm font-[700]  text-text-muted tracking-widest leading-none">Load: Optimal</span>
                         </div>
                     </div>
-                    <span className="text-[7px] font-mono text-text-muted opacity-40 uppercase tracking-[0.2em]">Product Module v4.1</span>
+                    <span className="text-xs font-mono text-text-muted opacity-40  tracking-[0.2em]">Product Module v4.1</span>
                 </div>
 
                 <ProductConfigModal 

@@ -16,7 +16,6 @@ import { ChatInfoSidebar } from './ChatInfoSidebar';
 import { MediaViewer } from './MediaViewer';
 import { useCRM } from '../../hooks/useCRM';
 import { DragOverlay } from './ChatParts';
-import { SystemConsole } from './SystemConsole';
 
 interface Props {
   currentUser: User;
@@ -57,7 +56,6 @@ export const ChatWindow: React.FC<Props> = ({
   const [viewingMedia, setViewingMedia] = useState<{ src: string, type: 'image' | 'video', name: string } | null>(null);
   const [isMuted, setIsMuted] = useState(false);
   const [currentWallpaper, setCurrentWallpaper] = useState(activeConversation.wallpaper);
-  const [consoleEvents, setConsoleEvents] = useState<any[]>([]);
   
   // New: Pending Attachments State
   const [pendingAttachments, setPendingAttachments] = useState<Attachment[]>([]);
@@ -104,25 +102,6 @@ export const ChatWindow: React.FC<Props> = ({
         scrollToBottom('smooth');
     }
   }, [visibleMessages, currentUser.id, scrollToBottom]);
-
-  useEffect(() => {
-    if (typingNow.length > 0) {
-        setTimeout(() => {
-            setConsoleEvents(prev => [...prev, { text: `${typingNow[0]} is transmitting...`, type: 'info' }]);
-        }, 0);
-    }
-  }, [typingNow]);
-
-  useEffect(() => {
-    if (messages.length > 0) {
-        const last = messages[messages.length - 1];
-        if (last.senderId !== currentUser.id) {
-            setTimeout(() => {
-                setConsoleEvents(prev => [...prev, { text: `Incoming packet from ${last.senderName}`, type: 'success' }]);
-            }, 0);
-        }
-    }
-  }, [messages, currentUser.id]);
 
   const handleScroll = useCallback(() => {
     if (!scrollContainerRef.current) return;
@@ -189,8 +168,6 @@ export const ChatWindow: React.FC<Props> = ({
                       md5: mockMd5
                   } : a
               ));
-              
-              setConsoleEvents(prev => [...prev, { text: `SCAN COMPLETE: ${file.name} [SECURE]`, type: 'success' }]);
           } catch {
               setToast({ title: 'Upload Error', message: `Failed to load ${file.name}`, type: 'error' });
               setPendingAttachments(prev => prev.filter(a => a.name !== file.name));
@@ -207,7 +184,7 @@ export const ChatWindow: React.FC<Props> = ({
     <div className="flex h-full w-full relative overflow-hidden" 
          style={{ background: currentWallpaper ? `url(${currentWallpaper}) center/cover` : 'transparent' }}>
       
-      {currentWallpaper && <div className="absolute inset-0 bg-black/60 backdrop-blur-[2px]"></div>}
+      {currentWallpaper && <div className="absolute inset-0 bg-surface-alt backdrop-blur-[2px]"></div>}
 
       <div 
         className="flex flex-col h-full flex-1 relative z-10"
@@ -217,8 +194,6 @@ export const ChatWindow: React.FC<Props> = ({
       >
         {isDragging && <DragOverlay />}
         
-        <SystemConsole events={consoleEvents} />
-
         <ChatHeader 
             conversation={activeConversation}
             typingNow={typingNow}
@@ -241,17 +216,9 @@ export const ChatWindow: React.FC<Props> = ({
         <div 
             ref={scrollContainerRef} 
             onScroll={handleScroll}
-            className="flex-1 overflow-y-auto custom-scrollbar p-3 space-y-2 relative z-0 pt-16 pb-20"
+            className="flex-1 overflow-y-auto custom-scrollbar p-3 space-y-2 relative z-0 pt-20 pb-20"
         >
             <div className={`mx-auto flex flex-col gap-1 min-h-full justify-end transition-all duration-500 ${isMaximized ? 'max-w-full px-8' : 'max-w-3xl'}`}>
-                {visibleMessages.length === 0 && !searchQuery && (
-                    <div className="flex flex-col items-center justify-center py-8 opacity-30 select-none">
-                        <Lock size={32} strokeWidth={1} className="mb-4 text-indigo-500" />
-                        <p className="text-[11px] font-black uppercase tracking-[0.4em] text-white">Encrypted Tunnel</p>
-                        <p className="text-[9px] font-bold text-slate-400 mt-1.5">Messages are end-to-end secured.</p>
-                    </div>
-                )}
-
                 {visibleMessages.map((msg, idx) => {
                     const prevMsg = visibleMessages[idx - 1];
                     const isStacked = prevMsg?.senderId === msg.senderId && (msg.timestamp - prevMsg.timestamp < 300000);
@@ -285,69 +252,77 @@ export const ChatWindow: React.FC<Props> = ({
 
         {/* INPUT CAPSULE */}
         <div className="absolute bottom-4 left-0 right-0 z-30 flex flex-col items-center px-4 pointer-events-none">
-            <div className={`w-full ${isMaximized ? 'max-w-full px-6' : 'max-w-2xl'} pointer-events-auto flex flex-col gap-2`}>
+            <div className={`w-full ${isMaximized ? 'max-w-full px-6' : 'max-w-3xl'} pointer-events-auto flex flex-col gap-2`}>
                 
                 {/* Pending Attachments Staging Area */}
                 {pendingAttachments.length > 0 && (
-                    <div className="flex gap-2.5 overflow-x-auto p-2.5 bg-slate-950/80 backdrop-blur-2xl border border-white/10 rounded-[20px] mx-3 mb-1.5 animate-in slide-in-from-bottom-4 shadow-2xl">
+                    <div className="flex gap-2 p-2 bg-surface-alt border border-border-subtle rounded-lg mx-1 shadow-lg overflow-x-auto">
                         {pendingAttachments.map((att, idx) => (
                             <div key={idx} className="relative group shrink-0">
                                 {att.type === 'image' ? (
                                     <div className="relative">
-                                        <img src={att.url || 'https://picsum.photos/seed/scan/100/100'} className={`w-16 h-16 object-cover rounded-xl border border-white/10 shadow-lg ${att.isScanning ? 'blur-sm grayscale animate-pulse' : ''}`} alt="preview" />
+                                        <img src={att.url || 'https://picsum.photos/seed/scan/100/100'} className={`w-16 h-16 object-cover rounded-md border border-border-subtle ${att.isScanning ? 'blur-sm grayscale animate-pulse' : ''}`} alt="preview" />
                                         {att.isScanning && (
                                             <div className="absolute inset-0 flex items-center justify-center">
-                                                <div className="w-6 h-6 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin"></div>
+                                                <div className="w-5 h-5 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin"></div>
                                             </div>
                                         )}
                                     </div>
                                 ) : (
-                                    <div className={`w-16 h-16 flex flex-col items-center justify-center bg-white/5 border border-white/10 rounded-xl shadow-lg ${att.isScanning ? 'animate-pulse' : ''}`}>
-                                        {att.isScanning ? <UploadCloud size={20} className="text-indigo-400 animate-bounce" /> : <FileText size={20} className="text-slate-400 mb-1"/>}
-                                        <span className="text-[7px] font-black text-slate-500 uppercase tracking-widest">{att.isScanning ? 'SCANNING' : att.size}</span>
+                                    <div className={`w-16 h-16 flex flex-col items-center justify-center bg-surface-main border border-border-subtle rounded-md ${att.isScanning ? 'animate-pulse' : ''}`}>
+                                        {att.isScanning ? <UploadCloud size={16} className="text-accent-secondary animate-bounce" /> : <FileText size={16} className="text-text-muted mb-1"/>}
+                                        <span className="text-[10px] font-semibold text-text-muted ">{att.isScanning ? 'Scan...' : att.size}</span>
                                     </div>
                                 )}
                                 <button 
                                     onClick={() => removeAttachment(idx)}
-                                    className="absolute -top-1.5 -right-1.5 bg-red-500 text-white p-1 rounded-full shadow-xl hover:scale-125 active:scale-90 transition-all z-10"
+                                    className="absolute -top-1.5 -right-1.5 bg-red-500 text-text-primary p-0.5 rounded-full shadow-md hover:scale-110 active:scale-95 transition-all z-10"
                                 >
-                                    <X size={10} strokeWidth={4}/>
+                                    <X size={14} strokeWidth={3}/>
                                 </button>
                             </div>
                         ))}
                     </div>
                 )}
 
-                <div className="bg-slate-950/40 backdrop-blur-3xl border border-white/10 rounded-[24px] shadow-[0_25px_50px_-12px_rgba(0,0,0,0.5)] overflow-hidden transition-all duration-500 hover:border-white/20">
-                    <ChatInput 
-                        input={input}
-                        setInput={setInput}
-                        onSend={handleSend}
-                        onTyping={(e) => { setInput(e.target.value); onTyping(e.target.value.length > 0); }}
-                        isRecording={false}
-                        isBlocked={isOffline}
-                        onStartRecording={() => {}}
-                        onStopRecording={() => {}}
-                        onAttach={handleAttach}
-                        onCreatePoll={onCreatePoll || (() => {})}
-                        onShareLocation={onShareLocation || (() => {})}
-                        placeholder={`Transmit to ${activeConversation.peerName}...`}
-                        replyTo={replyTo}
-                        editingMsg={editingMsg}
-                        onCancelContext={() => { setReplyTo(null); setEditingMsg(null); }}
-                        users={users.filter(u => u.id !== currentUser.id)}
-                        lastReceivedMessage={lastReceivedMessage}
-                    />
-                </div>
+                {activeConversation.peerName.startsWith('[INT]') ? (
+                    <div className="flex justify-center p-2">
+                        <div className="flex items-center gap-2 bg-red-500/10 border border-red-500/20 text-status-error px-4 py-2 rounded-lg text-sm font-semibold shadow-inner">
+                            <Lock size={16} /> Restricted Internal Channel
+                        </div>
+                    </div>
+                ) : (
+                    <div className="bg-surface-alt rounded-lg shadow-sm border border-transparent hover:border-border-subtle transition-colors focus-within:ring-1 focus-within:ring-indigo-500/50">
+                        <ChatInput 
+                            input={input}
+                            setInput={setInput}
+                            onSend={handleSend}
+                            onTyping={(e) => { setInput(e.target.value); onTyping(e.target.value.length > 0); }}
+                            isRecording={false}
+                            isBlocked={isOffline}
+                            onStartRecording={() => {}}
+                            onStopRecording={() => {}}
+                            onAttach={handleAttach}
+                            onCreatePoll={onCreatePoll || (() => {})}
+                            onShareLocation={onShareLocation || (() => {})}
+                            placeholder={`Message...`}
+                            replyTo={replyTo}
+                            editingMsg={editingMsg}
+                            onCancelContext={() => { setReplyTo(null); setEditingMsg(null); }}
+                            users={users.filter(u => u.id !== currentUser.id)}
+                            lastReceivedMessage={lastReceivedMessage}
+                        />
+                    </div>
+                )}
             </div>
         </div>
 
         {showScrollButton && (
             <button 
                 onClick={() => scrollToBottom()}
-                className="absolute bottom-28 right-10 z-50 p-2.5 bg-accent-primary text-white shadow-lg shadow-accent-primary/40 hover:scale-110 active:scale-95 transition-all animate-in fade-in zoom-in"
+                className="absolute bottom-28 right-10 z-50 p-2.5 bg-surface-alt hover:bg-surface-highlight text-text-primary rounded-full shadow-lg transition-all"
             >
-                <ArrowDown size={16} strokeWidth={3} />
+                <ArrowDown size={18} strokeWidth={2.5} />
             </button>
         )}
       </div>

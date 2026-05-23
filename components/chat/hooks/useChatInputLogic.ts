@@ -58,8 +58,8 @@ export const useChatInputLogic = ({ onSend, onTyping }: UseChatInputProps) => {
             recordTimerRef.current = setInterval(() => {
                 setRecordTime(prev => prev + 1);
             }, 1000);
-        } catch (err) {
-            console.error("Microphone access denied:", err);
+        } catch (err: any) {
+            console.warn("Microphone access denied or unavailable:", err?.message || 'Permission dismissed');
         }
     }, []);
 
@@ -67,16 +67,18 @@ export const useChatInputLogic = ({ onSend, onTyping }: UseChatInputProps) => {
         if (mediaRecorderRef.current && isRecording) {
             mediaRecorderRef.current.onstop = () => {
                 const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/webm' });
-                const audioUrl = URL.createObjectURL(audioBlob);
-                
-                const audioAttachment = { 
-                    type: 'audio', 
-                    name: `voice_memo_${Date.now()}.webm`, 
-                    url: audioUrl,
-                    size: `${(audioBlob.size / 1024).toFixed(1)}KB`
-                };
-                
-                onSend(`Voice Note (${formatDuration(recordTime)})`, [audioAttachment]);
+                if (audioBlob.size > 0) {
+                    const audioUrl = URL.createObjectURL(audioBlob);
+                    
+                    const audioAttachment = { 
+                        type: 'audio', 
+                        name: `voice_memo_${Date.now()}.webm`, 
+                        url: audioUrl,
+                        size: `${(audioBlob.size / 1024).toFixed(1)}KB`
+                    };
+                    
+                    onSend(`Voice Note (${formatDuration(recordTime)})`, [audioAttachment]);
+                }
                 
                 mediaRecorderRef.current?.stream.getTracks().forEach(track => track.stop());
             };

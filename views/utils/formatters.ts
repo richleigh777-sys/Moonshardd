@@ -7,3 +7,10 @@ export const formatUSAPhone = (phone: string) => {
     }
     return phone;
 };
+
+export const generateInternalStackFormat = (saleData: any) => {
+    const d = new Date().toLocaleDateString('en-US', { timeZone: 'America/New_York' });
+    const amount = saleData.amount ? `$${saleData.amount.toLocaleString()}` : 'TBD';
+    
+    return `🚨 NEW DEAL SECURED 🚨\n\n🎯 Agent: ${saleData.agent || saleData.agentId || 'Unknown'}\n👤 Client: ${saleData.customer || 'Unknown'}\n📞 Phone: ${saleData.phone || 'N/A'}\n💰 Revenue: ${amount}\n📝 Details: ${saleData.callSummary || saleData.notes || 'No notes provided'}\n📅 Date: ${d}\n\n🔥 LFG! keep pushing!`;
+};

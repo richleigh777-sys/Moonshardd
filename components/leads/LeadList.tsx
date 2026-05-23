@@ -24,18 +24,18 @@ export const LeadList: React.FC<LeadListProps> = ({
                 <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
                         <Heart size={16} className="text-accent-primary fill-current" />
-                        <h3 className="text-xs font-black uppercase text-text-primary tracking-widest">Lead Pool</h3>
+                        <h3 className="text-xs font-[700]  text-text-primary tracking-widest">Lead Pool</h3>
                     </div>
-                    <span className="text-[9px] font-bold px-2 py-0.5 rounded bg-surface-alt border border-border-subtle text-text-muted">{leads.length} Pending</span>
+                    <span className="text-xs font-bold px-2.5 py-1 rounded bg-surface-alt border border-border-subtle text-text-muted">{leads.length} Pending</span>
                 </div>
                 
                 <div className="relative group">
-                    <Search size={12} className="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted group-focus-within:text-accent-primary transition-colors"/>
-                    <input 
+                    <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted group-focus-within:text-accent-primary transition-colors"/>
+                    <input autoComplete="off" data-lpignore="true" data-prevent-autofill="true" spellCheck={false} 
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
                         placeholder="Search names or numbers..."
-                        className="w-full bg-surface-main border border-border-subtle rounded-xl py-2 pl-9 pr-3 text-[10px] font-bold outline-none focus:border-accent-primary transition-all shadow-inner"
+                        className="w-full bg-surface-main border border-border-subtle rounded-xl py-2 pl-9 pr-3 text-xs font-bold outline-none focus:border-accent-primary transition-all shadow-inner"
                     />
                 </div>
 
@@ -44,7 +44,7 @@ export const LeadList: React.FC<LeadListProps> = ({
                         <button
                             key={p}
                             onClick={() => setFilterPriority(p)}
-                            className={`flex-1 py-1.5 text-[9px] font-black uppercase rounded-lg border transition-all ${filterPriority === p ? 'bg-accent-primary text-white border-accent-primary shadow-sm' : 'bg-surface-main text-text-muted border-border-subtle hover:text-text-primary'}`}
+                            className={`flex-1 py-1.5 text-xs font-[700]  rounded-lg border transition-all ${filterPriority === p ? 'bg-accent-primary text-white border-accent-primary shadow-sm' : 'bg-surface-main text-text-muted border-border-subtle hover:text-text-primary'}`}
                         >
                             {p}
                         </button>
@@ -64,7 +64,7 @@ export const LeadList: React.FC<LeadListProps> = ({
                     />
                 ))}
                 {leads.length === 0 && (
-                    <div className="p-8 text-center opacity-40 text-xs font-bold text-text-muted uppercase tracking-widest">No matching leads</div>
+                    <div className="p-8 text-center opacity-40 text-xs font-bold text-text-muted  tracking-widest">No matching leads</div>
                 )}
             </div>
         </div>

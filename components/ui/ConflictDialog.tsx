@@ -38,15 +38,15 @@ export const ConflictDialog: React.FC<ConflictDialogProps> = ({
 
                 {conflicts.length > 0 && (
                     <div className="w-full bg-surface-alt rounded-xl p-3 mb-6 text-left border border-border-subtle">
-                        <p className="text-[10px] font-black uppercase text-text-muted mb-2 tracking-widest">Conflicting Fields:</p>
+                        <p className="text-xs font-[700]  text-text-muted mb-2 tracking-widest">Conflicting Fields:</p>
                         <div className="flex flex-wrap gap-2">
                             {conflicts.map(field => (
-                                <span key={field} className="px-2 py-1 bg-status-error/10 text-status-error text-[10px] font-bold rounded border border-status-error/20 uppercase">
+                                <span key={field} className="px-3 py-1.5 bg-status-error/10 text-status-error text-xs font-bold rounded border border-status-error/20 ">
                                     {field.replace(/([A-Z])/g, ' $1')}
                                 </span>
                             ))}
                         </div>
-                        <p className="text-[9px] text-text-muted mt-3 italic">
+                        <p className="text-xs text-text-muted mt-3 italic">
                             Other fields were automatically merged successfully.
                         </p>
                     </div>
@@ -80,7 +80,7 @@ export const ConflictDialog: React.FC<ConflictDialogProps> = ({
                     onClick={onClose}
                     className="mt-4 text-xs font-bold text-text-muted hover:text-text-primary flex items-center gap-1 transition-colors"
                 >
-                    <X size={12} />
+                    <X size={16} />
                     Cancel
                 </button>
             </div>

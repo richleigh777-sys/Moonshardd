@@ -61,11 +61,11 @@ export const ScriptEditor: React.FC<ScriptEditorProps> = ({
                 <div className="flex-1 mr-4 space-y-3">
                     <div className="flex items-center gap-3">
                         <div className="relative group flex-1">
-                            <label className="text-[9px] font-black text-text-muted uppercase tracking-widest mb-1 block">Protocol Identifier</label>
-                            <input 
+                            <label className="text-xs font-[700] text-text-muted  tracking-widest mb-1 block">Protocol Identifier</label>
+                            <input autoComplete="off" data-lpignore="true" data-prevent-autofill="true" spellCheck={false} 
                                 value={form.title || ''}
                                 onChange={e => onChange({ title: e.target.value })}
-                                className="w-full bg-transparent text-2xl font-black text-text-primary outline-none placeholder:text-text-muted/40 uppercase tracking-tight border-b border-transparent focus:border-accent-primary transition-colors"
+                                className="w-full bg-transparent text-2xl font-[700] text-text-primary outline-none placeholder:text-text-muted/40  tracking-tight border-b border-transparent focus:border-accent-primary transition-colors"
                                 placeholder="UNTITLED PROTOCOL"
                                 autoFocus={isNew}
                             />
@@ -78,13 +78,12 @@ export const ScriptEditor: React.FC<ScriptEditorProps> = ({
                         <select 
                             value={form.type}
                             onChange={e => onChange({ type: e.target.value as any })}
-                            className="bg-transparent text-[10px] font-bold text-text-primary uppercase outline-none cursor-pointer px-2 py-1 hover:text-accent-primary transition-colors"
+                            className="bg-transparent text-xs font-bold text-text-primary  outline-none cursor-pointer px-3 py-1.5 hover:text-accent-primary transition-colors"
                         >
                             <option value="Sales">Sales Script</option>
                             <option value="Rebuttal">Rebuttal</option>
                             <option value="Rescue">Rescue Ops</option>
                             <option value="FollowUp">Follow Up</option>
-                            <option value="Template">Email/Text Template</option>
                         </select>
                     </div>
                     
@@ -92,7 +91,7 @@ export const ScriptEditor: React.FC<ScriptEditorProps> = ({
                         {!isNew && form.id && (
                             <button 
                                 onClick={() => onDelete(form.id!)}
-                                className="p-2 hover:bg-red-500/10 text-text-muted hover:text-red-500 rounded-lg transition-colors border border-transparent hover:border-red-500/20"
+                                className="p-2 hover:bg-red-500/10 text-text-muted hover:text-status-error rounded-lg transition-colors border border-transparent hover:border-red-500/20"
                                 title="Purge Protocol"
                             >
                                 <Trash2 size={16}/>
@@ -120,14 +119,14 @@ export const ScriptEditor: React.FC<ScriptEditorProps> = ({
 
                 <div className="flex-1 bg-surface-alt/20 rounded-2xl border border-border-subtle p-4 relative group focus-within:border-accent-primary/50 transition-colors shadow-inner flex flex-col">
                     <div className="flex justify-between items-center mb-2 pb-2 border-b border-border-subtle">
-                        <span className="text-[9px] font-sans font-bold text-text-muted flex items-center gap-2 uppercase tracking-wide">
-                            <Terminal size={10}/> Script Source
+                        <span className="text-xs font-sans font-bold text-text-muted flex items-center gap-2  tracking-wide">
+                            <Terminal size={16}/> Script Source
                         </span>
                         <button 
                             onClick={handleCopyAll} 
-                            className={`text-[9px] font-bold uppercase flex items-center gap-1 transition-colors ${copied ? 'text-emerald-500' : 'text-text-muted hover:text-text-primary'}`}
+                            className={`text-xs font-bold  flex items-center gap-1 transition-colors ${copied ? 'text-status-success' : 'text-text-muted hover:text-text-primary'}`}
                         >
-                            {copied ? <Check size={10}/> : <Copy size={10}/>} Copy
+                            {copied ? <Check size={16}/> : <Copy size={16}/>} Copy
                         </button>
                     </div>
                     <textarea 
@@ -143,11 +142,11 @@ export const ScriptEditor: React.FC<ScriptEditorProps> = ({
 
             {/* Footer */}
             <div className="p-4 border-t border-border-subtle bg-surface-alt/30 relative z-10 flex justify-end gap-3">
-                <Button variant="secondary" onClick={onClose} className="h-10 text-[10px] uppercase font-bold px-6">
+                <Button variant="secondary" onClick={onClose} className="h-10 text-xs  font-bold px-6">
                     Cancel
                 </Button>
-                <Button variant="primary" onClick={onSave} className="h-10 text-[10px] font-black uppercase tracking-widest shadow-lg shadow-emerald-500/20 bg-emerald-600 hover:bg-emerald-500 border-emerald-500/50 px-8">
-                    <Save size={14} className="mr-2"/> Commit Changes
+                <Button variant="primary" onClick={onSave} className="h-10 text-xs font-[700]  tracking-widest shadow-lg shadow-emerald-500/20 bg-emerald-600 hover:bg-emerald-500 border-status-success/50 px-8">
+                    <Save size={16} className="mr-2"/> Commit Changes
                 </Button>
             </div>
 

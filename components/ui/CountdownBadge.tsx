@@ -34,14 +34,14 @@ export const CountdownBadge: React.FC<CountdownBadgeProps> = ({ targetTimestamp 
   const futureStyle = "bg-accent-primary/10 text-accent-primary border-accent-primary/20";
 
   let currentStyle = normalStyle;
-  let icon = <Clock size={12} />;
+  let icon = <Clock size={16} />;
 
   if (isOverdue) {
       currentStyle = overdueStyle;
-      icon = <AlertTriangle size={12} />;
+      icon = <AlertTriangle size={16} />;
   } else if (isCritical) {
       currentStyle = criticalStyle;
-      icon = <AlarmClock size={12} />;
+      icon = <AlarmClock size={16} />;
   } else if (timeLeft < 3600000) {
       currentStyle = "bg-status-warning/10 text-status-warning border-status-warning/30";
   } else {
@@ -49,7 +49,7 @@ export const CountdownBadge: React.FC<CountdownBadgeProps> = ({ targetTimestamp 
   }
 
   return (
-    <div className={`flex items-center gap-1.5 px-2 py-1 rounded-md border text-[10px] font-bold uppercase tracking-wider transition-colors ${currentStyle}`}>
+    <div className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md border text-xs font-bold  tracking-wider transition-colors ${currentStyle}`}>
       {icon}
       <span>
         {isOverdue ? `Overdue +${formatDelta(timeLeft)}` : `Due in ${formatDelta(timeLeft)}`}

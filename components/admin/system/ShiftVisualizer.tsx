@@ -31,10 +31,10 @@ export const ShiftVisualizer: React.FC<ShiftVisualizerProps> = ({ start, end }) 
     return (
         <div className="mt-6 select-none">
             {/* Labels */}
-            <div className="flex justify-between text-[8px] font-black uppercase text-text-muted mb-2 px-1">
-                <span className="flex items-center gap-1"><Moon size={8}/> 00:00</span>
-                <span className="flex items-center gap-1"><Sun size={8}/> 12:00</span>
-                <span className="flex items-center gap-1"><Moon size={8}/> 23:59</span>
+            <div className="flex justify-between text-sm font-[700]  text-text-muted mb-2 px-1">
+                <span className="flex items-center gap-1"><Moon size={16}/> 00:00</span>
+                <span className="flex items-center gap-1"><Sun size={16}/> 12:00</span>
+                <span className="flex items-center gap-1"><Moon size={16}/> 23:59</span>
             </div>
 
             {/* Track */}
@@ -60,7 +60,7 @@ export const ShiftVisualizer: React.FC<ShiftVisualizerProps> = ({ start, end }) 
 
             {/* Summary */}
             <div className="flex justify-center mt-2">
-                <span className="px-3 py-1 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-[9px] font-black text-indigo-400 uppercase tracking-widest">
+                <span className="px-3 py-1 rounded-full bg-accent-secondary/10 border border-accent-secondary/20 text-xs font-[700] text-accent-secondary  tracking-widest">
                     {durationHrs} Hour Operation Cycle
                 </span>
             </div>

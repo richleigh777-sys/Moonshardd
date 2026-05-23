@@ -54,26 +54,26 @@ export const ProductPanel: React.FC<ProductPanelProps> = ({
     };
 
     return (
-        <div className="w-full bg-[#121214] text-white border border-white/5 rounded-2xl overflow-hidden shadow-sm">
+        <div className="w-full bg-surface-main/40 backdrop-blur-3xl text-text-primary border border-border-subtle rounded-3xl overflow-hidden shadow-panel">
             {/* Header */}
-            <div className="px-6 py-4 border-b border-white/5 flex items-center justify-between bg-white/[0.02]">
+            <div className="px-4 py-3 border-b border-border-subtle flex items-center justify-between bg-transparent">
                 <div className="flex items-center gap-3">
-                    <div className="p-2 bg-amber-500/10 rounded-lg text-amber-500">
-                        <Package size={16} />
+                    <div className="p-2 bg-gradient-to-br from-surface-highlight to-surface-main border border-border-subtle shadow-lg rounded-xl text-status-warning">
+                        <Package size={16} className="drop-shadow-[0_0_8px_rgba(245,158,11,0.5)]" />
                     </div>
-                    <h4 className="text-xs font-bold uppercase text-white tracking-wider">Order Manifest</h4>
+                    <h4 className="text-xs font-[700]  text-text-primary tracking-[0.2em]">Order Manifest</h4>
                 </div>
 
                 <button 
                     onClick={addLineItem} 
-                    className="flex items-center gap-2 px-3 py-1.5 bg-amber-500/10 hover:bg-amber-500/20 text-amber-500 rounded-lg border border-amber-500/20 transition-all active:scale-95"
+                    className="flex items-center gap-2 px-3 py-1.5 bg-gradient-to-br from-amber-500/20 to-amber-500/5 hover:from-amber-500/30 hover:to-amber-500/10 text-status-warning rounded-xl border border-status-warning/30 transition-all active:scale-95 shadow-[0_0_15px_rgba(245,158,11,0.15)] group"
                 >
-                    <Plus size={14} />
-                    <span className="text-[10px] font-bold uppercase tracking-wide">Add Product</span>
+                    <Plus size={14} className="group-hover:rotate-90 transition-transform duration-300" />
+                    <span className="text-[10px] font-[700]  tracking-widest shadow-none drop-shadow-md">Add</span>
                 </button>
             </div>
             
-            <div className="p-6 space-y-6">
+            <div className="p-4 space-y-6">
                 <BasketLineItems 
                     cart={cart} 
                     updateLineItem={updateLineItem} 
@@ -81,14 +81,15 @@ export const ProductPanel: React.FC<ProductPanelProps> = ({
                     productConfig={productConfig} 
                 />
                 
-                <div className="pt-6 border-t border-white/5">
-                    <div className="flex items-center gap-2 mb-3">
-                        <Command size={14} className="text-zinc-500"/>
-                        <label className="text-[10px] font-bold uppercase text-zinc-500 tracking-wider">Deployment Notes</label>
+                <div className="pt-8 border-t border-border-subtle relative">
+                    <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-amber-500/20 to-transparent"></div>
+                    <div className="flex items-center gap-3 mb-4">
+                        <Command size={16} className="text-status-warning drop-shadow-[0_0_5px_rgba(245,158,11,0.5)]"/>
+                        <label className="text-xs font-[700]  text-status-warning/80 tracking-[0.2em]">Deployment Notes</label>
                     </div>
                     <textarea 
                         value={notes} onChange={e => setNotes(e.target.value)}
-                        className="w-full h-24 bg-black/20 border border-white/10 rounded-xl p-4 text-xs font-medium text-white placeholder:text-zinc-600 focus:ring-1 focus:ring-amber-500/50 focus:border-amber-500/50 outline-none resize-none transition-all leading-relaxed"
+                        className="w-full h-28 bg-surface-alt/30 border border-border-subtle rounded-2xl p-5 text-sm font-medium text-text-primary placeholder:text-zinc-600 focus:ring-1 focus:ring-amber-500/50 focus:border-amber-500/50 outline-none resize-none transition-all leading-relaxed shadow-inner"
                         placeholder="Add special handling instructions or customer requests..."
                     />
                 </div>

@@ -35,62 +35,69 @@ export const LeadHealthWidget: React.FC<LeadHealthWidgetProps> = ({ notes, now }
     }, [notes, now]);
 
     return (
-        <Card variant="panel" className="p-4 bg-surface-main border-border-subtle relative overflow-hidden group">
-            <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:scale-110 transition-transform">
-                <Database size={80} />
+        <Card variant="panel" className="h-[400px] w-[350px] p-4 md:p-6 bg-surface-main/30 backdrop-blur-3xl relative overflow-hidden group border border-border-strong rounded-2xl md:rounded-3xl hover:border-accent-primary/20 transition-all shadow-panel">
+            <div className="absolute inset-0 bg-gradient-to-br from-accent-primary/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity z-0"></div>
+            <div className="absolute -top-10 -right-10 p-4 opacity-[0.03] group-hover:opacity-5 group-hover:scale-110 transition-all z-0 blur-[2px]">
+                <Database size={140} />
             </div>
             
-            <div className="flex items-center justify-between mb-6 relative z-10">
-                <div className="flex items-center gap-2">
-                    <div className={`p-2 rounded-lg ${stats.health > 80 ? 'bg-emerald-500/10 text-emerald-500' : 'bg-amber-500/10 text-amber-500'}`}>
-                        <ShieldCheck size={18} />
+            <div className="flex items-center justify-between mb-8 relative z-10">
+                <div className="flex items-center gap-3">
+                    <div className={`p-3 rounded-2xl border flex items-center justify-center shadow-inner group-hover:scale-110 transition-transform ${stats.health > 80 ? 'bg-emerald-500/10 text-status-success border-emerald-500/20' : 'bg-amber-500/10 text-status-warning border-amber-500/20'}`}>
+                        <ShieldCheck size={24} strokeWidth={2.5} />
                     </div>
                     <div>
-                        <h3 className="text-xs font-black uppercase text-text-primary tracking-widest leading-none">CRM Hygiene</h3>
-                        <p className="text-[9px] font-bold text-text-muted uppercase mt-1">Data Organization Integrity</p>
+                        <h3 className="text-sm font-[700]  text-text-primary tracking-[0.2em] leading-none drop-shadow-sm">CRM Hygiene</h3>
+                        <p className="text-[10px] font-[700] text-text-muted  mt-1 tracking-widest">Data Structure Integrity</p>
                     </div>
                 </div>
-                <div className="text-right">
-                    <span className={`text-2xl font-black num-font ${stats.health > 80 ? 'text-emerald-500' : 'text-amber-500'}`}>
+                <div className="text-right bg-surface-alt/80 backdrop-blur-md px-3 py-1.5 rounded-xl border border-border-strong shadow-inner ring-1 ring-white/5">
+                    <span className={`text-2xl md:text-3xl font-[700] font-display tracking-tighter drop-shadow-sm ${stats.health > 80 ? 'text-status-success shadow-emerald-500/20' : 'text-status-warning shadow-amber-500/20'}`}>
                         {stats.health}%
                     </span>
-                    <p className="text-[8px] font-bold text-text-muted uppercase tracking-tighter">System Health</p>
+                    <p className="text-[10px] font-[700] text-text-muted  tracking-[0.2em] mt-0.5">System Health</p>
                 </div>
             </div>
 
-            <div className="space-y-4 relative z-10">
+            <div className="space-y-5 relative z-10">
                 <MetricRow 
                     label="Automated Follow-ups" 
                     value={`${stats.reminderRate}%`} 
                     sub="Coverage"
                     icon={Activity}
                     color="text-blue-500"
+                    glow="shadow-[0_0_10px_rgba(59,130,246,0.3)]"
                     progress={stats.reminderRate}
+                    labelStyle={{ height: '15px' }}
                 />
                 <MetricRow 
                     label="Stale Objectives" 
                     value={`${stats.stale}%`} 
                     sub="> 24h Idle"
                     icon={AlertTriangle}
-                    color="text-amber-500"
+                    color="text-status-warning"
+                    glow="shadow-[0_0_10px_rgba(245,158,11,0.3)]"
                     progress={stats.stale}
                     inverse
+                    labelStyle={{ fontSize: '12px' }}
                 />
                 <MetricRow 
                     label="Fragmented Data" 
                     value={`${stats.missingFields}%`} 
                     sub="Missing Profile Keys"
                     icon={Database}
-                    color="text-indigo-500"
+                    color="text-accent-secondary"
+                    glow="shadow-[0_0_10px_rgba(99,102,241,0.3)]"
                     progress={stats.missingFields}
                     inverse
+                    containerStyle={{ height: '125px' }}
                 />
             </div>
 
-            <div className="mt-6 pt-4 border-t border-border-subtle/50 relative z-10">
-                <div className="flex items-center gap-2 bg-surface-alt/50 p-2 rounded-xl border border-border-subtle italic">
-                    <Activity size={12} className="text-accent-primary animate-pulse" />
-                    <p className="text-[10px] font-medium text-text-secondary leading-tight">
+            <div className="mt-8 pt-4 border-t border-border-strong relative z-10">
+                <div className="flex items-start gap-3 bg-surface-main/60 backdrop-blur-sm p-4 rounded-xl border border-border-strong italic shadow-inner group-hover:border-accent-primary/30 transition-colors">
+                    <Activity size={18} className="text-accent-primary animate-pulse shrink-0 mt-0.5" />
+                    <p className="text-xs font-[700] text-text-primary  tracking-widest leading-relaxed opacity-90 font-mono">
                         {stats.health > 85 
                             ? "Organizational protocols are stable. Lead leaks minimized." 
                             : "Quiet leaks detected in follow-up loops. Enforce directive: No lead left idle."}
@@ -101,24 +108,27 @@ export const LeadHealthWidget: React.FC<LeadHealthWidgetProps> = ({ notes, now }
     );
 };
 
-const MetricRow = ({ label, value, sub, icon: Icon, color, progress, inverse = false }: any) => (
-    <div className="space-y-1.5">
-        <div className="flex justify-between items-end">
-            <div className="flex items-center gap-2">
-                <Icon size={12} className={color} />
+const MetricRow = ({ label, value, icon: Icon, color, glow, progress, inverse = false, labelStyle, containerStyle }: any) => (
+    <div style={containerStyle} className="space-y-2 p-3 bg-surface-main/40 border border-border-strong rounded-xl group-hover:bg-surface-main/60 transition-colors shadow-inner">
+        <div className="flex justify-between items-center">
+            <div className="flex items-center gap-3">
+                <div className={`p-1.5 rounded-lg bg-surface-main border border-border-strong shadow-inner ${color}`}>
+                    <Icon size={14} className={glow} strokeWidth={2.5}/>
+                </div>
                 <div>
-                    <p className="text-[9px] font-black text-text-muted uppercase tracking-widest leading-none">{label}</p>
-                    <p className="text-[8px] font-bold text-text-muted/60 uppercase mt-0.5">{sub}</p>
+                    <p style={labelStyle} className="text-[10px] font-[700] text-text-primary  tracking-[0.2em] leading-none drop-shadow-sm">{label}</p>
                 </div>
             </div>
-            <span className={`text-xs font-black num-font ${color}`}>{value}</span>
+            <div className={`bg-surface-main px-2 py-1 rounded-[4px] border border-border-strong shadow-inner ring-1 ring-white/5`}>
+                <span className={`text-[10px] font-[700] font-display tracking-widest ${color}`}>{value}</span>
+            </div>
         </div>
-        <div className="h-1 bg-surface-alt rounded-full overflow-hidden">
+        <div className="h-1.5 bg-surface-alt/80 rounded-full overflow-hidden border border-border-strong shadow-inner">
             <div 
                 className={`h-full transition-all duration-1000 ${
                     inverse 
-                    ? (progress > 50 ? 'bg-status-error' : progress > 20 ? 'bg-amber-500' : 'bg-emerald-500')
-                    : (progress > 80 ? 'bg-emerald-500' : progress > 40 ? 'bg-blue-500' : 'bg-amber-500')
+                    ? (progress > 50 ? 'bg-status-error shadow-[0_0_8px_var(--color-status-error)]' : progress > 20 ? 'bg-amber-500 shadow-[0_0_8px_rgba(245,158,11,0.5)]' : 'bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]')
+                    : (progress > 80 ? 'bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]' : progress > 40 ? 'bg-blue-500 shadow-[0_0_8px_rgba(59,130,246,0.5)]' : 'bg-amber-500 shadow-[0_0_8px_rgba(245,158,11,0.5)]')
                 }`}
                 style={{ width: `${progress}%` }}
             />

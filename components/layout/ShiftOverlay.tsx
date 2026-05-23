@@ -20,7 +20,7 @@ export const ShiftOverlay: React.FC = () => {
                 </div>
                 
                 <div className="space-y-3">
-                    <h1 className="text-4xl font-black text-text-primary tracking-tight">
+                    <h1 className="text-4xl font-[700] text-text-primary tracking-tight">
                         Welcome back, {currentUser.name.split(' ')[0]}
                     </h1>
                     <p className="text-text-muted font-medium text-lg">
@@ -29,22 +29,22 @@ export const ShiftOverlay: React.FC = () => {
                 </div>
 
                 <div className="bg-surface-main p-8 rounded-[2rem] border border-border-subtle shadow-float">
-                    <div className="flex items-center justify-between mb-8 text-[10px] font-black text-text-muted uppercase tracking-[0.2em]">
+                    <div className="flex items-center justify-between mb-8 text-xs font-[700] text-text-muted  tracking-[0.2em]">
                         <span>Current Time</span>
-                        <span className="font-mono text-text-primary bg-surface-highlight px-2 py-1 rounded">
+                        <span className="font-mono text-text-primary bg-surface-highlight px-3 py-1.5 rounded">
                             {new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
                         </span>
                     </div>
                     
                     <button 
                         onClick={clockIn}
-                        className="w-full py-5 bg-accent-primary hover:bg-accent-primary/90 text-white rounded-2xl font-black uppercase tracking-[0.15em] shadow-lg shadow-accent-primary/20 transition-all hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center gap-3"
+                        className="w-full py-5 bg-accent-primary hover:bg-accent-primary/90 text-white rounded-2xl font-[700]  tracking-[0.15em] shadow-lg shadow-accent-primary/20 transition-all hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center gap-3"
                     >
                         <Play size={20} fill="currentColor" />
                         Start Shift
                     </button>
                     
-                    <p className="mt-6 text-[10px] text-text-muted text-center leading-relaxed opacity-60">
+                    <p className="mt-6 text-xs text-text-muted text-center leading-relaxed opacity-60">
                         By clocking in, you confirm your readiness to support our customers with empathy and excellence.
                     </p>
                 </div>

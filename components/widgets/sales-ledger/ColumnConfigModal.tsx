@@ -84,7 +84,7 @@ export const ColumnConfigModal: React.FC<ColumnConfigModalProps> = ({ isOpen, on
                     </div>
                     <div>
                         <h4 className="text-xs font-bold text-text-primary mb-1">Customize Columns</h4>
-                        <p className="text-[10px] text-text-secondary leading-relaxed">
+                        <p className="text-xs text-text-secondary leading-relaxed">
                             Toggle visibility using the eye icon. 
                             <span className="block mt-1 text-accent-primary font-medium">
                                 Tip: Drag and drop column headers directly in the table to reorder them.
@@ -106,17 +106,17 @@ export const ColumnConfigModal: React.FC<ColumnConfigModalProps> = ({ isOpen, on
                                     onClick={() => toggleVisibility(key)}
                                 >
                                     <div className={`w-8 h-8 rounded-lg flex items-center justify-center border transition-colors ${isVisible ? 'bg-accent-primary/10 border-accent-primary/20 text-accent-primary' : 'bg-surface-alt border-border-subtle text-text-muted'}`}>
-                                        {field.icon ? <field.icon size={14}/> : <Check size={14}/>}
+                                        {field.icon ? <field.icon size={16}/> : <Check size={16}/>}
                                     </div>
                                     <div>
-                                        <p className={`text-xs font-bold uppercase tracking-wide ${isVisible ? 'text-text-primary' : 'text-text-muted'}`}>{field.label}</p>
-                                        <p className="text-[9px] font-mono text-text-muted opacity-60">{field.key}</p>
+                                        <p className={`text-xs font-bold  tracking-wide ${isVisible ? 'text-text-primary' : 'text-text-muted'}`}>{field.label}</p>
+                                        <p className="text-xs font-mono text-text-muted opacity-60">{field.key}</p>
                                     </div>
                                 </div>
 
                                 <button 
                                     onClick={() => toggleVisibility(key)}
-                                    className={`p-2 rounded-xl transition-all ${isVisible ? 'text-emerald-500 bg-emerald-500/10 hover:bg-emerald-500/20' : 'text-text-muted hover:text-text-primary hover:bg-surface-alt'}`}
+                                    className={`p-2 rounded-xl transition-all ${isVisible ? 'text-status-success bg-emerald-500/10 hover:bg-emerald-500/20' : 'text-text-muted hover:text-text-primary hover:bg-surface-alt'}`}
                                 >
                                     {isVisible ? <Eye size={16}/> : <EyeOff size={16}/>}
                                 </button>
@@ -126,13 +126,13 @@ export const ColumnConfigModal: React.FC<ColumnConfigModalProps> = ({ isOpen, on
                 </div>
 
                 <div className="pt-4 mt-4 border-t border-border-subtle flex justify-between items-center shrink-0">
-                    <button onClick={handleReset} className="text-[10px] font-bold uppercase text-text-muted hover:text-status-error flex items-center gap-2 transition-colors">
-                        <RotateCcw size={12}/> Reset Default
+                    <button onClick={handleReset} className="text-xs font-bold  text-text-muted hover:text-status-error flex items-center gap-2 transition-colors">
+                        <RotateCcw size={16}/> Reset Default
                     </button>
                     <div className="flex gap-2">
-                        <Button variant="secondary" onClick={onClose} className="h-10 text-[10px] font-bold">Cancel</Button>
-                        <Button variant="primary" onClick={handleSave} className="h-10 text-[10px] font-black uppercase tracking-wider bg-indigo-600 hover:bg-indigo-500 shadow-lg shadow-indigo-500/20">
-                            <Check size={14} className="mr-2"/> Apply Changes
+                        <Button variant="secondary" onClick={onClose} className="h-10 text-xs font-bold">Cancel</Button>
+                        <Button variant="primary" onClick={handleSave} className="h-10 text-xs font-[700]  tracking-wider bg-indigo-600 hover:bg-indigo-500 shadow-lg shadow-indigo-500/20">
+                            <Check size={16} className="mr-2"/> Apply Changes
                         </Button>
                     </div>
                 </div>

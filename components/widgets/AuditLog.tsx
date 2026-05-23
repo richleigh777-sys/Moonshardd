@@ -5,7 +5,11 @@ import { AuditEntry } from '../../types';
 import { Card, Button } from '../ui/Base';
 import { exportToCSV } from '../../views/utils/crmLogic';
 
+import { useCRM } from '../../hooks/useCRM';
+
 export const AuditLog: React.FC<{ logs: AuditEntry[] }> = ({ logs }) => {
+    const { currentUser } = useCRM();
+    const isSuperAdmin = (currentUser?.level || currentUser?.accessLevel || 0) >= 10;
     const [searchTerm, setSearchTerm] = useState('');
     const [filterModule, setFilterModule] = useState<'ALL' | 'AUTH' | 'SALE' | 'SYSTEM'>('ALL');
     const [selectedLog, setSelectedLog] = useState<AuditEntry | null>(null);
@@ -58,23 +62,25 @@ export const AuditLog: React.FC<{ logs: AuditEntry[] }> = ({ logs }) => {
                                 <Info size={20} className="text-accent-primary group-hover:scale-110 transition-transform" />
                             </div>
                             <div>
-                                <h3 className="text-lg font-bold tracking-tight text-text-primary uppercase flex items-center gap-2">
+                                <h3 className="text-lg font-bold tracking-tight text-text-primary  flex items-center gap-2">
                                     Community Events
                                 </h3>
-                                <p className="text-[10px] font-medium text-text-muted uppercase tracking-widest">
+                                <p className="text-xs font-medium text-text-muted  tracking-widest">
                                     Activity Timeline • {filteredLogs.length} Records
                                 </p>
                             </div>
                         </div>
-                        <Button variant="secondary" onClick={handleExport} className="h-8 text-[10px] uppercase font-bold px-3">
-                            <Download size={14} className="mr-2"/> Save Journal
-                        </Button>
+                        {isSuperAdmin && (
+                            <Button variant="secondary" onClick={handleExport} className="h-8 text-xs  font-bold px-3">
+                                <Download size={16} className="mr-2"/> Save Journal
+                            </Button>
+                        )}
                     </div>
 
                     <div className="flex flex-col md:flex-row gap-3">
                         <div className="relative flex-1 group">
-                            <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted group-focus-within:text-accent-primary transition-colors"/>
-                            <input 
+                            <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted group-focus-within:text-accent-primary transition-colors"/>
+                            <input autoComplete="off" data-lpignore="true" data-prevent-autofill="true" spellCheck={false} 
                                 className="w-full pl-9 pr-3 py-2 bg-surface-main border border-border-subtle rounded-xl text-xs font-medium outline-none focus:border-accent-primary transition-all shadow-sm"
                                 placeholder="Search by name or note..."
                                 value={searchTerm}
@@ -86,7 +92,7 @@ export const AuditLog: React.FC<{ logs: AuditEntry[] }> = ({ logs }) => {
                                 <button
                                     key={mod}
                                     onClick={() => setFilterModule(mod)}
-                                    className={`px-3 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-wider transition-all whitespace-nowrap ${
+                                    className={`px-3 py-1.5 rounded-lg text-xs font-[700]  tracking-wider transition-all whitespace-nowrap ${
                                         filterModule === mod 
                                         ? 'bg-accent-primary text-white shadow-md' 
                                         : 'text-text-muted hover:text-text-primary'
@@ -101,7 +107,7 @@ export const AuditLog: React.FC<{ logs: AuditEntry[] }> = ({ logs }) => {
                 
                 <div className="flex-1 overflow-y-auto p-0 relative custom-scrollbar bg-surface-main">
                     <table className="w-full text-left border-collapse">
-                        <thead className="sticky top-0 bg-surface-alt/95 backdrop-blur-md text-[9px] font-black text-text-muted uppercase tracking-widest border-b border-border-subtle z-10">
+                        <thead className="sticky top-0 bg-surface-alt/95 backdrop-blur-md text-xs font-[700] text-text-muted  tracking-widest border-b border-border-subtle z-10">
                             <tr>
                                 <th className="p-4 pl-6 w-32">Time</th>
                                 <th className="p-4 w-48">Partner Identity</th>
@@ -113,7 +119,7 @@ export const AuditLog: React.FC<{ logs: AuditEntry[] }> = ({ logs }) => {
                         <tbody className="divide-y divide-border-subtle text-xs">
                             {filteredLogs.length === 0 ? (
                                 <tr><td colSpan={5} className="p-20 text-center text-text-muted italic flex flex-col items-center gap-4">
-                                    <span className="font-sans text-xs uppercase tracking-widest opacity-50">Nothing new to show.</span>
+                                    <span className="font-sans text-xs  tracking-widest opacity-50">Nothing new to show.</span>
                                 </td></tr>
                             ) : filteredLogs.map(log => {
                                 const styles = getSeverityStyles(log.action);
@@ -125,7 +131,7 @@ export const AuditLog: React.FC<{ logs: AuditEntry[] }> = ({ logs }) => {
                                         onClick={() => setSelectedLog(log)}
                                         className={`cursor-pointer transition-all duration-200 border-l-2 ${isSelected ? 'bg-accent-primary/5 border-l-accent-primary' : 'hover:bg-surface-alt/40 border-l-transparent'}`}
                                     >
-                                        <td className="p-4 pl-6 text-text-muted font-sans text-[10px] whitespace-nowrap">
+                                        <td className="p-4 pl-6 text-text-muted font-sans text-xs whitespace-nowrap">
                                             <span className="block text-text-primary font-bold">{new Date(log.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
                                             {new Date(log.timestamp).toLocaleDateString()}
                                         </td>
@@ -136,13 +142,13 @@ export const AuditLog: React.FC<{ logs: AuditEntry[] }> = ({ logs }) => {
                                                 </div>
                                                 <div className="flex flex-col">
                                                     <span className="font-bold text-text-primary truncate max-w-[120px]">{log.agentName}</span>
-                                                    <span className="text-[9px] text-text-muted font-mono tracking-wide opacity-70">UID::{log.agentId}</span>
+                                                    <span className="text-xs text-text-muted font-mono tracking-wide opacity-70">UID::{log.agentId}</span>
                                                 </div>
                                             </div>
                                         </td>
                                         <td className="p-4">
-                                            <span className={`px-2 py-1 rounded text-[9px] font-bold border uppercase tracking-wider flex items-center gap-1 w-fit ${
-                                                log.module === 'SALE' ? 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20' : 
+                                            <span className={`px-3 py-1.5 rounded text-xs font-bold border  tracking-wider flex items-center gap-1 w-fit ${
+                                                log.module === 'SALE' ? 'bg-emerald-500/10 text-status-success border-emerald-500/20' : 
                                                 'bg-blue-500/10 text-blue-500 border-blue-500/20'
                                             }`}>
                                                 {log.module}
@@ -152,7 +158,7 @@ export const AuditLog: React.FC<{ logs: AuditEntry[] }> = ({ logs }) => {
                                             <div className="flex items-center gap-2">
                                                 <div className={`w-1.5 h-1.5 rounded-full ${styles.text.replace('text-', 'bg-')} shrink-0`}></div>
                                                 <div>
-                                                    <span className={`font-black uppercase text-[10px] mr-2 ${styles.text}`}>
+                                                    <span className={`font-[700]  text-xs mr-2 ${styles.text}`}>
                                                         {log.action.replace(/_/g, ' ')}
                                                     </span>
                                                     <span className="text-text-secondary line-clamp-1">{log.details}</span>
@@ -160,7 +166,7 @@ export const AuditLog: React.FC<{ logs: AuditEntry[] }> = ({ logs }) => {
                                             </div>
                                         </td>
                                         <td className="p-4 text-right pr-6">
-                                            <ChevronRight size={14} className={`text-text-muted transition-transform ${isSelected ? 'rotate-90 text-accent-primary' : ''}`}/>
+                                            <ChevronRight size={16} className={`text-text-muted transition-transform ${isSelected ? 'rotate-90 text-accent-primary' : ''}`}/>
                                         </td>
                                     </tr>
                                 );

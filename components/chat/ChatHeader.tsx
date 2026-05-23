@@ -4,7 +4,8 @@ import {
     Phone, Video, Layout, 
     Search, Bell, BellOff, MoreVertical, Pin, 
     Users, X, Palette, ChevronDown, Check,
-    Maximize2, Minimize2
+    Maximize2, Minimize2, Lock,
+    Hash
 } from 'lucide-react';
 import { Conversation } from '../../services/ChatService';
 import { sfx } from '../../lib/soundService';
@@ -71,10 +72,10 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({
 
     const statusMeta = (() => {
         switch(conversation.peerStatus) {
-            case 'online': return { text: 'Uplink Established', color: 'text-emerald-400', bg: 'bg-emerald-500' };
-            case 'break': return { text: 'Away', color: 'text-amber-400', bg: 'bg-amber-500' };
-            case 'busy': return { text: 'Do Not Disturb', color: 'text-red-400', bg: 'bg-red-500' };
-            default: return { text: 'Signal Lost', color: 'text-slate-500', bg: 'bg-slate-500' };
+            case 'online': return { text: 'Online', color: 'text-status-success', bg: 'bg-emerald-500' };
+            case 'break': return { text: 'Away', color: 'text-status-warning', bg: 'bg-amber-500' };
+            case 'busy': return { text: 'Do Not Disturb', color: 'text-status-error', bg: 'bg-red-500' };
+            default: return { text: 'Offline', color: 'text-text-muted', bg: 'bg-gray-500' };
         }
     })();
 
@@ -87,121 +88,120 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({
     };
 
     return (
-        <div className="absolute top-2 left-0 right-0 z-40 flex justify-center pointer-events-none px-4">
-            <div className={`pointer-events-auto bg-slate-950/60 backdrop-blur-3xl border border-white/10 px-4 py-1.5 shadow-[0_20px_40px_rgba(0,0,0,0.4)] flex items-center justify-between w-full ${isMaximized ? 'max-w-full mx-2' : 'max-w-4xl'} rounded-xl transition-all animate-in slide-in-from-top-6 duration-700 hover:border-white/20`}>
-                
-                {/* Identity */}
-                <div className="flex items-center gap-3 cursor-pointer group" ref={controlsRef}>
-                     <div className="relative" onClick={onViewProfileImage}>
-                        <div className="h-8 w-8 bg-slate-800 rounded-lg border-2 border-white/10 overflow-hidden shadow-xl group-hover:border-accent-primary/50 transition-all group-hover:scale-105">
-                             {conversation.peerAvatar ? (
-                                 <img src={conversation.peerAvatar} className="h-full w-full object-cover" />
-                             ) : (
-                                 <div className="h-full w-full flex items-center justify-center bg-accent-primary/10 text-accent-primary font-black text-xs">{conversation.peerName.charAt(0)}</div>
-                             )}
-                        </div>
-                        <div className={`absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 border-2 border-[#09090b] rounded-full ${statusMeta.bg} shadow-lg`}></div>
-                     </div>
-
-                     <div onClick={() => setShowControls(!showControls)} className="flex flex-col">
-                        <h3 className="text-[12px] font-black text-white uppercase tracking-tight flex items-center gap-1.5 group-hover:text-accent-primary transition-colors">
-                            {conversation.peerName}
-                            <ChevronDown size={10} className={`text-slate-500 transition-transform duration-300 ${showControls ? 'rotate-180' : ''}`} />
-                            {conversation.isPinned && <Pin size={10} className="text-accent-primary fill-current rotate-45 animate-pulse"/>}
-                        </h3>
-                        <div className="flex items-center gap-2">
-                             {typingNow.length > 0 ? (
-                                 <span className="text-[9px] font-black text-accent-primary uppercase tracking-[0.2em] animate-pulse">Active...</span>
-                             ) : (
-                                 <span className={`text-[9px] font-bold uppercase tracking-[0.15em] ${statusMeta.color} flex items-center gap-1.5 opacity-80`}>
-                                     <span className={`w-1 h-1 rounded-full ${statusMeta.bg} animate-pulse`}></span>
-                                     {statusMeta.text}
-                                 </span>
-                             )}
-                        </div>
-                     </div>
-
-                     {/* DROP DOWN MENU - Attached to name */}
-                     {showControls && (
-                        <div className="absolute top-full left-0 mt-4 w-64 bg-slate-900/95 backdrop-blur-3xl border border-white/10 shadow-[0_30px_60px_rgba(0,0,0,0.5)] rounded-3xl p-2 flex flex-col gap-1 animate-in fade-in zoom-in-95 duration-300 z-50">
-                            <button onClick={(e) => { e.stopPropagation(); onMute(); setShowControls(false); }} className="flex items-center gap-4 p-4 hover:bg-white/5 rounded-2xl text-[13px] font-bold text-slate-300 hover:text-white transition-all">
-                                {isMuted ? <Bell size={16} className="text-red-400"/> : <BellOff size={16}/>}
-                                <span>{isMuted ? 'Enable Alerts' : 'Silence Feed'}</span>
-                            </button>
-                            <button onClick={toggleSearch} className="flex items-center gap-4 p-4 hover:bg-white/5 rounded-2xl text-[13px] font-bold text-slate-300 hover:text-white transition-all">
-                                <Search size={16}/> Find Protocol
-                            </button>
-                            <div className="h-px bg-white/10 mx-4 my-1.5"></div>
-                            <button onClick={(e) => { e.stopPropagation(); setShowWallpaperPicker(!showWallpaperPicker); }} className="flex items-center justify-between p-4 hover:bg-white/5 rounded-2xl text-[13px] font-bold text-slate-300 hover:text-white transition-all">
-                                <div className="flex items-center gap-4"><Palette size={16}/> Visuals</div>
-                                <ChevronDown size={14} className={showWallpaperPicker ? 'rotate-180' : ''}/>
-                            </button>
-                            {showWallpaperPicker && (
-                                <div className="grid grid-cols-5 gap-2.5 p-4 bg-white/5 mt-1 rounded-2xl mx-1">
-                                    {WALLPAPERS.map(wp => (
-                                        <button key={wp.id} onClick={(e) => { e.stopPropagation(); onChangeWallpaper(wp.bg); }} className="w-9 h-9 rounded-xl border border-white/20 relative hover:scale-110 transition-all overflow-hidden shadow-lg" style={{ background: wp.bg ? `url(${wp.bg}) center/cover` : '#1a1a1a' }}>
-                                            {conversation.wallpaper === wp.bg && <div className="absolute inset-0 flex items-center justify-center bg-black/50 backdrop-blur-[1px]"><Check size={14} className="text-white"/></div>}
-                                        </button>
-                                    ))}
-                                </div>
-                            )}
-                        </div>
-                     )}
-                </div>
-
-                {/* SEARCH BAR INJECTION */}
-                {showSearch ? (
-                    <div className="flex-1 mx-8 relative animate-in fade-in slide-in-from-right-4">
-                        <input 
-                            ref={searchInputRef}
-                            value={searchQuery}
-                            onChange={(e) => onSearch(e.target.value)}
-                            placeholder="Scanning logs..."
-                            className="w-full bg-black/40 border border-white/10 rounded-2xl py-2.5 pl-5 pr-12 text-[13px] font-mono text-white outline-none focus:border-accent-primary transition-all shadow-inner"
-                            onKeyDown={(e) => e.key === 'Escape' && toggleSearch(e as any)}
-                        />
-                        <button onClick={toggleSearch} className="absolute right-3 top-1/2 -translate-y-1/2 p-1.5 hover:bg-white/10 rounded-xl text-slate-500 hover:text-white transition-colors"><X size={14}/></button>
+        <div className="flex items-center justify-between px-4 py-3 bg-surface-main border-b border-border-subtle z-40 w-full shadow-sm">
+            
+            {/* Identity */}
+            <div className="flex items-center gap-3 cursor-pointer group" ref={controlsRef}>
+                 <div className="relative" onClick={onViewProfileImage}>
+                    <div className="h-9 w-9 bg-surface-alt rounded-full overflow-hidden transition-all group-hover:ring-2 ring-indigo-500/50">
+                         {conversation.peerAvatar ? (
+                             <img src={conversation.peerAvatar} className="h-full w-full object-cover" />
+                         ) : (
+                             <div className="h-full w-full flex items-center justify-center bg-accent-secondary/10 text-accent-secondary font-bold text-sm"><Hash size={16}/></div>
+                         )}
                     </div>
-                ) : (
-                    <div className="flex-1 flex justify-center">
-                         <PresenceIndicator resourceId={conversation.id} />
+                    <div className={`absolute bottom-0 right-0 w-3 h-3 border-2 border-border-subtle rounded-full ${statusMeta.bg}`}></div>
+                 </div>
+
+                 <div onClick={() => setShowControls(!showControls)} className="flex flex-col">
+                    <h3 className="text-sm font-bold text-text-primary flex items-center gap-1.5 hover:text-accent-secondary transition-colors">
+                        {conversation.peerName.startsWith('[INT]') && <Lock size={14} className="text-status-error" />}
+                        {conversation.peerName.replace('[INT] ', '')}
+                        <ChevronDown size={14} className={`text-text-muted transition-transform duration-300 ${showControls ? 'rotate-180' : ''}`} />
+                        {conversation.isPinned && <Pin size={14} className="text-text-muted transform rotate-45"/>}
+                    </h3>
+                    <div className="flex items-center gap-2">
+                         {typingNow.length > 0 ? (
+                             <span className="text-xs font-semibold text-accent-secondary">Typing...</span>
+                         ) : (
+                             <span className={`text-xs font-medium ${statusMeta.color} flex items-center gap-1.5 opacity-80`}>
+                                 {statusMeta.text}
+                             </span>
+                         )}
                     </div>
-                )}
+                 </div>
 
-                {/* ACTIONS */}
-                <div className="flex items-center gap-1.5">
-                    <button onClick={() => onStartCall('audio')} className="p-2 bg-white/5 hover:bg-emerald-500/20 rounded-lg text-slate-400 hover:text-emerald-400 transition-all border border-transparent hover:border-emerald-500/30 shadow-lg hover:scale-105 active:scale-95" title="Audio Link">
-                        <Phone size={14} />
-                    </button>
-                    <button onClick={() => onStartCall('video')} className="p-2 bg-white/5 hover:bg-indigo-500/20 rounded-lg text-slate-400 hover:text-indigo-400 transition-all border border-transparent hover:border-indigo-500/30 shadow-lg hover:scale-105 active:scale-95" title="Video Link">
-                        <Video size={14} />
-                    </button>
-                    <div className="w-px h-5 bg-white/10 mx-1"></div>
-                    <button onClick={toggleMediaSidebar} className={`p-2 rounded-lg transition-all shadow-lg hover:scale-105 active:scale-95 ${showMediaSidebar ? 'bg-accent-primary text-white shadow-accent-primary/40' : 'bg-white/5 hover:bg-white/10 text-slate-400 hover:text-white'}`}>
-                        <Layout size={14} />
-                    </button>
-
-                    <button onClick={toggleMaximize} className="p-2 bg-white/5 hover:bg-white/10 rounded-lg text-slate-400 hover:text-white transition-all shadow-lg hover:scale-105 active:scale-95" title={isMaximized ? "Minimize" : "Maximize"}>
-                        {isMaximized ? <Minimize2 size={14} /> : <Maximize2 size={14} />}
-                    </button>
-                    
-                    <div className="relative" ref={menuRef}>
-                        <button onClick={() => setShowMenu(!showMenu)} className="p-2 bg-white/5 hover:bg-white/10 rounded-lg text-slate-400 hover:text-white transition-all shadow-lg hover:scale-105 active:scale-95">
-                            <MoreVertical size={14} />
+                 {/* DROP DOWN MENU */}
+                 {showControls && (
+                    <div className="absolute top-14 left-4 w-60 bg-surface-alt border border-border-subtle shadow-xl rounded-lg py-2 flex flex-col animate-in fade-in zoom-in-95 duration-200 z-50">
+                        <button onClick={(e) => { e.stopPropagation(); onMute(); setShowControls(false); }} className="flex items-center gap-3 px-4 py-2 hover:bg-surface-highlight text-sm font-medium text-text-primary transition-all text-left">
+                            {isMuted ? <Bell size={16} className="text-status-error"/> : <BellOff size={16}/>}
+                            <span>{isMuted ? 'Unmute Channel' : 'Mute Channel'}</span>
                         </button>
-                        {showMenu && (
-                            <div className="absolute top-full right-0 mt-4 w-56 bg-slate-900/95 backdrop-blur-3xl border border-white/10 shadow-[0_30px_60px_rgba(0,0,0,0.5)] rounded-3xl p-2 z-50 animate-in fade-in zoom-in-95 duration-300">
-                                <button onClick={() => { onTogglePin(); setShowMenu(false); }} className="flex items-center gap-4 p-4 hover:bg-white/5 rounded-2xl text-[13px] font-bold text-slate-300 hover:text-white transition-all w-full text-left">
-                                    <Pin size={16}/> {conversation.isPinned ? 'Unpin' : 'Pin Priority'}
-                                </button>
-                                <button onClick={() => { onCreateGroup(); setShowMenu(false); }} className="flex items-center gap-4 p-4 hover:bg-white/5 rounded-2xl text-[13px] font-bold text-slate-300 hover:text-white transition-all w-full text-left">
-                                    <Users size={16}/> Invite Others
-                                </button>
+                        <button onClick={toggleSearch} className="flex items-center gap-3 px-4 py-2 hover:bg-surface-highlight text-sm font-medium text-text-primary transition-all text-left">
+                            <Search size={16}/> Search
+                        </button>
+                        <div className="h-px bg-gray-700 my-1"></div>
+                        <button onClick={(e) => { e.stopPropagation(); setShowWallpaperPicker(!showWallpaperPicker); }} className="flex items-center justify-between px-4 py-2 hover:bg-surface-highlight text-sm font-medium text-text-primary transition-all text-left w-full">
+                            <div className="flex items-center gap-3"><Palette size={16}/> Theme</div>
+                            <ChevronDown size={16} className={showWallpaperPicker ? 'rotate-180' : ''}/>
+                        </button>
+                        {showWallpaperPicker && (
+                            <div className="grid grid-cols-5 gap-2 p-3 bg-surface-main mt-1 mx-2 rounded-md">
+                                {WALLPAPERS.map(wp => (
+                                    <button key={wp.id} onClick={(e) => { e.stopPropagation(); onChangeWallpaper(wp.bg); }} className="w-8 h-8 rounded-full border border-border-subtle relative hover:ring-2 ring-indigo-500 overflow-hidden" style={{ background: wp.bg ? `url(${wp.bg}) center/cover` : '#2b2d31' }}>
+                                        {conversation.wallpaper === wp.bg && <div className="absolute inset-0 flex items-center justify-center bg-surface-alt"><Check size={14} className="text-text-primary"/></div>}
+                                    </button>
+                                ))}
                             </div>
                         )}
                     </div>
-                </div>
+                 )}
+            </div>
 
+            {/* SEARCH */}
+            {showSearch ? (
+                <div className="flex-1 max-w-md mx-4 relative animate-in fade-in slide-in-from-right-4">
+                    <input autoComplete="off" data-lpignore="true" data-prevent-autofill="true" spellCheck={false} 
+                        ref={searchInputRef}
+                        value={searchQuery}
+                        onChange={(e) => onSearch(e.target.value)}
+                        placeholder="Search..."
+                        className="w-full bg-surface-main border-none rounded-md py-1.5 pl-3 pr-8 text-sm text-text-primary outline-none focus:ring-1 focus:ring-indigo-500/50 transition-all"
+                        onKeyDown={(e) => e.key === 'Escape' && toggleSearch(e as any)}
+                    />
+                    <button onClick={toggleSearch} className="absolute right-2 top-1/2 -translate-y-1/2 p-1 text-text-muted hover:text-text-primary transition-colors"><X size={14}/></button>
+                </div>
+            ) : (
+                <div className="flex-1 flex justify-center">
+                     <PresenceIndicator resourceId={conversation.id} />
+                </div>
+            )}
+
+            {/* ACTIONS */}
+            <div className="flex items-center gap-1.5">
+                <button onClick={() => onStartCall('audio')} className="p-2 hover:bg-surface-alt rounded-md text-text-muted hover:text-text-primary transition-all" title="Audio Call">
+                    <Phone size={18} />
+                </button>
+                <button onClick={() => onStartCall('video')} className="p-2 hover:bg-surface-alt rounded-md text-text-muted hover:text-text-primary transition-all" title="Video Call">
+                    <Video size={18} />
+                </button>
+                
+                <div className="w-px h-6 bg-gray-700 mx-1"></div>
+                
+                <button onClick={toggleMediaSidebar} className={`p-2 rounded-md transition-all ${showMediaSidebar ? 'bg-indigo-500/20 text-accent-secondary' : 'hover:bg-surface-alt text-text-muted hover:text-text-primary'}`}>
+                    <Layout size={18} />
+                </button>
+
+                <button onClick={toggleMaximize} className="p-2 hover:bg-surface-alt rounded-md text-text-muted hover:text-text-primary transition-all" title={isMaximized ? "Minimize" : "Maximize"}>
+                    {isMaximized ? <Minimize2 size={18} /> : <Maximize2 size={18} />}
+                </button>
+                
+                <div className="relative" ref={menuRef}>
+                    <button onClick={() => setShowMenu(!showMenu)} className="p-2 hover:bg-surface-alt rounded-md text-text-muted hover:text-text-primary transition-all">
+                        <MoreVertical size={18} />
+                    </button>
+                    {showMenu && (
+                        <div className="absolute top-10 right-0 w-48 bg-surface-alt border border-border-subtle shadow-xl rounded-lg py-2 z-50 animate-in fade-in duration-200">
+                            <button onClick={() => { onTogglePin(); setShowMenu(false); }} className="flex items-center gap-3 px-4 py-2 hover:bg-surface-highlight text-sm font-medium text-text-primary transition-all w-full text-left">
+                                <Pin size={16}/> {conversation.isPinned ? 'Unpin' : 'Pin Channel'}
+                            </button>
+                            <button onClick={() => { onCreateGroup(); setShowMenu(false); }} className="flex items-center gap-3 px-4 py-2 hover:bg-surface-highlight text-sm font-medium text-text-primary transition-all w-full text-left">
+                                <Users size={16}/> Add Members
+                            </button>
+                        </div>
+                    )}
+                </div>
             </div>
         </div>
     );

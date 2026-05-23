@@ -69,71 +69,82 @@ export const SalesHistoryChart: React.FC<{ sales: Sale[] }> = ({ sales }) => {
     const averageDaily = data.length > 0 ? data.reduce((a, b) => a + b.revenue, 0) / data.length : 0;
 
     return (
-        <Card variant="panel" className="h-full p-0 flex flex-col relative overflow-hidden group border-border-subtle bg-surface-main shadow-soft">
+        <Card variant="panel" className="h-full p-0 flex flex-col relative overflow-hidden group border border-border-subtle hover:border-accent-primary/20 transition-all bg-surface-main/30 backdrop-blur-3xl shadow-panel rounded-2xl md:rounded-3xl">
+            <div className={`absolute top-0 left-0 right-0 h-1 bg-gradient-to-r opacity-30 z-0 transition-colors duration-500 ${viewMode === 'daily' ? 'from-status-success to-transparent' : 'from-accent-secondary to-transparent'}`}></div>
+            
             {/* Header */}
-            <div className="p-5 border-b border-border-subtle flex justify-between items-start bg-surface-alt/20 backdrop-blur-md relative z-10">
+            <div className="p-4 lg:p-6 border-b border-border-subtle flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-surface-main/60 backdrop-blur-sm relative z-10">
                 <div className="flex items-center gap-4">
-                    <div className={`p-3 rounded-2xl border transition-colors ${viewMode === 'daily' ? 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20' : 'bg-indigo-500/10 text-indigo-500 border-indigo-500/20'}`}>
-                        {viewMode === 'daily' ? <BarChart2 size={20} /> : <TrendingUp size={20} />}
+                    <div className={`p-3 rounded-2xl border transition-colors duration-500 shadow-inner group-hover:scale-110 ${viewMode === 'daily' ? 'bg-status-success/10 text-status-success border-status-success/20' : 'bg-accent-secondary/10 text-accent-secondary border-accent-secondary/20'}`}>
+                        {viewMode === 'daily' ? <BarChart2 size={24} /> : <TrendingUp size={24} />}
                     </div>
                     <div>
-                        <h3 className="text-sm font-black uppercase text-text-primary tracking-widest flex items-center gap-2">
+                        <h3 className="text-xs font-[700]  text-text-primary tracking-[0.2em] flex items-center gap-2">
                             Revenue Manifest
                         </h3>
-                        <div className="flex items-center gap-3 mt-1">
-                            <span className="text-[10px] font-bold text-text-muted uppercase tracking-wider">
+                        <div className="flex flex-wrap items-center gap-3 mt-1">
+                            <span className="text-[10px] font-bold text-text-muted  tracking-widest opacity-80">
                                 {data.length} Day Horizon
                             </span>
                             {peakDay && peakDay.revenue > 0 && (
-                                <span className="text-[9px] font-bold text-emerald-500 bg-emerald-500/10 px-1.5 py-0.5 rounded border border-emerald-500/20 flex items-center gap-1">
-                                    <ArrowUpRight size={8} /> High: ${peakDay.revenue.toLocaleString()}
+                                <span className="text-[10px] font-[700] text-status-success bg-status-success/10 px-2 py-1 rounded-lg border border-status-success/20 flex items-center gap-1 shadow-[0_0_10px_var(--color-status-success)]/10">
+                                    <ArrowUpRight size={14} /> Peak: ${peakDay.revenue.toLocaleString()}
                                 </span>
                             )}
                         </div>
                     </div>
                 </div>
 
-                <div className="flex bg-surface-main p-1 rounded-xl border border-border-subtle shadow-sm">
+                <div className="flex bg-surface-alt/50 p-1 rounded-xl border border-border-strong shadow-inner">
                     <button 
                         onClick={() => setViewMode('daily')}
-                        className={`px-3 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-wider transition-all ${
-                            viewMode === 'daily' ? 'bg-surface-alt text-text-primary shadow-sm' : 'text-text-muted hover:text-text-primary'
+                        className={`px-4 py-2 rounded-lg text-[10px] font-[700]  tracking-[0.15em] transition-all ${
+                            viewMode === 'daily' ? 'bg-surface-main text-status-success shadow-[0_0_15px_rgba(0,0,0,0.5)] border border-status-success/20 ring-1 ring-status-success/5' : 'text-text-muted hover:text-text-primary hover:bg-surface-highlight'
                         }`}
                     >
-                        Daily
+                        Daily Sync
                     </button>
                     <button 
                         onClick={() => setViewMode('cumulative')}
-                        className={`px-3 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-wider transition-all ${
-                            viewMode === 'cumulative' ? 'bg-indigo-500 text-white shadow-md' : 'text-text-muted hover:text-text-primary'
+                        className={`px-4 py-2 rounded-lg text-[10px] font-[700]  tracking-[0.15em] transition-all ${
+                            viewMode === 'cumulative' ? 'bg-accent-secondary/20 text-accent-secondary shadow-[0_0_15px_rgba(0,0,0,0.5)] border border-accent-secondary/30 ring-1 ring-accent-secondary/10' : 'text-text-muted hover:text-text-primary hover:bg-surface-highlight'
                         }`}
                     >
-                        Growth
+                        Cumul. Growth
                     </button>
                 </div>
             </div>
 
             {/* Chart Area */}
-            <div className="flex-1 w-full min-h-[180px] relative z-10 px-2 pt-4">
-                <ChartFrame minHeight={180} children={() => (
+            <div className="flex-1 w-full min-h-[180px] relative z-10 px-4 pt-6 pb-2">
+                <ChartFrame minHeight={220} children={() => (
                     <ResponsiveContainer width="100%" height="100%">
-                        <AreaChart data={data} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
+                        <AreaChart data={data} margin={{ top: 10, right: 10, left: 10, bottom: 0 }}>
                             <defs>
                                 <linearGradient id={`colorRev-${gradientId}`} x1="0" y1="0" x2="0" y2="1">
-                                    <stop offset="5%" stopColor={viewMode === 'daily' ? '#10B981' : '#6366F1'} stopOpacity={0.3}/>
-                                    <stop offset="95%" stopColor={viewMode === 'daily' ? '#10B981' : '#6366F1'} stopOpacity={0}/>
+                                    <stop offset="5%" stopColor={viewMode === 'daily' ? 'var(--color-status-success)' : 'var(--color-accent-secondary)'} stopOpacity={0.4}/>
+                                    <stop offset="95%" stopColor={viewMode === 'daily' ? 'var(--color-status-success)' : 'var(--color-accent-secondary)'} stopOpacity={0}/>
                                 </linearGradient>
+                                <filter id={`glow-${gradientId}`}>
+                                    <feGaussianBlur stdDeviation="4" result="coloredBlur"/>
+                                    <feMerge>
+                                        <feMergeNode in="coloredBlur"/>
+                                        <feMergeNode in="SourceGraphic"/>
+                                    </feMerge>
+                                </filter>
                             </defs>
-                            <CartesianGrid strokeDasharray="3 3" stroke="var(--color-border-subtle)" vertical={false} opacity={0.4} />
+                            <CartesianGrid strokeDasharray="3 3" stroke="var(--color-border-subtle)" vertical={false} opacity={0.5} />
                             <XAxis 
                                 dataKey="date" 
                                 fontSize={10} 
                                 axisLine={false} 
                                 tickLine={false} 
                                 stroke="var(--color-text-muted)" 
-                                fontWeight={700}
-                                tickMargin={10}
+                                fontWeight={900}
+                                fontFamily="var(--font-mono)"
+                                tickMargin={15}
                                 minTickGap={30}
+                                style={{ textTransform: '' }}
                             />
                             <YAxis 
                                 hide={false}
@@ -141,38 +152,40 @@ export const SalesHistoryChart: React.FC<{ sales: Sale[] }> = ({ sales }) => {
                                 axisLine={false}
                                 tickLine={false}
                                 stroke="var(--color-text-muted)" 
-                                fontWeight={700}
+                                fontWeight={900}
+                                fontFamily="var(--font-mono)"
                                 tickFormatter={(val) => `$${val >= 1000 ? (val/1000).toFixed(1) + 'k' : val}`}
-                                width={35}
+                                width={45}
                             />
                             <Tooltip 
-                                cursor={{stroke: 'var(--color-text-muted)', strokeWidth: 1, strokeDasharray: '4 4'}}
+                                cursor={{stroke: 'var(--color-accent-primary)', strokeWidth: 1, strokeDasharray: '4 4'}}
                                 content={({ active, payload }) => {
                                     if (active && payload && payload.length) {
                                         const point = payload[0].payload;
                                         return (
-                                            <div className="bg-surface-main/95 backdrop-blur-xl border border-border-subtle p-3 rounded-xl shadow-2xl min-w-[140px]">
-                                                <p className="text-[10px] font-black uppercase tracking-widest text-text-muted mb-2 pb-2 border-b border-border-subtle">{point.fullDate}</p>
+                                            <div className="bg-surface-alt/90 backdrop-blur-3xl border border-border-strong p-4 rounded-xl shadow-[0_20px_40px_-10px_rgba(0,0,0,0.8)] min-w-[160px] relative overflow-hidden">
+                                                <div className="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-accent-primary/50 to-transparent"></div>
+                                                <p className="text-[10px] font-[700]  tracking-[0.2em] text-text-muted mb-3 pb-2 border-b border-border-subtle/50">{point.fullDate}</p>
                                                 
-                                                <div className="space-y-1.5">
-                                                    <div className="flex justify-between items-center">
-                                                        <span className="text-[10px] font-bold text-text-secondary">Revenue</span>
-                                                        <span className="text-xs font-black text-text-primary num-font">${point.revenue.toLocaleString()}</span>
+                                                <div className="space-y-2">
+                                                    <div className="flex justify-between items-center gap-4">
+                                                        <span className="text-[10px] font-bold text-text-secondary  tracking-widest">Revenue</span>
+                                                        <span className="text-sm font-display font-[700] text-text-primary tracking-tighter">${point.revenue.toLocaleString()}</span>
                                                     </div>
-                                                    <div className="flex justify-between items-center">
-                                                        <span className="text-[10px] font-bold text-text-secondary">Transactions</span>
-                                                        <span className="text-xs font-black text-indigo-500 num-font">{point.count}</span>
+                                                    <div className="flex justify-between items-center gap-4">
+                                                        <span className="text-[10px] font-bold text-text-secondary  tracking-widest">Ops</span>
+                                                        <span className="text-xs font-mono font-[700] text-accent-secondary">{point.count}</span>
                                                     </div>
                                                     {point.count > 0 && (
-                                                        <div className="flex justify-between items-center">
-                                                            <span className="text-[10px] font-bold text-text-secondary">Avg Order</span>
-                                                            <span className="text-xs font-black text-amber-500 num-font">${Math.round(point.aov).toLocaleString()}</span>
+                                                        <div className="flex justify-between items-center gap-4">
+                                                            <span className="text-[10px] font-bold text-text-secondary  tracking-widest">AOV</span>
+                                                            <span className="text-xs font-mono font-[700] text-status-warning">${Math.round(point.aov).toLocaleString()}</span>
                                                         </div>
                                                     )}
                                                     {viewMode === 'cumulative' && (
-                                                        <div className="pt-2 mt-1 border-t border-border-subtle/50 flex justify-between items-center">
-                                                            <span className="text-[10px] font-black uppercase text-text-muted">Total</span>
-                                                            <span className="text-xs font-black text-emerald-500 num-font">${point.cumulative.toLocaleString()}</span>
+                                                        <div className="pt-2 mt-2 border-t border-border-subtle/50 flex justify-between items-center gap-4">
+                                                            <span className="text-[10px] font-[700]  text-text-primary tracking-[0.2em] opacity-50">Total</span>
+                                                            <span className="text-sm font-display font-[700] text-status-success tracking-tighter shadow-sm">${point.cumulative.toLocaleString()}</span>
                                                         </div>
                                                     )}
                                                 </div>
@@ -188,18 +201,19 @@ export const SalesHistoryChart: React.FC<{ sales: Sale[] }> = ({ sales }) => {
                                     stroke="var(--color-text-muted)" 
                                     strokeDasharray="3 3" 
                                     opacity={0.5}
-                                    label={{ position: 'insideRight', value: 'AVG', fill: 'var(--color-text-muted)', fontSize: 9, fontWeight: 800 }} 
+                                    label={{ position: 'insideRight', value: 'AVG', fill: 'var(--color-text-muted)', fontSize: 9, fontWeight: 900, fontFamily: 'var(--font-mono)' }} 
                                 />
                             )}
                             <Area 
                                 type="monotone" 
                                 dataKey={viewMode === 'daily' ? 'revenue' : 'cumulative'} 
-                                stroke={viewMode === 'daily' ? '#10B981' : '#6366F1'} 
+                                stroke={viewMode === 'daily' ? 'var(--color-status-success)' : 'var(--color-accent-secondary)'} 
                                 strokeWidth={3}
                                 fillOpacity={1} 
                                 fill={`url(#colorRev-${gradientId})`}
-                                activeDot={{ r: 6, strokeWidth: 0, fill: '#fff' }}
-                                animationDuration={1000}
+                                activeDot={{ r: 6, strokeWidth: 0, fill: '#fff', stroke: viewMode === 'daily' ? 'var(--color-status-success)' : 'var(--color-accent-secondary)' }}
+                                animationDuration={1500}
+                                style={{ filter: `url(#glow-${gradientId})` }}
                             />
                         </AreaChart>
                     </ResponsiveContainer>

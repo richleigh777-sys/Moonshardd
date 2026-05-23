@@ -1,11 +1,12 @@
-
 import React, { useMemo, useState } from 'react';
 import { 
     Database, Trash2, Search,
-    CheckCircle, ShieldAlert, Fingerprint, Activity, Clock
+    CheckCircle, ShieldAlert, Fingerprint, Activity, Clock, Wrench
 } from 'lucide-react';
 import { Card, Button } from '../../../ui/Base';
-import { Sale, Note } from '../../../../types';
+import { Sale, Note, Customer } from '../../../../types';
+import { useCRM } from '../../../../hooks/useCRM';
+import { useSystem } from '../../../../hooks/useSystem';
 
 interface HygieneTabProps {
     sales: Sale[];
@@ -14,12 +15,14 @@ interface HygieneTabProps {
 }
 
 export const HygieneTab: React.FC<HygieneTabProps> = ({ sales, notes, now }) => {
-    const [auditType, setAuditType] = useState<'duplicates' | 'fragmentation' | 'stale'>('duplicates');
+    const { updateSale, updateNote, deleteNote, addCustomer } = useCRM();
+    const { setToast } = useSystem();
+    const [auditType, setAuditType] = useState<'duplicates' | 'fragmentation' | 'stale' | 'normalization'>('duplicates');
 
     const duplicates = useMemo(() => {
-        const phoneMap: Record<string, (Sale | Note)[]> = {};
+        const phoneMap: Record<string, (Sale | Note | Customer)[]> = {};
         
-        // Audit both Sales and Leads
+        // Audit Customers, Sales and Leads for overlaps
         [...sales, ...notes].forEach(item => {
             const phone = item.phone?.replace(/[^0-9]/g, '');
             if (phone && phone.length >= 7) {
@@ -28,8 +31,12 @@ export const HygieneTab: React.FC<HygieneTabProps> = ({ sales, notes, now }) => 
             }
         });
 
+        // Group by phone collision 
         return Object.entries(phoneMap)
-            .filter(([_, items]) => items.length > 1)
+            .filter(([_, items]) => {
+                // Flag if there are multiple customers with same phone, or if sales/notes are disconnected
+                return items.length > 1; 
+            })
             .map(([phone, items]) => ({ phone, items }));
     }, [sales, notes]);
 
@@ -45,48 +52,165 @@ export const HygieneTab: React.FC<HygieneTabProps> = ({ sales, notes, now }) => 
         return notes.filter(n => n.status !== 'Resolved' && (now - n.timestamp) > threshold);
     }, [notes, now]);
 
+    const normalization = useMemo(() => {
+        return [...sales, ...notes].filter(item => {
+            const phoneStr = item.phone || '';
+            const emailStr = (item as Sale).email || '';
+            const needsPhoneFix = phoneStr !== phoneStr.replace(/[^0-9]/g, '');
+            const needsEmailFix = emailStr !== emailStr.toLowerCase().trim();
+            return needsPhoneFix || needsEmailFix;
+        });
+    }, [sales, notes]);
+
+    const handleSynthesize = async (dup: { phone: string, items: (Sale | Note | Customer)[] }) => {
+        try {
+            // Find existing customers in this bucket
+            const dupCustomers = dup.items.filter(i => 'accountId' in i && 'ltv' in i) as Customer[];
+            
+            const masterCustomer = dupCustomers.length > 0 ? dupCustomers[0] : null;
+            const masterItem = dup.items.find(i => 'amount' in i) || dup.items[0];
+            const masterName = (masterItem as Sale).customer || (masterItem as Note).customerName || (masterItem as Customer).fullName || 'Unknown';
+            const masterEmail = (masterItem as Sale).email || (masterItem as Customer).email || '';
+            
+            if (!masterCustomer) {
+                const [firstName, ...rest] = masterName.split(' ');
+                await addCustomer({
+                    firstName: firstName || 'Unknown',
+                    lastName: rest.join(' ') || 'Unknown',
+                    fullName: masterName,
+                    phone: dup.phone,
+                    normalizedPhone: dup.phone,
+                    email: masterEmail,
+                    normalizedEmail: masterEmail.toLowerCase().trim(),
+                    address: (masterItem as Sale).address || '',
+                    ltv: 0,
+                    orderCount: 0
+                });
+            }
+
+            // Bring all items under normalization
+            for (const item of dup.items) {
+                if ('amount' in item) {
+                    await updateSale(item.id, { 
+                        customer: masterName, 
+                        phone: dup.phone 
+                    });
+                } else if ('content' in item) {
+                    await updateNote(item.id, { 
+                        customerName: masterName, 
+                        phone: dup.phone 
+                    });
+                }
+            }
+            setToast({ title: 'Records Synthesized', message: `Unified records for ${dup.phone}`, type: 'success' });
+        } catch {
+            setToast({ title: 'Error', message: 'Failed to synthesize records.', type: 'error' });
+        }
+    };
+
+    const handleFixFragmentation = async (item: Sale | Note) => {
+        try {
+            if ('amount' in item) {
+                await updateSale(item.id, { 
+                    customer: item.customer || 'Unknown User',
+                    phone: item.phone || '0000000000'
+                });
+            } else {
+                await updateNote(item.id, { 
+                    customerName: item.customerName || 'Unknown User',
+                    phone: item.phone || '0000000000'
+                });
+            }
+            setToast({ title: 'Record Patched', message: 'Incomplete identity patched with placeholders.', type: 'success' });
+        } catch {
+             setToast({ title: 'Error', message: 'Failed to patch record.', type: 'error' });
+        }
+    };
+
+    const handleNormalize = async (item: Sale | Note) => {
+        try {
+            const cleanPhone = item.phone?.replace(/[^0-9]/g, '') || '';
+            const emailStr = ('email' in item ? item.email : '') || '';
+            const cleanEmail = emailStr.toLowerCase().trim();
+            
+            if ('amount' in item) {
+                await updateSale(item.id, { phone: cleanPhone, email: cleanEmail });
+            } else {
+                await updateNote(item.id, { phone: cleanPhone });
+            }
+            setToast({ title: 'Data Normalized', message: 'Structurally invalid formats have been sanitized.', type: 'success' });
+        } catch {
+            setToast({ title: 'Error', message: 'Failed to normalize data.', type: 'error' });
+        }
+    };
+
+    const handleResolveStale = async (id: string) => {
+        try {
+            await deleteNote(id);
+            setToast({ title: 'Objective Cleared', message: 'Stale lead has been permanently removed from queue.', type: 'success' });
+        } catch {
+            setToast({ title: 'Error', message: 'Failed to clear lead.', type: 'error' });
+        }
+    };
+
     return (
-        <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-700">
+        <div className="space-y-6 lg:space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
             {/* Header Audit Stats */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 lg:gap-6">
                 <AuditStatCard 
                     label="Duplicate Entities" 
                     count={duplicates.length} 
                     icon={Fingerprint} 
-                    color="text-indigo-500" 
+                    color="text-accent-secondary" 
                     isActive={auditType === 'duplicates'}
                     onClick={() => setAuditType('duplicates')}
                 />
                 <AuditStatCard 
-                    label="Data Fragmentation" 
+                    label="Incomplete Data" 
                     count={fragmentation.length} 
                     icon={Database} 
-                    color="text-amber-500" 
+                    color="text-status-warning" 
                     isActive={auditType === 'fragmentation'}
                     onClick={() => setAuditType('fragmentation')}
+                />
+                <AuditStatCard 
+                    label="Unnormalized" 
+                    count={normalization.length} 
+                    icon={Wrench} 
+                    color="text-teal-500" 
+                    isActive={auditType === 'normalization'}
+                    onClick={() => setAuditType('normalization')}
                 />
                 <AuditStatCard 
                     label="Stale Objectives" 
                     count={staleLeads.length} 
                     icon={Clock} 
-                    color="text-red-500" 
+                    color="text-status-error" 
                     isActive={auditType === 'stale'}
                     onClick={() => setAuditType('stale')}
                 />
             </div>
 
             {/* Main Audit Display */}
-            <Card variant="panel" className="bg-surface-alt/20 border-border-subtle p-0 overflow-hidden min-h-[400px] flex flex-col">
-                <div className="p-4 border-b border-border-subtle bg-surface-alt/40 flex justify-between items-center">
-                    <div className="flex items-center gap-2">
-                        {auditType === 'duplicates' && <Fingerprint size={16} className="text-indigo-500" />}
-                        {auditType === 'fragmentation' && <Database size={16} className="text-amber-500" />}
-                        {auditType === 'stale' && <Clock size={16} className="text-red-500" />}
-                        <h3 className="text-xs font-black uppercase tracking-widest text-text-primary">
-                            {auditType === 'duplicates' ? 'Duplicate Collisions Detected' : 
-                             auditType === 'fragmentation' ? 'Missing Identity Keys' : 
-                             'Inactive Lead Protocols'}
-                        </h3>
+            <Card variant="panel" className="bg-surface-alt/40 border border-border-subtle p-0 overflow-hidden min-h-[400px] flex flex-col rounded-3xl shadow-float">
+                <div className="p-5 lg:p-6 border-b border-border-subtle bg-surface-main/60 flex justify-between items-center relative overflow-hidden backdrop-blur-xl">
+                    <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-accent-primary via-accent-secondary to-accent-primary opacity-30"></div>
+                    <div className="flex items-center gap-4 relative z-10">
+                        <div className="p-2.5 rounded-xl bg-surface-alt">
+                            {auditType === 'duplicates' && <Fingerprint size={20} className="text-accent-secondary" />}
+                            {auditType === 'fragmentation' && <Database size={20} className="text-status-warning" />}
+                            {auditType === 'normalization' && <Wrench size={20} className="text-teal-500" />}
+                            {auditType === 'stale' && <Clock size={20} className="text-status-error" />}
+                        </div>
+                        <div>
+                            <h3 className="text-sm font-[700]  tracking-[0.2em] text-text-primary">
+                                {auditType === 'duplicates' ? 'Duplicate Collisions Detected' : 
+                                auditType === 'fragmentation' ? 'Missing Identity Keys' : 
+                                auditType === 'normalization' ? 'Structural Irregularities' :
+                                'Inactive Lead Protocols'}
+                            </h3>
+                            <p className="text-[10px] font-bold text-text-muted  tracking-widest mt-1">Resolution Queue</p>
+                        </div>
                     </div>
                 </div>
 
@@ -97,32 +221,39 @@ export const HygieneTab: React.FC<HygieneTabProps> = ({ sales, notes, now }) => 
                                 <div key={dup.phone} className="p-4 bg-surface-main border border-border-subtle rounded-2xl space-y-3">
                                     <div className="flex items-center justify-between">
                                         <div className="flex items-center gap-3">
-                                            <div className="w-8 h-8 rounded-full bg-indigo-500/10 flex items-center justify-center text-indigo-500">
-                                                <Fingerprint size={14} />
+                                            <div className="w-8 h-8 rounded-full bg-accent-secondary/10 flex items-center justify-center text-accent-secondary">
+                                                <Fingerprint size={16} />
                                             </div>
                                             <div>
-                                                <p className="text-[10px] font-black text-text-muted uppercase tracking-tighter">Phone Collision</p>
+                                                <p className="text-xs font-[700] text-text-muted  tracking-tighter">Phone Collision</p>
                                                 <p className="text-xs font-bold text-text-primary">{dup.phone}</p>
                                             </div>
                                         </div>
-                                        <Button variant="secondary" className="h-7 px-2 text-[8px] font-black uppercase">
+                                        <Button variant="secondary" onClick={() => handleSynthesize(dup)} className="h-7 px-2 text-sm font-[700] ">
                                             Synthesize Records
                                         </Button>
                                     </div>
                                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                                        {dup.items.map((item, idx) => (
-                                            <div key={idx} className="p-2 border border-border-subtle/50 rounded-xl bg-surface-alt/30 text-[10px]">
+                                        {dup.items.map((item, idx) => {
+                                            const isCustomer = 'accountId' in item && 'ltv' in item;
+                                            const isSale = 'amount' in item;
+                                            const name = isSale ? (item as Sale).customer : isCustomer ? (item as Customer).fullName : (item as Note).customerName;
+                                            const label = isSale ? 'Sale' : isCustomer ? 'Profile' : 'Lead';
+                                            const details = isSale ? (item as Sale).product : isCustomer ? `LTV: ${(item as Customer).ltv}` : (item as Note).content;
+                                            return (
+                                            <div key={idx} className="p-2 border border-border-subtle/50 rounded-xl bg-surface-alt/30 text-xs">
                                                 <div className="flex justify-between font-bold mb-1">
-                                                    <span className="text-text-primary">{(item as Sale).customer || (item as Note).customerName || 'Unnamed'}</span>
-                                                    <span className="text-text-muted uppercase text-[8px] opacity-60">
-                                                        {(item as Sale).amount ? 'Sale' : 'Lead'}
+                                                    <span className="text-text-primary">{name || 'Unnamed'}</span>
+                                                    <span className="text-text-muted  text-sm opacity-60">
+                                                        {label}
                                                     </span>
                                                 </div>
                                                 <p className="text-text-muted italic opacity-80 truncate">
-                                                    {(item as Sale).product || (item as Note).content || 'No details'}
+                                                    {details || 'No details'}
                                                 </p>
                                             </div>
-                                        ))}
+                                            );
+                                        })}
                                     </div>
                                 </div>
                             ))}
@@ -135,21 +266,47 @@ export const HygieneTab: React.FC<HygieneTabProps> = ({ sales, notes, now }) => 
                             {fragmentation.map((item, idx) => (
                                 <div key={idx} className="p-3 bg-surface-main border border-border-subtle rounded-xl flex items-center justify-between">
                                     <div className="flex items-center gap-3">
-                                        <div className="p-2 bg-amber-500/10 rounded-lg text-amber-500">
-                                            <Database size={14} />
+                                        <div className="p-2 bg-amber-500/10 rounded-lg text-status-warning">
+                                            <Database size={16} />
                                         </div>
                                         <div>
-                                            <p className="text-xs font-bold text-text-primary">{(item as Sale).customer || (item as Note).customerName || 'Anonymous Entry'}</p>
+                                            <p className="text-xs font-bold text-text-primary">{('amount' in item ? item.customer : item.customerName) || 'Anonymous Entry'}</p>
                                             <div className="flex gap-2 mt-1">
-                                                {!item.phone && <span className="text-[8px] font-black uppercase bg-red-500/10 text-red-500 px-1.5 py-0.5 rounded border border-red-500/20">Missing Phone</span>}
-                                                {!(item as Sale).customer && !(item as Note).customerName && <span className="text-[8px] font-black uppercase bg-red-500/10 text-red-500 px-1.5 py-0.5 rounded border border-red-500/20">Missing Name</span>}
+                                                {!item.phone && <span className="text-sm font-[700]  bg-red-500/10 text-status-error px-3 py-1.5 rounded border border-red-500/20">Missing Phone</span>}
+                                                {!('amount' in item ? item.customer : item.customerName) && <span className="text-sm font-[700]  bg-red-500/10 text-status-error px-3 py-1.5 rounded border border-red-500/20">Missing Name</span>}
                                             </div>
                                         </div>
                                     </div>
-                                    <Button variant="secondary" className="h-7 px-3 text-[8px] font-black uppercase">Fix</Button>
+                                    <Button variant="secondary" onClick={() => handleFixFragmentation(item)} className="h-7 px-3 text-sm font-[700] ">Fix</Button>
                                 </div>
                             ))}
-                            {fragmentation.length === 0 && <EmptyAudit icon={CheckCircle} message="Single source of truth confirmed. Data integrity optimal." color="text-emerald-500" />}
+                            {fragmentation.length === 0 && <EmptyAudit icon={CheckCircle} message="Single source of truth confirmed. Data integrity optimal." color="text-status-success" />}
+                        </div>
+                    )}
+
+                    {auditType === 'normalization' && (
+                        <div className="space-y-3">
+                            {normalization.map((item, idx) => {
+                                const phoneStr = item.phone || '';
+                                return (
+                                    <div key={item.id || idx} className="p-3 bg-surface-main border border-border-subtle rounded-xl flex items-center justify-between">
+                                        <div className="flex items-center gap-3">
+                                            <div className="p-2 bg-teal-500/10 rounded-lg text-teal-500">
+                                                <Wrench size={16} />
+                                            </div>
+                                            <div>
+                                                <p className="text-xs font-bold text-text-primary">{('amount' in item ? item.customer : item.customerName) || 'Unknown'}</p>
+                                                <div className="flex flex-col gap-1 mt-1 text-xs text-text-muted font-mono">
+                                                    <span>Phone: {phoneStr}</span>
+                                                    {'amount' in item && item.email && <span>Email: {item.email}</span>}
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <Button variant="secondary" onClick={() => handleNormalize(item)} className="h-7 px-3 text-sm font-[700] ">Normalize</Button>
+                                    </div>
+                                )
+                            })}
+                            {normalization.length === 0 && <EmptyAudit icon={CheckCircle} message="All data structured to defined schemas." color="text-teal-500" />}
                         </div>
                     )}
 
@@ -158,20 +315,20 @@ export const HygieneTab: React.FC<HygieneTabProps> = ({ sales, notes, now }) => 
                             {staleLeads.map(lead => (
                                 <div key={lead.id} className="p-3 bg-surface-main border border-border-subtle rounded-xl flex items-center justify-between">
                                     <div className="flex items-center gap-3">
-                                        <div className="p-2 bg-red-500/10 rounded-lg text-red-500">
-                                            <Clock size={14} />
+                                        <div className="p-2 bg-red-500/10 rounded-lg text-status-error">
+                                            <Clock size={16} />
                                         </div>
                                         <div>
                                             <p className="text-xs font-bold text-text-primary">{lead.customerName || 'Unnamed Lead'}</p>
-                                            <p className="text-[9px] font-medium text-text-muted uppercase tracking-widest mt-1">
+                                            <p className="text-xs font-medium text-text-muted  tracking-widest mt-1">
                                                 IDLE FOR {Math.floor((now - lead.timestamp) / (3600000))} HOURS
                                             </p>
                                         </div>
                                     </div>
                                     <div className="flex items-center gap-2">
-                                        <Button variant="secondary" className="h-7 px-3 text-[8px] font-black uppercase">Reassign</Button>
-                                        <button className="p-2 text-text-muted hover:text-status-error transition-colors">
-                                            <Trash2 size={14} />
+                                        <Button variant="secondary" className="h-7 px-3 text-sm font-[700] ">Reassign</Button>
+                                        <button onClick={() => handleResolveStale(lead.id)} className="p-2 text-text-muted hover:text-status-error transition-colors">
+                                            <Trash2 size={16} />
                                         </button>
                                     </div>
                                 </div>
@@ -183,17 +340,17 @@ export const HygieneTab: React.FC<HygieneTabProps> = ({ sales, notes, now }) => 
             </Card>
 
             {/* Strategic Advice (AI Summary) */}
-            <div className="p-6 bg-indigo-500/5 border border-indigo-500/20 rounded-3xl relative overflow-hidden">
+            <div className="p-6 bg-indigo-500/5 border border-accent-secondary/20 rounded-3xl relative overflow-hidden">
                 <div className="absolute top-0 right-0 p-4 opacity-5">
-                    <ShieldAlert size={60} className="text-indigo-500" />
+                    <ShieldAlert size={60} className="text-accent-secondary" />
                 </div>
                 <div className="flex items-center gap-3 mb-2">
-                    <Activity size={18} className="text-indigo-500 animate-pulse" />
-                    <h4 className="text-xs font-black uppercase tracking-widest text-text-primary">Auditor Recommendation</h4>
+                    <Activity size={18} className="text-accent-secondary animate-pulse" />
+                    <h4 className="text-xs font-[700]  tracking-widest text-text-primary">Auditor Recommendation</h4>
                 </div>
                 <p className="text-xs font-medium text-text-secondary leading-relaxed max-w-2xl">
-                    Our sensors indicate {duplicates.length} synchronization collisions. This fragmentation typically occurs when 
-                    operatives bypass standard intake protocols. Recommend immediate "Synthesize" action to consolidate customer LTV 
+                    Our sensors indicate {duplicates.length} synchronization collisions and {normalization.length} unnormalized strings. This fragmentation typically occurs when 
+                    operatives bypass standard intake protocols. Recommend immediate "Synthesize" and "Normalize" action to consolidate customer LTV 
                     and prevent repeat support narratives.
                 </p>
             </div>
@@ -201,23 +358,26 @@ export const HygieneTab: React.FC<HygieneTabProps> = ({ sales, notes, now }) => 
     );
 };
 
-const AuditStatCard = ({ label, count, icon: Icon, color, isActive, onClick }: any) => (
+const AuditStatCard = ({ label, count, icon: Icon, isActive, onClick }: any) => (
     <button 
         onClick={onClick}
-        className={`p-4 rounded-2xl border transition-all text-left group ${
+        className={`p-5 lg:p-6 rounded-3xl border transition-all duration-300 text-left group overflow-hidden relative ${
             isActive 
-            ? 'bg-surface-main border-accent-primary shadow-lg shadow-accent-primary/10 ring-4 ring-accent-primary/5' 
-            : 'bg-surface-alt/40 border-border-subtle hover:bg-surface-main hover:border-border-subtle hover:translate-y-[-2px]'
+            ? 'bg-surface-main/80 border-accent-primary shadow-[0_0_30px_rgba(0,255,255,0.15)] ring-1 ring-accent-primary/20 backdrop-blur-xl scale-[1.02]' 
+            : 'bg-surface-alt/20 border-border-subtle hover:bg-surface-main/50 hover:border-border-strong hover:shadow-lg backdrop-blur-sm'
         }`}
     >
-        <div className="flex justify-between items-start mb-3">
-            <div className={`p-2 rounded-xl transition-all ${isActive ? 'bg-accent-primary text-white' : 'bg-surface-alt text-text-muted group-hover:text-text-primary'}`}>
-                <Icon size={18} />
+        {isActive && <div className="absolute inset-0 bg-gradient-to-br from-accent-primary/5 to-transparent z-0"></div>}
+        <div className="relative z-10">
+            <div className="flex justify-between items-start mb-4 lg:mb-6">
+                <div className={`p-3 lg:p-4 rounded-2xl transition-all duration-500 ${isActive ? 'bg-accent-primary text-surface-alt shadow-lg shadow-accent-primary/30' : 'bg-surface-alt text-text-muted group-hover:text-text-primary group-hover:bg-surface-highlight'}`}>
+                    <Icon size={24} strokeWidth={2} />
+                </div>
+                <span className={`text-4xl lg:text-5xl font-display font-[700] tracking-tighter ${isActive ? 'text-accent-primary drop-shadow-[0_0_15px_rgba(0,255,255,0.3)]' : 'text-text-primary'}`}>{count}</span>
             </div>
-            <span className={`text-2xl font-black num-font ${isActive ? 'text-accent-primary' : color}`}>{count}</span>
+            <p className="text-[10px] lg:text-xs font-[700]  text-text-primary tracking-[0.2em] leading-tight mb-1 text-left">{label}</p>
+            <p className="text-[10px] font-bold text-text-muted  tracking-widest text-left opacity-60">Detections</p>
         </div>
-        <p className="text-[10px] font-black uppercase text-text-muted tracking-widest leading-none mb-1">{label}</p>
-        <p className="text-[8px] font-bold text-text-muted/60 uppercase">Detections in scope</p>
     </button>
 );
 

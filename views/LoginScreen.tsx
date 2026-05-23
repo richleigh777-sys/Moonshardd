@@ -67,6 +67,30 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ onLogin }) => {
       }
   };
 
+  const handleSimulateLogin = async (uid: string, pass: string, companyId: string) => {
+      setError('');
+      setIsProcessing(true);
+      sfx.playSubmit();
+
+      try {
+          await new Promise(r => setTimeout(r, 600)); 
+          const result = await authenticate(uid, pass, companyId, "");
+          if (result && 'user' in result) {
+              const { user, sig } = result;
+              sfx.playSuccess();
+              await login(user, sig);
+              onLogin(user);
+          } else {
+              throw new Error(result && 'error' in result ? result.error : 'Invalid Credentials');
+          }
+      } catch (err: any) {
+          sfx.playError();
+          setError(err.message || "Simulated Login Failed");
+      } finally {
+          setIsProcessing(false);
+      }
+  };
+
   const handleServerConnect = async (companyId: string) => {
       setError('');
       setIsProcessing(true);
@@ -100,7 +124,7 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ onLogin }) => {
     
     // Use the known root credentials for quick developer access
     const rootId = SYSTEM_ADMIN_ID;
-    const rootPass = 'root';
+    const rootPass = 'root123';
     
     try {
         await new Promise(r => setTimeout(r, 400));
@@ -130,7 +154,7 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ onLogin }) => {
 
         <div className="w-full max-w-[400px] relative z-20 px-6">
             
-            <Card variant="panel" className="p-0 overflow-hidden flex flex-col shadow-2xl border-white/10 bg-surface-main/80 backdrop-blur-xl">
+            <Card variant="panel" className="p-0 overflow-hidden flex flex-col shadow-2xl border-border-subtle bg-surface-main/80 backdrop-blur-xl">
                 
                 {/* Header */}
                 <div className="p-8 pb-6 flex flex-col items-center text-center">
@@ -174,15 +198,34 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ onLogin }) => {
 
                 {/* Footer */}
                 <div className="p-5 border-t border-border-subtle bg-surface-alt/30 flex flex-col items-center gap-3">
-                    <button 
-                        onClick={handleQuickLogin}
-                        disabled={isProcessing}
-                        className="text-[10px] font-black uppercase tracking-[0.2em] text-accent-primary hover:text-accent-primary/80 transition-all hover:scale-105 active:scale-95 disabled:opacity-50 disabled:grayscale"
-                    >
-                        [ Quick Dev Access ]
-                    </button>
-                    <div className="text-[9px] font-bold text-text-muted uppercase tracking-widest opacity-40">
-                        Braveheart CRM OS • v2.4.0
+                    <div className="flex flex-col gap-2">
+                        <button 
+                            onClick={handleQuickLogin}
+                            disabled={isProcessing}
+                            className="text-xs font-semibold text-text-primary hover:text-accent-primary transition-colors disabled:opacity-50 border border-border-subtle hover:border-accent-primary/50 py-2 px-4 rounded-lg bg-surface-main"
+                        >
+                            Log in as Owner (Root)
+                        </button>
+                        <div className="grid grid-cols-2 gap-2">
+                            <button 
+                                onClick={() => handleSimulateLogin('admin-srv-001-1', 'admin123', 'srv-001')}
+                                disabled={isProcessing}
+                                className="text-xs font-medium text-text-secondary hover:text-text-primary transition-colors disabled:opacity-50 border border-border-subtle hover:bg-surface-highlight py-2 px-3 rounded-lg"
+                            >
+                                Log in as Manager
+                            </button>
+                            <button 
+                                onClick={() => handleSimulateLogin('agent-srv-001-1', 'agent123', 'srv-001')}
+                                disabled={isProcessing}
+                                className="text-xs font-medium text-text-secondary hover:text-text-primary transition-colors disabled:opacity-50 border border-border-subtle hover:bg-surface-highlight py-2 px-3 rounded-lg"
+                            >
+                                Log in as Agent
+                            </button>
+                        </div>
+                    </div>
+                    <div className="text-xs text-text-muted mt-2 text-center opacity-70">
+                        Braveheart CRM OS • v2.4.0 <br/>
+                        Development Environment Logins
                     </div>
                 </div>
             </Card>

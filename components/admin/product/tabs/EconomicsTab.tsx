@@ -15,15 +15,15 @@ export const EconomicsTab: React.FC<EconomicsTabProps> = ({ formData, setFormDat
         <div className="space-y-6 animate-in slide-in-from-right-4 duration-300">
             <div className="grid grid-cols-2 gap-6">
                 <div className="p-6 bg-surface-alt/30 rounded-3xl border border-border-subtle space-y-5">
-                    <h4 className="text-xs font-black uppercase text-text-muted tracking-widest flex items-center gap-2 mb-2">
-                        <DollarSign size={14} className="text-emerald-500"/> Pricing Model
+                    <h4 className="text-xs font-[700]  text-text-muted tracking-widest flex items-center gap-2 mb-2">
+                        <DollarSign size={16} className="text-status-success"/> Pricing Model
                     </h4>
                     <Input 
                         label="Retail Price ($)" 
                         type="number"
                         value={formData.price || 0} 
                         onChange={e => setFormData(prev => ({...prev, price: parseFloat(e.target.value)}))}
-                        className="text-emerald-500 font-bold text-lg"
+                        className="text-status-success font-bold text-lg"
                     />
                     <Input 
                         label="Cost Basis ($)" 
@@ -37,8 +37,8 @@ export const EconomicsTab: React.FC<EconomicsTabProps> = ({ formData, setFormDat
                 </div>
 
                 <div className="p-6 bg-surface-alt/30 rounded-3xl border border-border-subtle space-y-5">
-                    <h4 className="text-xs font-black uppercase text-text-muted tracking-widest flex items-center gap-2 mb-2">
-                        <List size={14} className="text-blue-500"/> Stock Control
+                    <h4 className="text-xs font-[700]  text-text-muted tracking-widest flex items-center gap-2 mb-2">
+                        <List size={16} className="text-blue-500"/> Stock Control
                     </h4>
                     <Input 
                         label="Current Stock" 
@@ -52,7 +52,7 @@ export const EconomicsTab: React.FC<EconomicsTabProps> = ({ formData, setFormDat
                         type="number"
                         value={formData.minStock || 0} 
                         onChange={e => setFormData(prev => ({...prev, minStock: parseInt(e.target.value)}))}
-                        className="font-mono text-amber-500"
+                        className="font-mono text-status-warning"
                     />
                 </div>
             </div>

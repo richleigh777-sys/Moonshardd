@@ -136,11 +136,11 @@ export const LoadTester: React.FC = () => {
                 </div>
                 
                 <div className="flex items-center gap-2">
-                    <div className={`px-2 py-1 rounded text-[10px] font-mono ${stats.fps < 30 ? 'bg-red-500/20 text-red-400' : 'bg-green-500/20 text-green-400'}`}>
+                    <div className={`px-3 py-1.5 rounded text-xs font-mono ${stats.fps < 30 ? 'bg-red-500/20 text-status-error' : 'bg-green-500/20 text-green-400'}`}>
                         {stats.fps} FPS
                     </div>
                     {stats.memory > 0 && (
-                        <div className="px-2 py-1 rounded text-[10px] font-mono bg-zinc-800 text-zinc-400">
+                        <div className="px-3 py-1.5 rounded text-xs font-mono bg-zinc-800 text-zinc-400">
                             {stats.memory} MB
                         </div>
                     )}
@@ -148,12 +148,12 @@ export const LoadTester: React.FC = () => {
             </div>
 
             <div className="grid grid-cols-2 gap-4 mb-6">
-                <div className="bg-black/40 rounded-lg p-4 border border-zinc-800/50">
-                    <div className="text-zinc-500 text-xs uppercase tracking-wider mb-1">Sales Generated</div>
+                <div className="bg-surface-alt rounded-lg p-4 border border-zinc-800/50">
+                    <div className="text-zinc-500 text-xs  tracking-wider mb-1">Sales Generated</div>
                     <div className="text-2xl font-mono text-purple-400">{stats.salesGenerated}</div>
                 </div>
-                <div className="bg-black/40 rounded-lg p-4 border border-zinc-800/50">
-                    <div className="text-zinc-500 text-xs uppercase tracking-wider mb-1">Logs Generated</div>
+                <div className="bg-surface-alt rounded-lg p-4 border border-zinc-800/50">
+                    <div className="text-zinc-500 text-xs  tracking-wider mb-1">Logs Generated</div>
                     <div className="text-2xl font-mono text-blue-400">{stats.logsGenerated}</div>
                 </div>
             </div>
@@ -161,9 +161,9 @@ export const LoadTester: React.FC = () => {
             <div className="flex gap-3">
                 <button
                     onClick={runStressTest}
-                    className={`flex-1 py-3 rounded-lg font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-2 transition-all ${
+                    className={`flex-1 py-3 rounded-lg font-bold text-xs  tracking-wider flex items-center justify-center gap-2 transition-all ${
                         mode === 'stress' 
-                            ? 'bg-red-500/20 text-red-400 border border-red-500/50 animate-pulse' 
+                            ? 'bg-red-500/20 text-status-error border border-red-500/50 animate-pulse' 
                             : 'bg-zinc-800 hover:bg-zinc-700 text-zinc-300'
                     }`}
                 >
@@ -174,7 +174,7 @@ export const LoadTester: React.FC = () => {
                 <button
                     onClick={runSpikeTest}
                     disabled={isRunning}
-                    className="flex-1 py-3 rounded-lg font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-2 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 disabled:opacity-50"
+                    className="flex-1 py-3 rounded-lg font-bold text-xs  tracking-wider flex items-center justify-center gap-2 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 disabled:opacity-50"
                 >
                     <Zap size={16} />
                     Inject 1k Spike
@@ -183,7 +183,7 @@ export const LoadTester: React.FC = () => {
 
             {isRunning && (
                 <div className="mt-4 flex items-center gap-2 text-xs text-yellow-500/80 bg-yellow-500/10 p-2 rounded border border-yellow-500/20">
-                    <AlertTriangle size={14} />
+                    <AlertTriangle size={16} />
                     <span>System performance may degrade during active testing.</span>
                 </div>
             )}

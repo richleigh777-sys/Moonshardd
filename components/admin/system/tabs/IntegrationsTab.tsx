@@ -74,18 +74,46 @@ export const IntegrationsTab: React.FC<IntegrationsTabProps> = ({ config, onChan
         setToast({ title: 'Integration', message: "Payload Delivered", type: "success" });
     };
 
+    const handleTestTeamsWebhook = async () => {
+        if (!config.teamsWebhookUrl) {
+            setToast({ title: 'Configuration', message: "No Teams Endpoint Configured", type: "warning" });
+            return;
+        }
+        setIsWebhookTest(true);
+        sfx.playSubmit();
+        setConsoleLogs([]);
+
+        const steps = [
+            `PREPARING_TEAMS_PAYLOAD --dest=${config.teamsWebhookUrl.substring(0, 20)}...`,
+            "FORMATTING_STACK_MESSAGE...",
+            "POST_REQUEST_SENT",
+            "WAITING_FOR_ACK...",
+            "RESPONSE: 200 OK",
+            "MESSAGE_DELIVERED_TO_CHANNEL"
+        ];
+
+        for (const step of steps) {
+            await new Promise(r => setTimeout(r, 300));
+            addLog(step);
+        }
+
+        setIsWebhookTest(false);
+        sfx.playSuccess();
+        setToast({ title: 'Integration', message: "Teams Message Delivered", type: "success" });
+    };
+
     return (
         <section className="space-y-10 animate-in fade-in slide-in-from-right-4 duration-500">
-            <SectionHeader icon={Globe} title="External Neural Uplinks" sub="Third-Party API Bridges" color="text-indigo-500" />
+            <SectionHeader icon={Globe} title="External Neural Uplinks" sub="Third-Party API Bridges" color="text-accent-secondary" />
             
             <div className="space-y-8">
                 {/* SERVER IDENTITY MODULE */}
                 <div className="space-y-4">
                     <div className="p-1 rounded-3xl bg-gradient-to-br from-cyan-500/20 to-blue-500/20">
                         <div className="bg-[#09090b] text-white rounded-[1.4rem] p-6 space-y-6">
-                            <div className="flex items-center justify-between pb-4 border-b border-white/10">
-                                <h5 className="text-[10px] font-black uppercase text-cyan-400 tracking-widest flex items-center gap-2">
-                                    <Key size={14} className="animate-pulse"/> Command Deck Identity
+                            <div className="flex items-center justify-between pb-4 border-b border-border-subtle">
+                                <h5 className="text-xs font-[700]  text-cyan-400 tracking-widest flex items-center gap-2">
+                                    <Key size={16} className="animate-pulse"/> Command Deck Identity
                                 </h5>
                             </div>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
@@ -95,7 +123,7 @@ export const IntegrationsTab: React.FC<IntegrationsTabProps> = ({ config, onChan
                                     value={config.serverKey || ''} 
                                     onChange={e => onChange('serverKey', e.target.value)} 
                                     placeholder="SRV-..." 
-                                    className="font-mono text-xs bg-black/40 border-white/10"
+                                    className="font-mono text-xs bg-surface-alt border-border-subtle"
                                 />
                                 <Input 
                                     icon={Lock}
@@ -103,7 +131,7 @@ export const IntegrationsTab: React.FC<IntegrationsTabProps> = ({ config, onChan
                                     type="password"
                                     value={config.serverPassword || ''} 
                                     onChange={e => onChange('serverPassword', e.target.value)} 
-                                    className="bg-black/40 border-white/10"
+                                    className="bg-surface-alt border-border-subtle"
                                 />
                             </div>
                         </div>
@@ -124,16 +152,16 @@ export const IntegrationsTab: React.FC<IntegrationsTabProps> = ({ config, onChan
                         <div className="p-1 rounded-3xl bg-gradient-to-br from-indigo-500/20 to-purple-500/20">
                             <div className="bg-[#09090b] rounded-[1.4rem] p-6 space-y-6">
                                 {/* Header Status */}
-                                <div className="flex items-center justify-between pb-4 border-b border-white/10">
-                                    <h5 className="text-[10px] font-black uppercase text-indigo-400 tracking-widest flex items-center gap-2">
-                                        <Radio size={14} className="animate-pulse"/> ViciDial Command Matrix
+                                <div className="flex items-center justify-between pb-4 border-b border-border-subtle">
+                                    <h5 className="text-xs font-[700]  text-accent-secondary tracking-widest flex items-center gap-2">
+                                        <Radio size={16} className="animate-pulse"/> ViciDial Command Matrix
                                     </h5>
                                     <button 
                                         onClick={handleTestConnection}
                                         disabled={isPing}
-                                        className="px-4 py-1.5 bg-white/5 border border-white/10 rounded-xl text-[9px] font-bold uppercase tracking-wide hover:bg-white/10 hover:border-emerald-500/50 hover:text-emerald-400 transition-all flex items-center gap-2 group"
+                                        className="px-4 py-1.5 bg-surface-highlight border border-border-subtle rounded-xl text-xs font-bold  tracking-wide hover:bg-surface-highlight hover:border-status-success/50 hover:text-status-success transition-all flex items-center gap-2 group"
                                     >
-                                        {isPing ? <Activity size={10} className="animate-spin text-emerald-500"/> : <Wifi size={12} className="text-emerald-500"/>}
+                                        {isPing ? <Activity size={16} className="animate-spin text-status-success"/> : <Wifi size={16} className="text-status-success"/>}
                                         {isPing ? 'Pinging Node...' : 'Test Signal'}
                                     </button>
                                 </div>
@@ -147,7 +175,7 @@ export const IntegrationsTab: React.FC<IntegrationsTabProps> = ({ config, onChan
                                             value={config.viciServerUrl || ''} 
                                             onChange={e => onChange('viciServerUrl', e.target.value)} 
                                             placeholder="https://vici.example.com" 
-                                            className="font-mono text-xs bg-black/40 border-white/10"
+                                            className="font-mono text-xs bg-surface-alt border-border-subtle"
                                         />
                                         <Input 
                                             icon={Hash}
@@ -155,7 +183,7 @@ export const IntegrationsTab: React.FC<IntegrationsTabProps> = ({ config, onChan
                                             value={config.viciCampaignId || ''} 
                                             onChange={e => onChange('viciCampaignId', e.target.value)} 
                                             placeholder="CAMP001" 
-                                            className="font-mono text-xs bg-black/40 border-white/10"
+                                            className="font-mono text-xs bg-surface-alt border-border-subtle"
                                         />
                                     </div>
                                     <div className="space-y-4">
@@ -164,7 +192,7 @@ export const IntegrationsTab: React.FC<IntegrationsTabProps> = ({ config, onChan
                                             label="API User" 
                                             value={config.viciApiUser || ''} 
                                             onChange={e => onChange('viciApiUser', e.target.value)}
-                                            className="bg-black/40 border-white/10"
+                                            className="bg-surface-alt border-border-subtle"
                                         />
                                         <Input 
                                             icon={Lock}
@@ -172,9 +200,53 @@ export const IntegrationsTab: React.FC<IntegrationsTabProps> = ({ config, onChan
                                             type="password" 
                                             value={config.viciApiPass || ''} 
                                             onChange={e => onChange('viciApiPass', e.target.value)} 
-                                            className="bg-black/40 border-white/10"
+                                            className="bg-surface-alt border-border-subtle"
                                         />
                                     </div>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+                </div>
+
+                {/* TEAMS WEBHOOK MODULE */}
+                <div className="space-y-4">
+                    <ConfigToggle 
+                        label="Microsoft Teams Integration" 
+                        active={config.teamsWebhookEnabled || false} 
+                        onToggle={() => onChange('teamsWebhookEnabled', !config.teamsWebhookEnabled)}
+                        icon={Network}
+                        description="Automatically push closed deals to a Microsoft Teams channel using Webhooks."
+                    />
+
+                    {config.teamsWebhookEnabled && (
+                        <div className="p-6 bg-surface-alt/30 rounded-3xl border border-border-subtle space-y-6">
+                            <div className="flex items-center justify-between">
+                                <h5 className="text-xs font-[700]  text-text-primary tracking-widest flex items-center gap-2">
+                                    <Link size={16} className="text-blue-500"/> Teams Configuration
+                                </h5>
+                                <button 
+                                    onClick={handleTestTeamsWebhook}
+                                    disabled={isWebhookTest}
+                                    className="px-3 py-1.5 bg-surface-main border border-border-subtle rounded-xl text-xs font-bold  tracking-wide hover:border-blue-500/50 hover:text-blue-400 transition-all flex items-center gap-2"
+                                >
+                                    {isWebhookTest ? <Activity size={16} className="animate-spin text-blue-500"/> : <Zap size={16} className="text-blue-500"/>}
+                                    Fire Test Event
+                                </button>
+                            </div>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <Input 
+                                    icon={Globe}
+                                    label="Teams Webhook URL" 
+                                    value={config.teamsWebhookUrl || ''} 
+                                    onChange={e => onChange('teamsWebhookUrl', e.target.value)} 
+                                    placeholder="https://YOUR_DOMAIN.webhook.office.com/..." 
+                                    className="font-mono text-xs"
+                                />
+                                <div className="flex items-end">
+                                    <p className="text-[10px] text-text-muted">
+                                        Sales will automatically be formatted and pushed to this incoming webhook upon closing.
+                                    </p>
                                 </div>
                             </div>
                         </div>
@@ -194,15 +266,15 @@ export const IntegrationsTab: React.FC<IntegrationsTabProps> = ({ config, onChan
                     {config.webhookEnabled && (
                         <div className="p-6 bg-surface-alt/30 rounded-3xl border border-border-subtle space-y-6">
                             <div className="flex items-center justify-between">
-                                <h5 className="text-[10px] font-black uppercase text-text-primary tracking-widest flex items-center gap-2">
-                                    <Link size={14} className="text-purple-500"/> Payload Configuration
+                                <h5 className="text-xs font-[700]  text-text-primary tracking-widest flex items-center gap-2">
+                                    <Link size={16} className="text-purple-500"/> Payload Configuration
                                 </h5>
                                 <button 
                                     onClick={handleTestWebhook}
                                     disabled={isWebhookTest}
-                                    className="px-3 py-1.5 bg-surface-main border border-border-subtle rounded-xl text-[9px] font-bold uppercase tracking-wide hover:border-purple-500/50 hover:text-purple-400 transition-all flex items-center gap-2"
+                                    className="px-3 py-1.5 bg-surface-main border border-border-subtle rounded-xl text-xs font-bold  tracking-wide hover:border-purple-500/50 hover:text-purple-400 transition-all flex items-center gap-2"
                                 >
-                                    {isWebhookTest ? <Activity size={10} className="animate-spin text-purple-500"/> : <Zap size={12} className="text-purple-500"/>}
+                                    {isWebhookTest ? <Activity size={16} className="animate-spin text-purple-500"/> : <Zap size={16} className="text-purple-500"/>}
                                     Fire Test Event
                                 </button>
                             </div>

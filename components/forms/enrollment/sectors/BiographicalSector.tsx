@@ -16,27 +16,27 @@ export const BiographicalSector: React.FC<Props> = ({ formData, handleIdentityCh
     const { systemConfig } = useCRM();
 
     return (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-3">
+        <div className="flex flex-col gap-3">
             <div className="space-y-3">
                 <div className="space-y-1">
-                    <FormLabel icon={User}>Designation</FormLabel>
+                    <FormLabel icon={User}>Full Name</FormLabel>
                     <FormInput 
                         name="fullName" 
                         value={formData.fullName} 
                         onChange={handleIdentityChange} 
-                        placeholder="Legal Identity..." 
-                        className="text-xs font-black h-9"
+                        placeholder="Full Name..." 
+                        className="text-xs font-[700] h-9"
                         status={formData.fullName.length > 3 ? 'valid' : 'default'}
                     />
                 </div>
                 <div className="grid grid-cols-2 gap-2">
                     <div className="space-y-1">
                         <div className="flex justify-between items-center">
-                            <FormLabel icon={Phone}>Comms</FormLabel>
+                            <FormLabel icon={Phone}>Phone Number</FormLabel>
                             {systemConfig.telephonyEnabled && formData.phone.length >= 10 && (
                                 <button 
                                     onClick={() => initiateCall(formData.phone)}
-                                    className="text-[9px] font-bold text-emerald-500 bg-emerald-500/10 px-2 py-0.5 rounded hover:bg-emerald-500/20 transition-colors uppercase tracking-wider"
+                                    className="text-[10px] font-bold text-status-success bg-emerald-500/10 px-2 rounded hover:bg-emerald-500/20 transition-colors  tracking-wider"
                                 >
                                     DIAL
                                 </button>
@@ -47,18 +47,18 @@ export const BiographicalSector: React.FC<Props> = ({ formData, handleIdentityCh
                             value={formData.phone} 
                             onChange={handleIdentityChange} 
                             placeholder="(000) 000-0000" 
-                            className="font-mono h-9 tracking-tight"
+                            className="font-mono h-9 tracking-tight text-xs"
                             status={formData.phone.length >= 14 ? 'valid' : 'default'}
                         />
                     </div>
                     <div className="space-y-1">
-                        <FormLabel icon={Calendar}>Origin</FormLabel>
+                        <FormLabel icon={Calendar}>DOB</FormLabel>
                         <FormInput 
                             type="date" 
                             name="dob" 
                             value={formData.dob} 
                             onChange={(e) => handleDobChange(e.target.value)} 
-                            className="h-9 font-mono text-[9px]"
+                            className="h-9 font-mono text-xs"
                             status={formData.dob ? 'valid' : 'default'}
                         />
                     </div>
@@ -67,36 +67,46 @@ export const BiographicalSector: React.FC<Props> = ({ formData, handleIdentityCh
 
             <div className="space-y-3">
                 <div className="space-y-1">
-                    <FormLabel icon={Mail}>Secure Dispatch</FormLabel>
+                    <FormLabel icon={Mail}>Email Address</FormLabel>
                     <FormInput 
                         name="email" 
                         value={formData.email} 
                         onChange={handleIdentityChange} 
-                        placeholder="member@nexus.com"
-                        className="h-9 font-bold"
+                        placeholder="email@example.com"
+                        className="h-9 font-bold text-xs"
                         status={formData.email.includes('@') ? 'valid' : 'default'}
                     />
                 </div>
-                <div className="grid grid-cols-2 gap-2">
+                <div className="grid grid-cols-3 gap-2">
                     <div className="space-y-1">
-                        <FormLabel icon={Activity}>Bio Age</FormLabel>
+                        <FormLabel icon={Activity}>Age</FormLabel>
                         <FormInput 
                             name="age" 
                             value={formData.age} 
                             onChange={(e) => handleAgeChange(e.target.value)} 
-                            className="h-9 text-center font-black text-sm" 
+                            className="h-9 font-[700] text-sm" 
                             placeholder="--" 
                             status={formData.age ? 'valid' : 'default'}
                         />
                     </div>
                     <div className="space-y-1">
-                        <FormLabel icon={Heart}>Spouse</FormLabel>
+                        <FormLabel icon={Activity}>Height</FormLabel>
                         <FormInput 
-                            name="spouseName" 
-                            value={formData.spouseName} 
+                            name="height" 
+                            value={formData.height || ''} 
                             onChange={handleIdentityChange} 
-                            className="h-9" 
-                            placeholder="Optional..." 
+                            className="h-9 text-xs" 
+                            placeholder="5'10" 
+                        />
+                    </div>
+                    <div className="space-y-1">
+                        <FormLabel icon={Activity}>Weight</FormLabel>
+                        <FormInput 
+                            name="weight" 
+                            value={formData.weight || ''} 
+                            onChange={handleIdentityChange} 
+                            className="h-9 text-xs" 
+                            placeholder="180 lbs" 
                         />
                     </div>
                 </div>

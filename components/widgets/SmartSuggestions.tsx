@@ -77,8 +77,8 @@ export const SmartSuggestions: React.FC<SmartSuggestionsProps> = ({ sales, notes
         switch(category) {
             case 'Mindset': return { icon: <Brain size={16}/>, color: 'text-purple-500', bg: 'bg-purple-500/10 border-purple-500/20' };
             case 'Tactics': return { icon: <Target size={16}/>, color: 'text-blue-500', bg: 'bg-blue-500/10 border-blue-500/20' };
-            case 'Grind': return { icon: <Zap size={16}/>, color: 'text-amber-500', bg: 'bg-amber-500/10 border-amber-500/20' };
-            case 'Closing': return { icon: <ShieldCheck size={16}/>, color: 'text-emerald-500', bg: 'bg-emerald-500/10 border-emerald-500/20' };
+            case 'Grind': return { icon: <Zap size={16}/>, color: 'text-status-warning', bg: 'bg-amber-500/10 border-amber-500/20' };
+            case 'Closing': return { icon: <ShieldCheck size={16}/>, color: 'text-status-success', bg: 'bg-emerald-500/10 border-emerald-500/20' };
             default: return { icon: <Lightbulb size={16}/>, color: 'text-accent-primary', bg: 'bg-accent-primary/10 border-accent-primary/20' };
         }
     };
@@ -91,16 +91,16 @@ export const SmartSuggestions: React.FC<SmartSuggestionsProps> = ({ sales, notes
             
             <div className="p-5 border-b border-border-subtle/50 bg-surface-highlight/20 flex items-center justify-between shrink-0 relative z-10">
                 <div className="flex items-center gap-3">
-                    <div className="p-2 bg-amber-500/10 rounded-xl text-amber-500 border border-amber-500/10 shadow-neon-amber">
+                    <div className="p-2 bg-amber-500/10 rounded-xl text-status-warning border border-amber-500/10 shadow-neon-amber">
                         <Lightbulb size={16} strokeWidth={3} />
                     </div>
                     <div>
-                        <h3 className="text-xs font-black uppercase tracking-[0.15em] text-text-primary">Smart Assist</h3>
-                        <p className="text-[9px] font-black text-text-muted uppercase tracking-widest">AI Cognitive Layer</p>
+                        <h3 className="text-xs font-[700]  tracking-[0.15em] text-text-primary">Smart Assist</h3>
+                        <p className="text-xs font-[700] text-text-muted  tracking-widest">AI Cognitive Layer</p>
                     </div>
                 </div>
-                <div className="flex items-center gap-1.5 px-2 py-1 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-emerald-500 text-[8px] font-black uppercase tracking-widest animate-pulse">
-                    <Sparkles size={10} /> Active
+                <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-status-success text-sm font-[700]  tracking-widest animate-pulse">
+                    <Sparkles size={16} /> Active
                 </div>
             </div>
             
@@ -111,11 +111,11 @@ export const SmartSuggestions: React.FC<SmartSuggestionsProps> = ({ sales, notes
                         <div className="flex gap-4">
                             <div className="mt-1 shrink-0 group-hover/item:scale-110 transition-transform duration-500">{item.icon}</div>
                             <div className="min-w-0">
-                                <h4 className="text-[10px] font-black text-text-primary mb-1 uppercase tracking-widest group-hover/item:text-accent-primary transition-colors">{item.title}</h4>
-                                <p className="text-[11px] text-text-secondary leading-relaxed font-bold opacity-80 group-hover/item:opacity-100 transition-opacity">{item.text}</p>
+                                <h4 className="text-xs font-[700] text-text-primary mb-1  tracking-widest group-hover/item:text-accent-primary transition-colors">{item.title}</h4>
+                                <p className="text-sm text-text-secondary leading-relaxed font-bold opacity-80 group-hover/item:opacity-100 transition-opacity">{item.text}</p>
                                 {item.action && (
-                                    <button className="mt-3 text-[9px] font-black uppercase text-accent-primary flex items-center gap-2 hover:gap-3 transition-all tracking-[0.15em]">
-                                        {item.action} <ArrowRight size={10} strokeWidth={3} />
+                                    <button className="mt-3 text-xs font-[700]  text-accent-primary flex items-center gap-2 hover:gap-3 transition-all tracking-[0.15em]">
+                                        {item.action} <ArrowRight size={16} strokeWidth={3} />
                                     </button>
                                 )}
                             </div>
@@ -134,28 +134,28 @@ export const SmartSuggestions: React.FC<SmartSuggestionsProps> = ({ sales, notes
                     </div>
 
                     <div className="flex justify-between items-start mb-4 relative z-10">
-                        <div className={`flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.2em] ${wisdomStyle.color}`}>
-                            <div className="p-1.5 rounded-lg bg-white/10 backdrop-blur-sm">
+                        <div className={`flex items-center gap-2 text-xs font-[700]  tracking-[0.2em] ${wisdomStyle.color}`}>
+                            <div className="p-1.5 rounded-lg bg-surface-highlight backdrop-blur-sm">
                                 {wisdomStyle.icon}
                             </div>
                             {activeWisdom.category}
                         </div>
                         <button 
                             onClick={nextWisdom}
-                            className={`p-2 rounded-xl hover:bg-white/20 transition-all duration-500 ${wisdomStyle.color} border border-transparent hover:border-white/10 shadow-sm`}
+                            className={`p-2 rounded-xl hover:bg-white/20 transition-all duration-500 ${wisdomStyle.color} border border-transparent hover:border-border-subtle shadow-sm`}
                             title="New Insight"
                         >
-                            <RefreshCw size={12} strokeWidth={3} className="group-hover/wisdom:rotate-180 transition-transform duration-700"/>
+                            <RefreshCw size={16} strokeWidth={3} className="group-hover/wisdom:rotate-180 transition-transform duration-700"/>
                         </button>
                     </div>
                     
-                    <p className="text-sm font-black text-text-primary italic leading-relaxed relative z-10 tracking-tight">
+                    <p className="text-sm font-[700] text-text-primary italic leading-relaxed relative z-10 tracking-tight">
                         "{activeWisdom.text}"
                     </p>
                     
                     <div className="mt-4 flex items-center gap-2 opacity-40">
                         <div className="w-1 h-1 rounded-full bg-current" />
-                        <span className="text-[8px] font-black uppercase tracking-widest">Braveheart Wisdom Collection</span>
+                        <span className="text-sm font-[700]  tracking-widest">Braveheart Wisdom Collection</span>
                     </div>
                 </div>
             </div>

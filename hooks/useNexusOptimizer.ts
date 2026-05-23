@@ -17,17 +17,9 @@ export const useNexusOptimizer = (sales: Sale[]) => {
     sales.forEach(sale => {
       let targetStage: PipelineStage | null = null;
 
-      // Rule A: Approved sales must be in 'Closed'
-      if (sale.status === 'Approved' && sale.pipelineStatus !== 'Closed') {
-        targetStage = 'Closed';
-      }
-      // Rule B: Declined sales must be in 'Declined'
-      else if (sale.status === 'Declined' && sale.pipelineStatus !== 'Declined') {
-        targetStage = 'Declined';
-      }
-      // Rule C: Rescue In Progress must be in 'Declined' (Recovery Column)
-      else if (sale.status === 'Rescue In Progress' && sale.pipelineStatus !== 'Declined') {
-        targetStage = 'Declined';
+      // Rule A: Approved sales must be in 'Closed Won'
+      if (sale.status === 'Approved' && sale.pipelineStatus !== 'Closed Won') {
+        targetStage = 'Closed Won';
       }
 
       if (targetStage) {

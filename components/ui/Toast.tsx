@@ -17,9 +17,9 @@ export const Toast = () => {
     }, [toast, setToast]);
 
     const icons = {
-        success: <CheckCircle2 className="text-emerald-500" size={16} />,
+        success: <CheckCircle2 className="text-status-success" size={16} />,
         error: <AlertCircle className="text-rose-500" size={16} />,
-        warning: <AlertTriangle className="text-amber-500" size={16} />,
+        warning: <AlertTriangle className="text-status-warning" size={16} />,
         info: <Info className="text-blue-500" size={16} />
     };
 
@@ -49,19 +49,19 @@ export const Toast = () => {
                     </div>
                     
                     <div className="flex-1 min-w-0">
-                        <h4 className="text-[11px] font-black uppercase tracking-widest text-text-primary mb-0.5">
+                        <h4 className="text-sm font-[700]  tracking-widest text-text-primary mb-0.5">
                             {toast.title}
                         </h4>
-                        <p className="text-[10px] font-medium text-text-muted leading-relaxed">
+                        <p className="text-xs font-medium text-text-muted leading-relaxed">
                             {toast.message}
                         </p>
                     </div>
 
                     <button 
                         onClick={() => setToast(null)}
-                        className="flex-shrink-0 p-1 hover:bg-white/10 rounded-lg transition-colors text-text-muted"
+                        className="flex-shrink-0 p-1 hover:bg-surface-highlight rounded-lg transition-colors text-text-muted"
                     >
-                        <X size={14} />
+                        <X size={16} />
                     </button>
 
                     {/* Progress Bar */}

@@ -12,8 +12,14 @@ import { TeamLeaderboard } from '../widgets/TeamLeaderboard';
 import { AgentScriptHub } from '../widgets/AgentScriptHub';
 import { PerformanceCenter } from '../widgets/PerformanceCenter';
 import { OperationalRhythm } from './OperationalRhythm';
+import { TelephonyPanel } from '../widgets/TelephonyPanel';
+import { SmartQueue } from '../widgets/SmartQueue';
 import { sfx } from '../../lib/soundService';
 import { User, Sale, Note, AttendanceRecord, ToastMessage } from '../../types';
+
+// Adaptive View Components
+import { AdaptiveView } from '../Dashboard/AdaptiveView';
+import { SmartLeadQueue } from '../LeadQueue/SmartLeadQueue';
 
 interface AgentTerminalManagerProps {
     isAllowed: (id: string) => boolean;
@@ -37,10 +43,25 @@ export const AgentViewManager: React.FC<AgentTerminalManagerProps> = ({
 
     return (
         <>
+            {/* New UI Implementations Map to standard or new keys */}
+            <TabContent value="home" className="w-full min-h-full flex flex-col flex-1">
+                <AdaptiveView />
+            </TabContent>
+            <TabContent value="leads" className="w-full min-h-full flex flex-col flex-1">
+                <SmartLeadQueue />
+            </TabContent>
+            <TabContent value="chat" className="w-full min-h-full flex flex-col flex-1">
+                <MessagingLayout />
+            </TabContent>
+            <TabContent value="me" className="w-full min-h-full flex flex-col flex-1 overflow-auto p-4">
+                <PerformanceCenter sales={mySales} currentUser={currentUser} attendance={attendance} />
+            </TabContent>
+
             {isAllowed('rhythm') && (
-                <TabContent value="rhythm" className="w-full h-full">
+                <TabContent value="rhythm" className="w-full min-h-full flex flex-col flex-1">
                     <OperationalRhythm 
                         notes={myNotes} 
+                        sales={mySales}
                         currentUser={currentUser} 
                         onLoadLead={handleEngageLead} 
                     />
@@ -48,34 +69,47 @@ export const AgentViewManager: React.FC<AgentTerminalManagerProps> = ({
             )}
             
             {isAllowed('dash') && (
-                <TabContent value="dash" className="w-full h-full">
-                    <DashView sales={sales} onEngage={handleEngageLead} />
+                <TabContent value="dash" className="w-full min-h-full flex flex-col flex-1">
+                    <AdaptiveView />
                 </TabContent>
             )}
 
             {isAllowed('comms') && (
-                <TabContent value="comms" className="w-full h-full">
+                <TabContent value="comms" className="w-full min-h-full flex flex-col flex-1">
                     <MessagingLayout />
                 </TabContent>
             )}
 
+            {isAllowed('dialer') && (
+                <TabContent value="dialer" className="w-full h-full p-4 md:p-6 overflow-hidden">
+                    <div className="flex flex-col lg:flex-row gap-6 h-full w-full">
+                        <div className="flex-1 min-h-0">
+                            <SmartQueue sales={sales} onEngage={handleEngageLead} />
+                        </div>
+                        <div className="lg:w-[400px] shrink-0 min-h-0">
+                            <TelephonyPanel />
+                        </div>
+                    </div>
+                </TabContent>
+            )}
+
             {isAllowed('enrollment') && (
-                <TabContent value="enrollment" className="w-full h-full">
+                <TabContent value="enrollment" className="w-full min-h-full flex flex-col flex-1">
                     <EnrollmentFormV2 
-                        onSuccess={() => setView('dash')} 
+                        onSuccess={() => setView(isAllowed('ledger') ? 'ledger' : 'pipeline')} 
                         onCancel={() => setView('dash')} 
                     />
                 </TabContent>
             )}
 
             {isAllowed('pipeline') && (
-                <TabContent value="pipeline" className="w-full h-full">
+                <TabContent value="pipeline" className="w-full min-h-full flex flex-col flex-1">
                     <PipelineBoard sales={mySales} />
                 </TabContent>
             )}
 
             {isAllowed('recovery') && (
-                <TabContent value="recovery" className="w-full h-full">
+                <TabContent value="recovery" className="w-full min-h-full flex flex-col flex-1">
                     <RecoveryEngine 
                         sales={mySales} 
                         onAction={(_sale, action) => {
@@ -86,7 +120,7 @@ export const AgentViewManager: React.FC<AgentTerminalManagerProps> = ({
             )}
 
             {isAllowed('callbacks') && (
-                <TabContent value="callbacks" className="w-full h-full">
+                <TabContent value="callbacks" className="w-full min-h-full flex flex-col flex-1">
                     <LeadHub 
                         notes={myNotes} 
                         onMarkDone={async (id) => { await deleteNote(id); sfx.playSuccess(); }}
@@ -96,35 +130,36 @@ export const AgentViewManager: React.FC<AgentTerminalManagerProps> = ({
             )}
 
             {isAllowed('contacts') && (
-                <TabContent value="contacts" className="w-full h-full">
+                <TabContent value="contacts" className="w-full min-h-full flex flex-col flex-1">
                     <ContactManager />
                 </TabContent>
             )}
 
             {isAllowed('ledger') && (
-                <TabContent value="ledger" className="w-full h-full">
+                <TabContent value="ledger" className="w-full min-h-full flex flex-col flex-1">
                     <SalesLedger sales={mySales} allowActions={false} />
                 </TabContent>
             )}
 
             {isAllowed('payouts') && (
-                <TabContent value="payouts" className="w-full h-full">
+                <TabContent value="payouts" className="w-full min-h-full flex flex-col flex-1">
                     <AgentPayouts />
                 </TabContent>
             )}
 
             {isAllowed('standings') && (
-                <TabContent value="standings" className="w-full h-full">
+                <TabContent value="standings" className="w-full min-h-full flex flex-col flex-1">
                     <TeamLeaderboard 
                         currentUserName={currentUser.name} 
                         currentUserRole="agent" 
                         currentUserTeam={currentUser.team}
+                        currentUserLevel={currentUser.level}
                     />
                 </TabContent>
             )}
 
             {isAllowed('scripts') && (
-                <TabContent value="scripts" className="w-full h-full">
+                <TabContent value="scripts" className="w-full min-h-full flex flex-col flex-1">
                     <AgentScriptHub />
                 </TabContent>
             )}

@@ -2,10 +2,12 @@
 import React from 'react';
 import { 
     Database, Search, Filter, FileSpreadsheet, Upload, 
-    Settings2, RefreshCw, Zap, LayoutList, AlignJustify 
+    Settings2, RefreshCw, Zap, LayoutList, AlignJustify, Map as MapIcon
 } from 'lucide-react';
 import { Card, Button } from '../../ui/Base';
 import { sfx } from '../../../lib/soundService';
+
+import { useCRM } from '../../../hooks/useCRM';
 
 interface LedgerHeaderProps {
     summary: { count: number; total: number; approved: number; pending: number; };
@@ -13,22 +15,28 @@ interface LedgerHeaderProps {
     onSearchChange: (term: string) => void;
     onToggleFilters: () => void;
     showFilters: boolean;
-    onExport: () => void;
+    onExportFulfillment: () => void;
+    onExportPayroll: () => void;
     onConfig: () => void;
     onTemplate?: () => void;
     onImport: () => void;
     importAvailable: boolean;
     density: 'compact' | 'comfortable';
     setDensity: (d: 'compact' | 'comfortable') => void;
+    viewMode?: 'table' | 'map';
+    setViewMode?: (mode: 'table' | 'map') => void;
     isRefreshing?: boolean;
     onRefresh?: () => void;
+    allowActions?: boolean;
 }
 
 export const LedgerHeader: React.FC<LedgerHeaderProps> = React.memo(({ 
     summary, searchTerm, onSearchChange, onToggleFilters, showFilters, 
-    onExport, onConfig, onImport, importAvailable,
-    density, setDensity, isRefreshing, onRefresh
+    onExportFulfillment, onExportPayroll, onConfig, onImport, importAvailable,
+    density, setDensity, viewMode, setViewMode, isRefreshing, onRefresh, allowActions = false
 }) => {
+    const { currentUser } = useCRM();
+    const isSuperAdmin = (currentUser?.level || currentUser?.accessLevel || 0) >= 10;
     
     const handleRefresh = () => {
         if(onRefresh) {
@@ -50,16 +58,16 @@ export const LedgerHeader: React.FC<LedgerHeaderProps> = React.memo(({
                         <div className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-emerald-500 rounded-full animate-pulse ring-2 ring-surface-main"></div>
                     </div>
                     <div className="hidden sm:block">
-                        <h2 className="text-base font-black uppercase tracking-tight text-text-primary flex items-center gap-2">
-                            Sales Ledger <span className="text-[9px] font-bold px-1.5 py-0.5 rounded bg-surface-alt border border-border-subtle text-text-muted tracking-wider">V5.0</span>
+                        <h2 className="text-base font-[700]  tracking-tight text-text-primary flex items-center gap-2">
+                            Sales Ledger <span className="text-xs font-bold px-3 py-1.5 rounded bg-surface-alt border border-border-subtle text-text-muted tracking-wider">V5.0</span>
                         </h2>
                         <div className="flex items-center gap-3 mt-0.5">
-                            <p className="text-[10px] font-bold text-text-muted uppercase tracking-wider">
+                            <p className="text-xs font-bold text-text-muted  tracking-wider">
                                 {summary.count.toLocaleString()} Records 
                             </p>
                             <div className="h-3 w-px bg-border-subtle"></div>
-                            <span className="text-[10px] font-black text-emerald-500 flex items-center gap-1">
-                                <Zap size={10} fill="currentColor"/> {summary.approved} Auth
+                            <span className="text-xs font-[700] text-status-success flex items-center gap-1">
+                                <Zap size={16} fill="currentColor"/> {summary.approved} Auth
                             </span>
                         </div>
                     </div>
@@ -69,8 +77,8 @@ export const LedgerHeader: React.FC<LedgerHeaderProps> = React.memo(({
                 <div className="flex items-center gap-2 flex-1 xl:flex-none">
                     <div className="relative group w-full sm:w-[320px] transition-all focus-within:w-full sm:focus-within:w-[360px]">
                         <div className="absolute inset-0 bg-accent-primary/5 rounded-xl blur-sm opacity-0 group-focus-within:opacity-100 transition-opacity pointer-events-none"></div>
-                        <Search size={14} className="absolute left-4 top-1/2 -translate-y-1/2 text-text-muted group-focus-within:text-accent-primary transition-colors" />
-                        <input 
+                        <Search size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-text-muted group-focus-within:text-accent-primary transition-colors" />
+                        <input autoComplete="off" data-lpignore="true" data-prevent-autofill="true" spellCheck={false} 
                             value={searchTerm} 
                             onChange={e => onSearchChange(e.target.value)} 
                             placeholder="Search Data Stream..." 
@@ -98,18 +106,25 @@ export const LedgerHeader: React.FC<LedgerHeaderProps> = React.memo(({
                 {/* Density */}
                 <div className="flex bg-surface-alt/50 p-1 rounded-xl border border-border-subtle">
                     <button 
-                        onClick={() => { setDensity('comfortable'); sfx.playClick(); }}
-                        className={`p-2 rounded-lg transition-all ${density === 'comfortable' ? 'bg-surface-main text-text-primary shadow-sm ring-1 ring-black/5' : 'text-text-muted hover:text-text-primary'}`}
+                        onClick={() => { setDensity('comfortable'); setViewMode?.('table'); sfx.playClick(); }}
+                        className={`p-2 rounded-lg transition-all ${density === 'comfortable' && viewMode !== 'map' ? 'bg-surface-main text-text-primary shadow-sm ring-1 ring-black/5' : 'text-text-muted hover:text-text-primary'}`}
                         title="Comfortable"
                     >
-                        <LayoutList size={14}/>
+                        <LayoutList size={16}/>
                     </button>
                     <button 
-                        onClick={() => { setDensity('compact'); sfx.playClick(); }}
-                        className={`p-2 rounded-lg transition-all ${density === 'compact' ? 'bg-surface-main text-text-primary shadow-sm ring-1 ring-black/5' : 'text-text-muted hover:text-text-primary'}`}
+                        onClick={() => { setDensity('compact'); setViewMode?.('table'); sfx.playClick(); }}
+                        className={`p-2 rounded-lg transition-all ${density === 'compact' && viewMode !== 'map' ? 'bg-surface-main text-text-primary shadow-sm ring-1 ring-black/5' : 'text-text-muted hover:text-text-primary'}`}
                         title="Compact"
                     >
-                        <AlignJustify size={14}/>
+                        <AlignJustify size={16}/>
+                    </button>
+                    <button 
+                        onClick={() => { setViewMode?.('map'); sfx.playClick(); }}
+                        className={`p-2 rounded-lg transition-all ml-1 ${viewMode === 'map' ? 'bg-emerald-500/10 text-status-success shadow-sm ring-1 ring-emerald-500/20' : 'text-text-muted hover:text-text-primary'}`}
+                        title="Map View"
+                    >
+                        <MapIcon size={16}/>
                     </button>
                 </div>
 
@@ -117,15 +132,22 @@ export const LedgerHeader: React.FC<LedgerHeaderProps> = React.memo(({
 
                 {importAvailable && (
                     <div className="flex items-center gap-2">
-                        <Button variant="secondary" onClick={onImport} className="h-10 px-4 text-[10px] font-black uppercase tracking-widest border-border-subtle hover:border-accent-primary/30 bg-surface-alt/30">
-                            <Upload size={14} className="mr-2"/> Import
+                        <Button variant="secondary" onClick={onImport} className="h-10 px-4 text-xs font-[700]  tracking-widest border-border-subtle hover:border-accent-primary/30 bg-surface-alt/30">
+                            <Upload size={16} className="mr-2"/> Import
                         </Button>
                     </div>
                 )}
                 
-                <Button variant="primary" onClick={onExport} className="h-10 px-5 text-[10px] font-black uppercase tracking-widest shadow-lg shadow-accent-primary/20 bg-gradient-to-r from-accent-primary to-indigo-600 border border-white/10 hover:brightness-110 active:scale-95 rounded-xl">
-                    <FileSpreadsheet size={16} className="mr-2"/> Export
-                </Button>
+                {allowActions && isSuperAdmin && (
+                    <div className="flex items-center gap-2">
+                        <Button variant="primary" onClick={onExportFulfillment} className="h-10 px-4 text-xs font-[700]  tracking-widest shadow-lg shadow-emerald-500/20 bg-gradient-to-r from-emerald-500 to-teal-600 border border-border-subtle hover:brightness-110 active:scale-95 rounded-xl">
+                            <FileSpreadsheet size={16} className="mr-2"/> fulfillment
+                        </Button>
+                        <Button variant="primary" onClick={onExportPayroll} className="h-10 px-4 text-xs font-[700]  tracking-widest shadow-lg shadow-accent-primary/20 bg-gradient-to-r from-purple-500 to-indigo-600 border border-border-subtle hover:brightness-110 active:scale-95 rounded-xl">
+                            <Database size={16} className="mr-2"/> payroll
+                        </Button>
+                    </div>
+                )}
                 
                 <button onClick={onConfig} className="p-2.5 rounded-xl hover:bg-surface-alt text-text-muted hover:text-text-primary transition-colors ml-1">
                     <Settings2 size={18}/>

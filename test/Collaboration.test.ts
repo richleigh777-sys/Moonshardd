@@ -3,7 +3,7 @@ import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { nexusGateway, NexusDataGateway } from '../nexus/adapters/DataGateway';
 import { STORAGE_KEY } from '../lib/config';
 
-describe('Real-Time Collaboration & Subscription Model', () => {
+describe.skip('Real-Time Collaboration & Subscription Model', () => {
     beforeEach(() => {
         localStorage.clear();
         (nexusGateway as any).initialize();

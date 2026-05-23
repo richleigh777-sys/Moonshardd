@@ -24,12 +24,12 @@ export const BreakOverlay: React.FC = () => {
                 <div className="flex justify-center mb-4">
                     <div className="w-28 h-28 bg-amber-500/5 rounded-full flex items-center justify-center shadow-[0_0_60px_rgba(245,158,11,0.1)] border border-amber-500/10 relative">
                         <div className="absolute inset-0 rounded-full border-4 border-amber-500/5 animate-ping"></div>
-                        <Coffee size={56} className="text-amber-500 relative z-10" />
+                        <Coffee size={56} className="text-status-warning relative z-10" />
                     </div>
                 </div>
                 
                 <div className="space-y-3">
-                    <h1 className="text-4xl font-black text-text-primary tracking-tight">
+                    <h1 className="text-4xl font-[700] text-text-primary tracking-tight">
                         {breakReason || 'Time to Recharge'}
                     </h1>
                     <p className="text-text-muted font-medium text-lg opacity-80">
@@ -39,15 +39,15 @@ export const BreakOverlay: React.FC = () => {
 
                 <div className="bg-surface-main p-10 rounded-[2.5rem] border border-border-subtle shadow-float max-w-sm mx-auto">
                     <div className="text-center mb-10">
-                        <div className="text-[10px] font-black text-text-muted uppercase tracking-[0.2em] mb-3 opacity-60">Break Duration</div>
-                        <div className="text-6xl font-mono font-black text-amber-500 tabular-nums tracking-tighter">
+                        <div className="text-xs font-[700] text-text-muted  tracking-[0.2em] mb-3 opacity-60">Break Duration</div>
+                        <div className="text-6xl font-mono font-[700] text-status-warning tabular-nums tracking-tighter">
                             {formatTimer(Math.floor(currentBreakDuration / 1000))}
                         </div>
                     </div>
                     
                     <button 
                         onClick={handleEndBreak}
-                        className="w-full py-5 bg-accent-primary hover:bg-accent-primary/90 text-white rounded-2xl font-black uppercase tracking-[0.15em] shadow-lg shadow-accent-primary/20 transition-all hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center gap-3"
+                        className="w-full py-5 bg-accent-primary hover:bg-accent-primary/90 text-white rounded-2xl font-[700]  tracking-[0.15em] shadow-lg shadow-accent-primary/20 transition-all hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center gap-3"
                     >
                         <Play size={20} fill="currentColor" />
                         Resume Work

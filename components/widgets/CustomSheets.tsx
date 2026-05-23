@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/set-state-in-effect */
 
 import React, { useState } from 'react';
 import { 
@@ -7,15 +8,15 @@ import {
 import { Card, Button, Input } from '../ui/Base';
 import { useCRM } from '../../hooks/useCRM';
 import { Modal } from '../ui/Modal';
-import { TeamsMock } from './sheets/TeamsMock';
 
 // --- MAIN WRAPPER ---
 
 export const CustomSheets = () => {
-    const { customSheets, addSheet, removeSheet, updateSheetCell, updateSheet } = useCRM();
+    const { currentUser, customSheets, addSheet, removeSheet, updateSheetCell, updateSheet } = useCRM();
+    const isSuperAdmin = (currentUser?.level || currentUser?.accessLevel || 0) >= 10;
     const [activeSheetId, setActiveSheetId] = useState<string | null>(null);
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
-    const [newSheetType, setNewSheetType] = useState<'native' | 'google' | 'teams'>('native');
+    const [newSheetType, setNewSheetType] = useState<'native' | 'google'>('native');
     const [googleUrl, setGoogleUrl] = useState('');
     const [isRenaming, setIsRenaming] = useState(false);
     const [renameVal, setRenameVal] = useState('');
@@ -80,21 +81,21 @@ export const CustomSheets = () => {
                         <button
                             key={sheet.id}
                             onClick={() => setActiveSheetId(sheet.id)}
-                            className={`px-4 py-2 text-xs font-bold uppercase rounded-lg whitespace-nowrap transition-all flex items-center gap-2 ${
+                            className={`px-4 py-2 text-xs font-bold  rounded-lg whitespace-nowrap transition-all flex items-center gap-2 ${
                                 activeSheetId === sheet.id 
                                 ? 'bg-accent-primary text-white shadow-lg shadow-accent-primary/30' 
                                 : 'bg-surface-alt text-text-muted hover:text-text-primary'
                             }`}
                         >
-                            {sheet.type === 'google' ? <Link size={12} className={activeSheetId === sheet.id ? 'text-white' : 'text-accent-primary'}/> : 
-                             sheet.type === 'teams' ? <MessageCircle size={12} className={activeSheetId === sheet.id ? 'text-white' : 'text-[#6264A7]'}/> : null}
+                            {sheet.type === 'google' ? <Link size={16} className={activeSheetId === sheet.id ? 'text-white' : 'text-accent-primary'}/> : 
+                             sheet.type === 'teams' ? <MessageCircle size={16} className={activeSheetId === sheet.id ? 'text-white' : 'text-[#6264A7]'}/> : null}
                             {sheet.name}
                         </button>
                     ))}
                     {customSheets.length === 0 && <span className="text-xs text-text-muted italic">No active sheets</span>}
                 </div>
-                <Button onClick={() => setIsAddModalOpen(true)} variant="secondary" className="h-8 text-[10px] uppercase font-bold">
-                    <Plus size={14} className="mr-1"/> New Sheet
+                <Button onClick={() => setIsAddModalOpen(true)} variant="secondary" className="h-8 text-xs  font-bold">
+                    <Plus size={16} className="mr-1"/> New Sheet
                 </Button>
             </div>
 
@@ -106,18 +107,18 @@ export const CustomSheets = () => {
                             <div className="flex items-center gap-2">
                                 <Grid size={16} className="text-text-muted"/>
                                 {isRenaming ? (
-                                    <input 
+                                    <input autoComplete="off" data-lpignore="true" data-prevent-autofill="true" spellCheck={false} 
                                         autoFocus
                                         value={renameVal}
                                         onChange={(e) => setRenameVal(e.target.value)}
                                         onBlur={handleRename}
                                         onKeyDown={(e) => e.key === 'Enter' && handleRename()}
-                                        className="bg-surface-main border border-accent-primary rounded px-2 py-1 text-sm font-bold w-32 outline-none"
+                                        className="bg-surface-main border border-accent-primary rounded px-3 py-1.5 text-sm font-bold w-32 outline-none"
                                     />
                                 ) : (
                                     <h3 
                                         onDoubleClick={() => { setRenameVal(activeSheet.name); setIsRenaming(true); }}
-                                        className="font-black text-sm text-text-primary uppercase tracking-wide ml-1 cursor-pointer hover:text-accent-primary transition-colors select-none"
+                                        className="font-[700] text-sm text-text-primary  tracking-wide ml-1 cursor-pointer hover:text-accent-primary transition-colors select-none"
                                         title="Double click to rename"
                                     >
                                         {activeSheet.name}
@@ -125,11 +126,13 @@ export const CustomSheets = () => {
                                 )}
                             </div>
                             <div className="flex items-center gap-2">
-                                <Button variant="ghost" onClick={handleAddRow} className="h-8 w-8 p-0" title="Add Row"><Plus size={14}/></Button>
-                                <Button variant="ghost" onClick={handleExport} className="h-8 w-8 p-0" title="Download CSV"><Download size={14}/></Button>
-                                <Button variant="ghost" onClick={handleClearSheet} className="h-8 w-8 p-0 hover:text-status-error" title="Clear Data"><Eraser size={14}/></Button>
+                                <Button variant="ghost" onClick={handleAddRow} className="h-8 w-8 p-0" title="Add Row"><Plus size={16}/></Button>
+                                {isSuperAdmin && (
+                                    <Button variant="ghost" onClick={handleExport} className="h-8 w-8 p-0" title="Download CSV"><Download size={16}/></Button>
+                                )}
+                                <Button variant="ghost" onClick={handleClearSheet} className="h-8 w-8 p-0 hover:text-status-error" title="Clear Data"><Eraser size={16}/></Button>
                                 <div className="w-px h-4 bg-border-subtle mx-1"></div>
-                                <Button variant="danger" className="h-8 w-8 p-0" onClick={() => { removeSheet(activeSheet.id); setActiveSheetId(null); }}><Trash2 size={14}/></Button>
+                                <Button variant="danger" className="h-8 w-8 p-0" onClick={() => { removeSheet(activeSheet.id); setActiveSheetId(null); }}><Trash2 size={16}/></Button>
                             </div>
                         </div>
                     )}
@@ -139,7 +142,7 @@ export const CustomSheets = () => {
                             <div className="w-full h-full relative group flex flex-col">
                                 <div className="p-2 bg-[#202124] border-b border-[#3c4043] flex justify-between items-center">
                                     <span className="text-xs text-white font-bold px-2">{activeSheet.name}</span>
-                                    <Button variant="danger" className="h-6 w-6 p-0" onClick={() => { removeSheet(activeSheet.id); setActiveSheetId(null); }}><Trash2 size={12}/></Button>
+                                    <Button variant="danger" className="h-6 w-6 p-0" onClick={() => { removeSheet(activeSheet.id); setActiveSheetId(null); }}><Trash2 size={16}/></Button>
                                 </div>
                                 <iframe 
                                     src={activeSheet.url} 
@@ -148,16 +151,14 @@ export const CustomSheets = () => {
                                     allowFullScreen
                                 />
                             </div>
-                        ) : activeSheet.type === 'teams' ? (
-                            <TeamsMock />
                         ) : (
                             <div className="w-full h-full overflow-auto custom-scrollbar bg-surface-main">
                                 <table className="w-full text-left border-collapse spreadsheet-grid">
                                     <thead>
                                         <tr>
-                                            <th className="w-10 text-center p-2 bg-surface-alt/50 border-r border-b border-border-subtle text-[10px] font-mono text-text-muted">#</th>
+                                            <th className="w-10 text-center p-2 bg-surface-alt/50 border-r border-b border-border-subtle text-xs font-mono text-text-muted">#</th>
                                             {Array.from({ length: 10 }).map((_, i) => (
-                                                <th key={i} className="min-w-[120px] p-2 text-[10px] font-black text-text-muted uppercase tracking-wider text-center">
+                                                <th key={i} className="min-w-[120px] p-2 text-xs font-[700] text-text-muted  tracking-wider text-center">
                                                     {String.fromCharCode(65 + i)}
                                                 </th>
                                             ))}
@@ -166,7 +167,7 @@ export const CustomSheets = () => {
                                     <tbody>
                                         {activeSheet.data.map((row: string[], rIndex: number) => (
                                             <tr key={rIndex}>
-                                                <td className="text-center bg-surface-alt/30 text-[10px] font-mono text-text-muted border-r border-border-subtle font-bold">
+                                                <td className="text-center bg-surface-alt/30 text-xs font-mono text-text-muted border-r border-border-subtle font-bold">
                                                     {rIndex + 1}
                                                 </td>
                                                 {row.map((cell: string, cIndex: number) => (
@@ -189,7 +190,7 @@ export const CustomSheets = () => {
             ) : (
                 <div className="flex-1 flex flex-col items-center justify-center text-text-muted opacity-50 border-2 border-dashed border-border-subtle rounded-3xl m-4">
                     <Grid size={48} className="mb-4"/>
-                    <p className="text-sm font-bold uppercase tracking-widest">Select or create a sheet</p>
+                    <p className="text-sm font-bold  tracking-widest">Select or create a sheet</p>
                 </div>
             )}
 
@@ -200,50 +201,34 @@ export const CustomSheets = () => {
                 </div>
             }>
                 <div className="space-y-6">
-                    <div className="grid grid-cols-3 gap-4">
+                    <div className="grid grid-cols-2 gap-4">
                         <button 
                             onClick={() => setNewSheetType('native')}
                             className={`p-4 rounded-xl border flex flex-col items-center justify-center gap-3 transition-all ${newSheetType === 'native' ? 'bg-accent-primary/10 border-accent-primary text-accent-primary ring-1 ring-accent-primary' : 'bg-surface-alt border-border-subtle text-text-muted hover:border-accent-primary/50'}`}
                         >
                             <Grid size={24}/>
-                            <span className="text-xs font-black uppercase tracking-widest text-center">Native Grid</span>
+                            <span className="text-xs font-[700]  tracking-widest text-center">Native Grid</span>
                         </button>
                         <button 
                             onClick={() => setNewSheetType('google')}
                             className={`p-4 rounded-xl border flex flex-col items-center justify-center gap-3 transition-all ${newSheetType === 'google' ? 'bg-accent-primary/10 border-accent-primary text-accent-primary ring-1 ring-accent-primary' : 'bg-surface-alt border-border-subtle text-text-muted hover:border-accent-primary/50'}`}
                         >
                             <Link size={24}/>
-                            <span className="text-xs font-black uppercase tracking-widest text-center">Google Sheet</span>
-                        </button>
-                        <button 
-                            onClick={() => setNewSheetType('teams')}
-                            className={`p-4 rounded-xl border flex flex-col items-center justify-center gap-3 transition-all ${newSheetType === 'teams' ? 'bg-accent-primary/10 border-accent-primary text-accent-primary ring-1 ring-accent-primary' : 'bg-surface-alt border-border-subtle text-text-muted hover:border-accent-primary/50'}`}
-                        >
-                            <MessageCircle size={24}/>
-                            <span className="text-xs font-black uppercase tracking-widest text-center">Teams View</span>
+                            <span className="text-xs font-[700]  tracking-widest text-center">Google Sheet</span>
                         </button>
                     </div>
 
                     {newSheetType === 'google' && (
                         <div className="space-y-2 animate-in fade-in slide-in-from-top-2">
-                            <label className="text-xs font-black uppercase text-text-muted tracking-wide">Google Sheet Embed URL</label>
+                            <label className="text-xs font-[700]  text-text-muted tracking-wide">Google Sheet Embed URL</label>
                             <Input 
                                 placeholder="e.g. https://docs.google.com/spreadsheets/d/.../edit" 
                                 value={googleUrl} 
                                 onChange={e => setGoogleUrl(e.target.value)}
                                 autoFocus
                             />
-                            <p className="text-[10px] text-text-secondary bg-surface-alt p-3 rounded-lg border border-border-subtle leading-relaxed">
+                            <p className="text-xs text-text-secondary bg-surface-alt p-3 rounded-lg border border-border-subtle leading-relaxed">
                                 <strong className="text-accent-primary">Instructions:</strong> Open your Google Sheet, go to <strong>File {'>'} Share {'>'} Publish to Web</strong>. Select "Embed" and copy the link (or just paste the browser URL here, and we will try to format it).
-                            </p>
-                        </div>
-                    )}
-                    
-                    {newSheetType === 'teams' && (
-                        <div className="space-y-2 animate-in fade-in slide-in-from-top-2">
-                            <p className="text-[10px] text-text-secondary bg-surface-alt p-3 rounded-lg border border-border-subtle leading-relaxed flex items-center gap-2">
-                                <MessageCircle size={16} className="text-[#6264A7] shrink-0"/>
-                                <span>This creates a <strong>simulated Microsoft Teams environment</strong> for communication drills or visual consistency. It is not a live connection to Microsoft servers.</span>
                             </p>
                         </div>
                     )}

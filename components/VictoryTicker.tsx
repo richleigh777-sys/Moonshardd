@@ -16,7 +16,7 @@ export const VictoryTicker = () => {
         {recentSales.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-12 text-slate-500 text-sm gap-3 border-2 border-dashed border-slate-800 rounded-xl">
             <Shield size={24} className="opacity-20" />
-            <p className="font-bold uppercase tracking-widest text-[10px]">Establishing live handshake...</p>
+            <p className="font-bold  tracking-widest text-xs">Establishing live handshake...</p>
           </div>
         ) : (
           recentSales.map((sale) => (
@@ -26,16 +26,16 @@ export const VictoryTicker = () => {
             >
               <div className="flex items-center gap-4">
                 <div className={`p-2.5 rounded-lg ${
-                  sale.status === 'Approved' ? 'bg-emerald-500/10 text-emerald-500' : 'bg-amber-500/10 text-amber-500'
+                  sale.status === 'Approved' ? 'bg-emerald-500/10 text-status-success' : 'bg-amber-500/10 text-status-warning'
                 }`}>
                   {sale.status === 'Approved' ? <CheckCircle size={16} /> : <Clock size={16} />}
                 </div>
                 <div>
-                  <p className="text-sm font-black text-slate-100 group-hover:text-white transition-colors tracking-tight uppercase">
+                  <p className="text-sm font-[700] text-slate-100 group-hover:text-white transition-colors tracking-tight ">
                     {sale.customer}
                   </p>
-                  <p className="text-[9px] text-slate-500 uppercase tracking-[0.15em] mt-0.5 flex items-center gap-1.5">
-                    <span className="text-indigo-400 font-bold">{sale.agent}</span>
+                  <p className="text-xs text-slate-500  tracking-[0.15em] mt-0.5 flex items-center gap-1.5">
+                    <span className="text-accent-secondary font-bold">{sale.agent}</span>
                     <span className="opacity-30">•</span>
                     <span>{sale.product}</span>
                   </p>
@@ -44,15 +44,15 @@ export const VictoryTicker = () => {
               
               <div className="text-right flex items-center gap-4">
                 <div>
-                    <p className="font-mono font-black text-white text-base leading-none">
+                    <p className="font-mono font-[700] text-white text-base leading-none">
                     ${Number(sale.amount).toLocaleString()}
                     </p>
-                    <p className="text-[9px] text-slate-500 font-bold mt-1">
+                    <p className="text-xs text-slate-500 font-bold mt-1">
                     {new Date(sale.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                     </p>
                 </div>
-                <div className="p-2 text-slate-600 group-hover:text-indigo-400 transition-colors">
-                    <ArrowUpRight size={14} />
+                <div className="p-2 text-slate-600 group-hover:text-accent-secondary transition-colors">
+                    <ArrowUpRight size={16} />
                 </div>
               </div>
             </div>

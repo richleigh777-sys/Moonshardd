@@ -36,12 +36,19 @@ export const usePipelineData = (sales: Sale[], currentUserId?: string) => {
         const data: Record<string, { sales: Sale[], total: number }> = {};
         
         PIPELINE_STAGES.forEach(stage => {
-            const stageSales = filteredSales.filter(s => s.pipelineStatus === stage);
-            data[stage] = {
-                sales: stageSales,
-                total: stageSales.reduce((acc, curr) => acc + Number(curr.amount), 0)
-            };
+            data[stage] = { sales: [], total: 0 };
         });
+
+        filteredSales.forEach(s => {
+            let sStage = s.pipelineStatus || 'New Order';
+            if (!PIPELINE_STAGES.includes(sStage as any)) sStage = 'New Order';
+            
+            if (data[sStage]) {
+                data[sStage].sales.push(s);
+                data[sStage].total += Number(s.amount) || 0;
+            }
+        });
+
         return data;
     }, [filteredSales]);
 

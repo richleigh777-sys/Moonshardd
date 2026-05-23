@@ -104,7 +104,7 @@ export const OperativeRoster: React.FC<OperativeRosterProps> = ({
             />
 
             {/* DATA GRID */}
-            <Card variant="panel" className="flex-1 p-0 overflow-hidden rounded-2xl flex flex-col w-full max-w-full relative border-white/5 bg-surface-main shadow-2xl">
+            <Card variant="panel" className="flex-1 p-0 overflow-hidden rounded-2xl flex flex-col w-full max-w-full relative border-border-subtle bg-surface-main shadow-2xl">
                 
                 <RosterGrid 
                     users={filteredUsers}
@@ -123,15 +123,15 @@ export const OperativeRoster: React.FC<OperativeRosterProps> = ({
                 <div className="p-2.5 border-t border-border-subtle bg-surface-alt/30 shrink-0 backdrop-blur-md relative z-10 flex justify-between items-center px-4">
                     <div className="flex items-center gap-4">
                         <div className="flex items-center gap-1.5">
-                            <HeartHandshake size={12} className="text-emerald-500" />
-                            <span className="text-[9px] font-bold uppercase text-text-muted tracking-widest">Community</span>
+                            <HeartHandshake size={16} className="text-status-success" />
+                            <span className="text-xs font-bold  text-text-muted tracking-widest">Community</span>
                         </div>
                         <div className="flex items-center gap-1.5">
-                            <Activity size={12} className="text-accent-primary" />
-                            <span className="text-[9px] font-bold uppercase text-text-muted tracking-widest">Wellness: 98%</span>
+                            <Activity size={16} className="text-accent-primary" />
+                            <span className="text-xs font-bold  text-text-muted tracking-widest">Wellness: 98%</span>
                         </div>
                     </div>
-                    <span className="text-[8px] font-medium text-text-muted/60">Braveheart v6.0</span>
+                    <span className="text-sm font-medium text-text-muted/60">Braveheart v6.0</span>
                 </div>
             </Card>
 
@@ -142,6 +142,9 @@ export const OperativeRoster: React.FC<OperativeRosterProps> = ({
                 user={editingUser}
                 onSave={handleSaveUser}
                 existingIds={users.map(u => u.id)}
+                sales={sales}
+                attendance={attendance}
+                onGhostLogin={onGhostLogin}
             />
 
             {/* LEDGER MODAL */}

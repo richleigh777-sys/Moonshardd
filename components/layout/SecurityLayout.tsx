@@ -66,12 +66,12 @@ export const SecurityLayout: React.FC<SecurityLayoutProps> = ({ children }) => {
       
       {/* Violation Overlay */}
       <div 
-        className={`fixed inset-0 z-[9999] bg-black/80 flex flex-col items-center justify-center text-red-500 transition-all duration-200 pointer-events-none backdrop-blur-sm ${
+        className={`fixed inset-0 z-[9999] bg-black/80 flex flex-col items-center justify-center text-status-error transition-all duration-200 pointer-events-none backdrop-blur-sm ${
           violationAttempt ? 'opacity-100 scale-100' : 'opacity-0 scale-110'
         }`}
       >
         <div className="relative z-10 flex flex-col items-center animate-in zoom-in-50 duration-300">
-            <div className="w-16 h-16 bg-red-500/10 text-red-500 rounded-full flex items-center justify-center mb-4">
+            <div className="w-16 h-16 bg-red-500/10 text-status-error rounded-full flex items-center justify-center mb-4">
                 <ShieldAlert size={32} strokeWidth={2} />
             </div>
             <h2 className="text-xl font-bold text-white mb-1">Restricted Action</h2>

@@ -36,8 +36,8 @@ export const ScriptLibrary: React.FC<ScriptLibraryProps> = ({
         <Card variant="panel" className="w-1/3 flex flex-col p-0 border-border-subtle bg-surface-main relative overflow-hidden min-w-[320px]">
             <div className="p-4 border-b border-border-subtle bg-surface-alt/30 backdrop-blur-md flex flex-col gap-4 z-10">
                 <div className="relative group">
-                    <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted group-focus-within:text-accent-primary transition-colors"/>
-                    <input 
+                    <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted group-focus-within:text-accent-primary transition-colors"/>
+                    <input autoComplete="off" data-lpignore="true" data-prevent-autofill="true" spellCheck={false} 
                         value={searchTerm}
                         onChange={e => setSearchTerm(e.target.value)}
                         placeholder="Search Knowledge Base..."
@@ -45,11 +45,11 @@ export const ScriptLibrary: React.FC<ScriptLibraryProps> = ({
                     />
                 </div>
                 <div className="flex gap-1.5 overflow-x-auto scrollbar-hide pb-1">
-                    {['All', 'Sales', 'Rebuttal', 'Rescue', 'FollowUp', 'Template'].map(t => (
+                    {['All', 'Sales', 'Rebuttal', 'Rescue', 'FollowUp'].map(t => (
                         <button
                             key={t}
                             onClick={() => { setFilterType(t as any); sfx.playClick(); }}
-                            className={`px-3 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-wider border transition-all whitespace-nowrap ${
+                            className={`px-3 py-1.5 rounded-lg text-xs font-[700]  tracking-wider border transition-all whitespace-nowrap ${
                                 filterType === t 
                                 ? 'bg-accent-primary text-white border-accent-primary shadow-sm' 
                                 : 'text-text-muted border-transparent hover:text-text-primary hover:bg-surface-alt'
@@ -75,7 +75,7 @@ export const ScriptLibrary: React.FC<ScriptLibraryProps> = ({
                 {filteredScripts.length === 0 && (
                     <div className="flex flex-col items-center justify-center h-64 opacity-40 text-text-muted gap-3">
                         <FileText size={32} strokeWidth={1}/>
-                        <p className="text-xs font-black uppercase tracking-widest">No Scripts Found</p>
+                        <p className="text-xs font-[700]  tracking-widest">No Scripts Found</p>
                     </div>
                 )}
             </div>

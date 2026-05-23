@@ -24,10 +24,10 @@ export const LeadHub: React.FC<LeadHubProps> = ({ notes = [], onMarkDone, onView
          return (
             <Card variant="panel" className="flex flex-col h-full items-center justify-center text-center opacity-50 p-10 bg-surface-main border-dashed border-border-subtle">
                  <div className="w-24 h-24 bg-surface-alt rounded-full flex items-center justify-center mb-6 animate-pulse">
-                    <CheckCircle2 size={40} className="text-emerald-500" />
+                    <CheckCircle2 size={40} className="text-status-success" />
                  </div>
-                 <h3 className="text-xl font-black uppercase tracking-widest text-text-primary">Pipeline Clear</h3>
-                 <p className="text-xs font-bold text-text-muted mt-2 uppercase tracking-wide">No pending callbacks. Great work.</p>
+                 <h3 className="text-xl font-[700]  tracking-widest text-text-primary">Pipeline Clear</h3>
+                 <p className="text-xs font-bold text-text-muted mt-2  tracking-wide">No pending callbacks. Great work.</p>
             </Card>
          );
     }

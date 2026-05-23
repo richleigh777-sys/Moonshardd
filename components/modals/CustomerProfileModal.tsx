@@ -1,6 +1,6 @@
 
 import React, { useMemo, useState } from 'react';
-import { User, ShoppingBag, Clock, Shield, Mail, Phone, MapPin, TrendingUp, Award, Calendar, Activity, AlertTriangle, ArrowUpRight, Zap, Link, Eye, EyeOff } from 'lucide-react';
+import { User, ShoppingBag, Clock, Shield, Mail, Phone, MapPin, TrendingUp, Award, Calendar, Activity, AlertTriangle, ArrowUpRight, Zap, Link, Eye, EyeOff, Hash, UserIcon, FileText, ChevronDown, ChevronRight, CheckCircle2, Ticket } from 'lucide-react';
 import { Modal } from '../ui/Modal';
 import { Sale } from '../../types';
 import { Badge, Button } from '../ui/Base';
@@ -22,9 +22,20 @@ export const CustomerProfileModal: React.FC<CustomerProfileModalProps> = ({
     isOpen, onClose, phone, allSales, onLoadToWorkspace, role 
 }) => {
     const { currentUser } = useAuth();
-    const { customers } = useCRM();
+    const { customers, notes, addNote } = useCRM();
     const [now] = React.useState(() => Date.now());
-    const [isRevealed, setIsRevealed] = useState(false);
+    const [isRevealed, setIsRevealed] = useState(true);
+    const [expandedRows, setExpandedRows] = useState<Set<string>>(new Set());
+    const [newNote, setNewNote] = useState('');
+
+    const toggleRow = (id: string) => {
+        setExpandedRows(prev => {
+            const newSet = new Set(prev);
+            if (newSet.has(id)) newSet.delete(id);
+            else newSet.add(id);
+            return newSet;
+        });
+    };
 
     // 1. Resolve Customer Identity via Smart Guard (Multi-Point Lookup)
     const customerProfile = useMemo(() => {
@@ -84,10 +95,10 @@ export const CustomerProfileModal: React.FC<CustomerProfileModalProps> = ({
             tierColor = 'text-cyan-400 border-cyan-400 shadow-[0_0_15px_rgba(34,211,238,0.3)] bg-cyan-950/30'; 
         } else if (totalSpent > 5000 || orderCount >= 5) { 
             tier = 'Platinum'; 
-            tierColor = 'text-indigo-400 border-indigo-400 shadow-[0_0_15px_rgba(129,140,248,0.3)] bg-indigo-950/30'; 
+            tierColor = 'text-accent-secondary border-indigo-400 shadow-[0_0_15px_rgba(129,140,248,0.3)] bg-indigo-950/30'; 
         } else if (totalSpent > 1000 || orderCount >= 2) { 
             tier = 'Gold'; 
-            tierColor = 'text-amber-400 border-amber-400 shadow-[0_0_15px_rgba(251,191,36,0.3)] bg-amber-950/30'; 
+            tierColor = 'text-status-warning border-amber-400 shadow-[0_0_15px_rgba(251,191,36,0.3)] bg-amber-950/30'; 
         }
 
         const declineRate = customerHistory.length > 0 ? declined.length / customerHistory.length : 0;
@@ -95,6 +106,26 @@ export const CustomerProfileModal: React.FC<CustomerProfileModalProps> = ({
 
         return { totalSpent, orderCount, avgOrderValue, daysSinceLastActive, tier, tierColor, riskLevel };
     }, [customerHistory, now]);
+
+    const customerNotes = useMemo(() => {
+        const cleanPhone = normalizePhone(phone);
+        return notes.filter(n => normalizePhone(n.phone || '') === cleanPhone).sort((a, b) => b.timestamp - a.timestamp);
+    }, [notes, phone]);
+
+    const handleAddNote = async () => {
+        if (!newNote.trim() || !currentUser) return;
+        await addNote({
+            agentId: currentUser.id,
+            agentName: currentUser.name,
+            content: newNote.trim(),
+            type: 'note',
+            priority: 'Low',
+            phone: phone,
+            customerName: displayName,
+            timestamp: Date.now()
+        });
+        setNewNote('');
+    };
 
     const handleEngage = () => {
         if (onLoadToWorkspace) {
@@ -128,29 +159,29 @@ export const CustomerProfileModal: React.FC<CustomerProfileModalProps> = ({
                         <div className="flex items-center gap-6">
                             <div className="w-20 h-20 rounded-2xl bg-surface-main flex items-center justify-center border border-border-subtle shadow-2xl relative overflow-hidden shrink-0">
                                 <div className="absolute inset-0 bg-gradient-to-br from-accent-primary/20 to-transparent"></div>
-                                <span className="text-3xl font-black text-accent-primary drop-shadow-lg">
+                                <span className="text-3xl font-[700] text-accent-primary drop-shadow-lg">
                                     {displayName.charAt(0)}
                                 </span>
                             </div>
                             
                             <div className="min-w-0">
                                 <div className="flex items-center gap-3 mb-1 flex-wrap">
-                                    <h2 className="text-2xl font-black text-text-primary tracking-tight truncate">
+                                    <h2 className="text-2xl font-[700] text-text-primary tracking-tight truncate">
                                         {isRevealed ? displayName : maskPII(displayName, 'text')}
                                     </h2>
                                     <button 
                                         onClick={() => setIsRevealed(!isRevealed)}
-                                        className="p-1 px-2 flex items-center gap-1.5 rounded-lg bg-surface-alt/50 hover:bg-surface-alt text-[9px] font-black uppercase tracking-widest text-text-muted hover:text-accent-primary transition-all border border-border-subtle"
+                                        className="p-1 px-2 flex items-center gap-1.5 rounded-lg bg-surface-alt/50 hover:bg-surface-alt text-xs font-[700]  tracking-widest text-text-muted hover:text-accent-primary transition-all border border-border-subtle"
                                     >
-                                        {isRevealed ? <EyeOff size={12} /> : <Eye size={12} />}
+                                        {isRevealed ? <EyeOff size={16} /> : <Eye size={16} />}
                                         {isRevealed ? 'Hide PII' : 'Reveal PII'}
                                     </button>
-                                    <span className={`px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-widest border ${metrics.tierColor}`}>
+                                    <span className={`px-2.5 py-1 rounded text-xs font-[700]  tracking-widest border ${metrics.tierColor}`}>
                                         {metrics.tier} Member
                                     </span>
                                     {customerProfile && (
-                                        <span className="px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-widest border border-status-success/30 text-status-success bg-status-success/10 flex items-center gap-1">
-                                            <Shield size={10} /> Verified
+                                        <span className="px-2.5 py-1 rounded text-xs font-[700]  tracking-widest border border-status-success/30 text-status-success bg-status-success/10 flex items-center gap-1">
+                                            <Shield size={16} /> Verified
                                         </span>
                                     )}
                                 </div>
@@ -158,17 +189,17 @@ export const CustomerProfileModal: React.FC<CustomerProfileModalProps> = ({
                                 <div className="grid grid-cols-1 gap-y-2 text-sm">
                                      <div className="flex items-center gap-4 flex-wrap">
                                          <div className="flex items-center gap-2 text-text-secondary group/link cursor-pointer hover:text-accent-primary transition-colors">
-                                            <Phone size={14} className="text-text-muted group-hover/link:text-accent-primary"/> 
+                                            <Phone size={16} className="text-text-muted group-hover/link:text-accent-primary"/> 
                                             <span className="font-mono">{isRevealed ? phone : maskPII(phone, 'phone')}</span>
                                             {customerProfile && customerProfile.phones && customerProfile.phones.length > 1 && (
-                                                <span className="text-[9px] bg-surface-alt px-1.5 rounded text-text-muted border border-border-subtle">
+                                                <span className="text-xs bg-surface-alt px-1.5 rounded text-text-muted border border-border-subtle">
                                                     +{customerProfile.phones.length - 1} Alt
                                                 </span>
                                             )}
                                          </div>
                                          {(displayAge || displayDob) && (
                                              <div className="flex items-center gap-2 text-text-secondary">
-                                                 <Calendar size={14} className="text-text-muted"/>
+                                                 <Calendar size={16} className="text-text-muted"/>
                                                  <span className="font-mono">
                                                      {displayAge ? `${displayAge} Yrs` : ''} 
                                                      {displayAge && displayDob ? ' • ' : ''}
@@ -178,10 +209,10 @@ export const CustomerProfileModal: React.FC<CustomerProfileModalProps> = ({
                                          )}
                                      </div>
                                      <div className="flex items-center gap-2 text-text-secondary truncate">
-                                        <Mail size={14} className="text-text-muted"/> {isRevealed ? displayEmail : maskPII(displayEmail, 'email')}
+                                        <Mail size={16} className="text-text-muted"/> {isRevealed ? displayEmail : maskPII(displayEmail, 'email')}
                                      </div>
                                      <div className="flex items-center gap-2 text-text-muted text-xs mt-1">
-                                        <MapPin size={14} className="shrink-0"/> 
+                                        <MapPin size={16} className="shrink-0"/> 
                                         <span className="truncate">{isRevealed ? displayAddress : maskPII(displayAddress)}</span>
                                      </div>
                                 </div>
@@ -192,7 +223,7 @@ export const CustomerProfileModal: React.FC<CustomerProfileModalProps> = ({
                         {role === 'agent' && onLoadToWorkspace && (
                             <Button 
                                 onClick={handleEngage}
-                                className="h-12 bg-emerald-600 hover:bg-emerald-500 text-white font-black uppercase tracking-widest shadow-lg shadow-emerald-500/30 border border-emerald-400/50 animate-in slide-in-from-right-4"
+                                className="h-12 bg-emerald-600 hover:bg-emerald-500 text-white font-[700]  tracking-widest shadow-lg shadow-emerald-500/30 border border-emerald-400/50 animate-in slide-in-from-right-4"
                             >
                                 <Zap size={18} className="mr-2 fill-current" />
                                 Initialize Reorder
@@ -204,35 +235,35 @@ export const CustomerProfileModal: React.FC<CustomerProfileModalProps> = ({
                 {/* METRICS GRID */}
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                     <div className="p-4 glass-panel rounded-xl hover:bg-surface-highlight/10 transition-colors group">
-                        <p className="text-[10px] font-bold uppercase text-text-muted flex items-center gap-2 mb-2">
-                            <Award size={12} /> Lifetime Value
+                        <p className="text-[10px] uppercase font-bold text-text-muted flex items-center gap-2 mb-2 tracking-widest">
+                            <Award size={14} /> Lifetime Value
                         </p>
-                        <p className="text-xl font-black text-text-primary num-font group-hover:text-status-success transition-colors">
+                        <p className="text-2xl font-[700] text-text-primary num-font group-hover:text-status-success transition-colors">
                             ${metrics.totalSpent.toLocaleString()}
                         </p>
                     </div>
                     <div className="p-4 glass-panel rounded-xl hover:bg-surface-highlight/10 transition-colors group">
-                        <p className="text-[10px] font-bold uppercase text-text-muted flex items-center gap-2 mb-2">
-                            <TrendingUp size={12} /> Avg Order
+                        <p className="text-[10px] uppercase font-bold text-text-muted flex items-center gap-2 mb-2 tracking-widest">
+                            <TrendingUp size={14} /> Avg Order
                         </p>
-                        <p className="text-xl font-black text-text-primary num-font">
+                        <p className="text-2xl font-[700] text-text-primary num-font">
                             ${metrics.avgOrderValue.toFixed(0)}
                         </p>
                     </div>
                     <div className="p-4 glass-panel rounded-xl hover:bg-surface-highlight/10 transition-colors group">
-                        <p className="text-[10px] font-bold uppercase text-text-muted flex items-center gap-2 mb-2">
-                            <ShoppingBag size={12} /> Frequency
+                        <p className="text-[10px] uppercase font-bold text-text-muted flex items-center gap-2 mb-2 tracking-widest">
+                            <ShoppingBag size={14} /> Frequency
                         </p>
-                        <p className="text-xl font-black text-text-primary num-font">
-                            {metrics.orderCount} <span className="text-xs text-text-muted font-bold">Orders</span>
+                        <p className="text-2xl font-[700] text-text-primary num-font focus-expand">
+                            {metrics.orderCount} <span className="text-xs text-text-muted font-bold font-sans tracking-tight">Orders</span>
                         </p>
                     </div>
                     <div className="p-4 glass-panel rounded-xl hover:bg-surface-highlight/10 transition-colors group">
-                        <p className="text-[10px] font-bold uppercase text-text-muted flex items-center gap-2 mb-2">
-                            <Clock size={12} /> Recency
+                        <p className="text-[10px] uppercase font-bold text-text-muted flex items-center gap-2 mb-2 tracking-widest">
+                            <Clock size={14} /> Since Last Order
                         </p>
-                        <p className={`text-xl font-black num-font ${metrics.daysSinceLastActive > 60 ? 'text-status-warning' : 'text-text-primary'}`}>
-                            {metrics.daysSinceLastActive} <span className="text-xs text-text-muted font-bold">Days Ago</span>
+                        <p className={`text-2xl font-[700] num-font focus-expand ${metrics.daysSinceLastActive > 60 ? 'text-status-warning' : 'text-text-primary'}`}>
+                            {metrics.daysSinceLastActive} <span className="text-xs text-text-muted font-bold font-sans tracking-tight">Days Ago</span>
                         </p>
                     </div>
                 </div>
@@ -240,10 +271,10 @@ export const CustomerProfileModal: React.FC<CustomerProfileModalProps> = ({
                 {/* INTELLIGENCE & TAGS */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div className="space-y-3">
-                         <h4 className="text-xs font-black text-text-primary flex items-center gap-2 uppercase tracking-wider">
-                            <Activity size={14} className="text-accent-primary"/> Behavioral Signals
+                         <h4 className="text-[10px] uppercase font-[700] text-text-primary flex items-center gap-2 tracking-widest">
+                            <Activity size={12} className="text-accent-primary"/> Behavioral Signals
                          </h4>
-                         <div className="p-4 glass-panel rounded-xl space-y-3">
+                         <div className="p-4 glass-panel rounded-xl space-y-3 shadow-inner">
                             <div className="flex justify-between items-center text-xs">
                                 <span className="text-text-muted font-bold">Churn Risk</span>
                                 <Badge status={metrics.daysSinceLastActive > 90 ? 'High' : metrics.daysSinceLastActive > 45 ? 'Mid' : 'Low'}>
@@ -260,79 +291,185 @@ export const CustomerProfileModal: React.FC<CustomerProfileModalProps> = ({
                     </div>
 
                     <div className="space-y-3">
-                        <h4 className="text-xs font-black text-text-primary flex items-center gap-2 uppercase tracking-wider">
-                            <Shield size={14} className="text-accent-primary"/> Medical Context
+                        <h4 className="text-[10px] uppercase font-[700] text-text-primary flex items-center gap-2 tracking-widest">
+                            <Shield size={12} className="text-accent-primary"/> Medical Context
                         </h4>
-                        <div className="p-4 glass-panel rounded-xl min-h-[88px] flex flex-wrap content-start gap-1.5">
+                        <div className="p-4 glass-panel rounded-xl min-h-[88px] flex flex-wrap content-start gap-2 shadow-inner">
                             {customerHistory.length > 0 && customerHistory[0].medicalConditions && customerHistory[0].medicalConditions.length > 0 ? (
                                 customerHistory[0].medicalConditions.map((c, i) => (
-                                    <span key={i} className="px-2 py-1 bg-surface-main/50 rounded-md text-[10px] font-bold text-text-primary border border-border-subtle shadow-sm flex items-center gap-1">
-                                        <div className="w-1 h-1 rounded-full bg-accent-primary"></div>
+                                    <span key={i} className="px-3 py-1.5 bg-surface-alt rounded border border-border-subtle text-[11px] font-[700] tracking-wide text-text-primary flex items-center gap-1.5 shadow-sm">
+                                        <div className="w-1.5 h-1.5 rounded-full bg-accent-primary"></div>
                                         {c}
                                     </span>
                                 ))
                             ) : (
                                 <span className="text-xs text-text-muted italic flex items-center gap-2 opacity-60">
-                                    <AlertTriangle size={12}/> No conditions tagged.
+                                    <AlertTriangle size={16}/> No conditions tagged.
                                 </span>
                             )}
                         </div>
                     </div>
                 </div>
 
+                {/* CUSTOMER NOTES & ACTIVITY */}
+                <div className="space-y-3">
+                    <h4 className="text-[10px] uppercase font-[700] text-text-primary flex items-center gap-2 tracking-widest">
+                        <FileText size={12} className="text-accent-primary"/> CRM Activity Log
+                    </h4>
+                    <div className="glass-panel rounded-xl overflow-hidden shadow-inner flex flex-col h-[280px]">
+                        <div className="flex-1 overflow-y-auto custom-scrollbar p-4 space-y-3">
+                            {customerNotes.length === 0 ? (
+                                <div className="text-center py-8 text-text-muted italic text-xs">
+                                    No notes or activity logged for this customer.
+                                </div>
+                            ) : (
+                                customerNotes.map(note => (
+                                    <div key={note.id} className="bg-surface-alt/50 border border-border-subtle rounded-lg p-3">
+                                        <div className="flex justify-between items-start mb-2">
+                                            <div className="flex items-center gap-2">
+                                                <div className="w-5 h-5 rounded-full bg-accent-primary/20 flex items-center justify-center text-[10px] font-bold text-accent-primary border border-accent-primary/30">
+                                                    {note.agentName?.charAt(0) || '?'}
+                                                </div>
+                                                <span className="text-xs font-bold text-text-secondary">{note.agentName}</span>
+                                            </div>
+                                            <span className="text-[10px] text-text-muted font-mono">{new Date(note.timestamp).toLocaleString()}</span>
+                                        </div>
+                                        <p className="text-xs text-text-primary leading-relaxed whitespace-pre-wrap pl-7">{note.content}</p>
+                                    </div>
+                                ))
+                            )}
+                        </div>
+                        <div className="p-3 bg-surface-alt border-t border-border-subtle flex gap-2">
+                            <input
+                                type="text"
+                                value={newNote}
+                                onChange={(e) => setNewNote(e.target.value)}
+                                onKeyDown={(e) => e.key === 'Enter' && handleAddNote()}
+                                placeholder="Add a secure internal note..."
+                                className="flex-1 bg-surface-main border border-border-subtle rounded-lg px-3 py-2 text-xs text-text-primary focus:border-accent-primary outline-none transition-colors"
+                            />
+                            <Button variant="primary" className="px-4 text-xs font-bold tracking-wider" onClick={handleAddNote}>
+                                Log Note
+                            </Button>
+                        </div>
+                    </div>
+                </div>
+
                 {/* TRANSACTION HISTORY */}
                 <div className="space-y-3 flex-1 flex flex-col min-h-0">
-                    <h4 className="text-xs font-black text-text-primary flex items-center gap-2 uppercase tracking-wider">
-                        <Calendar size={14} className="text-accent-primary"/> Transaction Ledger
+                    <h4 className="text-[10px] uppercase font-[700] text-text-primary flex items-center gap-2 tracking-widest">
+                        <Calendar size={12} className="text-accent-primary"/> Transaction Ledger
                     </h4>
-                    <div className="border border-border-subtle rounded-xl overflow-hidden shadow-sm flex-1">
+                    <div className="border border-border-subtle rounded-xl overflow-hidden shadow-sm flex-1 bg-surface-main">
                         <div className="max-h-[300px] overflow-y-auto custom-scrollbar">
                             <table className="w-full text-left bg-surface-main relative">
-                                <thead className="bg-surface-alt/80 backdrop-blur-sm text-[9px] font-bold text-text-muted uppercase tracking-widest border-b border-border-subtle sticky top-0 z-10">
+                                <thead className="bg-surface-alt/90 backdrop-blur-md text-[10px] uppercase font-bold text-text-muted tracking-widest border-b border-border-subtle sticky top-0 z-10">
                                     <tr>
-                                        <th className="p-3 pl-4">Date</th>
-                                        <th className="p-3">Product Detail</th>
-                                        <th className="p-3">Matched By</th>
+                                        <th className="p-3 pl-4 w-8"></th>
+                                        <th className="p-3">Order Details</th>
+                                        <th className="p-3">Attribution</th>
                                         <th className="p-3 text-right">Value</th>
-                                        <th className="p-3 text-right">Result</th>
+                                        <th className="p-3 text-right">Status</th>
                                         {role === 'agent' && onLoadToWorkspace && <th className="p-3 text-right pr-4">Action</th>}
                                     </tr>
                                 </thead>
                                 <tbody className="divide-y divide-border-subtle text-xs">
                                     {customerHistory.length === 0 ? (
-                                        <tr><td colSpan={6} className="p-8 text-center text-text-muted italic">No history found.</td></tr>
+                                        <tr><td colSpan={6} className="p-8 text-center text-text-muted italic">No transaction history found for this profile.</td></tr>
                                     ) : customerHistory.map(sale => {
                                         const matchType = getMatchReason(sale);
+                                        const isExpanded = expandedRows.has(sale.id);
                                         return (
-                                            <tr key={sale.id} className="hover:bg-surface-alt/50 transition-colors group">
-                                                <td className="p-3 pl-4 font-mono text-text-muted whitespace-nowrap align-top">{new Date(sale.timestamp).toLocaleDateString()}</td>
-                                                <td className="p-3 align-top">
-                                                    <div className="font-bold text-text-primary truncate max-w-[120px]" title={sale.product}>{sale.product}</div>
-                                                    <div className="text-[10px] text-text-muted">{sale.quantity}</div>
-                                                </td>
-                                                <td className="p-3 align-top">
-                                                    <div className="flex items-center gap-1.5 text-[9px] font-bold uppercase text-text-muted">
-                                                        <Link size={10} className={matchType === 'Email' ? 'text-indigo-500' : matchType === 'Phone' ? 'text-emerald-500' : 'text-text-muted'}/>
-                                                        {matchType}
-                                                    </div>
-                                                </td>
-                                                <td className="p-3 text-right font-mono font-bold text-text-primary align-top">${sale.amount}</td>
-                                                <td className="p-3 text-right align-top"><Badge status={sale.status} className="scale-75 origin-right"/></td>
-                                                {role === 'agent' && onLoadToWorkspace && (
-                                                    <td className="p-3 text-right pr-4 align-top">
-                                                        <button 
-                                                            onClick={() => {
-                                                                onLoadToWorkspace(sale);
-                                                                onClose();
-                                                            }}
-                                                            className="p-1.5 bg-accent-primary/10 hover:bg-accent-primary text-accent-primary hover:text-white rounded-lg transition-all"
-                                                            title="Load Record"
-                                                        >
-                                                            <ArrowUpRight size={14} />
-                                                        </button>
+                                            <React.Fragment key={sale.id}>
+                                                <tr 
+                                                    className="hover:bg-surface-highlight/30 transition-colors group cursor-pointer"
+                                                    onClick={() => toggleRow(sale.id)}
+                                                >
+                                                    <td className="p-3 pl-4 text-text-muted">
+                                                        {isExpanded ? <ChevronDown size={16} /> : <ChevronRight size={16} className="group-hover:text-accent-primary transition-colors"/>}
                                                     </td>
+                                                    <td className="p-3 align-middle">
+                                                        <div className="flex flex-col">
+                                                            <div className="font-bold text-text-primary flex items-center gap-2">
+                                                                {sale.product}
+                                                                <span className="text-[10px] text-text-muted font-normal bg-surface-alt px-1.5 rounded">x{sale.quantity}</span>
+                                                            </div>
+                                                            <div className="text-[10px] font-mono text-text-muted mt-0.5 flex items-center gap-1.5 tracking-tight">
+                                                                <span>{new Date(sale.timestamp).toLocaleDateString()}</span>
+                                                                {sale.orderId && <span className="opacity-70">| #{sale.orderId}</span>}
+                                                            </div>
+                                                        </div>
+                                                    </td>
+                                                    <td className="p-3 align-middle">
+                                                        <div className="flex flex-col gap-0.5">
+                                                            <div className="flex items-center gap-1.5 text-xs font-bold text-text-secondary">
+                                                                <UserIcon size={12} className="text-text-muted"/> {sale.agent || 'Unknown'}
+                                                            </div>
+                                                            <div className="flex items-center gap-1 text-[10px] font-bold text-text-muted">
+                                                                <Link size={10} className={matchType === 'Email' ? 'text-accent-secondary' : matchType === 'Phone' ? 'text-status-success' : 'text-text-muted'}/>
+                                                                Matched: {matchType}
+                                                            </div>
+                                                        </div>
+                                                    </td>
+                                                    <td className="p-3 text-right font-mono font-bold text-text-primary align-middle text-sm tracking-tight">${Number(sale.amount).toFixed(2)}</td>
+                                                    <td className="p-3 text-right align-middle"><Badge status={sale.status} className="scale-90 origin-right inline-flex">{sale.status}</Badge></td>
+                                                    {role === 'agent' && onLoadToWorkspace && (
+                                                        <td className="p-3 text-right pr-4 align-middle">
+                                                            <button 
+                                                                onClick={(e) => {
+                                                                    e.stopPropagation();
+                                                                    onLoadToWorkspace(sale);
+                                                                    onClose();
+                                                                }}
+                                                                className="p-1.5 bg-accent-primary/10 hover:bg-accent-primary text-accent-primary hover:text-white rounded-lg transition-all"
+                                                                title="Load Record"
+                                                            >
+                                                                <ArrowUpRight size={16} />
+                                                            </button>
+                                                        </td>
+                                                    )}
+                                                </tr>
+                                                {isExpanded && (
+                                                    <tr className="bg-surface-alt/20">
+                                                        <td colSpan={6} className="p-4 pl-12">
+                                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 bg-surface-main p-4 rounded-xl border border-border-subtle shadow-inner">
+                                                                <div className="space-y-3">
+                                                                    <div className="text-[10px] uppercase font-bold text-text-muted tracking-widest flex items-center gap-1.5">
+                                                                        <FileText size={12}/> Order Summary
+                                                                    </div>
+                                                                    <div className="text-xs text-text-secondary leading-relaxed p-3 bg-surface-alt rounded-lg border border-border-subtle/50">
+                                                                        {sale.callSummary || <span className="italic opacity-50">No summary notes provided for this transaction.</span>}
+                                                                    </div>
+                                                                </div>
+                                                                <div className="space-y-3">
+                                                                     <div className="text-[10px] uppercase font-bold text-text-muted tracking-widest flex items-center gap-1.5">
+                                                                        <Ticket size={12}/> Logistic & Financial Details
+                                                                    </div>
+                                                                    <div className="text-xs grid grid-cols-2 gap-y-2 gap-x-4">
+                                                                        <div className="text-text-muted">Account Number</div>
+                                                                        <div className="font-mono text-text-primary text-right">{isRevealed ? (sale.cardNumber || 'N/A') : maskPII(sale.cardNumber || 'N/A')}</div>
+
+                                                                        <div className="text-text-muted">Valid Thru</div>
+                                                                        <div className="font-mono text-text-primary text-right">{isRevealed ? (sale.cardExpiry || 'N/A') : maskPII(sale.cardExpiry || 'N/A')}</div>
+
+                                                                        <div className="text-text-muted">Sec Code</div>
+                                                                        <div className="font-mono text-text-primary text-right">{isRevealed ? (sale.cardCvv || 'N/A') : '•••'}</div>
+
+                                                                        <div className="text-text-muted">Billing Address</div>
+                                                                        <div className="text-text-primary text-right truncate" title={isRevealed ? sale.billingAddress : maskPII(sale.billingAddress || '')}>{isRevealed ? (sale.billingAddress || 'Same as primary') : maskPII(sale.billingAddress || 'Same as primary')}</div>
+                                                                        
+                                                                        <div className="text-text-muted">Tracking ID</div>
+                                                                        <div className="font-mono text-text-primary text-right">{sale.trackingId || 'Pending Fulfillment'}</div>
+                                                                        
+                                                                        <div className="text-text-muted">Probability Status</div>
+                                                                        <div className="text-text-primary text-right">{sale.probability ? `${sale.probability}%` : 'Firm'}</div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
                                                 )}
-                                            </tr>
+                                            </React.Fragment>
                                         );
                                     })}
                                 </tbody>
@@ -342,7 +479,7 @@ export const CustomerProfileModal: React.FC<CustomerProfileModalProps> = ({
                 </div>
                 
                 <div className="pt-2">
-                    <Button variant="ghost" onClick={onClose} className="w-full h-10 uppercase tracking-widest font-bold text-xs hover:bg-surface-alt border border-transparent hover:border-border-subtle">
+                    <Button variant="ghost" onClick={onClose} className="w-full h-10 tracking-widest font-bold text-xs hover:bg-surface-alt border border-transparent hover:border-border-subtle">
                         Dismiss Profile
                     </Button>
                 </div>
@@ -350,3 +487,4 @@ export const CustomerProfileModal: React.FC<CustomerProfileModalProps> = ({
         </Modal>
     );
 };
+

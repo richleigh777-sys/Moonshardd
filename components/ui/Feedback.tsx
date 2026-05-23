@@ -25,13 +25,13 @@ export const SyncOverlay: React.FC<{ isSyncing: boolean }> = ({ isSyncing }) => 
         
         {/* Text Interface */}
         <div className="text-center space-y-3 relative z-10">
-            <h3 className="text-2xl font-bold uppercase tracking-widest text-white drop-shadow-lg flex items-center justify-center gap-3">
+            <h3 className="text-2xl font-bold  tracking-widest text-white drop-shadow-lg flex items-center justify-center gap-3">
                 <Radio size={20} className="text-accent-primary animate-pulse" />
                 Loading Data
             </h3>
             
             <div className="flex flex-col items-center gap-1">
-                <p className="text-[10px] font-mono font-bold text-accent-primary/80 uppercase tracking-widest bg-accent-primary/10 px-3 py-1 rounded border border-accent-primary/20">
+                <p className="text-xs font-mono font-bold text-accent-primary/80  tracking-widest bg-accent-primary/10 px-3 py-1 rounded border border-accent-primary/20">
                     Connecting to server...
                 </p>
             </div>

@@ -6,6 +6,7 @@ import { User } from '../../../../../types';
 import { PayoutCycle } from '../../../../widgets/payouts/usePayoutHistory';
 import { exportToCSV } from '../../../../../views/utils/crmLogic';
 import { sfx } from '../../../../../lib/soundService';
+import { useCRM } from '../../../../../hooks/useCRM';
 
 interface PayrollCycleCardProps {
     cycle: PayoutCycle & { agentPayouts: any[] };
@@ -14,6 +15,8 @@ interface PayrollCycleCardProps {
 }
 
 export const PayrollCycleCard: React.FC<PayrollCycleCardProps> = ({ cycle, onInspect, onAdjust }) => {
+    const { currentUser } = useCRM();
+    const isSuperAdmin = (currentUser?.level || currentUser?.accessLevel || 0) >= 10;
     
     // Progress Calculation
     const [now] = React.useState(() => Date.now());
@@ -23,8 +26,8 @@ export const PayrollCycleCard: React.FC<PayrollCycleCardProps> = ({ cycle, onIns
 
     const getStatusPill = (status: string) => {
         const styles = {
-            Paid: 'bg-emerald-100 text-emerald-700 dark:bg-emerald-500/20 dark:text-emerald-400',
-            Processing: 'bg-amber-100 text-amber-700 dark:bg-amber-500/20 dark:text-amber-400',
+            Paid: 'bg-emerald-100 text-emerald-700 dark:bg-emerald-500/20 dark:text-status-success',
+            Processing: 'bg-amber-100 text-amber-700 dark:bg-amber-500/20 dark:text-status-warning',
             Open: 'bg-blue-100 text-blue-700 dark:bg-blue-500/20 dark:text-blue-400'
         }[status] || 'bg-gray-100 text-gray-600';
         
@@ -54,7 +57,7 @@ export const PayrollCycleCard: React.FC<PayrollCycleCardProps> = ({ cycle, onIns
     };
 
     return (
-        <div className="bg-surface-main rounded-2xl border border-border-subtle shadow-sm overflow-hidden transition-all hover:shadow-md">
+        <div className="bg-surface-main rounded-2xl shadow-panel overflow-hidden transition-all hover:shadow-md">
             
             {/* Cycle Header */}
             <div className="p-6 border-b border-border-subtle flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6 bg-surface-alt/20">
@@ -70,14 +73,14 @@ export const PayrollCycleCard: React.FC<PayrollCycleCardProps> = ({ cycle, onIns
                         <div className="flex items-center gap-4 text-xs font-medium text-text-muted">
                             <span>{cycle.startDate.toLocaleDateString()} - {cycle.endDate.toLocaleDateString()}</span>
                             <span className="w-1 h-1 rounded-full bg-border-subtle"></span>
-                            <span className="flex items-center gap-1"><Clock size={12}/> Pay Date: {cycle.payDate.toLocaleDateString()}</span>
+                            <span className="flex items-center gap-1"><Clock size={16}/> Pay Date: {cycle.payDate.toLocaleDateString()}</span>
                         </div>
                     </div>
                 </div>
 
                 <div className="flex items-center gap-6 w-full lg:w-auto justify-between lg:justify-end">
                     <div className="text-right">
-                        <p className="text-xs font-medium text-text-muted mb-1 uppercase tracking-wider">Cycle Liability</p>
+                        <p className="text-xs font-medium text-text-muted mb-1  tracking-wider">Cycle Liability</p>
                         <p className="text-2xl font-bold text-text-primary tracking-tight">
                             ${(cycle as any).totalLiability.toLocaleString(undefined, {minimumFractionDigits: 2})}
                         </p>
@@ -89,9 +92,11 @@ export const PayrollCycleCard: React.FC<PayrollCycleCardProps> = ({ cycle, onIns
                                 {cycle.status === 'Open' ? 'Lock' : 'Finalize'}
                             </Button>
                         )}
-                        <Button onClick={handleMasterExport} className="h-10 px-4 bg-text-primary hover:bg-text-secondary text-surface-main rounded-xl shadow-lg text-xs font-bold uppercase tracking-wide transition-all">
-                            <Download size={16} className="mr-2"/> Export File
-                        </Button>
+                        {isSuperAdmin && (
+                            <Button onClick={handleMasterExport} className="h-10 px-4 bg-text-primary hover:bg-text-secondary text-surface-main rounded-xl shadow-lg text-xs font-bold  tracking-wide transition-all">
+                                <Download size={16} className="mr-2"/> Export File
+                            </Button>
+                        )}
                     </div>
                 </div>
             </div>
@@ -111,8 +116,8 @@ export const PayrollCycleCard: React.FC<PayrollCycleCardProps> = ({ cycle, onIns
                             <th className="py-3 pl-6 font-medium w-16">#</th>
                             <th className="py-3 font-medium">Partner</th>
                             <th className="py-3 font-medium text-right">Volume</th>
-                            <th className="py-3 font-medium text-right text-emerald-500">Comm.</th>
-                            <th className="py-3 font-medium text-right text-amber-500">Bonus</th>
+                            <th className="py-3 font-medium text-right text-status-success">Comm.</th>
+                            <th className="py-3 font-medium text-right text-status-warning">Bonus</th>
                             <th className="py-3 font-medium text-right">Adjust</th>
                             <th className="py-3 font-medium text-right pr-6">Payout</th>
                             <th className="py-3 w-10"></th>
@@ -135,10 +140,10 @@ export const PayrollCycleCard: React.FC<PayrollCycleCardProps> = ({ cycle, onIns
                                 <td className="py-4 text-right font-mono text-text-muted">
                                     ${p.volume.toLocaleString()}
                                 </td>
-                                <td className="py-4 text-right font-mono font-medium text-emerald-500">
+                                <td className="py-4 text-right font-mono font-medium text-status-success">
                                     ${p.commission.toLocaleString()}
                                 </td>
-                                <td className="py-4 text-right font-mono font-medium text-amber-500">
+                                <td className="py-4 text-right font-mono font-medium text-status-warning">
                                     ${p.spiff.toLocaleString()}
                                 </td>
                                 <td className="py-4 text-right" onClick={(e) => e.stopPropagation()}>

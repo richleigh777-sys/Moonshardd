@@ -42,9 +42,9 @@ export const ScratchpadSidebar: React.FC<ScratchpadSidebarProps> = ({
         `}>
             <div className="p-3 border-b border-border-subtle">
                 <div className="relative">
-                    <Search size={12} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-text-muted" />
-                    <input 
-                        className="w-full bg-surface-main border border-border-subtle rounded-lg py-2 pl-8 pr-2 text-[10px] font-bold outline-none focus:border-accent-primary placeholder:text-text-muted/50"
+                    <Search size={16} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-text-muted" />
+                    <input autoComplete="off" data-lpignore="true" data-prevent-autofill="true" spellCheck={false} 
+                        className="w-full bg-surface-main border border-border-subtle rounded-lg py-2 pl-8 pr-2 text-xs font-bold outline-none focus:border-accent-primary placeholder:text-text-muted/50"
                         placeholder="Search notes..."
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
@@ -64,8 +64,8 @@ export const ScratchpadSidebar: React.FC<ScratchpadSidebarProps> = ({
                     >
                         <div className="flex items-center justify-between mb-1">
                             <div className="flex items-center gap-2 min-w-0">
-                                <FileText size={12} className={activeSheetId === sheet.id ? 'text-accent-primary' : 'text-text-muted'} />
-                                <p className={`text-[10px] font-bold truncate ${activeSheetId === sheet.id ? 'text-text-primary' : 'text-text-secondary'}`}>
+                                <FileText size={16} className={activeSheetId === sheet.id ? 'text-accent-primary' : 'text-text-muted'} />
+                                <p className={`text-xs font-bold truncate ${activeSheetId === sheet.id ? 'text-text-primary' : 'text-text-secondary'}`}>
                                     {getSheetTitle(sheet.content)}
                                 </p>
                             </div>
@@ -73,12 +73,12 @@ export const ScratchpadSidebar: React.FC<ScratchpadSidebarProps> = ({
                                 onClick={(e) => onDelete(e, sheet.id)}
                                 className="opacity-0 group-hover:opacity-100 p-1 hover:bg-status-error/10 text-text-muted hover:text-status-error rounded transition-all"
                             >
-                                <Trash2 size={10} />
+                                <Trash2 size={16} />
                             </button>
                         </div>
                         <div className="pl-5">
-                            <p className="text-[9px] text-text-muted/70 truncate">{getSheetPreview(sheet.content)}</p>
-                            <p className="text-[8px] text-text-muted/40 font-mono mt-0.5">
+                            <p className="text-xs text-text-muted/70 truncate">{getSheetPreview(sheet.content)}</p>
+                            <p className="text-sm text-text-muted/40 font-mono mt-0.5">
                                 {new Date(sheet.timestamp).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})}
                             </p>
                         </div>
@@ -86,8 +86,8 @@ export const ScratchpadSidebar: React.FC<ScratchpadSidebarProps> = ({
                 ))}
             </div>
             <div className="p-3 border-t border-border-subtle">
-                <button onClick={onNew} className="w-full py-2 bg-accent-primary/10 hover:bg-accent-primary/20 text-accent-primary text-[10px] font-bold uppercase rounded-lg border border-accent-primary/20 flex items-center justify-center gap-2 transition-all">
-                    <Plus size={12} /> New Note
+                <button onClick={onNew} className="w-full py-2 bg-accent-primary/10 hover:bg-accent-primary/20 text-accent-primary text-xs font-bold  rounded-lg border border-accent-primary/20 flex items-center justify-center gap-2 transition-all">
+                    <Plus size={16} /> New Note
                 </button>
             </div>
         </div>

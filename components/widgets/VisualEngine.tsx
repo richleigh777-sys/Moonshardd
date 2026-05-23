@@ -80,109 +80,97 @@ export const VisualEngine: React.FC<VisualEngineProps> = ({ sales, theme }) => {
       text: isDark ? '#A1A1AA' : '#71717A'
   }), [isDark]);
 
-  const CustomTooltip = ({ active, payload, label }: any) => {
-    if (active && payload && payload.length) {
-      return (
-        <div className="bg-surface-main/95 backdrop-blur-xl border border-border-subtle p-4 rounded-2xl shadow-2xl min-w-[150px]">
-          <p className="text-[10px] font-black uppercase tracking-widest text-text-muted mb-2 border-b border-border-subtle pb-2">{label}</p>
-          <div className="space-y-1">
-              {payload.map((entry: any, i: number) => (
-                  entry.value > 0 && (
-                    <div key={i} className="flex items-center justify-between gap-4">
-                        <span className="text-xs font-bold text-text-secondary capitalize flex items-center gap-1.5">
-                            <div className="w-1.5 h-1.5 rounded-full" style={{backgroundColor: entry.color}}></div>
-                            {entry.dataKey === 'actual' ? 'Revenue' : 'Forecast'}
-                        </span>
-                        <span className={`text-sm font-black num-font ${entry.dataKey === 'projected' ? 'text-amber-500' : 'text-text-primary'}`}>
-                            ${entry.value.toLocaleString()}
-                        </span>
-                    </div>
-                  )
-              ))}
-          </div>
-        </div>
-      );
-    }
-    return null;
-  };
-
-  const hasData = chartData.some(d => d.actual > 0);
+    const hasData = chartData.some(d => d.actual > 0);
 
   return (
-    <div className="w-full h-full flex flex-col relative bg-surface-main group overflow-hidden">
+    <div className="w-full h-full flex flex-col relative bg-surface-main/30 backdrop-blur-3xl group overflow-hidden border border-border-subtle rounded-2xl md:rounded-3xl shadow-panel transition-all hover:border-accent-primary/20">
+        <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-accent-primary/30 via-accent-secondary/30 to-status-warning/30 z-0"></div>
         
         {/* Header */}
-        <div className="flex justify-between items-center p-6 pb-2 border-b border-border-subtle/30 z-10 relative">
-            <div className="flex items-center gap-3">
-                <div className="p-2.5 bg-accent-primary/10 rounded-2xl text-accent-primary border border-accent-primary/20 shadow-neon">
-                    <TrendingUp size={20} strokeWidth={2.5}/>
+        <div className="flex justify-between items-center p-4 lg:p-6 pb-4 border-b border-border-subtle bg-surface-main/60 backdrop-blur-sm z-10 relative">
+            <div className="flex items-center gap-4">
+                <div className="p-3 bg-accent-primary/10 rounded-2xl text-accent-primary border border-accent-primary/20 shadow-inner group-hover:scale-110 transition-transform">
+                    <TrendingUp size={24} strokeWidth={2.5}/>
                 </div>
                 <div>
-                    <h3 className="text-base font-black text-text-primary flex items-center gap-2 tracking-tight uppercase">
+                    <h3 className="text-xs font-[700] text-text-primary flex items-center gap-2 tracking-[0.2em] ">
                         Revenue Velocity
                     </h3>
-                    <p className="text-[10px] font-bold text-text-muted uppercase tracking-wider mt-0.5 flex items-center gap-1">
-                        <Calendar size={10} /> 7 Day Trajectory with AI Forecast
+                    <p className="text-[10px] font-bold text-text-muted  tracking-widest mt-1 flex items-center gap-2 opacity-80">
+                        <Calendar size={14} /> 7 Day Trajectory w/ AI Forecast
                     </p>
                 </div>
             </div>
             {hasData && (
                 <div className="flex gap-2">
-                    <div className="px-3 py-1.5 rounded-xl border text-[10px] font-bold uppercase tracking-wider flex items-center gap-1.5 bg-surface-alt border-border-subtle text-text-muted">
-                        <span className="w-2 h-2 rounded-full bg-accent-primary"></span> Actual
+                    <div className="px-3 py-1.5 rounded-lg border text-[10px] font-[700]  tracking-[0.15em] flex items-center gap-2 bg-surface-main border-border-subtle text-text-secondary shadow-inner">
+                        <span className="w-2 h-2 rounded-full bg-accent-primary shadow-[0_0_8px_var(--color-accent-primary)]"></span> ACTUAL
                     </div>
-                    <div className="px-3 py-1.5 rounded-xl border text-[10px] font-bold uppercase tracking-wider flex items-center gap-1.5 bg-amber-500/5 border-amber-500/20 text-amber-600">
-                        <span className="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></span> Projected
+                    <div className="px-3 py-1.5 rounded-lg border text-[10px] font-[700]  tracking-[0.15em] flex items-center gap-2 bg-surface-main border-border-subtle text-text-secondary shadow-inner">
+                        <span className="w-2 h-2 rounded-full bg-status-warning shadow-[0_0_8px_var(--color-status-warning)] animate-pulse"></span> PROJECTED
                     </div>
                 </div>
             )}
         </div>
         
         {/* Chart */}
-        <div className="flex-1 w-full min-h-[220px] relative px-2 pb-2 pt-6 z-10">
+        <div className="flex-1 w-full min-h-[220px] relative px-4 pb-2 pt-6 z-10">
             <ChartFrame minHeight={220} children={() => (
                 hasData ? (
                     <ResponsiveContainer width="100%" height="100%">
                         <ComposedChart data={chartData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
                             <defs>
                                 <linearGradient id={`colorRev-${gradientId}`} x1="0" y1="0" x2="0" y2="1">
-                                    <stop offset="5%" stopColor={colors.primary} stopOpacity={0.25}/>
+                                    <stop offset="5%" stopColor={colors.primary} stopOpacity={0.4}/>
                                     <stop offset="95%" stopColor={colors.primary} stopOpacity={0}/>
                                 </linearGradient>
-                                <pattern id="pattern-stripes" width="8" height="8" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
-                                    <rect width="4" height="8" transform="translate(0,0)" fill="rgba(245, 158, 11, 0.1)"></rect>
-                                </pattern>
+                                <filter id="glow-visual">
+                                    <feGaussianBlur stdDeviation="4" result="coloredBlur"/>
+                                    <feMerge>
+                                        <feMergeNode in="coloredBlur"/>
+                                        <feMergeNode in="SourceGraphic"/>
+                                    </feMerge>
+                                </filter>
                             </defs>
-                            <CartesianGrid strokeDasharray="3 3" stroke={colors.grid} vertical={false} />
+                            <CartesianGrid strokeDasharray="3 3" stroke={colors.grid} vertical={false} opacity={0.6}/>
                             <XAxis 
                                 dataKey="date" 
                                 stroke={colors.text} 
                                 fontSize={10} 
+                                fontFamily="var(--font-mono)"
                                 tickLine={false} 
                                 axisLine={false} 
                                 tickMargin={15} 
-                                fontWeight={700}
-                                opacity={0.7}
+                                fontWeight={900}
+                                opacity={0.8}
+                                style={{ textTransform: '' }}
                             />
                             <YAxis 
                                 stroke={colors.text} 
                                 fontSize={10} 
+                                fontFamily="var(--font-mono)"
                                 tickLine={false} 
                                 axisLine={false} 
                                 tickFormatter={(val) => val >= 1000 ? `$${(val / 1000).toFixed(1)}k` : `$${val}`} 
-                                fontWeight={700}
-                                tickMargin={10}
-                                opacity={0.7}
+                                fontWeight={900}
+                                tickMargin={15}
+                                opacity={0.8}
+                                width={45}
                             />
-                            <Tooltip content={<CustomTooltip />} cursor={{ stroke: colors.text, strokeWidth: 1, strokeDasharray: '4 4' }} />
+                            <Tooltip 
+                                contentStyle={{ backgroundColor: 'var(--color-surface-alt)', borderColor: 'var(--color-border-strong)', borderRadius: '12px', padding: '12px', boxShadow: '0 20px 40px -10px rgba(0,0,0,0.8)' }}
+                                itemStyle={{ color: 'var(--color-accent-primary)', fontSize: '14px', fontWeight: '900', fontFamily: 'var(--font-mono)' }}
+                                labelStyle={{ color: 'var(--color-text-muted)', fontSize: '10px', textTransform: '', letterSpacing: '0.1em', marginBottom: '4px' }}
+                                cursor={{ stroke: colors.primary, strokeWidth: 1, strokeDasharray: '4 4' }} 
+                            />
                             
                             {avgRevenue > 0 && (
                                 <ReferenceLine 
                                     y={avgRevenue} 
                                     stroke={colors.text} 
                                     strokeDasharray="3 3" 
-                                    strokeOpacity={0.3}
-                                    label={{ position: 'insideRight', value: 'AVG', fill: colors.text, fontSize: 9, fontWeight: 800 }} 
+                                    strokeOpacity={0.5}
+                                    label={{ position: 'insideRight', value: 'AVG', fill: colors.text, fontSize: 9, fontWeight: 900, fontFamily: 'var(--font-mono)' }} 
                                 />
                             )}
                             
@@ -192,8 +180,9 @@ export const VisualEngine: React.FC<VisualEngineProps> = ({ sales, theme }) => {
                                 stroke={colors.primary} 
                                 strokeWidth={3} 
                                 fill={`url(#colorRev-${gradientId})`}
-                                activeDot={{ r: 6, strokeWidth: 0, fill: '#fff' }}
+                                activeDot={{ r: 6, strokeWidth: 0, fill: '#fff', stroke: colors.primary }}
                                 animationDuration={1500}
+                                style={{ filter: 'url(#glow-visual)' }}
                             />
                             {/* Forecast Line */}
                             <Line 
@@ -205,15 +194,16 @@ export const VisualEngine: React.FC<VisualEngineProps> = ({ sales, theme }) => {
                                 dot={{ r: 4, fill: colors.prediction, strokeWidth: 0 }}
                                 animationDuration={1500}
                                 animationBegin={1000}
+                                style={{ filter: 'url(#glow-visual)' }}
                             />
                         </ComposedChart>
                     </ResponsiveContainer>
                 ) : (
                     <div className="flex flex-col items-center justify-center h-full text-text-muted opacity-40">
-                        <div className="p-4 rounded-[2rem] bg-surface-alt mb-4 border border-border-subtle shadow-inner">
+                        <div className="p-4 rounded-3xl bg-surface-alt mb-4 border border-border-strong shadow-inner">
                             <Activity size={32} />
                         </div>
-                        <p className="text-[10px] font-black uppercase tracking-[0.2em]">Awaiting transaction data</p>
+                        <p className="text-[10px] font-[700]  tracking-[0.2em]">Awaiting Data</p>
                     </div>
                 )
             )} />
