@@ -219,12 +219,12 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ onLogin }) => {
                                 disabled={isProcessing}
                                 className="text-xs font-medium text-text-secondary hover:text-text-primary transition-colors disabled:opacity-50 border border-border-subtle hover:bg-surface-highlight py-2 px-3 rounded-lg"
                             >
-                                Log in as Agent
+                                Log in as Team Member
                             </button>
                         </div>
                     </div>
                     <div className="text-xs text-text-muted mt-2 text-center opacity-70">
-                        Braveheart CRM OS • v2.4.0 <br/>
+                        Braveheart Workspace • v2.4.0 <br/>
                         Development Environment Logins
                     </div>
                 </div>

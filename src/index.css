@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -6,87 +6,87 @@
 
 @layer base {
   :root {
-    --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
-    --font-display: "Inter", sans-serif;
+    --font-sans: "Nunito", ui-sans-serif, system-ui, sans-serif;
+    --font-display: "Nunito", sans-serif;
     --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
 
-    /* Icy Blue Light Mode */
-    --color-surface-main: 210 40% 98%; /* Icy White Panel */
-    --color-surface-alt: 210 30% 94%; /* Icy Blue Canvas */
-    --color-surface-highlight: 210 25% 88%;
+    /* Empathy Theme Light Mode */
+    --color-surface-main: 0 0% 100%; /* Pure White */
+    --color-surface-alt: 30 40% 98%; /* Warm off-white canvas */
+    --color-surface-highlight: 30 30% 95%; /* Soft highlight */
     
-    --color-accent-primary: 210 85% 50%; /* Deep Icy Blue */
-    --color-accent-secondary: 190 90% 50%; /* Cyan */
+    --color-accent-primary: 340 70% 65%; /* Warm Rose / Soft Pink */
+    --color-accent-secondary: 190 60% 60%; /* Soft Teal */
     
-    --color-text-primary: 210 30% 15%; /* Deep slate blue/black */
-    --color-text-secondary: 210 20% 35%;
-    --color-text-muted: 210 10% 50%;
+    --color-text-primary: 30 20% 25%; /* Soft Brownish Gray */
+    --color-text-secondary: 30 15% 45%; /* Warm Muted Gray */
+    --color-text-muted: 30 15% 65%;
     
-    --color-border-subtle: 210 20% 86%;
-    --color-border-strong: 210 20% 76%;
+    --color-border-subtle: 30 20% 92%;
+    --color-border-strong: 30 20% 86%;
 
-    /* Status Colors (Light) */
-    --color-status-success: 160 100% 40%;
-    --color-status-warning: 40 100% 50%;
-    --color-status-error: 350 100% 55%;
-    --color-status-info: 210 100% 55%;
+    /* Gentle Status Colors (Light) */
+    --color-status-success: 140 50% 50%; /* Soft Green */
+    --color-status-warning: 40 80% 60%; /* Soft Orange */
+    --color-status-error: 350 70% 65%; /* Soft Coral Red */
+    --color-status-info: 210 70% 65%; /* Soft Sky Blue */
 
     /* Generic component overrides */
     --color-blue-500: var(--color-status-info);
-    --color-emerald-400: 160 100% 45%;
+    --color-emerald-400: 140 50% 55%;
     --color-emerald-500: var(--color-status-success);
-    --color-emerald-600: 160 100% 30%;
-    --color-amber-400: 40 100% 60%;
+    --color-emerald-600: 140 50% 45%;
+    --color-amber-400: 40 80% 65%;
     --color-amber-500: var(--color-status-warning);
-    --color-red-400: 350 100% 65%;
+    --color-red-400: 350 70% 70%;
     --color-red-500: var(--color-status-error);
     --color-indigo-500: var(--color-accent-secondary);
 
-    /* Icy Blue Shadows for Light Mode */
-    --shadow-panel: 0 8px 30px rgba(50, 70, 90, 0.06), 0 2px 4px rgba(50, 70, 90, 0.04);
-    --shadow-float: 0 20px 40px rgba(50, 70, 90, 0.1), 0 4px 12px rgba(50, 70, 90, 0.06);
+    /* Soft Friendly Shadows */
+    --shadow-panel: 0 4px 15px -3px rgba(120, 100, 90, 0.08), 0 2px 4px -2px rgba(120, 100, 90, 0.04);
+    --shadow-float: 0 15px 30px -5px rgba(120, 100, 90, 0.12), 0 8px 12px -4px rgba(120, 100, 90, 0.06);
   }
 
   html.dark, .dark {
-    /* Obsidian & Ethereal Frost - Ultra-Premium Executive UI */
-    --color-surface-main: 220 5% 6%;       /* #0F1012 - Graphite Glass */
-    --color-surface-alt: 220 5% 2%;        /* #050506 - Deep Obsidian */
-    --color-surface-highlight: 220 5% 10%; /* #18191C - Frost Layer */
+    /* Empathy Theme Dark Mode */
+    --color-surface-main: 30 15% 15%; /* Warm dark brown-gray */
+    --color-surface-alt: 30 15% 10%; /* Deeper warm gray */
+    --color-surface-highlight: 30 15% 20%; 
     
-    --color-accent-primary: 185 100% 50%;  /* #00FFFF Electric Cyan */
-    --color-accent-secondary: 265 100% 65%;/* #9D4EDD Vivid Amethyst */
+    --color-accent-primary: 340 70% 70%; /* Soft Rose for Dark Mode */
+    --color-accent-secondary: 190 60% 65%; /* Soft Teal */
     
-    --color-text-primary: 0 0% 100%;       /* Pure White */
-    --color-text-secondary: 220 5% 75%;    /* Clean Frost Silver */
-    --color-text-muted: 220 5% 45%;        /* Dimmed Slate */
+    --color-text-primary: 30 20% 95%; /* Soft warm white */
+    --color-text-secondary: 30 15% 75%; /* Soft warm gray */
+    --color-text-muted: 30 15% 55%; 
     
-    --color-border-subtle: 220 5% 14%;     /* Thin glass borders */
-    --color-border-strong: 220 5% 25%;     /* Stronger contrast lines */
+    --color-border-subtle: 30 15% 24%;     
+    --color-border-strong: 30 15% 32%;     
     
-    /* Cyber-Pro Status Colors */
-    --color-status-success: 150 100% 45%;  /* Emerald Frost */
-    --color-status-warning: 35 100% 60%;   /* Solar Amber */
-    --color-status-error: 345 100% 55%;    /* Neon Crimson */
-    --color-status-info: 210 100% 65%;     /* Glacial Blue */
+    /* Gentle Status Colors */
+    --color-status-success: 140 50% 50%;  
+    --color-status-warning: 40 80% 60%;   
+    --color-status-error: 350 70% 65%;    
+    --color-status-info: 210 70% 65%;     
 
     /* Generic component overrides */
     --color-blue-500: var(--color-status-info);
-    --color-emerald-400: 150 100% 55%;
+    --color-emerald-400: 140 50% 55%;
     --color-emerald-500: var(--color-status-success);
-    --color-emerald-600: 150 100% 35%;
-    --color-amber-400: 35 100% 70%;
+    --color-emerald-600: 140 50% 45%;
+    --color-amber-400: 40 80% 65%;
     --color-amber-500: var(--color-status-warning);
-    --color-red-400: 345 100% 65%;
+    --color-red-400: 350 70% 70%;
     --color-red-500: var(--color-status-error);
     --color-indigo-500: var(--color-accent-secondary);
 
-    /* Ultra-luxe Glass Shadows */
-    --shadow-panel: 0 20px 40px -15px rgba(0, 0, 0, 0.9), 0 0 0 1px rgba(255, 255, 255, 0.04) inset, 0 10px 25px rgba(0,0,0,0.4);
-    --shadow-float: 0 30px 60px -20px rgba(0,0,0,1), 0 0 0 1px rgba(255, 255, 255, 0.08) inset, 0 20px 40px rgba(0, 229, 255, 0.03);
+    /* Soft Dark Shadows */
+    --shadow-panel: 0 4px 10px -2px rgb(0 0 0 / 0.4), 0 2px 4px -2px rgb(0 0 0 / 0.2);
+    --shadow-float: 0 20px 25px -5px rgb(0 0 0 / 0.6), 0 8px 10px -6px rgb(0 0 0 / 0.4);
   }
 
   html {
-    @apply antialiased h-full overflow-hidden text-[14px] 2xl:text-[15px] font-medium leading-normal tracking-normal;
+    @apply antialiased h-full overflow-hidden text-[14px] 2xl:text-[15px] font-normal leading-normal tracking-normal;
     text-rendering: optimizeLegibility;
     -moz-osx-font-smoothing: grayscale;
   }
@@ -115,24 +115,24 @@
   }
 
   h1, h2, h3, h4, h5, h6 {
-    @apply font-display tracking-tight font-bold text-text-primary;
+    @apply font-display tracking-tight font-semibold text-text-primary;
   }
 }
 
 @layer components {
   .custom-scrollbar::-webkit-scrollbar {
-    @apply w-1 h-1;
+    @apply w-1.5 h-1.5;
   }
   .custom-scrollbar::-webkit-scrollbar-track {
     @apply bg-transparent;
   }
   .custom-scrollbar::-webkit-scrollbar-thumb {
-    @apply bg-border-strong/30 rounded hover:bg-border-strong/60 transition-colors;
+    @apply bg-border-strong/40 rounded hover:bg-border-strong/80 transition-colors;
   }
 
   .glass-panel {
-    @apply bg-surface-main/80 shadow-panel rounded-3xl border border-white/5;
-    backdrop-filter: blur(30px) saturate(150%);
+    @apply bg-surface-main/90 shadow-panel rounded-xl border border-border-subtle/70;
+    backdrop-filter: blur(16px) saturate(140%);
   }
 
   .tech-grid {

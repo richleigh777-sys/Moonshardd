@@ -149,7 +149,7 @@ export const AgentPortal: React.FC = () => {
             
             <PortalShell 
                 user={currentUser} 
-                title="Agent Terminal" 
+                title="Your Workspace" 
                 sidebarContent={<AgentSidebar isAllowed={isAllowed} />}
                 headerContent={
                     <AgentHeaderControls 

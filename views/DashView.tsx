@@ -49,7 +49,7 @@ export const DashView: React.FC<{ sales: Sale[], onEngage?: (data: any) => void 
   const widgets = {
       'kpi_revenue': (
           <StatCard 
-            label="Daily Revenue" 
+            label="Today's Sales" 
             value={`$${stats.dailyRev.toLocaleString()}`} 
             icon={Heart} 
             trend={12.5} 
@@ -57,7 +57,7 @@ export const DashView: React.FC<{ sales: Sale[], onEngage?: (data: any) => void 
       ),
       'kpi_winrate': (
           <StatCard 
-            label="Win Rate" 
+            label="Success Rate" 
             value={`${stats.winRate}%`} 
             icon={Activity} 
             trend={4.2} 
@@ -65,7 +65,7 @@ export const DashView: React.FC<{ sales: Sale[], onEngage?: (data: any) => void 
       ),
       'kpi_goal': (
           <StatCard 
-            label="Monthly Goal" 
+            label="Target for Month" 
             value={`$${stats.totalRevenue.toLocaleString()}`} 
             icon={Target} 
           />
@@ -85,7 +85,7 @@ export const DashView: React.FC<{ sales: Sale[], onEngage?: (data: any) => void 
                           <List size={18} strokeWidth={2}/>
                       </div>
                       <div>
-                          <h3 className="text-sm font-bold text-text-primary tracking-tight">Recent Activity Stream</h3>
+                          <h3 className="text-sm font-bold text-text-primary tracking-tight">What You Have Done Recently</h3>
                       </div>
                   </div>
               </div>
@@ -162,7 +162,7 @@ export const DashView: React.FC<{ sales: Sale[], onEngage?: (data: any) => void 
                     className="px-5 py-2.5 bg-emerald-500 hover:bg-emerald-600 text-white rounded-lg font-semibold text-sm flex items-center gap-2 transition-all shadow-sm"
                 >
                     <Heart size={16} />
-                    New Sale
+                    Help a Customer
                 </button>
             </div>
         </div>

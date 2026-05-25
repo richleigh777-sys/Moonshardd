@@ -34,13 +34,12 @@ export const DashboardHeader: React.FC<DashboardHeaderProps> = ({ health, onTogg
                     {isOffline ? <Activity size={22} className="animate-pulse"/> : <ShieldCheck size={24} />}
                 </div>
                 <div>
-                    <h2 className="text-xl font-display font-[700] tracking-tighter text-text-primary capitalize flex items-center gap-3">
-                        {isOffline ? 'System Offline' : 'System Nomenclature'}
+                    <h2 className="text-xl font-display font-[700] tracking-tight text-text-primary capitalize flex items-center gap-3">
+                        {isOffline ? 'System Offline' : 'Company Overview'}
                         <div className={`w-2.5 h-2.5 rounded-full animate-pulse shadow-[0_0_12px_currentColor] ${isOffline ? 'bg-status-error text-status-error' : 'bg-status-success text-status-success'}`}></div>
                     </h2>
-                    <p className="text-[10px] font-[700]  tracking-[0.3em] text-text-muted mt-1 flex items-center gap-2">
-                        <span className="text-accent-primary opacity-80">[{isOffline ? 'ERR' : 'OK'}]</span>
-                        CORE_{isOffline ? 'DISCONNECTED' : 'ONLINE'} // UID_V4
+                    <p className="text-xs font-semibold text-text-muted mt-1 flex items-center gap-2">
+                        <span>{isOffline ? 'We are having trouble connecting.' : 'Everything is running smoothly.'}</span>
                     </p>
                 </div>
             </div>
@@ -51,7 +50,7 @@ export const DashboardHeader: React.FC<DashboardHeaderProps> = ({ health, onTogg
                         sfx.playClick();
                         setLiveMode(!liveMode);
                     }}
-                    className={`group flex items-center gap-2 px-5 py-3 rounded-2xl text-[10px] font-[700] tracking-[0.2em] border transition-all active:scale-95 ${
+                    className={`group flex items-center gap-2 px-5 py-3 rounded-2xl text-xs font-bold tracking-wider border transition-all active:scale-95 ${
                         liveMode 
                             ? 'bg-blue-500/10 text-blue-500 border-blue-500/30 hover:bg-blue-500 hover:text-white hover:shadow-[0_0_20px_var(--color-blue-500)] ring-1 ring-transparent hover:ring-white/20' 
                             : 'bg-surface-alt/50 text-text-muted border-border-strong hover:bg-surface-alt hover:text-text-primary'
@@ -59,7 +58,7 @@ export const DashboardHeader: React.FC<DashboardHeaderProps> = ({ health, onTogg
                     title="Toggle Live Mode (60s refresh)"
                 >
                     <RefreshCcw size={16} className={liveMode ? "animate-spin" : ""} />
-                    Live Mode: {liveMode ? 'ON' : 'OFF'}
+                    Live Data: {liveMode ? 'ON' : 'OFF'}
                 </button>
                 {onToggleTerminals && (
                     <button
@@ -67,23 +66,23 @@ export const DashboardHeader: React.FC<DashboardHeaderProps> = ({ health, onTogg
                             sfx.playClick();
                             onToggleTerminals();
                         }}
-                        className={`group flex items-center gap-2 px-5 py-3 rounded-2xl text-[10px] font-[700]  tracking-[0.2em] border transition-all active:scale-95 ${
+                        className={`group flex items-center gap-2 px-5 py-3 rounded-2xl text-xs font-bold tracking-wider border transition-all active:scale-95 ${
                             areTerminalsOpen 
                                 ? 'bg-surface-alt/50 text-text-primary border-border-strong shadow-inner hover:bg-surface-alt' 
                                 : 'bg-emerald-500/10 text-status-success border-status-success/30 hover:bg-emerald-500 hover:text-white hover:shadow-[0_0_20px_var(--color-status-success)] ring-1 ring-transparent hover:ring-white/20'
                         }`}
-                        title="Toggle Network Terminals"
+                        title="Toggle Setup Tools"
                     >
                         <Terminal size={16} className={areTerminalsOpen ? "opacity-50" : "animate-pulse"} />
-                        {areTerminalsOpen ? 'Hide Terminals' : 'Open Terminals'}
+                        {areTerminalsOpen ? 'Hide Tools' : 'Open Tools'}
                     </button>
                 )}
                 <button
                     onClick={() => window.dispatchEvent(new CustomEvent('NAVIGATE', { detail: 'enrollment' }))}
-                    className="group flex items-center gap-2 px-6 py-3 rounded-2xl text-[10px] font-[700]  tracking-[0.2em] border transition-all bg-accent-primary/10 text-accent-primary border-accent-primary/30 hover:bg-accent-primary hover:text-white shadow-[inset_0_0_20px_rgba(0,0,0,0)] hover:shadow-[0_0_20px_var(--color-accent-primary)] ring-1 ring-transparent hover:ring-white/20 active:scale-95"
+                    className="group flex items-center gap-2 px-6 py-3 rounded-2xl text-xs font-bold tracking-wider border transition-all bg-accent-primary/10 text-accent-primary border-accent-primary/30 hover:bg-accent-primary hover:text-white shadow-[inset_0_0_20px_rgba(0,0,0,0)] hover:shadow-[0_0_20px_var(--color-accent-primary)] ring-1 ring-transparent hover:ring-white/20 active:scale-95"
                 >
                     <Zap size={16} className="group-hover:animate-bounce" />
-                    Init Order Sequence
+                    Help a Customer
                 </button>
             </div>
         </div>

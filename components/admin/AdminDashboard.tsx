@@ -65,17 +65,22 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
 
       {/* Tab Navigation */}
       <div className="flex gap-2 bg-slate-800 rounded-lg p-2 border border-slate-700">
-        {(['overview', 'operations', 'analytics', 'tools'] as const).map((tab) => (
+        {([
+          { id: 'overview', label: 'Home' },
+          { id: 'operations', label: 'Company' },
+          { id: 'analytics', label: 'Progress' },
+          { id: 'tools', label: 'Extra Tools' }
+        ] as const).map((tab) => (
           <button
-            key={tab}
-            onClick={() => setActiveTab(tab)}
+            key={tab.id}
+            onClick={() => setActiveTab(tab.id as any)}
             className={`flex-1 py-2 rounded font-semibold text-sm transition-colors ${
-              activeTab === tab
+              activeTab === tab.id
                 ? 'bg-blue-600 text-white'
                 : 'text-slate-400 hover:text-white'
             }`}
           >
-            {tab.charAt(0).toUpperCase() + tab.slice(1)}
+            {tab.label}
           </button>
         ))}
       </div>
@@ -144,19 +149,19 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
 
           {/* Predictive Alerts */}
           <div>
-            <h3 className="text-lg font-bold text-white mb-3">Predictive Alerts</h3>
+            <h3 className="text-lg font-bold text-white mb-3">Helpful Alerts</h3>
             <PredictiveAlerts sales={sales} users={users} notes={notes} />
           </div>
 
           {/* Scenario Planner */}
           <div>
-            <h3 className="text-lg font-bold text-white mb-3">Scenario Planner</h3>
+            <h3 className="text-lg font-bold text-white mb-3">Look Ahead</h3>
             <ScenarioPlanner sales={sales} users={users} systemConfig={systemConfig} />
           </div>
 
           {/* Audit Explorer */}
           <div>
-            <h3 className="text-lg font-bold text-white mb-3">Audit Trail</h3>
+            <h3 className="text-lg font-bold text-white mb-3">Action History</h3>
             <AuditExplorer auditLogs={auditLogs || []} />
           </div>
         </div>

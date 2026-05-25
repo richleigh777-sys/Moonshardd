@@ -11,16 +11,16 @@ interface CardProps {
 
 export const Card = React.memo(({ children, className = "", onClick, variant = 'default' }: CardProps) => {
     const variants = {
-        default: "bg-surface-main/60 backdrop-blur-3xl shadow-panel border border-border-subtle",
-        panel:   "bg-surface-main/60 backdrop-blur-3xl shadow-panel border border-border-subtle", 
-        glass:   "bg-surface-main/30 backdrop-blur-3xl border border-border-subtle shadow-float text-shadow-sm",
-        refraction: "bg-gradient-to-br from-surface-main/80 to-surface-alt/40 backdrop-blur-[40px] border border-border-subtle shadow-float"
+        default: "bg-surface-main/60 backdrop-blur-2xl shadow-panel border border-border-subtle",
+        panel:   "bg-surface-main/60 backdrop-blur-2xl shadow-panel border border-border-subtle", 
+        glass:   "bg-surface-main/30 backdrop-blur-2xl border border-border-subtle shadow-float text-shadow-sm",
+        refraction: "bg-gradient-to-br from-surface-main/80 to-surface-alt/40 backdrop-blur-3xl border border-border-subtle shadow-float"
     };
 
     return (
         <div 
             onClick={onClick} 
-            className={`transition-all duration-300 rounded-3xl ${variants[variant] || variants.default} ${
+            className={`transition-all duration-300 rounded-xl ${variants[variant] || variants.default} ${
                 onClick ? 'cursor-pointer hover:border-border-strong' : ''
             } ${className}`}
         >
@@ -43,9 +43,9 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
 
 export const Button = React.memo(({ children, variant = 'primary', className = "", disabled, isLoading, icon, onClick, ...props }: ButtonProps) => {
   const variants = {
-    primary: "bg-accent-primary text-surface-alt hover:brightness-110 shadow-sm border border-transparent shadow-accent-primary/20",
+    primary: "bg-accent-primary text-surface-alt hover:opacity-90 shadow-sm border border-transparent shadow-accent-primary/20",
     secondary: "bg-surface-main text-text-primary border border-border-subtle hover:bg-surface-alt hover:border-border-strong shadow-sm",
-    danger: "bg-status-error text-white border border-transparent hover:brightness-110 shadow-sm shadow-status-error/10",
+    danger: "bg-status-error text-white border border-transparent hover:opacity-90 shadow-sm shadow-status-error/10",
     ghost: "bg-transparent text-text-muted hover:text-text-primary hover:bg-surface-alt",
     glow: "bg-accent-primary text-surface-alt shadow-[0_0_15px_var(--color-accent-primary)] hover:shadow-[0_0_25px_var(--color-accent-primary)] border border-accent-primary/50"
   };
@@ -61,7 +61,7 @@ export const Button = React.memo(({ children, variant = 'primary', className = "
   return (
     <button 
       className={`
-        flex items-center justify-center font-semibold px-5 py-2.5 text-sm transition-all active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed disabled:active:scale-100 rounded-lg outline-none whitespace-nowrap
+        flex items-center justify-center font-medium px-4 py-2 text-sm transition-all active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed disabled:active:scale-100 rounded-md outline-none whitespace-nowrap
         ${variants[variant] || variants.primary} ${className}
       `}
       onClick={handleClick}
@@ -102,10 +102,10 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(({ label, er
                     spellCheck="false"
                     data-prevent-autofill="true"
                     className={`
-                        w-full bg-surface-alt/50 border border-border-subtle px-3 py-2.5 rounded-lg
+                        w-full bg-surface-alt/50 border border-border-subtle px-3 py-2 rounded-md
                         ${Icon ? 'pl-10' : ''}
                         text-sm font-medium text-text-primary outline-none 
-                        focus:bg-surface-main focus:border-accent-primary focus:ring-2 focus:ring-accent-primary/20 focus:shadow-sm
+                        focus:bg-surface-main focus:border-accent-primary focus:ring-1 focus:ring-accent-primary/50 focus:shadow-sm
                         transition-all placeholder:text-text-muted/40 ${className}
                     `}
                     {...props}
@@ -126,7 +126,7 @@ export const Badge = ({ children, status = 'default', className = "" }: { childr
   };
 
   return (
-    <span className={`inline-flex items-center justify-center px-2.5 py-1 text-[10px] md:text-xs font-[700]  tracking-widest border rounded-md leading-none ${getStyles(status)} ${className}`}>
+    <span className={`inline-flex items-center justify-center px-2 py-0.5 text-[10px] md:text-[11px] font-medium tracking-wide border rounded-md leading-none ${getStyles(status)} ${className}`}>
       {children || status}
     </span>
   );

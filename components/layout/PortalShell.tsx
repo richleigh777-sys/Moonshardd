@@ -119,9 +119,9 @@ export const PortalShell: React.FC<PortalShellProps> = ({
                             <div className="h-20 flex items-center justify-between px-6 border-b border-border-subtle">
                                 <div className="flex items-center gap-3">
                                     <div className="w-8 h-8 rounded-lg bg-accent-primary flex items-center justify-center text-surface-alt">
-                                        <Terminal size={16} fill="currentColor" />
+                                        <LayoutGrid size={16} fill="currentColor" />
                                     </div>
-                                    <span className="font-[700]  tracking-tighter">Nexus OS</span>
+                                    <span className="font-[700]  tracking-tighter">Workspace</span>
                                 </div>
                                 <button onClick={() => setIsMobileMenuOpen(false)} className="p-2 text-text-muted">
                                     <CloseIcon size={20} />
@@ -147,12 +147,12 @@ export const PortalShell: React.FC<PortalShellProps> = ({
                 onMouseLeave={() => setIsSidebarCollapsed(true)}
                 className={`
                     hidden lg:flex z-[100] transition-all duration-300 ease-out flex-col shrink-0
-                    bg-surface-main border border-border-subtle rounded-2xl shadow-sm relative
+                    bg-surface-main border border-border-subtle rounded-xl shadow-sm relative
                     ${isSidebarCollapsed ? 'w-[72px]' : 'w-[260px]'}
                 `}
             >
                 <div className="h-20 flex items-center justify-center shrink-0 border-b border-border-subtle relative">
-                    <div className="w-10 h-10 flex items-center justify-center rounded-xl bg-accent-primary text-white cursor-pointer hover:scale-[1.05] transition-transform shadow-sm relative z-10" onClick={() => setIsTimeSheetOpen(true)}>
+                    <div className="w-10 h-10 flex items-center justify-center rounded-lg bg-accent-primary text-white cursor-pointer hover:scale-[1.05] transition-transform shadow-sm relative z-10" onClick={() => setIsTimeSheetOpen(true)}>
                         <LayoutGrid size={20} strokeWidth={2} />
                     </div>
                 </div>
@@ -161,8 +161,8 @@ export const PortalShell: React.FC<PortalShellProps> = ({
                     {sidebarContent}
                 </nav>
 
-                <div className="p-3 border-t border-border-subtle bg-surface-alt/40 rounded-b-2xl">
-                    <button onClick={handleLogout} className="w-full p-3 flex items-center justify-center gap-3 text-text-muted hover:text-text-primary transition-all rounded-xl hover:bg-surface-highlight border border-transparent hover:border-border-strong group">
+                <div className="p-3 border-t border-border-subtle bg-surface-alt/40 rounded-b-xl">
+                    <button onClick={handleLogout} className="w-full p-3 flex items-center justify-center gap-3 text-text-muted hover:text-text-primary transition-all rounded-lg hover:bg-surface-highlight border border-transparent hover:border-border-strong group">
                         <LogOut size={18} className="group-hover:text-status-error transition-colors" />
                         {!isSidebarCollapsed && <span className="text-sm font-semibold">Log Out</span>}
                     </button>
@@ -170,7 +170,7 @@ export const PortalShell: React.FC<PortalShellProps> = ({
             </aside>
 
             {/* MAIN CONTENT WORKSPACE */}
-            <main className={`flex-1 flex flex-col min-w-0 transition-all duration-300 overflow-hidden bg-surface-main lg:rounded-2xl lg:border lg:border-border-subtle shadow-sm relative`}>
+            <main className={`flex-1 flex flex-col min-w-0 transition-all duration-300 overflow-hidden bg-surface-main lg:rounded-xl lg:border lg:border-border-subtle shadow-sm relative`}>
                 
                 {/* HEADER */}
                 <header className="h-20 px-8 flex items-center justify-between bg-transparent border-b border-border-subtle shrink-0 z-[50]">

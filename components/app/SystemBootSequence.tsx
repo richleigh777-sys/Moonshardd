@@ -9,8 +9,8 @@ export const SystemBootSequence: React.FC = () => (
                     <Hexagon size={40} className="text-accent-primary animate-pulse" strokeWidth={1.5} />
                 </div>
             </div>
-            <h1 className="text-3xl font-bold text-text-primary tracking-tight">Braveheart CRM</h1>
-            <p className="text-sm text-text-muted mt-4 animate-pulse">System Initializing...</p>
+            <h1 className="text-3xl font-bold text-text-primary tracking-tight">Braveheart Workspace</h1>
+            <p className="text-sm text-text-muted mt-4 animate-pulse">Getting things ready for you...</p>
         </div>
     </div>
 );
