@@ -208,7 +208,7 @@ export const DashboardLiveOpsBoard: React.FC<DashboardLiveOpsBoardProps> = ({
               <div key={callback.id} className="flex items-start gap-2 bg-slate-800 rounded p-2">
                 <Clock className="text-blue-300 flex-shrink-0 mt-0.5" size={14} />
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-semibold text-white truncate">{callback.linkedItemName || 'Unknown Customer'}</p>
+                  <p className="text-sm font-semibold text-white truncate">{callback.customerName || 'Unknown Customer'}</p>
                   <p className="text-xs text-slate-400">Due: {formatTime(callback.reminderAt)}</p>
                 </div>
               </div>

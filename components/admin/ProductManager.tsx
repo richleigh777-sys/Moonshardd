@@ -1,6 +1,6 @@
 
 import React, { useState, useMemo } from 'react';
-import { ShieldCheck, Activity } from 'lucide-react';
+import { ShieldCheck, Activity, PackageOpen, Layers } from 'lucide-react';
 import { ProductConfig, Product } from '../../types';
 import { Card } from '../ui/Base';
 import { sfx } from '../../lib/soundService';
@@ -12,6 +12,7 @@ import { BulkActions } from './product/BulkActions';
 import { ProductConfigModal } from './product/ProductConfigModal';
 import { SupplyChainHUD } from './product/SupplyChainHUD';
 import { CatalogToolbar } from './product/CatalogToolbar';
+import { PresetManager } from './PresetManager';
 
 interface Props {
     configForm: ProductConfig;
@@ -24,6 +25,7 @@ export const ProductManager: React.FC<Props> = ({ configForm, setConfigForm, onS
     const { setToast } = useSystem();
     const [isBulkOpen, setIsBulkOpen] = useState(false);
     const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
+    const [activeTab, setActiveTab] = useState<'catalog' | 'presets'>('catalog');
     
     // Editor State
     const [editingProduct, setEditingProduct] = useState<Partial<Product> | null>(null);
@@ -106,80 +108,111 @@ export const ProductManager: React.FC<Props> = ({ configForm, setConfigForm, onS
     return (
         <div className="flex flex-col h-full gap-3 animate-in fade-in duration-700 w-full overflow-visible pb-4">
             
-            <SupplyChainHUD stats={productLogic.stats} />
+            <div className="flex bg-surface-alt/50 border border-border-subtle rounded-xl p-1 mb-2">
+                <button 
+                  onClick={() => { setActiveTab('catalog'); sfx.playClick(); }}
+                  className={`flex-1 flex items-center justify-center gap-2 py-2 text-sm font-bold rounded-lg transition-all ${
+                    activeTab === 'catalog' 
+                      ? 'bg-surface-main text-emerald-400 shadow-sm border border-border-subtle/50' 
+                      : 'text-text-muted hover:text-text-primary'
+                  }`}
+                >
+                  <PackageOpen size={16} /> Catalog & Inventory
+                </button>
+                <button 
+                  onClick={() => { setActiveTab('presets'); sfx.playClick(); }}
+                  className={`flex-1 flex items-center justify-center gap-2 py-2 text-sm font-bold rounded-lg transition-all ${
+                    activeTab === 'presets' 
+                      ? 'bg-surface-main text-indigo-400 shadow-sm border border-border-subtle/50' 
+                      : 'text-text-muted hover:text-text-primary'
+                  }`}
+                >
+                  <Layers size={16} /> Fulfillment Presets
+                </button>
+            </div>
 
-            <Card variant="panel" className="flex-1 flex flex-col overflow-hidden rounded-2xl p-0 border-border-subtle bg-surface-main shadow-2xl relative">
-                
-                <CatalogToolbar 
-                    totalItems={configForm.products.length}
-                    searchTerm={productLogic.searchTerm}
-                    onSearchChange={productLogic.setSearchTerm}
-                    sortMode={productLogic.sortMode}
-                    onSortChange={productLogic.setSortMode}
-                    categories={categories}
-                    activeCategory={productLogic.activeCategory}
-                    onCategoryChange={(cat) => { productLogic.setActiveCategory(cat); sfx.playClick(); }}
-                    onToggleBulk={() => setIsBulkOpen(!isBulkOpen)}
-                    onAddProduct={() => handleEdit({} as any)}
-                    viewMode={viewMode}
-                    onViewModeChange={(m) => { setViewMode(m); sfx.playClick(); }}
-                />
+            {activeTab === 'catalog' ? (
+                <>
+                    <SupplyChainHUD stats={productLogic.stats} />
 
-                {isBulkOpen && (
-                    <BulkActions 
-                        onAdjust={(pct) => {
-                            productLogic.adjustGlobalPrices(pct);
-                            setTimeout(() => onSave(configForm), 100);
-                        }} 
-                        onClose={() => setIsBulkOpen(false)} 
-                    />
-                )}
+                    <Card variant="panel" className="flex-1 flex flex-col overflow-hidden rounded-2xl p-0 border-border-subtle bg-surface-main shadow-2xl relative">
+                        
+                        <CatalogToolbar 
+                            totalItems={configForm.products.length}
+                            searchTerm={productLogic.searchTerm}
+                            onSearchChange={productLogic.setSearchTerm}
+                            sortMode={productLogic.sortMode}
+                            onSortChange={productLogic.setSortMode}
+                            categories={categories}
+                            activeCategory={productLogic.activeCategory}
+                            onCategoryChange={(cat) => { productLogic.setActiveCategory(cat); sfx.playClick(); }}
+                            onToggleBulk={() => setIsBulkOpen(!isBulkOpen)}
+                            onAddProduct={() => handleEdit({} as any)}
+                            viewMode={viewMode}
+                            onViewModeChange={(m) => { setViewMode(m); sfx.playClick(); }}
+                        />
 
-                <div className={`flex-1 overflow-y-auto custom-scrollbar p-3 bg-surface-alt/5 ${viewMode === 'grid' ? '' : 'px-2'}`}>
-                    <div className={viewMode === 'grid' 
-                        ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-3" 
-                        : "flex flex-col gap-1.5"
-                    }>
-                        {productLogic.filteredProducts.map(p => (
-                            <ProductSKUCard 
-                                key={p.id}
-                                product={p}
-                                revenue={productLogic.metrics[p.id]?.revenue || 0}
-                                volume={productLogic.metrics[p.id]?.volume || 0}
-                                onToggle={(id) => {
-                                    productLogic.toggleProductActive(id);
+                        {isBulkOpen && (
+                            <BulkActions 
+                                onAdjust={(pct) => {
+                                    productLogic.adjustGlobalPrices(pct);
                                     setTimeout(() => onSave(configForm), 100);
-                                }}
-                                onEdit={handleEdit}
-                                onDuplicate={handleDuplicate}
-                                onDelete={handleDelete}
-                                viewMode={viewMode}
+                                }} 
+                                onClose={() => setIsBulkOpen(false)} 
                             />
-                        ))}
-                    </div>
-                </div>
+                        )}
 
-                <div className="p-2.5 border-t border-border-subtle bg-surface-alt/50 shrink-0 backdrop-blur-md flex justify-between items-center px-4">
-                    <div className="flex items-center gap-4">
-                        <div className="flex items-center gap-1.5">
-                            <ShieldCheck size={16} className="text-status-success" />
-                            <span className="text-sm font-[700]  text-text-muted tracking-widest leading-none">Security: Verified</span>
+                        <div className={`flex-1 overflow-y-auto custom-scrollbar p-3 bg-surface-alt/5 ${viewMode === 'grid' ? '' : 'px-2'}`}>
+                            <div className={viewMode === 'grid' 
+                                ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-3" 
+                                : "flex flex-col gap-1.5"
+                            }>
+                                {productLogic.filteredProducts.map(p => (
+                                    <ProductSKUCard 
+                                        key={p.id}
+                                        product={p}
+                                        revenue={productLogic.metrics[p.id]?.revenue || 0}
+                                        volume={productLogic.metrics[p.id]?.volume || 0}
+                                        onToggle={(id) => {
+                                            productLogic.toggleProductActive(id);
+                                            setTimeout(() => onSave(configForm), 100);
+                                        }}
+                                        onEdit={handleEdit}
+                                        onDuplicate={handleDuplicate}
+                                        onDelete={handleDelete}
+                                        viewMode={viewMode}
+                                    />
+                                ))}
+                            </div>
                         </div>
-                        <div className="flex items-center gap-1.5">
-                            <Activity size={16} className="text-accent-secondary" />
-                            <span className="text-sm font-[700]  text-text-muted tracking-widest leading-none">Load: Optimal</span>
-                        </div>
-                    </div>
-                    <span className="text-xs font-mono text-text-muted opacity-40  tracking-[0.2em]">Product Module v4.1</span>
-                </div>
 
-                <ProductConfigModal 
-                    isOpen={isEditModalOpen} 
-                    onClose={() => setIsEditModalOpen(false)} 
-                    product={editingProduct} 
-                    onSave={handleSaveProduct} 
-                />
-            </Card>
+                        <div className="p-2.5 border-t border-border-subtle bg-surface-alt/50 shrink-0 backdrop-blur-md flex justify-between items-center px-4">
+                            <div className="flex items-center gap-4">
+                                <div className="flex items-center gap-1.5">
+                                    <ShieldCheck size={16} className="text-status-success" />
+                                    <span className="text-sm font-[700]  text-text-muted tracking-widest leading-none">Security: Verified</span>
+                                </div>
+                                <div className="flex items-center gap-1.5">
+                                    <Activity size={16} className="text-accent-secondary" />
+                                    <span className="text-sm font-[700]  text-text-muted tracking-widest leading-none">Load: Optimal</span>
+                                </div>
+                            </div>
+                            <span className="text-xs font-mono text-text-muted opacity-40  tracking-[0.2em]">Product Module v4.1</span>
+                        </div>
+
+                        <ProductConfigModal 
+                            isOpen={isEditModalOpen} 
+                            onClose={() => setIsEditModalOpen(false)} 
+                            product={editingProduct} 
+                            onSave={handleSaveProduct} 
+                        />
+                    </Card>
+                </>
+            ) : (
+                <div className="flex-1 overflow-hidden pb-8">
+                    <PresetManager productConfig={configForm} onUpdateConfig={onSave} />
+                </div>
+            )}
         </div>
     );
 };

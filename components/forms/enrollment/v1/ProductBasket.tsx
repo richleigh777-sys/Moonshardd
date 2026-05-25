@@ -86,57 +86,76 @@ export const ProductBasket: React.FC<ProductBasketProps> = ({
              <p className="text-xs text-text-muted/70 mt-1">Add items below to begin</p>
           </div>
         ) : (
-          cart.map((item) => (
-            <div key={item.id} className="bg-surface-alt/60 rounded-xl p-3 flex justify-between items-start border border-border-subtle/50 hover:border-accent-primary/50 transition-colors shadow-sm">
-              <div className="flex-1 min-w-0 space-y-2">
-                <select
-                  value={item.product}
-                  onChange={(e) => updateCartItem(item.id || '', 'product', e.target.value)}
-                  className="w-full bg-surface-main border border-border-subtle rounded-lg px-3 py-2 text-sm font-bold text-text-primary outline-none focus:border-accent-primary cursor-pointer shadow-inner"
-                >
-                  {productConfig.products?.map((p: any) => (
-                    <option key={p.id} value={p.name}>{p.name}</option>
-                  ))}
-                </select>
-                
-                <div className="flex items-center gap-2 flex-wrap">
+          cart.map((item) => {
+            const multiplier = item.quantity.includes('90') ? 3 : item.quantity.includes('180') ? 6 : (item.quantity.includes('1 Year') || item.quantity.includes('365')) ? 12 : 1;
+            return (
+            <div key={item.id} className="bg-surface-alt/60 rounded-xl p-3 flex flex-col border border-border-subtle/50 hover:border-accent-primary/50 transition-colors shadow-sm">
+              <div className="flex justify-between items-start mb-2">
+                <div className="flex-1 min-w-0 pr-2">
                   <select
-                    value={item.quantity}
-                    onChange={(e) => updateCartItem(item.id || '', 'quantity', e.target.value)}
-                    className="bg-surface-main border border-border-subtle rounded-md px-2 py-1 text-xs text-text-secondary font-bold outline-none focus:border-accent-primary cursor-pointer"
+                    value={item.product}
+                    onChange={(e) => updateCartItem(item.id || '', 'product', e.target.value)}
+                    className="w-full bg-surface-main border border-border-subtle rounded-lg px-3 py-2 text-sm font-bold text-text-primary outline-none focus:border-accent-primary cursor-pointer shadow-inner mb-2"
                   >
-                    <option>30 Day Supply</option>
-                    <option>90 Day Supply</option>
-                    <option>180 Day Supply</option>
-                    <option>1 Year Supply</option>
+                    {productConfig.products?.map((p: any) => (
+                      <option key={p.id} value={p.name}>{p.name}</option>
+                    ))}
                   </select>
-
-                  {productConfig.products?.find((p: any) => p.name === item.product)?.dosages && (
+                  
+                  <div className="flex items-center gap-2 flex-wrap text-sm">
                     <select
-                      value={item.dosage}
-                      onChange={(e) => updateCartItem(item.id || '', 'dosage', e.target.value)}
+                      value={item.quantity}
+                      onChange={(e) => updateCartItem(item.id || '', 'quantity', e.target.value)}
                       className="bg-surface-main border border-border-subtle rounded-md px-2 py-1 text-xs text-text-secondary font-bold outline-none focus:border-accent-primary cursor-pointer"
                     >
-                      {productConfig.products?.find((p: any) => p.name === item.product)?.dosages?.map((d: string) => (
-                        <option key={d} value={d}>{d}</option>
-                      ))}
+                      <option>30 Day Supply</option>
+                      <option>90 Day Supply</option>
+                      <option>180 Day Supply</option>
+                      <option>1 Year Supply</option>
                     </select>
-                  )}
-                  
-                  <div className="ml-auto flex items-center justify-center bg-surface-main border border-status-success/30 px-2 py-1 rounded-md">
-                     <span className="text-xs font-black text-status-success">${(item.unitPrice * (item.quantity.includes('90') ? 3 : item.quantity.includes('180') ? 6 : item.quantity.includes('1 Year') ? 12 : 1)).toFixed(2)}</span>
+
+                    {productConfig.products?.find((p: any) => p.name === item.product)?.dosages && (
+                      <select
+                        value={item.dosage}
+                        onChange={(e) => updateCartItem(item.id || '', 'dosage', e.target.value)}
+                        className="bg-surface-main border border-border-subtle rounded-md px-2 py-1 text-xs text-text-secondary font-bold outline-none focus:border-accent-primary cursor-pointer"
+                      >
+                        {productConfig.products?.find((p: any) => p.name === item.product)?.dosages?.map((d: string) => (
+                          <option key={d} value={d}>{d}</option>
+                        ))}
+                      </select>
+                    )}
                   </div>
                 </div>
+                <button
+                  type="button"
+                  onClick={() => removeProduct(item.id || '')}
+                  className="p-2 text-status-error/70 hover:bg-status-error/10 hover:text-status-error rounded-lg transition-colors border border-transparent hover:border-status-error/20"
+                >
+                  <Trash2 size={16} />
+                </button>
               </div>
-              <button
-                type="button"
-                onClick={() => removeProduct(item.id || '')}
-                className="ml-3 p-2 text-status-error/70 hover:bg-status-error/10 hover:text-status-error rounded-lg transition-colors border border-transparent hover:border-status-error/20"
-              >
-                <Trash2 size={16} />
-              </button>
+
+              {/* Breakdown */}
+              <div className="flex justify-between items-center text-xs border-t border-border-subtle pt-2 mt-1">
+                <div className="flex items-center gap-2">
+                  <span className="text-text-muted">Unit Price:</span>
+                  <span className="font-bold text-text-primary">${item.unitPrice}</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="text-text-muted">Multiplier:</span>
+                  <span className="font-bold text-accent-primary">{multiplier}x</span>
+                </div>
+                <div className="text-right">
+                  <span className="text-text-muted">Line Total: </span>
+                  <span className="font-bold text-status-success">
+                    ${(item.unitPrice * multiplier).toFixed(2)}
+                  </span>
+                </div>
+              </div>
             </div>
-          ))
+            );
+          })
         )}
       </div>
 

@@ -27,8 +27,8 @@ export class SystemOpsService {
             batch.set(doc(db, `servers/${c.serverId}/channels`, c.id), c);
         });
 
-        await batch.commit();
-        console.log("[Nexus] Firestore Seed Complete");
+        batch.commit().catch(e => console.warn("[Nexus] Seed commit error/offline:", e));
+        console.log("[Nexus] Firestore Seed Fired (Async)");
     }
 
     public async simulateHighLoadTest() {

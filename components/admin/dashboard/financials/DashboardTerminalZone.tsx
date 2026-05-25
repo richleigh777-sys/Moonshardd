@@ -1,6 +1,6 @@
-import { CommandConsole } from './financials/CommandConsole';
-import { SystemMonitor } from '../../widgets/SystemMonitor';
-import { SystemHealth } from '../../../types';
+import { CommandConsole } from './CommandConsole';
+import { SystemMonitor } from '../../../widgets/SystemMonitor';
+import { SystemHealth } from '../../../../types';
 
 interface DashboardTerminalZoneProps {
     areTerminalsOpen: boolean;

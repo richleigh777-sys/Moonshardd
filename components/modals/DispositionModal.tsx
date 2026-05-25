@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Modal } from '../ui/Modal';
 import { PhoneMissed, PhoneOff, CalendarClock, Ban, Check, X, Calendar, Clock, DollarSign, Save } from 'lucide-react';
-import { EnrollmentState } from '../../types';
+import { EnrollmentState } from '../../hooks/useEnrollmentLogic';
 
 interface DispositionModalProps {
   isOpen: boolean;

@@ -10,11 +10,11 @@ export const ContextualHelp: React.FC = () => {
   return (
     <div className="fixed bottom-24 md:bottom-8 right-4 left-4 md:left-auto md:max-w-sm z-40 animate-slideUp">
       <div className={`rounded-lg p-4 border ${
-        tip.type === 'action-required'
+        tip.trigger === 'stuck'
           ? 'bg-blue-900 border-blue-700'
-          : tip.type === 'milestone'
+          : tip.trigger === 'milestone'
           ? 'bg-green-900 border-green-700'
-          : tip.type === 'motivational'
+          : tip.trigger === 'momentum'
           ? 'bg-purple-900 border-purple-700'
           : 'bg-red-900 border-red-700'
       } shadow-lg`}>

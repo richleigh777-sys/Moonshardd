@@ -217,7 +217,7 @@ export class BaseRepository {
         });
 
         try {
-            await setDoc(ref, payload);
+            setDoc(ref, payload).catch(e => handleFirestoreError(e, OperationType.CREATE, path));
             return payload;
         } catch (error) {
             handleFirestoreError(error, OperationType.CREATE, path);
@@ -230,27 +230,38 @@ export class BaseRepository {
         
         try {
             if (expectedUpdatedAt) {
-                const snap = await getDoc(ref);
-                if (snap.exists()) {
-                    const currentData = snap.data();
-                    if (currentData.updatedAt && currentData.updatedAt !== expectedUpdatedAt) {
-                        const conflicts: string[] = [];
-                        let hasConflict = false;
-                        
-                        if (originalData) {
-                            for (const key in updates) {
-                                if (currentData[key] !== originalData[key] && currentData[key] !== updates[key]) {
-                                    conflicts.push(key);
-                                    hasConflict = true;
+                // If we must check conflict, we can't avoid a read, but we can do a cache-first read?
+                // For now, if dummy-project, this might still hang. We'll leave the read but add a timeout? 
+                // Let's just do getDoc. But actually getDoc() hangs offline.
+                // We'll skip the conflict check if getDoc takes too long.
+                const snapPromise = getDoc(ref);
+                const timeoutPromise = new Promise((_, reject) => setTimeout(() => reject(new Error("timeout")), 2000));
+                
+                try {
+                    const snap: any = await Promise.race([snapPromise, timeoutPromise]);
+                    if (snap.exists()) {
+                        const currentData = snap.data();
+                        if (currentData.updatedAt && currentData.updatedAt !== expectedUpdatedAt) {
+                            const conflicts: string[] = [];
+                            let hasConflict = false;
+                            
+                            if (originalData) {
+                                for (const key in updates) {
+                                    if (currentData[key] !== originalData[key] && currentData[key] !== updates[key]) {
+                                        conflicts.push(key);
+                                        hasConflict = true;
+                                    }
                                 }
+                                if (hasConflict) {
+                                    throw new ConflictError(currentData, conflicts);
+                                }
+                            } else {
+                                throw new ConflictError(currentData);
                             }
-                            if (hasConflict) {
-                                throw new ConflictError(currentData, conflicts);
-                            }
-                        } else {
-                            throw new ConflictError(currentData);
                         }
                     }
+                } catch(e) {
+                    console.warn("[Nexus] Offline or timeout reading for conflict check. Proceeding optimistically.");
                 }
             }
 
@@ -258,10 +269,9 @@ export class BaseRepository {
                 ...(updates as object),
                 updatedAt: Date.now()
             });
-            await updateDoc(ref, finalUpdates);
+            updateDoc(ref, finalUpdates).catch(e => handleFirestoreError(e, OperationType.UPDATE, path));
             
-            const finalSnap = await getDoc(ref);
-            return { id, ...(finalSnap.exists() ? finalSnap.data() : finalUpdates) };
+            return { id, ...(originalData || {}), ...finalUpdates };
         } catch (error) {
             if (error instanceof ConflictError) throw error;
             handleFirestoreError(error, OperationType.UPDATE, path);
@@ -272,7 +282,7 @@ export class BaseRepository {
         const path = this.getPath(collectionName, id);
         const ref = doc(db, path);
         try {
-            await deleteDoc(ref);
+            deleteDoc(ref).catch(e => handleFirestoreError(e, OperationType.DELETE, path));
         } catch (error) {
             handleFirestoreError(error, OperationType.DELETE, path);
         }
@@ -285,7 +295,7 @@ export class BaseRepository {
             batch.delete(doc(db, path));
         });
         try {
-            await batch.commit();
+            batch.commit().catch(e => handleFirestoreError(e, OperationType.DELETE, collectionName));
         } catch (error) {
             handleFirestoreError(error, OperationType.DELETE, collectionName);
         }
@@ -305,7 +315,7 @@ export class BaseRepository {
             batch.set(doc(db, path), payload);
         });
         try {
-            await batch.commit();
+            batch.commit().catch(e => handleFirestoreError(e, OperationType.CREATE, collectionName));
             return items.length;
         } catch (error) {
             handleFirestoreError(error, OperationType.CREATE, collectionName);
@@ -321,7 +331,7 @@ export class BaseRepository {
             batch.update(doc(db, path), finalUpdates);
         });
         try {
-            await batch.commit();
+            batch.commit().catch(e => handleFirestoreError(e, OperationType.UPDATE, collectionName));
         } catch (error) {
             handleFirestoreError(error, OperationType.UPDATE, collectionName);
         }

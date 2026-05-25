@@ -48,10 +48,10 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
 
   usePresence('dashboard', 'dashboard', 'viewing');
   
-  const systemConfig = propSystemConfig || crmSystemConfig || { baseCommission: 15 };
+  const systemConfig = propSystemConfig || crmSystemConfig || { baseCommission: 15, shiftStart: '09:00', shiftEnd: '17:00', cutoffDay1: 15, cutoffDay2: 30, breakDurationMinutes: 60 };
 
-  const handleApproveSale = onApproveSale || ((id: string) => updateSaleStatus(id, 'Approved'));
-  const handleDeclineSale = onDeclineSale || ((id: string) => updateSaleStatus(id, 'Declined'));
+  const handleApproveSale = onApproveSale || ((id: string) => updateSaleStatus(id, 'Approved', {}));
+  const handleDeclineSale = onDeclineSale || ((id: string) => updateSaleStatus(id, 'Declined', {}));
   // fallback for testing
   const handleSendMessage = onSendMessage || ((id: string, msg: string) => console.log('Mail to', id, msg));
 

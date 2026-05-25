@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { DollarSign, Check, Search, AlertTriangle, MessageSquare } from 'lucide-react';
+import { DollarSign, Check, Search, AlertTriangle, MessageSquare, Loader } from 'lucide-react';
 import { useEnrollmentLogic } from '../../hooks/useEnrollmentLogic';
 import { TOP_US_BANKS, CARD_PROVIDERS } from '../../constants';
 import { Button, Card } from '../ui/Base';
@@ -7,7 +7,7 @@ import { EnrollmentHeader } from './enrollment/v1/EnrollmentHeader';
 import { IdentitySection } from './enrollment/v1/IdentitySection';
 import { MedicalSection } from './enrollment/v1/MedicalSection';
 import { PaymentSection } from './enrollment/v1/PaymentSection';
-import { ProductBasket } from './enrollment/v1/ProductBasket';
+import { ProductBasketEnhanced } from './enrollment/v1/ProductBasketEnhanced';
 import { ReviewModal } from './enrollment/v1/ReviewModal';
 import { CustomerLookup } from './enrollment/v1/CustomerLookup';
 import { DispositionModal } from '../modals/DispositionModal';
@@ -28,37 +28,49 @@ export default function EnrollmentForm({
   const [isLookupOpen, setIsLookupOpen] = useState(false);
   const [isDispositionOpen, setIsDispositionOpen] = useState(false);
   const [lookupQuery, setLookupQuery] = useState('');
+  const [showClearConfirm, setShowClearConfirm] = useState(false);
 
   return (
-    <div id="enrollment-form-container" className="w-full h-full animate-in fade-in duration-500 overflow-hidden flex flex-col bg-surface-main">
+    <div id="enrollment-form-container" className="w-full h-full animate-in fade-in duration-500 overflow-hidden flex flex-col bg-surface-main relative">
       {/* Header */}
       <EnrollmentHeader
         manualAmount={logic.manualAmount}
         customerTime={logic.customerTime}
-        onClear={logic.handleClear}
+        onClear={() => setShowClearConfirm(true)}
       />
 
       {/* Main Content */}
       <div className="flex-1 min-h-0 p-4 lg:p-6 overflow-y-auto custom-scrollbar bg-surface-alt/10">
-        <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-6 pb-20 items-start">
-          {/* LEFT COLUMN: Identity & Medical (Span 7) */}
-          <div className="lg:col-span-7 flex flex-col gap-6 relative">
+        <div className="max-w-7xl mx-auto flex flex-col lg:flex-row gap-6 pb-20 items-start">
+          
+          {/* LEFT COLUMN: Identity & Medical */}
+          <div className="w-full lg:w-7/12 flex flex-col gap-6 relative order-2 lg:order-1">
             
             {/* Minimalist Progress Stepper */}
-            <div className="hidden lg:flex sticky top-0 z-20 bg-surface-main/80 backdrop-blur-md rounded-xl p-3 border border-border-subtle shadow-sm mb-2 items-center justify-between">
-               <div className="flex items-center gap-2">
-                 <div className={`w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-bold ${logic.formData.fullName ? 'bg-indigo-500 text-white' : 'bg-surface-alt text-text-muted border border-border-subtle'}`}>1</div>
-                 <span className={`text-[11px] font-bold tracking-widest ${logic.formData.fullName ? 'text-indigo-400' : 'text-text-muted'}`}>IDENTITY</span>
+            <div className="sticky top-0 z-20 bg-surface-main/80 backdrop-blur-md rounded-xl p-3 border border-border-subtle shadow-sm mb-2 items-center justify-between">
+               {/* Desktop Stepper */}
+               <div className="hidden lg:flex items-center justify-between w-full">
+                 <div className="flex items-center gap-2">
+                   <div className={`w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-bold ${logic.formData.fullName ? 'bg-indigo-500 text-white' : 'bg-surface-alt text-text-muted border border-border-subtle'}`}>1</div>
+                   <span className={`text-[11px] font-bold tracking-widest ${logic.formData.fullName ? 'text-indigo-400' : 'text-text-muted'}`}>IDENTITY</span>
+                 </div>
+                 <div className="h-px bg-border-subtle flex-1 mx-4"></div>
+                 <div className="flex items-center gap-2">
+                   <div className={`w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-bold ${logic.formData.medicalConditions?.length ? 'bg-indigo-500 text-white' : 'bg-surface-alt text-text-muted border border-border-subtle'}`}>2</div>
+                   <span className={`text-[11px] font-bold tracking-widest ${logic.formData.medicalConditions?.length ? 'text-indigo-400' : 'text-text-muted'}`}>MEDICAL</span>
+                 </div>
+                 <div className="h-px bg-border-subtle flex-1 mx-4"></div>
+                 <div className="flex items-center gap-2">
+                   <div className={`w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-bold ${logic.financials.cardNumber ? 'bg-indigo-500 text-white' : 'bg-surface-alt text-text-muted border border-border-subtle'}`}>3</div>
+                   <span className={`text-[11px] font-bold tracking-widest ${logic.financials.cardNumber ? 'text-indigo-400' : 'text-text-muted'}`}>PAYMENT</span>
+                 </div>
                </div>
-               <div className="h-px bg-border-subtle flex-1 mx-4"></div>
-               <div className="flex items-center gap-2">
-                 <div className={`w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-bold ${logic.formData.medicalConditions?.length ? 'bg-indigo-500 text-white' : 'bg-surface-alt text-text-muted border border-border-subtle'}`}>2</div>
-                 <span className={`text-[11px] font-bold tracking-widest ${logic.formData.medicalConditions?.length ? 'text-indigo-400' : 'text-text-muted'}`}>MEDICAL</span>
-               </div>
-               <div className="h-px bg-border-subtle flex-1 mx-4"></div>
-               <div className="flex items-center gap-2">
-                 <div className={`w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-bold ${logic.financials.cardNumber ? 'bg-indigo-500 text-white' : 'bg-surface-alt text-text-muted border border-border-subtle'}`}>3</div>
-                 <span className={`text-[11px] font-bold tracking-widest ${logic.financials.cardNumber ? 'text-indigo-400' : 'text-text-muted'}`}>PAYMENT</span>
+               
+               {/* Mobile Stepper */}
+               <div className="lg:hidden flex items-center justify-between gap-1 w-full">
+                  <div className={`flex-1 h-1.5 rounded-full ${logic.formData.fullName ? 'bg-indigo-500' : 'bg-border-subtle'}`}></div>
+                  <div className={`flex-1 h-1.5 rounded-full ${logic.formData.medicalConditions?.length ? 'bg-indigo-500' : 'bg-border-subtle'}`}></div>
+                  <div className={`flex-1 h-1.5 rounded-full ${logic.financials.cardNumber ? 'bg-indigo-500' : 'bg-border-subtle'}`}></div>
                </div>
             </div>
 
@@ -114,13 +126,15 @@ export default function EnrollmentForm({
             />
           </div>
 
-          {/* RIGHT COLUMN: Products & Amount (Span 5) */}
-          <div className="lg:col-span-5 flex flex-col gap-6 lg:sticky lg:top-6">
+          {/* RIGHT COLUMN: Products & Amount */}
+          <div className="w-full lg:w-5/12 flex flex-col gap-6 lg:sticky lg:top-6 order-1 lg:order-2 h-fit">
             {/* Products */}
-            <ProductBasket
+            <ProductBasketEnhanced
               cart={logic.cart}
               setCart={logic.setCart}
-              productConfig={logic.productConfig}
+              activeProducts={logic.activeProducts}
+              activePresets={logic.activePresets}
+              quantities={logic.productConfig.quantities}
               notes={logic.notes}
               setNotes={logic.setNotes}
               calculatedTotal={logic.calculatedTotal}
@@ -131,22 +145,55 @@ export default function EnrollmentForm({
               <div className="absolute inset-0 bg-gradient-to-t from-emerald-500/5 to-transparent pointer-events-none"></div>
 
               {/* Manual Amount Input */}
-              <div className="mb-5 relative z-10">
+              <div className="mb-5 relative z-10 w-full">
                 <label className="text-[11px] font-bold text-text-muted tracking-widest mb-1.5 block">
                   FINAL ORDER AMOUNT *
                 </label>
-                <div className="relative group">
-                  <div className="absolute left-4 top-1/2 -translate-y-1/2 font-black text-xl text-status-success/80 pointer-events-none">$</div>
-                  <input
-                    type="number"
-                    value={logic.manualAmount}
-                    onChange={(e) => logic.setManualAmount(e.target.value)}
-                    placeholder="0.00"
-                    step="0.01"
-                    min="0"
-                    className="w-full bg-surface-alt/70 border border-border-subtle rounded-xl py-4 pl-9 pr-5 text-2xl font-black num-font text-right outline-none ring-offset-surface-main focus:border-status-success/50 focus:ring-4 focus:ring-status-success/10 focus:bg-surface-main transition-all shadow-inner text-text-primary"
-                  />
+                
+                {/* Show calculated total first */}
+                <div className="mb-2 p-2 bg-indigo-500/10 border border-indigo-500/20 rounded-lg">
+                  <div className="flex justify-between items-center">
+                    <span className="text-xs font-bold text-text-muted">Calculated from cart:</span>
+                    <span className="text-sm font-bold text-indigo-400">${logic.calculatedTotal.toFixed(2)}</span>
+                  </div>
                 </div>
+
+                <div className="mb-2">
+                  <p className="text-xs text-text-muted mb-2">
+                    💡 <strong className="text-indigo-400">Override calculation:</strong> You can enter any custom amount you explicitly negotiated or needed to charge the customer.
+                  </p>
+                  <div className="relative group">
+                    <div className="absolute left-4 top-1/2 -translate-y-1/2 font-black text-xl text-status-success/80 pointer-events-none">$</div>
+                    <input
+                      type="number"
+                      value={logic.manualAmount}
+                      onChange={(e) => {
+                        if (logic.handleManualAmountChange) {
+                          logic.handleManualAmountChange(e.target.value);
+                        } else {
+                          logic.setManualAmount(e.target.value);
+                        }
+                      }}
+                      placeholder="0.00"
+                      step="0.01"
+                      className="w-full bg-surface-alt/70 border border-border-subtle rounded-xl py-4 pl-9 pr-5 text-2xl font-black num-font text-right outline-none ring-offset-surface-main focus:border-status-success/50 focus:ring-4 focus:ring-status-success/10 focus:bg-surface-main transition-all shadow-inner text-text-primary"
+                    />
+                  </div>
+                </div>
+
+                {logic.manualAmountError && (
+                  <p className="text-xs text-status-error mt-2">
+                    {logic.manualAmountError}
+                  </p>
+                )}
+                
+                {!logic.manualAmountError && parseFloat(logic.manualAmount) !== logic.calculatedTotal && logic.manualAmount !== '' && (
+                  <div className="mt-2 p-2 bg-amber-500/10 border border-amber-500/20 rounded-lg">
+                    <p className="text-xs text-amber-400">
+                      ⚠️ Override amount differs from cart calculation
+                    </p>
+                  </div>
+                )}
               </div>
 
               {/* Error Message */}
@@ -179,14 +226,25 @@ export default function EnrollmentForm({
                     </button>
                 </div>
                 <button
+                  disabled={logic.loading}
                   onClick={(e) => {
                     if (logic.handleValidation(e as any)) {
                       logic.setShowReview(true);
                     }
                   }}
-                  className="flex-[2] sm:w-1/2 min-w-[200px] rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-base font-black shadow-lg shadow-emerald-500/20 transition-all flex items-center justify-center gap-2 border border-emerald-500/20 active:scale-[0.98]"
+                  className={`flex-[2] sm:w-1/2 min-w-[200px] rounded-xl bg-emerald-600 text-white text-base font-black shadow-lg shadow-emerald-500/20 transition-all flex items-center justify-center gap-2 border border-emerald-500/20 active:scale-[0.98] ${
+                    logic.loading ? 'opacity-50 cursor-not-allowed' : 'hover:bg-emerald-500'
+                  }`}
                 >
-                  <Check size={20} strokeWidth={3} /> Review & Submit
+                  {logic.loading ? (
+                    <>
+                      <Loader size={20} className="animate-spin" /> Processing...
+                    </>
+                  ) : (
+                    <>
+                      <Check size={20} strokeWidth={3} /> Review & Submit
+                    </>
+                  )}
                 </button>
               </div>
             </Card>
@@ -214,6 +272,34 @@ export default function EnrollmentForm({
         cart={logic.cart}
         manualAmount={logic.manualAmount}
       />
+
+      {showClearConfirm && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-[60]">
+          <div className="bg-surface-main rounded-2xl p-6 max-w-sm shadow-xl m-4 border border-border-subtle">
+            <h3 className="text-lg font-bold text-text-primary mb-2">Clear Form?</h3>
+            <p className="text-sm text-text-muted mb-6">
+              All entered data will be lost. This cannot be undone.
+            </p>
+            <div className="flex gap-3">
+              <button
+                onClick={() => setShowClearConfirm(false)}
+                className="flex-1 px-4 py-2 border border-border-subtle rounded-lg hover:bg-surface-alt transition text-text-primary text-sm font-bold"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => {
+                  logic.handleClear(true);
+                  setShowClearConfirm(false);
+                }}
+                className="flex-1 px-4 py-2 bg-status-error text-white rounded-lg hover:bg-status-error/90 transition text-sm font-bold shadow-md"
+              >
+                Clear Everything
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       <CustomerLookup
         isOpen={isLookupOpen}

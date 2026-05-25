@@ -21,7 +21,7 @@ export const DashboardStrategicAnalytics: React.FC<DashboardStrategicAnalyticsPr
     const cohorts = new Map<number, { sales: number; agents: number }>();
 
     agents.forEach((agent) => {
-      const weeksActive = Math.floor((Date.now() - (agent.created || Date.now())) / (7 * 24 * 60 * 60 * 1000));
+      const weeksActive = Math.floor((Date.now() - (agent.createdAt || Date.now())) / (7 * 24 * 60 * 60 * 1000));
       const key = Math.max(0, weeksActive);
 
       const agentSales = sales.filter((s) => s.agentId === agent.id && s.status === 'Approved').length;

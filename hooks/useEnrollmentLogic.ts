@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { useAuth } from './useAuth';
 import { useCRM } from './useCRM';
-import { Sale, CartItem, ProductConfig } from '../types';
+import { Sale, CartItem, ProductConfig, Product, ProductPreset } from '../types';
 import { 
   formatCardNumber, 
   formatExpiry, 
@@ -11,6 +11,7 @@ import {
   normalizePhone
 } from '../lib/enrollment/validators';
 import { validators } from '../lib/enrollment/validators';
+import { presetUtils } from '../lib/enrollment/presetUtils';
 import { draftService } from '../lib/enrollment/draftService';
 import { sfx } from '../lib/soundService';
 
@@ -55,6 +56,10 @@ export interface EnrollmentLogicReturn {
   cardStatus: 'neutral' | 'valid' | 'invalid';
   displayPhone: string;
   
+  customerTime: string | null;
+  handleManualAmountChange: (value: string) => void;
+  manualAmountError: string;
+
   loading: boolean;
   error: string;
   setError: React.Dispatch<React.SetStateAction<string>>;
@@ -69,7 +74,7 @@ export interface EnrollmentLogicReturn {
   handleFinancialChange: (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => void;
   handleValidation: (e: React.FormEvent) => boolean;
   handleFinalSubmit: () => Promise<void>;
-  handleClear: () => void;
+  handleClear: (skipConfirm?: boolean) => void;
   handleDisposition: (dispo: { outcome: string; notes: string; callbackTimestamp?: number }) => Promise<void>;
   selectCustomer: (sale: Sale) => void;
   handlePasteParse: () => Promise<void>;
@@ -77,6 +82,8 @@ export interface EnrollmentLogicReturn {
   validateField: (fieldName: string, value: string, cardType?: string) => string | null;
   activeMedicalConditions: string[];
   productConfig: ProductConfig;
+  activeProducts: Product[];
+  activePresets: any[];
   currentUser: any;
   uniqueCustomers: Sale[];
   allSales: Sale[];
@@ -114,6 +121,7 @@ export function useEnrollmentLogic(
 
   const [cart, setCart] = useState<CartItem[]>([]);
   const [manualAmount, setManualAmount] = useState<string>('0.00');
+  const [manualAmountError, setManualAmountError] = useState('');
   const [notes, setNotes] = useState<string>('');
   const [useShippingForBilling, setUseShippingForBilling] = useState(true);
   const [showCvv, setShowCvv] = useState(false);
@@ -124,9 +132,61 @@ export function useEnrollmentLogic(
   const [showReview, setShowReview] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
 
+  // Helper to extract unit multiplier from quantity strings like "30 Day Supply", "3 Bottles", etc.
+  const getQuantityMultiplier = useCallback((quantity: string): number => {
+    const q = quantity.toLowerCase();
+    if (q.includes('90')) return 3;
+    if (q.includes('180')) return 6;
+    if (q.includes('365') || q.includes('1 year')) return 12;
+    // Basic number extraction if specific words aren't matched
+    const match = q.match(/^(\d+)/);
+    if (match && !q.includes('day')) {
+        return parseInt(match[1], 10) || 1;
+    }
+    return 1;
+  }, []);
+
   const calculatedTotal = useMemo(() => {
-    return cart.reduce((sum, item) => sum + (item.unitPrice * 1), 0);
-  }, [cart]);
+    return cart.reduce((sum, item) => sum + (item.unitPrice * getQuantityMultiplier(item.quantity)), 0);
+  }, [cart, getQuantityMultiplier]);
+
+  const handleManualAmountChange = useCallback((value: string) => {
+    const amount = parseFloat(value);
+    
+    if (value === '') {
+      setManualAmount('');
+      setManualAmountError('');
+      return;
+    }
+
+    if (isNaN(amount)) {
+      setManualAmountError('Invalid amount');
+      // Still set it so the user can see what they typed and fix it
+      setManualAmount(value);
+      return;
+    }
+
+    if (amount < 0) {
+      setManualAmountError('Amount cannot be negative');
+      setManualAmount(value);
+      return;
+    }
+
+    if (amount === 0) {
+      setManualAmountError('Amount must be greater than $0.00');
+      setManualAmount(value);
+      return;
+    }
+
+    if (amount > 999999.99) {
+      setManualAmountError('Amount too large (max: $999,999.99)');
+      setManualAmount(value);
+      return;
+    }
+
+    setManualAmount(value);
+    setManualAmountError('');
+  }, []);
 
   const displayPhone = useMemo(() => {
     return formatPhoneForDisplay(formData.phone);
@@ -185,6 +245,41 @@ export function useEnrollmentLogic(
     return () => clearTimeout(timer);
   }, [formData, financials, cart, manualAmount, notes, useShippingForBilling, showSuccess]);
 
+  const activePresets = useMemo(() => {
+    return productConfig?.presets?.length ? productConfig.presets : presetUtils.getDefaultPresets();
+  }, [productConfig]);
+
+  const activeProducts = useMemo(() => {
+    return productConfig?.products || [];
+  }, [productConfig]);
+
+  const handleQuickAddPreset = useCallback((preset: ProductPreset) => {
+    const newItems = presetUtils.applyPreset(preset, [], productConfig);
+    setCart((prev) => [...prev, ...newItems]);
+    sfx.playSuccess();
+  }, [productConfig]);
+
+  useEffect(() => {
+    const handleGlobalKeyDown = (e: KeyboardEvent) => {
+      if (e.altKey) {
+        if (e.key === '1' && activePresets[0]) {
+          e.preventDefault();
+          handleQuickAddPreset(activePresets[0]);
+        }
+        if (e.key === '2' && activePresets[1]) {
+          e.preventDefault();
+          handleQuickAddPreset(activePresets[1]);
+        }
+        if (e.key === '3' && activePresets[2]) {
+          e.preventDefault();
+          handleQuickAddPreset(activePresets[2]);
+        }
+      }
+    };
+    window.addEventListener('keydown', handleGlobalKeyDown);
+    return () => window.removeEventListener('keydown', handleGlobalKeyDown);
+  }, [activePresets, handleQuickAddPreset]);
+
   const validateField = useCallback((fieldName: string, value: string, cardType?: string): string | null => {
     switch (fieldName) {
       case 'fullName': return validators.fullName(value);
@@ -240,7 +335,13 @@ export function useEnrollmentLogic(
         let age = today.getFullYear() - birthDate.getFullYear();
         const m = today.getMonth() - birthDate.getMonth();
         if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) age--;
-        if (age >= 18 && age <= 120) newState.age = age.toString();
+        
+        if (age < 18) {
+          newState.age = ''; // Clear if under 18
+          newState.dob = ''; // Clear DOB too
+        } else if (age <= 120) {
+          newState.age = age.toString();
+        }
       }
       return newState;
     });
@@ -310,7 +411,7 @@ export function useEnrollmentLogic(
       return false;
     }
 
-    if (financials.cardNumber) {
+    if (financials.cardNumber && financials.cardNumber.trim() !== '') {
       const clean = financials.cardNumber.replace(/\D/g, '');
       const reqLen = getRequiredCardLength(financials.cardType);
       if (clean.length !== reqLen) {
@@ -318,10 +419,29 @@ export function useEnrollmentLogic(
         sfx.playDecline();
         return false;
       }
+      
+      const cardErr = validators.cardNumber(financials.cardNumber, financials.cardType);
+      if (cardErr) {
+        setError(`Invalid card number: ${cardErr}`);
+        sfx.playDecline();
+        return false;
+      }
+
+      if (!financials.cardExpiry) {
+        setError('Card expiry is required');
+        sfx.playDecline();
+        return false;
+      }
 
       const expiryErr = validators.expiry(financials.cardExpiry);
       if (expiryErr) {
         setError('Invalid expiry date');
+        sfx.playDecline();
+        return false;
+      }
+
+      if (!financials.cardCvv) {
+        setError('CVV is required');
         sfx.playDecline();
         return false;
       }
@@ -359,7 +479,7 @@ export function useEnrollmentLogic(
     try {
       await addSale({
         agentId: currentUser?.id,
-        agent: currentUser?.name || currentUser?.username || 'Admin',
+        agent: currentUser?.name || 'Admin',
         customer: formData.fullName.trim(),
         phone: normalizePhone(formData.phone),
         email: formData.email || undefined,
@@ -565,7 +685,7 @@ export function useEnrollmentLogic(
     } finally {
       setLoading(false);
     }
-  }, [currentUser, formData, financials, cart, manualAmount, addSale, addNote, useShippingForBilling, handleClear]);
+  }, [currentUser, formData, financials, cart, manualAmount, calculatedTotal, addSale, addNote, useShippingForBilling, handleClear]);
 
   const selectCustomer = useCallback(
     (sale: Sale) => {
@@ -647,6 +767,7 @@ export function useEnrollmentLogic(
 
     // Computed values
     calculatedTotal,
+    displayPhone,
     customerTime: null,
     cardStatus,
 
@@ -671,13 +792,18 @@ export function useEnrollmentLogic(
     handleValidation,
     handleFinalSubmit,
     handleClear,
+    handleDisposition,
     selectCustomer,
     handlePasteParse,
     toggleCondition,
+    handleManualAmountChange,
+    manualAmountError,
 
     // Utilities
     validateField,
     activeMedicalConditions,
+    activePresets,
+    activeProducts,
     productConfig,
     currentUser,
   };

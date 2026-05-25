@@ -53,9 +53,13 @@ export class AuthService {
                    serverId: effectiveServerId, 
                    role: 'admin', 
                    level: 10,
-                   username: 'System Root',
+                   name: 'System Root',
                    pass: '',
-                   status: 'active'
+                   status: 'active',
+                   accessLevel: 10,
+                   commissionRate: 0,
+                   active: true,
+                   currentStatus: 'online'
                 } as User;
             }
 
@@ -84,15 +88,19 @@ export class AuthService {
             if (isDummyProject) {
                 this.repository.setActiveServer(companyId);
                 const sig = btoa(`${userId}:${companyId}:${Date.now()}`);
-                const authUser: User = { 
+                const authUser = { 
                    id: userId, 
                    serverId: companyId, 
                    role: 'agent', 
                    level: 1,
-                   username: userId,
+                   name: userId,
                    pass: '',
-                   status: 'active'
-                };
+                   status: 'active',
+                   accessLevel: 1,
+                   commissionRate: 15,
+                   active: true,
+                   currentStatus: 'online'
+                } as User;
                 return { user: authUser, sig };
             }
 
@@ -104,15 +112,19 @@ export class AuthService {
                 this.repository.setActiveServer(companyId);
                 const sig = btoa(`${userId}:${companyId}:${Date.now()}`);
                 
-                const authUser: User = { 
+                const authUser = { 
                    id: userId, 
                    serverId: companyId, 
                    role: 'agent', 
                    level: 1,
-                   username: userId,
+                   name: userId,
                    pass: '',
-                   status: 'active'
-                };
+                   status: 'active',
+                   accessLevel: 1,
+                   commissionRate: 15,
+                   active: true,
+                   currentStatus: 'online'
+                } as User;
                 return { user: authUser, sig };
             } catch (err: any) {
                 if (err.code === 'auth/user-not-found' || err.code === 'auth/invalid-credential') {
@@ -126,9 +138,12 @@ export class AuthService {
                            serverId: companyId, 
                            role: 'agent', 
                            level: 1,
-                           username: userId,
+                           name: userId,
                            pass: '',
-                           status: 'active'
+                           accessLevel: 1,
+                           commissionRate: 15,
+                           active: true,
+                           currentStatus: 'online'
                         };
                         return { user: authUser, sig };
                     } catch (createErr: any) {
@@ -161,15 +176,19 @@ export class AuthService {
             if (isDummyProject) {
                 this.repository.setActiveServer(sid);
                 const sig = btoa(`sys_root:${sid}:${Date.now()}`);
-                const authUser: User = { 
+                const authUser = { 
                    id: 'sys_root', 
                    serverId: sid, 
                    role: 'admin', 
                    level: 10,
-                   username: 'System Root',
+                   name: 'System Root',
                    pass: '',
-                   status: 'active'
-                };
+                   status: 'active',
+                   accessLevel: 10,
+                   commissionRate: 0,
+                   active: true,
+                   currentStatus: 'online'
+                } as User;
                 
                 // Fire onRootCreated immediately since dummy doesn't keep track of if it was created just now.
                 console.warn("[Nexus] Root user created (Dummy). Auto-triggering seed...");
@@ -208,15 +227,19 @@ export class AuthService {
                 this.repository.setActiveServer(sid);
                 const sig = btoa(`sys_root:${sid}:${Date.now()}`);
                 
-                const authUser: User = { 
+                const authUser = { 
                    id: 'sys_root', 
                    serverId: sid, 
                    role: 'admin', 
                    level: 10,
-                   username: 'System Root',
+                   name: 'System Root',
                    pass: '',
-                   status: 'active'
-                };
+                   status: 'active',
+                   accessLevel: 10,
+                   commissionRate: 0,
+                   active: true,
+                   currentStatus: 'online'
+                } as User;
                 
                 return { user: authUser, sig };
             }

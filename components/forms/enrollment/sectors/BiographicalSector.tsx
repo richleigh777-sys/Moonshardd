@@ -26,8 +26,11 @@ export const BiographicalSector: React.FC<Props> = ({ formData, handleIdentityCh
                         onChange={handleIdentityChange} 
                         placeholder="Full Name..." 
                         className="text-xs font-[700] h-9"
-                        status={formData.fullName.length > 3 ? 'valid' : 'default'}
+                        status={formData.fullName.length > 0 ? (formData.fullName.length >= 2 ? 'valid' : 'invalid') : 'default'}
                     />
+                    {formData.fullName.length > 0 && formData.fullName.length < 2 && (
+                        <p className="text-[10px] text-status-error mt-0.5 ml-1 font-bold">Name too short (min 2 chars)</p>
+                    )}
                 </div>
                 <div className="grid grid-cols-2 gap-2">
                     <div className="space-y-1">
@@ -48,8 +51,11 @@ export const BiographicalSector: React.FC<Props> = ({ formData, handleIdentityCh
                             onChange={handleIdentityChange} 
                             placeholder="(000) 000-0000" 
                             className="font-mono h-9 tracking-tight text-xs"
-                            status={formData.phone.length >= 14 ? 'valid' : 'default'}
+                            status={formData.phone.length > 0 ? (formData.phone.replace(/\D/g, '').length === 10 ? 'valid' : 'invalid') : 'default'}
                         />
+                        {formData.phone.length > 0 && formData.phone.replace(/\D/g, '').length !== 10 && (
+                           <p className="text-[10px] text-status-error mt-0.5 ml-1 font-bold">Must be 10 digits</p>
+                        )}
                     </div>
                     <div className="space-y-1">
                         <FormLabel icon={Calendar}>DOB</FormLabel>

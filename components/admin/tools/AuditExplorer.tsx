@@ -120,7 +120,7 @@ export const AuditExplorer: React.FC<AuditExplorerProps> = ({ auditLogs }) => {
                       <Clock size={14} />
                       <span>{new Date(log.timestamp).toLocaleString()}</span>
                       <span>•</span>
-                      <span>{(log as any).agentName || log.userId}</span>
+                      <span>{log.agentName || log.agentId}</span>
                     </div>
                   </div>
                 </div>

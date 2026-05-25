@@ -26,8 +26,14 @@ export const CustomerLookup: React.FC<CustomerLookupProps> = ({
   const filteredCustomers = useMemo(() => {
     if (!searchQuery) return customers.slice(0, pageSize);
     const q = searchQuery.toLowerCase();
+    const normalizedSearch = q.replace(/\D/g, '');
     return customers.filter(
-      (c) => c.customer.toLowerCase().includes(q) || c.phone.includes(q) || c.address?.toLowerCase().includes(q)
+      (c) => {
+        const normalizedPhone = c.phone.replace(/\D/g, '');
+        return c.customer.toLowerCase().includes(q) || 
+               (normalizedSearch.length > 0 && normalizedPhone.includes(normalizedSearch)) || 
+               c.address?.toLowerCase().includes(q);
+      }
     );
   }, [customers, searchQuery]);
 

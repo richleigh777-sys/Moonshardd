@@ -1,5 +1,5 @@
 import React from 'react';
-import { User, Clipboard } from 'lucide-react';
+import { User, Clipboard, CheckCircle, AlertTriangle } from 'lucide-react';
 import { Card } from '../../../ui/Base';
 
 interface IdentityProps {
@@ -50,30 +50,67 @@ export const IdentitySection: React.FC<IdentityProps> = ({
         {/* Full Name */}
         <div>
           <label className="text-[11px] font-bold text-text-muted tracking-widest mb-1.5 block">FULL NAME *</label>
-          <input
-            type="text"
-            name="fullName"
-            value={formData.fullName}
-            onChange={handleIdentityChange}
-            placeholder="e.g. John Smith"
-            className="w-full bg-surface-alt/70 border border-border-subtle rounded-xl px-4 py-3 text-sm font-bold text-text-primary outline-none focus:border-indigo-500/50 focus:ring-4 focus:ring-indigo-500/10 focus:bg-surface-main transition-all"
-            autoComplete="off"
-          />
+          <div className="relative">
+            <input
+              type="text"
+              name="fullName"
+              value={formData.fullName}
+              onChange={handleIdentityChange}
+              placeholder="e.g. John Smith"
+              className={`w-full bg-surface-alt/70 border rounded-xl px-4 py-3 text-sm font-bold text-text-primary outline-none focus:ring-4 focus:bg-surface-main transition-all ${
+                formData.fullName.length === 0 
+                  ? 'border-border-subtle focus:border-indigo-500/50 focus:ring-indigo-500/10' 
+                  : formData.fullName.length < 2 
+                  ? 'border-status-error focus:border-status-error/50 focus:ring-status-error/10 bg-status-error/5' 
+                  : 'border-status-success focus:border-status-success/50 focus:ring-status-success/10 bg-status-success/5'
+              }`}
+              autoComplete="off"
+            />
+            {formData.fullName.length > 0 && (
+              <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none">
+                {formData.fullName.length >= 2 ? (
+                  <CheckCircle size={18} className="text-status-success" />
+                ) : (
+                  <AlertTriangle size={18} className="text-status-error" />
+                )}
+              </div>
+            )}
+          </div>
+          {formData.fullName.length > 0 && formData.fullName.length < 2 && (
+            <p className="text-xs text-status-error mt-1">Name too short (min 2 chars)</p>
+          )}
         </div>
 
         {/* Contact Info (Row) */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <label className="text-[11px] font-bold text-text-muted tracking-widest mb-1.5 block">PHONE *</label>
-            <input
-              type="tel"
-              name="phone"
-              value={formData.phone}
-              onChange={handleIdentityChange}
-              placeholder="(555) 123-4567"
-              className="w-full bg-surface-alt/70 border border-border-subtle rounded-xl px-4 py-3 text-sm font-bold text-text-primary outline-none focus:border-indigo-500/50 focus:ring-4 focus:ring-indigo-500/10 focus:bg-surface-main transition-all font-mono"
-              autoComplete="off"
-            />
+            <div className="relative">
+              <input
+                type="tel"
+                name="phone"
+                value={formData.phone}
+                onChange={handleIdentityChange}
+                placeholder="(555) 123-4567"
+                className={`w-full bg-surface-alt/70 border rounded-xl px-4 py-3 text-sm font-bold text-text-primary outline-none focus:ring-4 focus:bg-surface-main transition-all font-mono ${
+                  formData.phone.length === 0 
+                    ? 'border-border-subtle focus:border-indigo-500/50 focus:ring-indigo-500/10' 
+                    : formData.phone.replace(/\\D/g, '').length < 10 
+                    ? 'border-status-error focus:border-status-error/50 focus:ring-status-error/10 bg-status-error/5' 
+                    : 'border-status-success focus:border-status-success/50 focus:ring-status-success/10 bg-status-success/5'
+                }`}
+                autoComplete="off"
+              />
+              {formData.phone.length > 0 && (
+                <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none">
+                  {formData.phone.replace(/\\D/g, '').length >= 10 ? (
+                    <CheckCircle size={18} className="text-status-success" />
+                  ) : (
+                    <AlertTriangle size={18} className="text-status-error" />
+                  )}
+                </div>
+              )}
+            </div>
           </div>
           <div>
             <label className="text-[11px] font-bold text-text-muted tracking-widest mb-1.5 block">EMAIL ADDRESS</label>

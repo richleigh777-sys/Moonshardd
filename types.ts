@@ -91,6 +91,7 @@ export interface Customer {
     followUpDate?: number;
     callbackTime?: number;
     updatedAt?: number;
+    createdAt?: number;
     agentId?: string;
     status?: string;
 }
@@ -187,6 +188,7 @@ export interface User {
     loginTimeToday?: number;
     dailyHours?: number;
     conversations?: Record<string, any>;
+    createdAt?: number;
     widgetPreferences?: {
         pinnedWidgets: string[];
     };
@@ -216,12 +218,28 @@ export interface Product {
     quantities?: string[];
 }
 
+export interface ProductPreset {
+    id: string;
+    name: string;
+    description: string;
+    icon: string;
+    items: {
+        product: string;
+        quantity: string;
+        dosage?: string;
+    }[];
+    createdBy?: string;
+    createdAt?: number;
+    color?: string;
+}
+
 export interface ProductConfig {
     serverId?: string;
     products: Product[];
     quantities: string[];
     medicalConditions: string[];
     teams: string[];
+    presets?: ProductPreset[];
 }
 
 export interface SpiffRule {

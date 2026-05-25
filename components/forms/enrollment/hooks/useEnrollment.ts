@@ -126,9 +126,23 @@ export const useEnrollment = (onSuccess: () => void, customerData?: any) => {
         }
     }, [customerData]);
 
+    // Helper to extract unit multiplier from quantity strings like "30 Day Supply", "3 Bottles", etc.
+    const getQuantityMultiplier = useCallback((quantity: string): number => {
+        const q = quantity.toLowerCase();
+        if (q.includes('90')) return 3;
+        if (q.includes('180')) return 6;
+        if (q.includes('365') || q.includes('1 year')) return 12;
+        // Basic number extraction if specific words aren't matched
+        const match = q.match(/^(\d+)/);
+        if (match && !q.includes('day')) {
+            return parseInt(match[1], 10) || 1;
+        }
+        return 1;
+    }, []);
+
     const grandTotal = useMemo(() => {
-        return cart.reduce((acc, item) => acc + ((parseInt(item.quantity) || 1) * item.unitPrice), 0);
-    }, [cart]);
+        return cart.reduce((acc, item) => acc + (getQuantityMultiplier(item.quantity) * item.unitPrice), 0);
+    }, [cart, getQuantityMultiplier]);
 
     const handleIdentityChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
