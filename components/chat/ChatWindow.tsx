@@ -1,6 +1,7 @@
 
 import React, { useState, useRef, useEffect, useMemo, useCallback } from 'react';
-import { ArrowDown, Lock, FileText, X, UploadCloud } from 'lucide-react';
+import { ArrowDown, Lock, FileText, X, UploadCloud, Pin } from 'lucide-react';
+import { Virtuoso } from 'react-virtuoso';
 import { Conversation } from '../../services/ChatService';
 import { MessageBubble } from './MessageBubble';
 import { ChatMessage, User, Attachment } from '../../types';
@@ -62,6 +63,7 @@ export const ChatWindow: React.FC<Props> = ({
 
   const [isDragging, setIsDragging] = useState(false);
   const [showScrollButton, setShowScrollButton] = useState(false);
+  const [showPinnedMsgs, setShowPinnedMsgs] = useState(false);
   const dragCounterRef = useRef(0);
 
   const { setToast } = useSystem();
@@ -72,6 +74,10 @@ export const ChatWindow: React.FC<Props> = ({
       if (!searchQuery) return messages;
       return messages.filter(m => m.text.toLowerCase().includes(searchQuery.toLowerCase()));
   }, [messages, searchQuery]);
+
+  const pinnedMessages = useMemo(() => {
+      return messages.filter(m => m.isPinned && !m.isDeleted);
+  }, [messages]);
 
   // Fix: Calculate last received message for Smart Chips
   const lastReceivedMessage = useMemo(() => {
@@ -87,6 +93,15 @@ export const ChatWindow: React.FC<Props> = ({
       }
   }, []);
 
+  const jumpToMessage = (id: string) => {
+      const el = document.getElementById(`msg-${id}`);
+      if (el) {
+          el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          el.classList.add('ring-2', 'ring-accent-secondary', 'ring-offset-2', 'rounded-lg');
+          setTimeout(() => el.classList.remove('ring-2', 'ring-accent-secondary', 'ring-offset-2', 'rounded-lg'), 2000);
+      }
+  };
+
   useEffect(() => {
     scrollToBottom('auto');
   }, [activeConversation.id, scrollToBottom]);
@@ -94,6 +109,8 @@ export const ChatWindow: React.FC<Props> = ({
   useEffect(() => {
     if (!scrollContainerRef.current) return;
     const { scrollTop, scrollHeight, clientHeight } = scrollContainerRef.current;
+    
+    // Automatically scroll down if user was already at the bottom or sent a new message
     const isNearBottom = scrollHeight - scrollTop - clientHeight < 200;
     const lastMsg = visibleMessages[visibleMessages.length - 1];
     const isMine = lastMsg?.senderId === currentUser.id;
@@ -184,7 +201,7 @@ export const ChatWindow: React.FC<Props> = ({
     <div className="flex h-full w-full relative overflow-hidden" 
          style={{ background: currentWallpaper ? `url(${currentWallpaper}) center/cover` : 'transparent' }}>
       
-      {currentWallpaper && <div className="absolute inset-0 bg-surface-alt backdrop-blur-[2px]"></div>}
+      {currentWallpaper && <div className="absolute inset-0 bg-surface-main/30 backdrop-blur-sm -z-10"></div>}
 
       <div 
         className="flex flex-col h-full flex-1 relative z-10"
@@ -212,14 +229,76 @@ export const ChatWindow: React.FC<Props> = ({
             isMuted={isMuted}
         />
 
+        {/* PINNED MESSAGES BAR */}
+        {pinnedMessages.length > 0 && (
+            <div className="bg-surface-alt/80 backdrop-blur-md border-b border-border-subtle p-2 md:px-4 z-20 sticky top-0 flex items-center justify-between">
+                 <div className="flex items-center gap-3 w-full overflow-hidden">
+                    <Pin size={16} className="text-accent-secondary shrink-0" />
+                    <div 
+                        className="flex-1 cursor-pointer truncate text-sm font-semibold opacity-90 hover:opacity-100 transition-opacity" 
+                        onClick={() => jumpToMessage(pinnedMessages[pinnedMessages.length - 1].id)}
+                    >
+                        <span className="opacity-60 mr-2">{pinnedMessages[pinnedMessages.length - 1].senderName}:</span>
+                        {pinnedMessages[pinnedMessages.length - 1].text}
+                    </div>
+                 </div>
+                 {pinnedMessages.length > 1 && (
+                     <button 
+                        onClick={() => setShowPinnedMsgs(!showPinnedMsgs)} 
+                        className="ml-4 shrink-0 text-xs font-bold text-accent-secondary hover:underline"
+                     >
+                         {showPinnedMsgs ? 'Hide' : `See all (${pinnedMessages.length})`}
+                     </button>
+                 )}
+            </div>
+        )}
+
+        {/* EXPANDED PINNED MESSAGES */}
+        {showPinnedMsgs && pinnedMessages.length > 1 && (
+            <div className="absolute top-16 left-0 right-0 bg-surface-alt border-b border-border-subtle shadow-lg z-30 max-h-60 overflow-y-auto p-4 custom-scrollbar flex flex-col gap-2">
+                <div className="flex justify-between items-center mb-2">
+                    <h3 className="font-bold text-sm text-text-primary">Pinned Messages</h3>
+                    <button onClick={() => setShowPinnedMsgs(false)}><X size={16}/></button>
+                </div>
+                {pinnedMessages.map((pm) => (
+                    <div key={pm.id} onClick={() => jumpToMessage(pm.id)} className="bg-surface-main p-3 border border-border-subtle rounded-lg cursor-pointer hover:border-accent-secondary/50 transition-colors">
+                        <div className="text-xs text-text-muted mb-1 flex justify-between">
+                            <span>{pm.senderName}</span>
+                            <span>{new Date(pm.timestamp).toLocaleDateString()}</span>
+                        </div>
+                        <div className="text-sm line-clamp-2">{pm.text}</div>
+                    </div>
+                ))}
+            </div>
+        )}
+
         {/* MESSAGES STREAM */}
-        <div 
-            ref={scrollContainerRef} 
-            onScroll={handleScroll}
-            className="flex-1 overflow-y-auto custom-scrollbar p-3 space-y-2 relative z-0 pt-20 pb-20"
-        >
-            <div className={`mx-auto flex flex-col gap-1 min-h-full justify-end transition-all duration-500 ${isMaximized ? 'max-w-full px-8' : 'max-w-3xl'}`}>
-                {visibleMessages.map((msg, idx) => {
+        <div className="flex-1 relative z-0">
+            <Virtuoso
+                className="custom-scrollbar h-full w-full"
+                data={visibleMessages}
+                initialTopMostItemIndex={visibleMessages.length - 1}
+                followOutput={true}
+                alignToBottom={true}
+                atBottomStateChange={(atBottom) => {
+                    setShowScrollButton(!atBottom);
+                }}
+                components={{
+                    Footer: () => (
+                        <div className="mx-auto flex flex-col gap-1 pb-[120px]">
+                            <TypingBubble users={typingNow} />
+                            <div ref={endRef} className="h-4 shrink-0 mt-4" />
+                        </div>
+                    ),
+                    List: React.forwardRef((props, ref) => (
+                        <div 
+                            {...props} 
+                            ref={ref} 
+                            className={`mx-auto flex flex-col gap-1 w-full transition-all duration-500 p-3 h-full justify-end ${isMaximized ? 'max-w-full px-8' : 'max-w-3xl'}`} 
+                        />
+                    ))
+                }}
+                itemContent={(idx, msg) => {
                     const prevMsg = visibleMessages[idx - 1];
                     const isStacked = prevMsg?.senderId === msg.senderId && (msg.timestamp - prevMsg.timestamp < 300000);
                     const showDate = !prevMsg || new Date(msg.timestamp).toDateString() !== new Date(prevMsg.timestamp).toDateString();
@@ -239,15 +318,25 @@ export const ChatWindow: React.FC<Props> = ({
                                 onReaction={onReaction} 
                                 onForward={setForwardingMsg}
                                 onVote={onVote}
+                                onJumpTo={jumpToMessage}
                                 onViewImage={(url, name) => setViewingMedia({ src: url, type: 'image', name })}
                             />
                         </React.Fragment>
                     );
-                })}
-                
-                <TypingBubble users={typingNow} />
-                <div ref={endRef} className="h-2 shrink-0" />
-            </div>
+                }}
+            />
+        </div>
+
+        {/* SCROLL TO BOTTOM BUTTON */}
+        <div className="absolute bottom-32 right-10 z-40 transition-all duration-300 pointer-events-none">
+            {showScrollButton && (
+                <button 
+                    onClick={() => scrollToBottom('smooth')}
+                    className="p-3 bg-indigo-500 hover:bg-indigo-600 text-white rounded-full shadow-[0_4px_14px_rgba(0,0,0,0.39)] transition-all animate-in zoom-in pointer-events-auto flex items-center justify-center transform active:scale-95"
+                >
+                    <ArrowDown size={20} strokeWidth={2.5} />
+                </button>
+            )}
         </div>
 
         {/* INPUT CAPSULE */}
@@ -256,7 +345,7 @@ export const ChatWindow: React.FC<Props> = ({
                 
                 {/* Pending Attachments Staging Area */}
                 {pendingAttachments.length > 0 && (
-                    <div className="flex gap-2 p-2 bg-surface-alt border border-border-subtle rounded-lg mx-1 shadow-lg overflow-x-auto">
+                    <div className="flex gap-2 p-2 bg-surface-alt border border-border-subtle rounded-lg shadow-lg overflow-x-auto max-w-full">
                         {pendingAttachments.map((att, idx) => (
                             <div key={idx} className="relative group shrink-0">
                                 {att.type === 'image' ? (
@@ -276,7 +365,7 @@ export const ChatWindow: React.FC<Props> = ({
                                 )}
                                 <button 
                                     onClick={() => removeAttachment(idx)}
-                                    className="absolute -top-1.5 -right-1.5 bg-red-500 text-text-primary p-0.5 rounded-full shadow-md hover:scale-110 active:scale-95 transition-all z-10"
+                                    className="absolute -top-1.5 -right-1.5 bg-red-500 text-white p-0.5 rounded-full shadow-md hover:scale-110 active:scale-95 transition-all z-10"
                                 >
                                     <X size={14} strokeWidth={3}/>
                                 </button>
@@ -287,12 +376,12 @@ export const ChatWindow: React.FC<Props> = ({
 
                 {activeConversation.peerName.startsWith('[INT]') ? (
                     <div className="flex justify-center p-2">
-                        <div className="flex items-center gap-2 bg-red-500/10 border border-red-500/20 text-status-error px-4 py-2 rounded-lg text-sm font-semibold shadow-inner">
+                        <div className="flex items-center gap-2 bg-red-500/10 border border-red-500/20 text-status-error px-4 py-2 rounded-lg text-sm font-bold shadow-inner">
                             <Lock size={16} /> Restricted Internal Channel
                         </div>
                     </div>
                 ) : (
-                    <div className="bg-surface-alt rounded-lg shadow-sm border border-transparent hover:border-border-subtle transition-colors focus-within:ring-1 focus-within:ring-indigo-500/50">
+                    <div className="bg-surface-alt rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.12)] border border-border-subtle focus-within:border-accent-secondary/50 focus-within:ring-2 focus-within:ring-accent-secondary/20 transition-all duration-300">
                         <ChatInput 
                             input={input}
                             setInput={setInput}
@@ -317,14 +406,6 @@ export const ChatWindow: React.FC<Props> = ({
             </div>
         </div>
 
-        {showScrollButton && (
-            <button 
-                onClick={() => scrollToBottom()}
-                className="absolute bottom-28 right-10 z-50 p-2.5 bg-surface-alt hover:bg-surface-highlight text-text-primary rounded-full shadow-lg transition-all"
-            >
-                <ArrowDown size={18} strokeWidth={2.5} />
-            </button>
-        )}
       </div>
 
       {showMediaSidebar && (
@@ -357,3 +438,4 @@ export const ChatWindow: React.FC<Props> = ({
     </div>
   );
 };
+

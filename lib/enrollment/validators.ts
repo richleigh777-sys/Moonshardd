@@ -200,17 +200,9 @@ export const getRequiredCardLength = (cardType: string): number => {
   }
 };
 
-export const normalizePhone = (phone: string): string => {
-  return phone.replace(/\D/g, '');
-};
+import { normalizePhone, formatPhoneForDisplay } from '../../utils/phoneUtils';
 
-export const formatPhoneForDisplay = (phone: string): string => {
-  const clean = phone.replace(/\D/g, '');
-  if (clean.length === 10) {
-    return `(${clean.slice(0, 3)}) ${clean.slice(3, 6)}-${clean.slice(6, 10)}`;
-  }
-  return phone;
-};
+export { normalizePhone, formatPhoneForDisplay };
 
 export const formatCardNumber = (value: string, cardType: string): string => {
   const v = value.replace(/\s+/g, '').replace(/[^0-9]/gi, '');

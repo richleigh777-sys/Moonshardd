@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { DollarSign, Check, Search, AlertTriangle, MessageSquare, Loader } from 'lucide-react';
+import { DollarSign, Check, Search, AlertTriangle, MessageSquare, Loader, ShoppingCart } from 'lucide-react';
 import { useEnrollmentLogic } from '../../hooks/useEnrollmentLogic';
 import { TOP_US_BANKS, CARD_PROVIDERS } from '../../constants';
 import { Button, Card } from '../ui/Base';
@@ -8,6 +8,7 @@ import { IdentitySection } from './enrollment/v1/IdentitySection';
 import { MedicalSection } from './enrollment/v1/MedicalSection';
 import { PaymentSection } from './enrollment/v1/PaymentSection';
 import { ProductBasketEnhanced } from './enrollment/v1/ProductBasketEnhanced';
+import { CartPreview } from './enrollment/CartPreview';
 import { ReviewModal } from './enrollment/v1/ReviewModal';
 import { CustomerLookup } from './enrollment/v1/CustomerLookup';
 import { DispositionModal } from '../modals/DispositionModal';
@@ -144,8 +145,29 @@ export default function EnrollmentForm({
             <Card variant="panel" className="p-5 bg-surface-main border-border-subtle shadow-md shrink-0 rounded-xl relative overflow-hidden">
               <div className="absolute inset-0 bg-gradient-to-t from-emerald-500/5 to-transparent pointer-events-none"></div>
 
-              {/* Manual Amount Input */}
+              {/* Cart Preview in Submit Panel */}
               <div className="mb-5 relative z-10 w-full">
+                <div className="flex items-center gap-2 mb-2">
+                   <ShoppingCart size={14} className="text-emerald-500" />
+                   <label className="text-[11px] font-bold text-emerald-500 tracking-widest block uppercase">
+                     Ready to Process
+                   </label>
+                </div>
+                {logic.cart.length > 0 ? (
+                  <CartPreview 
+                    cart={logic.cart} 
+                    onRemove={(id) => logic.setCart(prev => prev.filter(c => c.id !== id))} 
+                    calculatedTotal={logic.calculatedTotal} 
+                  />
+                ) : (
+                  <div className="p-3 text-center border border-dashed border-border-subtle rounded-xl bg-surface-alt/50 text-xs text-text-muted">
+                     Add products to order
+                  </div>
+                )}
+              </div>
+
+              {/* Manual Amount Input */}
+              <div className="mb-5 relative z-10 w-full pt-4 border-t border-border-subtle">
                 <label className="text-[11px] font-bold text-text-muted tracking-widest mb-1.5 block">
                   FINAL ORDER AMOUNT *
                 </label>

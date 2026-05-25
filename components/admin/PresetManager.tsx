@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Package, Plus, Trash2, Edit2, GripVertical, CheckCircle2, Search, Settings } from 'lucide-react';
 import { ProductPreset, ProductConfig } from '../../types';
 import { Card, Button } from '../ui/Base';
+import { getQuantityMultiplier } from '../../utils/quantityUtils';
 
 interface Props {
   productConfig: ProductConfig;
@@ -90,6 +91,15 @@ export function PresetManager({ productConfig, onUpdateConfig }: Props) {
   const removePresetItem = (index: number) => {
     setItems(items.filter((_, i) => i !== index));
   };
+
+  // Live total preview computation
+  const liveTotal = items.reduce((sum, item) => {
+    const pDef = productConfig.products.find((p) => p.name === item.product);
+    if (pDef) {
+       return sum + pDef.price * getQuantityMultiplier(item.quantity);
+    }
+    return sum;
+  }, 0);
 
   return (
     <div className="flex flex-col lg:flex-row gap-6 p-6 h-full max-w-7xl mx-auto">
@@ -203,7 +213,7 @@ export function PresetManager({ productConfig, onUpdateConfig }: Props) {
              />
            </div>
            
-           <div>
+            <div>
              <div className="flex justify-between items-center mb-2">
                <label className="text-xs font-bold text-text-muted">PRODUCTS IN BUNDLE *</label>
                <button onClick={addPresetItem} className="text-[10px] bg-indigo-500 text-white px-2 py-1 rounded font-bold hover:bg-indigo-600 transition-colors flex items-center gap-1">
@@ -211,7 +221,7 @@ export function PresetManager({ productConfig, onUpdateConfig }: Props) {
                </button>
              </div>
              
-             <div className="space-y-3">
+             <div className="space-y-3 mb-4">
                {items.length === 0 ? (
                  <div className="border border-dashed border-border-subtle rounded-lg p-6 text-center text-sm text-text-muted">
                     No products added. Click Add to include products in this preset.
@@ -272,6 +282,17 @@ export function PresetManager({ productConfig, onUpdateConfig }: Props) {
                  ))
                )}
              </div>
+
+             {/* Live Bundle Preview */}
+             {items.length > 0 && (
+               <div className="bg-emerald-500/10 border border-emerald-500/20 rounded-lg p-3 flex justify-between items-center shadow-inner">
+                  <div className="flex flex-col">
+                     <span className="text-[10px] font-bold text-emerald-600/80 uppercase tracking-widest">Live Total Preview</span>
+                     <span className="text-xs text-text-muted mt-0.5">{items.length} items bundled</span>
+                  </div>
+                  <span className="text-lg font-black text-emerald-500">${liveTotal.toFixed(2)}</span>
+               </div>
+             )}
            </div>
         </div>
         

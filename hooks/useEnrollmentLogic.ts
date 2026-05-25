@@ -5,15 +5,15 @@ import { Sale, CartItem, ProductConfig, Product, ProductPreset } from '../types'
 import { 
   formatCardNumber, 
   formatExpiry, 
-  formatPhoneForDisplay, 
   validateLuhn, 
-  getRequiredCardLength,
-  normalizePhone
+  getRequiredCardLength
 } from '../lib/enrollment/validators';
 import { validators } from '../lib/enrollment/validators';
 import { presetUtils } from '../lib/enrollment/presetUtils';
 import { draftService } from '../lib/enrollment/draftService';
 import { sfx } from '../lib/soundService';
+import { getQuantityMultiplier, validateManualAmount } from '../utils/quantityUtils';
+import { normalizePhone, formatPhoneForDisplay } from '../utils/phoneUtils';
 
 export interface EnrollmentState {
   fullName: string;
@@ -132,61 +132,19 @@ export function useEnrollmentLogic(
   const [showReview, setShowReview] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
 
-  // Helper to extract unit multiplier from quantity strings like "30 Day Supply", "3 Bottles", etc.
-  const getQuantityMultiplier = useCallback((quantity: string): number => {
-    const q = quantity.toLowerCase();
-    if (q.includes('90')) return 3;
-    if (q.includes('180')) return 6;
-    if (q.includes('365') || q.includes('1 year')) return 12;
-    // Basic number extraction if specific words aren't matched
-    const match = q.match(/^(\d+)/);
-    if (match && !q.includes('day')) {
-        return parseInt(match[1], 10) || 1;
-    }
-    return 1;
-  }, []);
-
   const calculatedTotal = useMemo(() => {
     return cart.reduce((sum, item) => sum + (item.unitPrice * getQuantityMultiplier(item.quantity)), 0);
-  }, [cart, getQuantityMultiplier]);
+  }, [cart]);
 
   const handleManualAmountChange = useCallback((value: string) => {
-    const amount = parseFloat(value);
-    
+    setManualAmount(value);
     if (value === '') {
-      setManualAmount('');
       setManualAmountError('');
       return;
     }
-
-    if (isNaN(amount)) {
-      setManualAmountError('Invalid amount');
-      // Still set it so the user can see what they typed and fix it
-      setManualAmount(value);
-      return;
-    }
-
-    if (amount < 0) {
-      setManualAmountError('Amount cannot be negative');
-      setManualAmount(value);
-      return;
-    }
-
-    if (amount === 0) {
-      setManualAmountError('Amount must be greater than $0.00');
-      setManualAmount(value);
-      return;
-    }
-
-    if (amount > 999999.99) {
-      setManualAmountError('Amount too large (max: $999,999.99)');
-      setManualAmount(value);
-      return;
-    }
-
-    setManualAmount(value);
-    setManualAmountError('');
-  }, []);
+    const errorMsg = validateManualAmount(value, calculatedTotal);
+    setManualAmountError(errorMsg || '');
+  }, [calculatedTotal]);
 
   const displayPhone = useMemo(() => {
     return formatPhoneForDisplay(formData.phone);

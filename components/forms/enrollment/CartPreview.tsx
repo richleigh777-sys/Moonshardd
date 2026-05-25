@@ -3,6 +3,7 @@ import { ShoppingCart, Trash2, CheckCircle2 } from 'lucide-react';
 import { sfx } from '../../../lib/soundService';
 import { CartItem } from '../../../types';
 import { Card } from '../../ui/Base';
+import { getQuantityMultiplier } from '../../../utils/quantityUtils';
 
 interface Props {
   cart: CartItem[];
@@ -11,18 +12,6 @@ interface Props {
 }
 
 export function CartPreview({ cart, onRemove, calculatedTotal }: Props) {
-  const getQuantityMultiplier = (qty: string): number => {
-    const q = qty.toLowerCase();
-    if (q.includes('90')) return 3;
-    if (q.includes('180')) return 6;
-    if (q.includes('365') || q.includes('1 year')) return 12;
-    const match = q.match(/^(\d+)/);
-    if (match && !q.includes('day')) {
-      return parseInt(match[1], 10) || 1;
-    }
-    return 1;
-  };
-
   const handleRemove = (id: string, isLast: boolean) => {
     if (isLast) {
       if (confirm('Remove the last item from your cart?')) {

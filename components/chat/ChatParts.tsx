@@ -15,26 +15,26 @@ import { AudioPlayer } from '../ui/Base';
 const CRMLeadBlock = ({ title, details }: { title: string, details: any[] }) => {
     const [opened, setOpened] = useState(false);
     return (
-        <div className="bg-surface-main border border-border-subtle rounded-xl p-3 my-2 w-full max-w-[300px] font-sans break-words shadow-sm">
-            <div className="flex items-center gap-2 mb-2 pb-2 border-b border-border-subtle/50">
-                <div className="p-1.5 bg-indigo-500/20 text-accent-secondary rounded-md">
-                    <FileText size={14} />
+        <div className="bg-amber-50 border border-amber-200 rounded-3xl p-4 my-2 w-full max-w-[300px] font-sans break-words shadow-sm text-gray-800">
+            <div className="flex items-center gap-2 mb-3 pb-3 border-b border-amber-200/60">
+                <div className="p-2 bg-amber-400 text-amber-900 rounded-full">
+                    <FileText size={16} />
                 </div>
-                <span className="text-sm font-bold text-text-primary">{title}</span>
+                <span className="text-sm font-semibold">{title}</span>
             </div>
-            <div className="space-y-1.5">
+            <div className="space-y-2">
                 {details.map((d, i) => (
-                    <div key={i} className="flex justify-between items-start text-xs">
-                        <span className="text-text-muted font-semibold  shrink-0 mr-2">{d.key}:</span>
-                        <span className="text-text-primary font-medium text-right break-words">{d.value || '-'}</span>
+                    <div key={i} className="flex justify-between items-start text-sm">
+                        <span className="text-amber-700/80 font-medium shrink-0 mr-2">{d.key}:</span>
+                        <span className="text-gray-900 font-semibold text-right break-words">{d.value || '-'}</span>
                     </div>
                 ))}
             </div>
             <button 
                 onClick={() => setOpened(true)}
-                className={`mt-3 w-full py-1.5 rounded-md text-xs font-semibold transition-colors ${opened ? 'bg-indigo-500/50 text-text-primary cursor-default' : 'bg-surface-highlight hover:bg-indigo-500 text-text-primary'}`}
+                className={`mt-4 w-full py-2.5 rounded-xl text-sm font-semibold transition-colors ${opened ? 'bg-amber-200/50 text-amber-800 cursor-default' : 'bg-amber-400 hover:bg-amber-500 text-amber-950'}`}
             >
-                {opened ? 'Record Opened' : 'Open Record'}
+                {opened ? 'Opened' : 'Open Details'}
             </button>
         </div>
     );
@@ -43,29 +43,29 @@ const CRMLeadBlock = ({ title, details }: { title: string, details: any[] }) => 
 const TeamsStackBlock = ({ title, details }: { title: string, details: any[] }) => {
     const [sent, setSent] = useState(false);
     return (
-        <div className="bg-emerald-500/10 border border-status-success/30 rounded-xl p-3 my-2 w-full max-w-[320px] font-sans break-words shadow-sm relative overflow-hidden">
-            <div className="absolute -right-4 -top-4 text-status-success/20">
-                <Globe size={64} />
+        <div className="bg-sky-50 border border-sky-200 rounded-3xl p-4 my-2 w-full max-w-[320px] font-sans break-words shadow-sm relative overflow-hidden text-gray-800">
+            <div className="absolute -right-4 -top-4 text-sky-200/40">
+                <Globe size={80} />
             </div>
-            <div className="flex items-center gap-2 mb-3 pb-2 border-b border-emerald-500/20 relative z-10">
-                <div className="p-1.5 bg-emerald-500 rounded-md text-text-primary shadow-sm shadow-emerald-500/50">
-                    <Zap size={14} fill="currentColor" />
+            <div className="flex items-center gap-2 mb-4 pb-3 border-b border-sky-200/60 relative z-10">
+                <div className="p-2 bg-sky-400 rounded-full text-white shadow-sm shadow-sky-400/50">
+                    <Zap size={16} fill="currentColor" />
                 </div>
-                <span className="text-sm font-[700]  tracking-widest text-emerald-100">{title}</span>
+                <span className="text-sm font-semibold text-sky-900">{title}</span>
             </div>
-            <div className="space-y-1.5 relative z-10">
+            <div className="space-y-2 relative z-10">
                 {details.map((d, i) => (
-                    <div key={i} className="flex justify-between items-start text-xs">
-                        <span className="text-status-success/70 font-[700]  tracking-wider shrink-0 mr-2">{d.key}:</span>
-                        <span className="text-emerald-100 font-mono font-bold text-right break-words">{d.value || '-'}</span>
+                    <div key={i} className="flex justify-between items-start text-sm">
+                        <span className="text-sky-700/80 font-medium shrink-0 mr-2">{d.key}:</span>
+                        <span className="text-gray-900 font-semibold text-right break-words">{d.value || '-'}</span>
                     </div>
                 ))}
             </div>
             <button 
                 onClick={() => setSent(true)}
-                className={`mt-3 w-full py-2 rounded-md text-xs font-[700]  tracking-widest transition-all shadow-sm relative z-10 flex items-center justify-center gap-2 ${sent ? 'bg-emerald-500/50 text-emerald-100 cursor-default shadow-none hover:shadow-none' : 'bg-emerald-500 hover:bg-emerald-400 text-gray-900 shadow-emerald-500/20 hover:shadow-emerald-500/40'}`}
+                className={`mt-4 w-full py-2.5 rounded-xl text-sm font-semibold transition-all shadow-sm relative z-10 flex items-center justify-center gap-2 ${sent ? 'bg-sky-200/50 text-sky-800 cursor-default shadow-none hover:shadow-none' : 'bg-sky-400 hover:bg-sky-500 text-white shadow-sky-400/20 hover:shadow-sky-400/40'}`}
             >
-                {sent ? <><CheckCircle size={14} /> Pushed to Teams</> : <><Globe size={14} /> Send to MS Teams</>}
+                {sent ? <><CheckCircle size={16} /> Shared with Team</> : <><Globe size={16} /> Share with Team</>}
             </button>
         </div>
     );
@@ -74,26 +74,26 @@ const TeamsStackBlock = ({ title, details }: { title: string, details: any[] }) 
 const DNCBlock = ({ title, details }: { title: string, details: any[] }) => {
     const [confirmed, setConfirmed] = useState(false);
     return (
-        <div className="bg-red-500/10 border border-status-error/30 rounded-xl p-3 my-2 w-full max-w-[300px] font-sans break-words shadow-sm">
-            <div className="flex items-center gap-2 mb-2 pb-2 border-b border-red-500/20">
-                <div className="p-1.5 bg-red-500/20 text-status-error rounded-md">
-                    <PhoneOff size={14} />
+        <div className="bg-rose-50 border border-rose-200 rounded-3xl p-4 my-2 w-full max-w-[300px] font-sans break-words shadow-sm text-gray-800">
+            <div className="flex items-center gap-2 mb-3 pb-3 border-b border-rose-200/60">
+                <div className="p-2 bg-rose-400 text-white rounded-full shadow-sm">
+                    <PhoneOff size={16} />
                 </div>
-                <span className="text-sm font-bold text-red-200">{title}</span>
+                <span className="text-sm font-semibold text-rose-900">{title}</span>
             </div>
-            <div className="space-y-1.5">
+            <div className="space-y-2">
                 {details.map((d, i) => (
-                    <div key={i} className="flex justify-between items-start text-xs">
-                        <span className="text-status-error/70 font-semibold  mr-2">{d.key}:</span>
-                        <span className="text-red-100 font-medium break-words">{d.value || '-'}</span>
+                    <div key={i} className="flex justify-between items-start text-sm">
+                        <span className="text-rose-700/80 font-medium mr-2">{d.key}:</span>
+                        <span className="text-gray-900 font-semibold break-words">{d.value || '-'}</span>
                     </div>
                 ))}
             </div>
             <button 
                 onClick={() => setConfirmed(true)}
-                className={`mt-3 w-full py-1.5 rounded-md text-xs font-semibold transition-colors border ${confirmed ? 'bg-red-500/50 text-text-primary border-transparent cursor-default' : 'bg-red-500/20 hover:bg-red-500/40 text-status-error border-status-error/30'}`}
+                className={`mt-4 w-full py-2.5 rounded-xl text-sm font-semibold transition-colors border ${confirmed ? 'bg-rose-100 text-rose-800 border-transparent cursor-default' : 'bg-rose-50 hover:bg-rose-100 text-rose-600 border-rose-300'}`}
             >
-                {confirmed ? 'Blacklisted' : 'Confirm Blacklist'}
+                {confirmed ? 'Marked as Do Not Call' : 'Mark as Do Not Call'}
             </button>
         </div>
     );
@@ -102,26 +102,26 @@ const DNCBlock = ({ title, details }: { title: string, details: any[] }) => {
 const CallbackBlock = ({ title, details }: { title: string, details: any[] }) => {
     const [scheduled, setScheduled] = useState(false);
     return (
-        <div className="bg-amber-500/10 border border-status-warning/30 rounded-xl p-3 my-2 w-full max-w-[300px] font-sans break-words shadow-sm">
-            <div className="flex items-center gap-2 mb-2 pb-2 border-b border-amber-500/20">
-                <div className="p-1.5 bg-amber-500/20 text-status-warning rounded-md">
-                    <CalendarClock size={14} />
+        <div className="bg-orange-50 border border-orange-200 rounded-3xl p-4 my-2 w-full max-w-[300px] font-sans break-words shadow-sm text-gray-800">
+            <div className="flex items-center gap-2 mb-3 pb-3 border-b border-orange-200/60">
+                <div className="p-2 bg-orange-400 text-white rounded-full shadow-sm">
+                    <CalendarClock size={16} />
                 </div>
-                <span className="text-sm font-bold text-amber-200">{title}</span>
+                <span className="text-sm font-semibold text-orange-900">{title}</span>
             </div>
-            <div className="space-y-1.5">
+            <div className="space-y-2">
                 {details.map((d, i) => (
-                    <div key={i} className="flex justify-between items-start text-xs">
-                        <span className="text-status-warning/70 font-semibold  mr-2">{d.key}:</span>
-                        <span className="text-amber-100 font-medium break-words">{d.value || '-'}</span>
+                    <div key={i} className="flex justify-between items-start text-sm">
+                        <span className="text-orange-700/80 font-medium mr-2">{d.key}:</span>
+                        <span className="text-gray-900 font-semibold break-words">{d.value || '-'}</span>
                     </div>
                 ))}
             </div>
             <button 
                 onClick={() => setScheduled(true)}
-                className={`mt-3 w-full py-1.5 rounded-md text-xs font-semibold transition-colors ${scheduled ? 'bg-amber-500/50 text-text-primary cursor-default' : 'bg-amber-500 hover:bg-amber-400 text-gray-900'}`}
+                className={`mt-4 w-full py-2.5 rounded-xl text-sm font-semibold transition-colors shadow-sm ${scheduled ? 'bg-orange-200/50 text-orange-800 cursor-default shadow-none' : 'bg-orange-400 hover:bg-orange-500 text-white'}`}
             >
-                {scheduled ? 'Scheduled' : 'Add to Schedule'}
+                {scheduled ? 'Scheduled' : 'Save Reminder'}
             </button>
         </div>
     );
@@ -176,23 +176,23 @@ const parseMarkdown = (text: string) => {
     const urlRegex = /(https?:\/\/[^\s]+)/g;
     return text.split(urlRegex).map((part, i) => {
         if (part.match(urlRegex)) {
-            return <a key={i} href={part} target="_blank" rel="noopener noreferrer" className="text-accent-primary hover:underline font-bold break-all transition-colors cursor-pointer" onClick={(e) => e.stopPropagation()}>{part}</a>;
+            return <a key={i} href={part} target="_blank" rel="noopener noreferrer" className="text-accent-primary hover:underline font-semibold break-all transition-colors cursor-pointer" onClick={(e) => e.stopPropagation()}>{part}</a>;
         }
         
         // 2. Process Mentions
         const mentionRegex = /(@\w+)/g;
         return part.split(mentionRegex).map((subPart, j) => {
             if (subPart.match(mentionRegex)) {
-                return <span key={`${i}-${j}`} className="text-accent-primary font-[700] bg-accent-primary/10 px-1.5 rounded-md mx-0.5 cursor-pointer hover:bg-accent-primary/20 transition-colors">@{subPart.slice(1)}</span>;
+                return <span key={`${i}-${j}`} className="text-accent-primary font-bold bg-accent-primary/10 px-2 py-0.5 rounded-lg mx-0.5 cursor-pointer hover:bg-accent-primary/20 transition-colors">@{subPart.slice(1)}</span>;
             }
 
             // 3. Process Markdown Styles (Bold, Italic, Strike, Code, Blockquote)
             let segments: React.ReactNode[] = [subPart];
             const rules = [
-                { regex: /`([^`]+)`/g, render: (m: string, idx: number) => <code key={`code-${idx}`} className="bg-surface-alt/20 text-accent-primary font-mono px-1 rounded text-xs border border-border-subtle">{m}</code> },
-                { regex: /\*\*(.*?)\*\*/g, render: (m: string, idx: number) => <strong key={`bold-${idx}`} className="font-[700] text-text-primary">{m}</strong> },
-                { regex: /\*(.*?)\*/g, render: (m: string, idx: number) => <em key={`italic-${idx}`} className="italic opacity-90">{m}</em> },
-                { regex: /~(.*?)~/g, render: (m: string, idx: number) => <span key={`strike-${idx}`} className="line-through opacity-70">{m}</span> },
+                { regex: /`([^`]+)`/g, render: (m: string, idx: number) => <code key={`code-${idx}`} className="bg-black/5 text-gray-700 font-mono px-1.5 py-0.5 rounded-md text-[13px] border border-black/5">{m}</code> },
+                { regex: /\*\*(.*?)\*\*/g, render: (m: string, idx: number) => <strong key={`bold-${idx}`} className="font-bold">{m}</strong> },
+                { regex: /\*(.*?)\*/g, render: (m: string, idx: number) => <em key={`italic-${idx}`} className="italic">{m}</em> },
+                { regex: /~(.*?)~/g, render: (m: string, idx: number) => <span key={`strike-${idx}`} className="line-through opacity-60">{m}</span> },
             ];
 
             rules.forEach(rule => {
@@ -223,7 +223,7 @@ export const RichTextRenderer = React.memo(({ text }: { text: string }) => {
                 // Blockquote support
                 if (line.startsWith('> ')) {
                     return (
-                        <div key={idx} className="border-l-2 border-accent-primary pl-3 my-1 italic text-text-secondary">
+                        <div key={idx} className="border-l-4 border-indigo-400 pl-4 my-2 italic text-gray-600 bg-indigo-50/50 py-2 pr-2 rounded-r-2xl">
                             {parseMarkdown(line.slice(2))}
                         </div>
                     );
@@ -231,7 +231,7 @@ export const RichTextRenderer = React.memo(({ text }: { text: string }) => {
                 // List support
                 if (line.startsWith('- ')) {
                     return (
-                        <div key={idx} className="pl-4 relative before:content-['•'] before:absolute before:left-1 before:text-accent-primary">
+                        <div key={idx} className="pl-6 relative before:content-['•'] before:absolute before:left-2 before:-top-0.5 before:text-indigo-400 before:text-lg my-1">
                             {parseMarkdown(line.slice(2))}
                         </div>
                     );
@@ -244,60 +244,51 @@ export const RichTextRenderer = React.memo(({ text }: { text: string }) => {
 
 export const MessageAttachments = React.memo(({ attachments, isMe, onViewImage }: { attachments: Attachment[], isMe: boolean, onViewImage: (url: string, name: string) => void }) => {
     return (
-        <div className="space-y-2 mb-2">
+        <div className="space-y-2.5 mb-3">
             {attachments.map((at, i) => (
                 <div key={i} className="relative group/att">
                     {at.type === 'image' && (
-                        <div className="relative group/img cursor-pointer overflow-hidden rounded-2xl" onClick={(e) => { e.stopPropagation(); onViewImage(at.url, at.name); }}>
+                        <div className="relative group/img cursor-pointer overflow-hidden rounded-3xl" onClick={(e) => { e.stopPropagation(); onViewImage(at.url, at.name); }}>
                             <img 
                                 src={at.url} 
-                                className={`w-full h-auto border border-black/5 shadow-md group-hover/img:scale-105 transition-transform duration-500 ${at.isScanning ? 'blur-sm grayscale' : ''}`} 
+                                className={`w-full h-auto border-2 border-black/5 shadow-sm group-hover/img:scale-105 transition-transform duration-500 rounded-3xl ${at.isScanning ? 'blur-sm grayscale' : ''}`} 
                                 alt={at.name} 
                             />
                             {at.isScanning && (
-                                <div className="absolute inset-0 flex flex-col items-center justify-center bg-surface-alt/40 backdrop-blur-sm">
-                                    <div className="w-12 h-12 border-2 border-indigo-500/30 border-t-indigo-500 rounded-full animate-spin mb-2"></div>
-                                    <span className="text-sm font-mono font-[700] text-accent-secondary  tracking-[0.3em] animate-pulse">Scanning Payload...</span>
+                                <div className="absolute inset-0 flex flex-col items-center justify-center bg-white/60 backdrop-blur-md">
+                                    <div className="w-12 h-12 border-4 border-indigo-200 border-t-indigo-500 rounded-full animate-spin mb-3 shadow-md"></div>
+                                    <span className="text-sm font-semibold text-indigo-700 tracking-wide animate-pulse bg-white/80 px-4 py-1.5 rounded-full shadow-sm">Checking picture...</span>
                                 </div>
                             )}
-                            <div className="absolute inset-0 bg-black/0 group-hover/img:bg-black/10 transition-colors"></div>
+                            <div className="absolute inset-0 bg-black/0 group-hover/img:bg-black/5 transition-colors rounded-3xl"></div>
                         </div>
                     )}
                     {at.type === 'audio' && (
-                        <div className={`rounded-2xl overflow-hidden ${isMe ? 'bg-black/10 border border-border-subtle' : 'bg-surface-alt border border-border-subtle'}`}>
+                        <div className={`rounded-3xl overflow-hidden ${isMe ? 'bg-indigo-600 border border-indigo-400' : 'bg-surface-alt border border-border-subtle'}`}>
                             <AudioPlayer src={at.url} />
                         </div>
                     )}
                     {at.type === 'file' && (
-                        <div className={`relative flex items-center gap-4 p-4 rounded-2xl border transition-all ${isMe ? 'bg-surface-highlight border-border-strong' : 'bg-surface-alt border-border-subtle'} ${at.isScanning ? 'opacity-50' : ''}`}>
-                            <div className="p-2 bg-surface-highlight rounded-xl">
-                                {at.isScanning ? <UploadCloud size={24} className="animate-bounce text-accent-secondary" /> : <FileText size={24}/>}
+                        <div className={`relative flex items-center gap-4 p-4 rounded-3xl border transition-all ${isMe ? 'bg-indigo-500 border-indigo-400 text-white' : 'bg-surface-main border-border-subtle'} ${at.isScanning ? 'opacity-60' : ''}`}>
+                            <div className={`p-3 rounded-2xl shadow-sm ${isMe ? 'bg-indigo-400/50' : 'bg-surface-highlight'}`}>
+                                {at.isScanning ? <UploadCloud size={24} className={`animate-bounce ${isMe ? 'text-white' : 'text-accent-secondary'}`} /> : <FileText size={24}/>}
                             </div>
                             <div className="flex-1 truncate min-w-0">
-                                <p className="text-xs font-bold truncate">{at.name}</p>
-                                <div className="flex items-center gap-2 mt-0.5">
-                                    <p className="text-xs font-mono opacity-50  tracking-wider">{at.size || 'FILE'}</p>
+                                <p className="text-sm font-bold truncate mb-0.5">{at.name}</p>
+                                <div className="flex items-center gap-2">
+                                    <p className={`text-xs font-medium ${isMe ? 'opacity-80' : 'opacity-60'}`}>{at.size || 'Document'}</p>
                                     {at.isEncrypted && (
-                                        <span className="flex items-center gap-1 text-sm font-mono text-status-success  tracking-widest bg-emerald-500/10 px-3 py-1.5 rounded">
-                                            <Lock size={16} fill="currentColor" /> Encrypted
+                                        <span className={`flex items-center gap-1 text-[11px] font-bold px-2.5 py-1 rounded-full ${isMe ? 'bg-white/20 text-white' : 'bg-emerald-100 text-emerald-700'}`}>
+                                            <Lock size={12} fill="currentColor" /> Safe
                                         </span>
                                     )}
                                 </div>
                             </div>
                             {!at.isScanning && (
-                                <button className="opacity-70 hover:opacity-100 p-2 rounded-lg hover:bg-black/10 transition-all" onClick={(e) => { e.stopPropagation(); }}>
+                                <button className={`opacity-80 hover:opacity-100 p-2.5 rounded-xl transition-all ${isMe ? 'hover:bg-white/20' : 'hover:bg-black/5'}`} onClick={(e) => { e.stopPropagation(); }}>
                                     <Download size={20} />
                                 </button>
                             )}
-                        </div>
-                    )}
-
-                    {/* Technical Metadata Overlay (Visible on Hover) */}
-                    {!at.isScanning && at.md5 && (
-                        <div className="absolute -bottom-1 right-2 opacity-0 group-hover/att:opacity-100 transition-opacity pointer-events-none">
-                            <div className="bg-black/80 backdrop-blur-md border border-border-subtle px-3 py-1.5 rounded text-xs font-mono text-text-muted  tracking-widest shadow-2xl">
-                                MD5: {at.md5}
-                            </div>
                         </div>
                     )}
                 </div>
@@ -310,67 +301,69 @@ export const MessagePoll = React.memo(({ poll, isMe, currentUserId, onVote }: { 
     const totalVotes = poll.options.reduce((acc, o) => acc + o.votes, 0);
 
     return (
-        <div className={`mb-2 p-4 rounded-2xl border ${isMe ? 'bg-black/10 border-border-strong' : 'bg-surface-main border-border-subtle'}`}>
-            <div className="flex items-center gap-2 mb-4 font-[700] text-sm">
-                <div className={`p-1.5 rounded-lg ${isMe ? 'bg-white/20' : 'bg-accent-primary/10 text-accent-primary'}`}><BarChart2 size={16}/></div>
+        <div className={`mb-3 p-5 rounded-3xl border ${isMe ? 'bg-indigo-500/90 border-indigo-400/50 text-white' : 'bg-surface-main border-border-subtle'}`}>
+            <div className="flex items-start gap-3 mb-5 font-bold text-base leading-snug">
+                <div className={`p-2 rounded-xl mt-0.5 shrink-0 ${isMe ? 'bg-white/20' : 'bg-indigo-100 text-indigo-600'}`}><BarChart2 size={18}/></div>
                 {poll.question}
             </div>
-            <div className="space-y-2.5">
+            <div className="space-y-3">
                 {poll.options.map(opt => {
                     const isSelected = opt.voters && opt.voters.includes(currentUserId);
                     const percentage = totalVotes > 0 ? Math.round((opt.votes / totalVotes) * 100) : 0;
 
                     return (
                         <div key={opt.id} className="relative group/poll cursor-pointer" onClick={(e) => { e.stopPropagation(); onVote?.(opt.id); }}>
-                            <div className={`absolute inset-0 rounded-xl transition-all duration-700 ease-out ${isMe ? 'bg-white/20' : 'bg-accent-primary/10'}`} style={{ width: `${percentage}%` }}></div>
-                            <div className={`relative w-full px-4 py-3 text-xs font-bold rounded-xl border flex justify-between items-center transition-colors ${
+                            <div className={`absolute inset-0 rounded-2xl transition-all duration-700 ease-out ${isMe ? 'bg-white/20' : 'bg-indigo-50'}`} style={{ width: `${percentage}%` }}></div>
+                            <div className={`relative w-full px-4 py-3.5 text-sm font-semibold rounded-2xl border-2 flex justify-between items-center transition-all ${
                                     isSelected 
-                                    ? (isMe ? 'border-white ring-1 ring-white/50' : 'border-accent-primary ring-1 ring-accent-primary text-accent-primary font-[700]') 
-                                    : (isMe ? 'border-border-strong hover:bg-surface-highlight' : 'border-border-subtle hover:bg-surface-alt')
+                                    ? (isMe ? 'border-white bg-white/10 shadow-sm' : 'border-indigo-400 bg-white shadow-sm text-indigo-700') 
+                                    : (isMe ? 'border-indigo-400/30 hover:bg-white/10' : 'border-border-subtle hover:bg-surface-alt bg-white')
                                 }`}>
-                                <span className="flex items-center gap-3 relative z-10">
-                                    {isSelected ? <CheckCircle size={16} strokeWidth={3} className={isMe ? 'text-text-primary' : 'text-accent-primary'} /> : <div className={`w-3.5 h-3.5 rounded-full border-2 ${isMe ? 'border-border-subtle' : 'border-border-subtle'}`}></div>}
-                                    {opt.text}
+                                <span className="flex items-center gap-3 relative z-10 w-full">
+                                    {isSelected ? <CheckCircle size={18} strokeWidth={2.5} className={isMe ? 'text-white shrink-0' : 'text-indigo-500 shrink-0'} /> : <div className={`w-4 h-4 rounded-full border-2 shrink-0 ${isMe ? 'border-white/50' : 'border-gray-300'}`}></div>}
+                                    <span className="truncate pr-4">{opt.text}</span>
                                 </span>
-                                <span className="text-xs font-mono font-[700] opacity-80">{percentage}%</span>
+                                <span className={`text-[13px] font-bold shrink-0 ${isMe ? 'opacity-90' : 'text-gray-500'}`}>{percentage}%</span>
                             </div>
                         </div>
                     );
                 })}
             </div>
-            <div className="mt-3 text-xs opacity-70 text-right font-[700]  tracking-widest">
-                {totalVotes} Votes
+            <div className={`mt-4 text-sm font-medium text-right ${isMe ? 'opacity-80' : 'text-gray-500'}`}>
+                {totalVotes} {totalVotes === 1 ? 'vote' : 'votes'}
             </div>
         </div>
     );
 });
 
 export const MessageLocation = React.memo(({ location, isMe }: { location: LocationData, isMe: boolean }) => (
-    <div className={`mb-2 p-1 rounded-2xl border overflow-hidden ${isMe ? 'bg-black/10 border-border-strong' : 'bg-surface-main border-border-subtle'}`}>
-        <div className="h-24 bg-surface-alt relative flex items-center justify-center">
-            <div className="absolute inset-0 bg-[radial-gradient(#a1a1aa_1px,transparent_1px)] [background-size:8px_8px] opacity-20"></div>
-            <div className="w-8 h-8 bg-accent-primary rounded-full flex items-center justify-center shadow-lg animate-bounce text-text-primary z-10">
-                <MapPin size={16} fill="currentColor"/>
-            </div>
+    <div className={`mb-3 p-1.5 rounded-3xl border overflow-hidden ${isMe ? 'bg-indigo-500/90 border-indigo-400/50' : 'bg-surface-main border-border-subtle'}`}>
+        <div className="h-32 bg-gray-100 relative items-center justify-center rounded-2xl overflow-hidden shadow-inner">
+            <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cartographer.png')] opacity-20"></div>
             <div className="absolute inset-0 flex items-center justify-center">
-                <div className="w-24 h-24 bg-accent-primary/10 rounded-full animate-ping"></div>
+                 <div className="w-10 h-10 bg-indigo-500 rounded-full flex items-center justify-center shadow-xl animate-bounce text-white z-10">
+                    <MapPin size={20} fill="currentColor"/>
+                </div>
+                <div className="absolute inset-0 flex items-center justify-center">
+                    <div className="w-32 h-32 bg-indigo-500/10 rounded-full animate-ping"></div>
+                </div>
             </div>
         </div>
-        <div className="p-3">
-            <p className="text-xs font-[700]  tracking-wider opacity-70 flex items-center gap-1">
-                <Globe size={16}/> Live Location
+        <div className={`p-4 ${isMe ? 'text-white' : 'text-gray-800'}`}>
+            <p className="text-sm font-semibold opacity-80 flex items-center gap-1.5 mb-1">
+                <Globe size={16}/> Shared Location
             </p>
-            <p className="text-xs font-bold mt-1">{location.address}</p>
+            <p className="text-[15px] font-medium leading-snug">{location.address}</p>
         </div>
     </div>
 ));
 
 export const MessageLinkPreview = React.memo(({ preview, isMe }: { preview: LinkPreview, isMe: boolean }) => (
-    <div className={`mt-3 rounded-2xl overflow-hidden border ${isMe ? 'border-border-strong bg-black/10' : 'border-border-subtle bg-surface-alt'}`}>
-        {preview.image && <div className="h-40 w-full bg-cover bg-center" style={{backgroundImage: `url(${preview.image})`}}></div>}
-        <div className="p-4">
-            <p className="text-xs font-[700] truncate mb-1">{preview.title}</p>
-            <p className="text-sm opacity-70 line-clamp-2 leading-relaxed">{preview.description}</p>
+    <div className={`mt-3 rounded-3xl overflow-hidden border transition-shadow hover:shadow-md ${isMe ? 'border-indigo-400/50 bg-indigo-500/30' : 'border-border-subtle bg-surface-main'}`}>
+        {preview.image && <div className="h-44 w-full bg-cover bg-center border-b border-black/5" style={{backgroundImage: `url(${preview.image})`}}></div>}
+        <div className={`p-4 ${isMe ? 'text-white' : 'text-gray-800'}`}>
+            <p className="text-[15px] font-bold truncate mb-1.5">{preview.title}</p>
+            <p className={`text-[13px] leading-relaxed line-clamp-2 ${isMe ? 'opacity-80' : 'text-gray-500'}`}>{preview.description}</p>
         </div>
     </div>
 ));
@@ -384,13 +377,13 @@ export const MessageActions = ({
     const pickerRef = React.useRef<HTMLDivElement>(null);
 
     return (
-        <div className={`absolute -top-12 ${isMe ? 'right-0' : 'left-0'} z-30 flex items-center gap-1 p-1.5 rounded-2xl bg-surface-main/90 backdrop-blur-xl border border-border-subtle shadow-xl animate-in fade-in zoom-in-95 duration-200 select-none`}>
-            {['👍', '❤️', '🔥'].map(emoji => (
+        <div className={`absolute -top-12 ${isMe ? 'right-0' : 'left-0'} z-30 flex items-center gap-1 p-1.5 rounded-2xl bg-surface-main/95 backdrop-blur-xl border border-border-subtle shadow-lg animate-in fade-in zoom-in-95 duration-200 select-none`}>
+            {['👍', '❤️', '😂', '🎉'].map(emoji => (
                 <button 
                     key={emoji}
                     onClick={(e) => { e.stopPropagation(); onReaction(msgId, emoji); onClose(); }} 
                     style={{ fontFamily: EMOJI_FONT }} 
-                    className="w-8 h-8 flex items-center justify-center hover:bg-surface-alt rounded-xl text-lg transition-transform hover:scale-125 active:scale-95"
+                    className="w-9 h-9 flex items-center justify-center hover:bg-surface-alt rounded-xl text-xl transition-transform hover:scale-125 active:scale-95"
                 >
                     {emoji}
                 </button>
@@ -399,29 +392,29 @@ export const MessageActions = ({
             <div className="relative" ref={pickerRef}>
                 <button 
                     onClick={(e) => { e.stopPropagation(); setShowPicker(!showPicker); }} 
-                    className={`w-8 h-8 flex items-center justify-center rounded-xl transition-colors ${showPicker ? 'bg-accent-primary text-text-primary' : 'hover:bg-surface-alt text-text-muted hover:text-text-primary'}`}
+                    className={`w-9 h-9 flex items-center justify-center rounded-xl transition-colors ${showPicker ? 'bg-indigo-100 text-indigo-600' : 'hover:bg-surface-alt text-gray-400 hover:text-gray-700'}`}
                 >
-                    <Plus size={16} />
+                    <Plus size={18} />
                 </button>
                 {showPicker && (
                     <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-3 w-72 origin-bottom animate-in zoom-in-95 duration-200" onMouseDown={(e) => e.stopPropagation()}>
                         <EmojiPicker 
                             onSelect={(e) => { onReaction(msgId, e); setShowPicker(false); onClose(); }} 
                             onClose={() => setShowPicker(false)} 
-                            className="border border-border-subtle shadow-2xl"
+                            className="border border-border-subtle shadow-2xl rounded-3xl overflow-hidden"
                         />
                     </div>
                 )}
             </div>
 
-            <div className="w-px h-5 bg-border-subtle mx-1"></div>
+            <div className="w-px h-6 bg-border-subtle mx-1"></div>
             
-            <button onClick={(e) => { e.stopPropagation(); onReply(); onClose(); }} className="p-2 hover:bg-surface-alt rounded-xl text-text-muted hover:text-text-primary transition-all" title="Reply"><Reply size={16}/></button>
+            <button onClick={(e) => { e.stopPropagation(); onReply(); onClose(); }} className="p-2.5 hover:bg-surface-alt rounded-xl text-gray-500 hover:text-indigo-600 transition-all font-medium flex items-center gap-1.5" title="Reply"><Reply size={16}/> <span className="hidden sm:inline text-sm">Reply</span></button>
             
             {isMe && (
                 <>
-                    <button onClick={(e) => { e.stopPropagation(); onEdit(); onClose(); }} className="p-2 hover:bg-surface-alt rounded-xl text-text-muted hover:text-text-primary transition-all" title="Edit"><Edit2 size={16}/></button>
-                    <button onClick={(e) => { e.stopPropagation(); onDelete(); onClose(); }} className="p-2 hover:bg-red-500/10 rounded-xl text-text-muted hover:text-status-error transition-all" title="Delete"><Trash2 size={16}/></button>
+                    <button onClick={(e) => { e.stopPropagation(); onEdit(); onClose(); }} className="p-2.5 hover:bg-surface-alt rounded-xl text-gray-400 hover:text-gray-700 transition-all" title="Edit"><Edit2 size={16}/></button>
+                    <button onClick={(e) => { e.stopPropagation(); onDelete(); onClose(); }} className="p-2.5 hover:bg-rose-50 rounded-xl text-gray-400 hover:text-rose-500 transition-all" title="Delete"><Trash2 size={16}/></button>
                 </>
             )}
         </div>
@@ -438,42 +431,42 @@ export const ContextBanner = ({
     if (!replyTo && !editingMsg) return null;
     
     return (
-        <div className="flex items-center justify-between px-6 py-3 border-b border-border-subtle/50 bg-surface-alt/30 rounded-t-[2rem]">
-            <div className="flex items-center gap-3 overflow-hidden">
-                <div className={`p-1.5 rounded-lg ${editingMsg ? 'bg-amber-500/10 text-status-warning' : 'bg-accent-primary/10 text-accent-primary'}`}>
-                    {editingMsg ? <Edit2 size={16}/> : <Quote size={16}/>}
+        <div className="flex items-center justify-between px-6 py-4 border-b border-border-subtle/50 bg-indigo-50/30 rounded-t-[2.5rem]">
+            <div className="flex items-center gap-3.5 overflow-hidden">
+                <div className={`p-2.5 rounded-2xl ${editingMsg ? 'bg-amber-100 text-amber-600' : 'bg-indigo-100 text-indigo-500 shadow-sm'}`}>
+                    {editingMsg ? <Edit2 size={18}/> : <Reply size={18} className="scale-110"/>}
                 </div>
                 <div className="flex flex-col min-w-0">
-                    <span className={`text-xs font-[700]  tracking-widest ${editingMsg ? 'text-status-warning' : 'text-accent-primary'}`}>
-                        {editingMsg ? 'Editing Message' : `Replying to ${replyTo?.senderName}`}
+                    <span className={`text-[13px] font-bold ${editingMsg ? 'text-amber-600' : 'text-indigo-600'}`}>
+                        {editingMsg ? 'Editing your message' : `Reply to ${replyTo?.senderName}`}
                     </span>
-                    <span className="text-xs text-text-secondary truncate max-w-[200px] md:max-w-md italic">
+                    <span className="text-sm text-gray-500 truncate max-w-[200px] md:max-w-md">
                         {editingMsg ? editingMsg.text : replyTo?.text}
                     </span>
                 </div>
             </div>
-            <button onClick={onCancel} className="p-1 hover:bg-surface-alt rounded-full text-text-muted hover:text-text-primary transition-colors">
-                <X size={16}/>
+            <button onClick={onCancel} className="p-2 hover:bg-black/5 rounded-full text-gray-400 hover:text-gray-700 transition-colors">
+                <X size={20}/>
             </button>
         </div>
     );
 };
 
 export const DragOverlay = () => (
-    <div className="absolute inset-0 z-50 bg-surface-main/90 backdrop-blur-xl flex flex-col items-center justify-center border-4 border-dashed border-accent-primary m-4 rounded-[2rem] animate-in fade-in duration-200 pointer-events-none">
-        <div className="w-24 h-24 bg-accent-primary/10 rounded-full flex items-center justify-center mb-6 animate-bounce border border-accent-primary/30 shadow-neon">
-            <UploadCloud size={48} className="text-accent-primary" />
+    <div className="absolute inset-0 z-50 bg-white/90 backdrop-blur-xl flex flex-col items-center justify-center border-4 border-dashed border-indigo-400 m-6 rounded-[3rem] animate-in fade-in duration-200 pointer-events-none">
+        <div className="w-28 h-28 bg-indigo-100 rounded-full flex items-center justify-center mb-6 animate-bounce shadow-lg">
+            <UploadCloud size={56} className="text-indigo-500" />
         </div>
-        <h3 className="text-2xl font-[700]  text-text-primary tracking-widest drop-shadow-md">Drop Payload</h3>
-        <p className="text-xs font-bold text-text-muted mt-2">Release to attach files</p>
+        <h3 className="text-3xl font-bold text-gray-900 drop-shadow-sm">Drop here!</h3>
+        <p className="text-base font-medium text-gray-500 mt-3">Release your files to add them to the chat</p>
     </div>
 );
 
 export const ScrollToBottomButton = ({ onClick }: { onClick: () => void }) => (
     <button 
         onClick={onClick}
-        className="absolute bottom-24 right-8 z-30 p-3 bg-surface-main/90 backdrop-blur-md border border-border-subtle rounded-full shadow-xl text-accent-primary hover:scale-110 transition-transform animate-in fade-in zoom-in hover:shadow-accent-primary/20"
+        className="absolute bottom-24 right-8 z-30 p-3 bg-white/90 backdrop-blur-md border border-border-subtle rounded-full shadow-lg text-indigo-500 hover:scale-105 active:scale-95 transition-all animate-in fade-in zoom-in hover:shadow-indigo-500/20"
     >
-        <ChevronDown size={20} strokeWidth={3} />
+        <ChevronDown size={24} strokeWidth={3} />
     </button>
 );
