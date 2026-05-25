@@ -13,7 +13,6 @@ import { useCRM } from '../hooks/useCRM';
 import { AgentViewManager } from '../components/agent/AgentViewManager';
 
 // NEW COMPONENTS
-import { QuickSaleEntry } from '../components/Sales/QuickSaleEntry';
 import { ContextualHelp } from '../components/Common/ContextualHelp';
 import { BottomNav } from '../components/Layout/BottomNav';
 
@@ -26,7 +25,6 @@ export const AgentPortal: React.FC = () => {
     } = useAgentPortalLogic();
 
     const { dialerLists, customers } = useCRM();
-    const [showSaleModal, setShowSaleModal] = useState(false);
 
     const handleNextCall = () => {
         // 1. Strict Priority: Urgent Callbacks & Protocols
@@ -187,14 +185,6 @@ export const AgentPortal: React.FC = () => {
                         sales={sales}
                     />
 
-                    <QuickSaleEntry
-                        isOpen={showSaleModal}
-                        onClose={() => setShowSaleModal(false)}
-                        onSuccess={() => {
-                            setView('dash');
-                        }}
-                    />
-
                     <AgentViewManager 
                         isAllowed={isAllowed}
                         mySales={mySales}
@@ -207,14 +197,6 @@ export const AgentPortal: React.FC = () => {
                         setView={setView}
                     />
 
-                    {/* Floating Action Button (Create Sale) */}
-                    <button
-                        onClick={() => setShowSaleModal(true)}
-                        className="fixed bottom-24 md:bottom-8 left-4 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-bold py-3 px-6 rounded-full shadow-lg hover:shadow-xl transition-all z-40"
-                    >
-                        ➕ NEW SALE
-                    </button>
-                    
                     <BottomNav />
                 </div>
             </PortalShell>

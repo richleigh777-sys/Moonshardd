@@ -13,32 +13,32 @@ export const AdaptiveView: React.FC = () => {
       <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 p-4 pb-24 flex items-center justify-center">
         <div className="max-w-md w-full text-center">
           <h1 className="text-4xl mb-4">👋 Welcome!</h1>
-          <p className="text-xl text-slate-300 mb-8">Let's get you making sales in 30 seconds</p>
+          <p className="text-xl text-slate-300 mb-8">Let's get you making your first sale</p>
           <div className="bg-slate-800 rounded-lg p-6 border border-slate-700 space-y-4 text-left">
             <div className="flex gap-4">
               <div className="text-3xl">1️⃣</div>
               <div>
-                <h3 className="font-bold text-white">Click "New Sale"</h3>
-                <p className="text-sm text-slate-400">Log your first order</p>
+                <h3 className="font-bold text-white">Navigate to Enrollment</h3>
+                <p className="text-sm text-slate-400">Open the full form to log your first order</p>
               </div>
             </div>
             <div className="flex gap-4">
               <div className="text-3xl">2️⃣</div>
               <div>
-                <h3 className="font-bold text-white">Fill 3 fields</h3>
-                <p className="text-sm text-slate-400">Customer, amount, product</p>
+                <h3 className="font-bold text-white">Fill required fields</h3>
+                <p className="text-sm text-slate-400">Customer details, payment, and medical</p>
               </div>
             </div>
             <div className="flex gap-4">
               <div className="text-3xl">3️⃣</div>
               <div>
-                <h3 className="font-bold text-white">Hit submit</h3>
-                <p className="text-sm text-slate-400">Earn instant commission!</p>
+                <h3 className="font-bold text-white">Submit to Ledger</h3>
+                <p className="text-sm text-slate-400">Approve the order and earn commission!</p>
               </div>
             </div>
           </div>
-          <button className="mt-8 w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-lg">
-            Create First Sale →
+          <button className="mt-8 w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-lg" onClick={() => window.dispatchEvent(new CustomEvent('NAVIGATE', { detail: 'enrollment' }))}>
+            Go to Enrollment →
           </button>
         </div>
       </div>

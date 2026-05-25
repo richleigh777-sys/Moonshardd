@@ -1,7 +1,7 @@
 import { TabContent } from '../ui/Tabs';
 import { DashView } from '../../views/DashView';
 import { MessagingLayout } from '../chat/MessagingLayout';
-import EnrollmentFormV2 from '../forms/EnrollmentFormV2';
+import EnrollmentForm from '../forms/EnrollmentForm';
 import { PipelineBoard } from '../pipeline/PipelineBoard';
 import { RecoveryEngine } from '../widgets/RecoveryEngine';
 import { LeadHub } from '../leads/LeadHub';
@@ -95,7 +95,7 @@ export const AgentViewManager: React.FC<AgentTerminalManagerProps> = ({
 
             {isAllowed('enrollment') && (
                 <TabContent value="enrollment" className="w-full min-h-full flex flex-col flex-1">
-                    <EnrollmentFormV2 
+                    <EnrollmentForm 
                         onSuccess={() => setView(isAllowed('ledger') ? 'ledger' : 'pipeline')} 
                         onCancel={() => setView('dash')} 
                     />

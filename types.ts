@@ -104,6 +104,7 @@ export interface Sale {
     serverId: string; // Tenant Isolation Key
     agentId: string;
     agent: string;
+    team?: string;
     customer: string;
     customerId?: string; // Relational Link to Customer Profile
     accountId?: string;  // Relational Link to Account

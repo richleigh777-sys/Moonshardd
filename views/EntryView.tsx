@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
 import { ArrowLeft, Zap, CheckCircle } from 'lucide-react';
-import EnrollmentFormV2 from '../components/forms/EnrollmentFormV2';
+import EnrollmentForm from '../components/forms/EnrollmentForm';
 import { sfx } from '../lib/soundService';
 
 interface EntryViewProps {
@@ -48,11 +48,10 @@ export const EntryView: React.FC<EntryViewProps> = ({ onBack }) => {
             {/* Main Content Area */}
             <div className="flex-1 overflow-hidden relative bg-surface-alt/20 p-6 flex justify-center">
                 <div className="w-full max-w-7xl h-full flex flex-col relative z-10">
-                    <EnrollmentFormV2 
+                    <EnrollmentForm 
                         onSuccess={handleSuccess} 
                         onCancel={onBack}
-                        // Dummy customer data injection for V2 to work immediately in focus mode
-                        customerData={{
+                        initialData={{
                             fullName: '', phone: '', email: '', shippingAddress: '', billingAddress: ''
                         }}
                     />

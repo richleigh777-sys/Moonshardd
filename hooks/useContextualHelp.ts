@@ -23,7 +23,7 @@ export function useContextualHelp(): HelpTip | null {
       return {
         id: 'welcome-tip',
         title: '🎯 Welcome to Braveheart!',
-        message: 'Click "New Sale" to log your first order in 30 seconds. You\'ve got this!',
+        message: 'Navigate to Enrollment to log your first order!',
         icon: '👋',
         trigger: 'first-time',
         dismissible: true,

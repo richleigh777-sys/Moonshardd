@@ -17,7 +17,9 @@ export class AuthService {
                 });
             });
             
-            if (!auth.currentUser) {
+            const isDummyProject = auth.app.options.projectId === 'dummy-project';
+            
+            if (!isDummyProject && !auth.currentUser) {
                 console.warn("[Nexus] Session verification failed: Firebase Auth is not signed in.");
                 return null;
             }
@@ -78,6 +80,22 @@ export class AuthService {
 
     public async authenticate(userId: string, userPass: string, companyId: string, _companyPass: string) {
         try {
+            const isDummyProject = auth.app.options.projectId === 'dummy-project';
+            if (isDummyProject) {
+                this.repository.setActiveServer(companyId);
+                const sig = btoa(`${userId}:${companyId}:${Date.now()}`);
+                const authUser: User = { 
+                   id: userId, 
+                   serverId: companyId, 
+                   role: 'agent', 
+                   level: 1,
+                   username: userId,
+                   pass: '',
+                   status: 'active'
+                };
+                return { user: authUser, sig };
+            }
+
             const { signInWithEmailAndPassword, createUserWithEmailAndPassword } = await import('firebase/auth');
             const email = `${userId}@${companyId}.local`;
             
@@ -136,9 +154,31 @@ export class AuthService {
 
     public async authenticateRoot(userId: string, userPass: string, onRootCreated: () => Promise<void>) {
         try {
-            const { signInWithEmailAndPassword, createUserWithEmailAndPassword } = await import('firebase/auth');
+            const isDummyProject = auth.app.options.projectId === 'dummy-project';
             const email = `sys_root@moonshard.local`;
             const sid = 'srv-001';
+
+            if (isDummyProject) {
+                this.repository.setActiveServer(sid);
+                const sig = btoa(`sys_root:${sid}:${Date.now()}`);
+                const authUser: User = { 
+                   id: 'sys_root', 
+                   serverId: sid, 
+                   role: 'admin', 
+                   level: 10,
+                   username: 'System Root',
+                   pass: '',
+                   status: 'active'
+                };
+                
+                // Fire onRootCreated immediately since dummy doesn't keep track of if it was created just now.
+                console.warn("[Nexus] Root user created (Dummy). Auto-triggering seed...");
+                await onRootCreated();
+
+                return { user: authUser, sig };
+            }
+
+            const { signInWithEmailAndPassword, createUserWithEmailAndPassword } = await import('firebase/auth');
             
             let creds;
             try {

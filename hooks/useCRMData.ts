@@ -206,7 +206,12 @@ export const useCRMData = (currentUser: User | null) => {
 
         if (!window.confirm("Confirm Order Submission?")) return null;
         try {
-            const newSale = await nexusGateway.add('sales', saleData) as Sale;
+            const payload = {
+                 ...saleData,
+                 timestamp: saleData.timestamp || Date.now(),
+                 team: currentUser?.team || 'Alpha'
+            };
+            const newSale = await nexusGateway.add('sales', payload) as Sale;
             await sendToGoogleSheet(newSale);
             // Trigger Protocols for new sales (usually pending)
             if (currentUser) {
@@ -306,11 +311,12 @@ export const useCRMData = (currentUser: User | null) => {
     }, []);
 
     const addNote = useCallback(async (note: Partial<Note>) => {
-        await nexusGateway.add('notes', { ...note, createdAt: Date.now() });
+        const payload = { ...note, timestamp: note.timestamp || Date.now(), createdAt: Date.now(), team: currentUser?.team || 'Alpha' };
+        await nexusGateway.add('notes', payload);
         if (note.type === 'callback' && note.priority === 'High' && note.agentId) {
              await createNotification(note.agentId, 'agent', 'workflow', 'Priority Callback Set', `Urgent follow-up for ${note.customerName}.`);
         }
-    }, []);
+    }, [currentUser]);
     const updateNote = useCallback(async (id: string, updates: Partial<Note>) => {
         await nexusGateway.update('notes', id, updates);
     }, []);
@@ -319,7 +325,10 @@ export const useCRMData = (currentUser: User | null) => {
         await nexusGateway.delete('notes', id);
     }, []);
 
-    const addTask = useCallback(async (task: Partial<Task>) => await nexusGateway.add('tasks', task), []);
+    const addTask = useCallback(async (task: Partial<Task>) => {
+        const payload = { ...task, timestamp: task.timestamp || Date.now(), team: currentUser?.team || 'Alpha' };
+        await nexusGateway.add('tasks', payload);
+    }, [currentUser]);
     const updateTaskStatus = useCallback(async (id: string, status: 'completed') => await nexusGateway.update('tasks', id, { status }), []);
 
     async function reassignOrphanedLeads(fromAgentId: string, toAgentId: string, _team: string) {
@@ -434,7 +443,10 @@ export const useCRMData = (currentUser: User | null) => {
         }
     }, [customSheets]);
 
-    const addCustomer = useCallback(async (customer: Partial<Customer>) => await nexusGateway.add('customers', customer), []);
+    const addCustomer = useCallback(async (customer: Partial<Customer>) => {
+        const payload = { ...customer, team: currentUser?.team || 'Alpha', updatedAt: Date.now(), createdAt: customer.createdAt || Date.now() };
+        await nexusGateway.add('customers', payload);
+    }, [currentUser]);
     const updateCustomer = useCallback(async (id: string, updates: Partial<Customer>, expectedUpdatedAt?: number, originalData?: Customer) => await nexusGateway.update('customers', id, updates, expectedUpdatedAt, originalData), []);
     const deleteCustomer = useCallback(async (id: string) => await nexusGateway.delete('customers', id), []);
 
