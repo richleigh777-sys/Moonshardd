@@ -80,6 +80,35 @@ export const GodModePanel = () => {
         }
     };
 
+    const handleInjectLeads = async () => {
+        if (!confirm("This will securely inject 20 detailed mock leads to simulate an active pipeline. Proceed?")) return;
+        sfx.playSubmit();
+        addToUplink('DOWNLOADING LEAD PACKAGE...');
+        addToUplink('Injecting 20 highly detailed CRM leads...');
+        try {
+            await nexusGateway.injectSampleLeads();
+            addToUplink('INJECTION COMPLETE.');
+            sfx.playSuccess();
+        } catch(e: any) {
+            addToUplink(`[ERROR] Injection failed: ${e.message}`);
+            sfx.playDecline();
+        }
+    };
+
+    const handleInjectClosedSales = async () => {
+        if (!confirm("This will inject 10 agents with 1 closed sale each into a single team (Delta Force). Proceed?")) return;
+        sfx.playSubmit();
+        addToUplink('INJECTING TEAM SALES DATA...');
+        try {
+            await nexusGateway.injectClosedSales();
+            addToUplink('TEAM SALES INJECTION COMPLETE.');
+            sfx.playSuccess();
+        } catch(e: any) {
+            addToUplink(`[ERROR] Injection failed: ${e.message}`);
+            sfx.playDecline();
+        }
+    };
+
     const handleInspect = (id: string) => {
         setInspectTarget(prev => prev === id ? null : id as any);
         sfx.playClick();
@@ -122,15 +151,12 @@ export const GodModePanel = () => {
             <div className="flex-1 flex flex-col md:flex-row gap-6 min-h-0">
                 {/* Console */}
                 <div className="w-full md:w-80 flex flex-col gap-4">
-                    <Card variant="refraction" className="flex-1 p-0 overflow-hidden bg-surface-main border-border-subtle shadow-2xl flex flex-col font-mono text-xs relative group border border-border-subtle">
-                        <div className="p-3 border-b border-border-subtle bg-surface-alt/20 flex items-center justify-between shrink-0 relative z-30">
-                            <span className="text-text-primary font-bold ml-1 flex items-center gap-2 tracking-widest"><Info size={16}/> SYSTEM CONSOLE</span>
-                            <div className="flex gap-1.5">
-                                <div className="w-2 h-2 rounded-full bg-emerald-500/20 border border-emerald-500 animate-pulse"></div>
-                            </div>
+                    <Card variant="refraction" className="flex-1 p-0 overflow-hidden bg-surface-main border-border-subtle shadow-sm flex flex-col font-mono text-xs relative group border border-border-subtle">
+                        <div className="p-3 border-b border-border-subtle bg-surface-alt flex items-center justify-between shrink-0 relative z-30">
+                            <span className="text-text-primary font-bold ml-1 flex items-center gap-2 uppercase tracking-wide"><Info size={16}/> Operations Log</span>
                         </div>
                         
-                        <div ref={uplinkRef} className="flex-1 p-4 overflow-y-auto custom-scrollbar space-y-1.5 text-text-secondary font-medium relative z-10 bg-surface-main/50">
+                        <div ref={uplinkRef} className="flex-1 p-4 overflow-y-auto custom-scrollbar space-y-1.5 text-text-secondary font-medium relative z-10 bg-surface-main">
                             {uplinkLines.map((line, i) => (
                                 <div key={i} className="flex gap-2 animate-in slide-in-from-left-1 break-all tracking-tight leading-snug">
                                     <span className="text-accent-primary shrink-0 select-none opacity-50">{'>'}</span>
@@ -139,8 +165,7 @@ export const GodModePanel = () => {
                             ))}
                             {uplinkLines.length === 0 && (
                                 <div className="h-full flex flex-col items-center justify-center opacity-30 text-center gap-2 text-text-muted">
-                                    <Terminal size={24}/>
-                                    <span className="tracking-[0.2em] font-bold">READY FOR COMMAND</span>
+                                    <span className="tracking-wide font-medium">No recent operations</span>
                                 </div>
                             )}
                         </div>
@@ -149,6 +174,8 @@ export const GodModePanel = () => {
                     <Card variant="panel" className="p-4 border-border-subtle bg-surface-main shrink-0 shadow-lg">
                         <div className="flex flex-col gap-3">
                             <Button onClick={handleOptimize} className="h-10 text-xs font-[700]  tracking-widest bg-emerald-500/10 text-emerald-600 border-emerald-500/20 hover:bg-emerald-500/20"><Zap size={16} className="mr-2"/> Optimize Database</Button>
+                            <Button onClick={handleInjectLeads} className="h-10 text-xs font-[700]  tracking-widest bg-indigo-500/10 text-indigo-400 border-indigo-500/20 hover:bg-indigo-500/20"><Terminal size={16} className="mr-2"/> Inject 20 Mock Leads</Button>
+                            <Button onClick={handleInjectClosedSales} className="h-10 text-xs font-[700]  tracking-widest bg-blue-500/10 text-blue-400 border-blue-500/20 hover:bg-blue-500/20"><Terminal size={16} className="mr-2"/> Inject Team Sales</Button>
                             <Button onClick={handleLoadTest} className="h-10 text-xs font-[700]  tracking-widest bg-amber-500/10 text-status-warning border-amber-500/20 hover:bg-amber-500/20"><Terminal size={16} className="mr-2"/> Fire Load Test</Button>
                             <Button onClick={confirmReset ? performFactoryReset : handleResetToggle} className={`h-10 text-xs font-[700]  tracking-widest border transition-all ${confirmReset ? 'bg-status-error text-white' : 'bg-surface-alt text-text-muted border-border-subtle'}`}>
                                 {confirmReset ? 'CONFIRM DELETION' : 'Factory Reset'}

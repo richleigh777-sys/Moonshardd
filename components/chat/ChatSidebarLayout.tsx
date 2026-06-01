@@ -20,7 +20,7 @@ type ChannelType = 'internal' | 'sms' | 'email' | 'social';
 export const ChatSidebarLayout: React.FC<ChatSidebarLayoutProps> = ({
     mobileView, convos, activeChannelId, setActiveChannelId, setMobileView, setShowNewGroup
 }) => {
-    const { isMobile } = useSystem();
+    const isMobile = false;
     const [activeChannel, setActiveChannel] = useState<ChannelType>('internal');
     const [showSettings, setShowSettings] = useState(false);
     const [isCollapsed, setIsCollapsed] = useState(false);

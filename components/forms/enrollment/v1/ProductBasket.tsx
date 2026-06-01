@@ -55,7 +55,7 @@ export const ProductBasket: React.FC<ProductBasketProps> = ({
   };
 
   return (
-    <Card variant="panel" className="shrink-0 p-5 border-border-subtle flex flex-col bg-surface-main relative shadow-md rounded-xl overflow-hidden">
+    <Card variant="refraction" className="shrink-0 p-5 border-border-subtle flex flex-col bg-surface-main relative shadow-md rounded-xl overflow-hidden">
       <div className="absolute inset-0 bg-gradient-to-tr from-accent-primary/10 via-transparent to-transparent pointer-events-none"></div>
       
       <div className="flex justify-between items-end border-b border-border-subtle pb-4 mb-5 relative z-10">

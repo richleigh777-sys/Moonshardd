@@ -30,19 +30,19 @@ export function CartPreview({ cart, onRemove, calculatedTotal }: Props) {
   const hiddenCount = cart.length - MAX_VISIBLE;
 
   return (
-    <Card className="flex flex-col overflow-hidden border-border-subtle shadow-md bg-surface-main">
+    <Card variant="refraction" className="flex flex-col overflow-hidden border-border-subtle shadow-md bg-surface-main">
       {/* Summary Header */}
-      <div className="bg-gradient-to-r from-emerald-600/90 to-emerald-500/90 p-3 flex justify-between items-center text-white">
-        <div className="flex items-center gap-2">
+      <div className="bg-surface-alt/50 border-b border-border-subtle p-3 flex justify-between items-center text-text-primary">
+        <div className="flex items-center gap-2 text-indigo-400">
           <ShoppingCart size={18} />
           <span className="font-bold text-sm tracking-wide">ORDER SUMMARY</span>
         </div>
         <div className="flex items-center gap-3">
-          <div className="flex items-center gap-1.5 text-xs bg-black/20 px-2 py-1 rounded-md font-medium">
-             <span className="opacity-80">Items:</span>
+          <div className="flex items-center gap-1.5 text-xs bg-surface-main px-2 py-1 rounded border border-border-subtle font-medium">
+             <span className="text-text-muted">Items:</span>
              <span className="font-bold">{cart.length}</span>
           </div>
-          <div className="bg-white/10 px-3 py-1 rounded-lg border border-white/20">
+          <div className="bg-emerald-500/10 px-3 py-1 rounded-lg border border-emerald-500/20 text-emerald-400">
              <span className="font-black">${calculatedTotal.toFixed(2)}</span>
           </div>
         </div>

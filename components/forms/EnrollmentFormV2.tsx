@@ -2,8 +2,8 @@
 import React, { useState } from 'react';
 import { useAuth } from '../../hooks/useAuth';
 import { useCRM } from '../../hooks/useCRM';
-import { AlertTriangle, RefreshCw, ShieldCheck, Lock, PhoneOff, UserMinus, UserX } from 'lucide-react';
-import { Button } from '../ui/Base';
+import { AlertTriangle, RefreshCw, ShieldCheck, Lock, PhoneOff, UserMinus, UserX, MessageSquare, Send, Phone, Mail } from 'lucide-react';
+import { Button, Card } from '../ui/Base';
 import { ResizableFrame } from '../ui/ResizableFrame';
 import { SalesFormData } from '../../types';
 import { useEnrollment } from './enrollment/hooks/useEnrollment';
@@ -30,6 +30,56 @@ export default function EnrollmentFormV2({ onSuccess, onCancel, customerData }: 
   const { addNote, customers, updateCustomer, addCustomer } = useCRM();
   const [activeLeadId, setActiveLeadId] = useState<string | null>(customerData?.id || null);
 
+  const [commsMode, setCommsMode] = useState<'none' | 'call' | 'sms' | 'email'>('none');
+  const [commsText, setCommsText] = useState('');
+  const [callDuration, setCallDuration] = useState(0);
+
+  React.useEffect(() => {
+      let timer: any;
+      if (commsMode === 'call') {
+          timer = setInterval(() => setCallDuration(p => p + 1), 1000);
+      } else {
+          setCallDuration(0);
+      }
+      return () => clearInterval(timer);
+  }, [commsMode]);
+
+  const handleSendComms = async () => {
+      if (!currentUser || !formData.phone) return;
+      
+      let content = '';
+      let reason = '';
+      
+      if (commsMode === 'sms') {
+          if (!commsText.trim()) return;
+          reason = 'Outbound SMS';
+          content = `Message Sent: "${commsText.trim()}"`;
+      } else if (commsMode === 'email') {
+          if (!commsText.trim()) return;
+          reason = 'Outbound Email';
+          content = `Email Sent:\n\n${commsText.trim()}`;
+      } else if (commsMode === 'call') {
+          reason = 'Outbound Call';
+          const m = Math.floor(callDuration / 60).toString().padStart(2, '0');
+          const s = (callDuration % 60).toString().padStart(2, '0');
+          content = `Call completed. Duration: ${m}:${s}`;
+      }
+
+      await addNote({
+          agentId: currentUser.id,
+          agentName: currentUser.name,
+          content,
+          type: 'note',
+          priority: 'Low',
+          phone: formData.phone,
+          customerName: `${formData.firstName} ${formData.lastName}`.trim(),
+          reason
+      } as any);
+
+      setCommsMode('none');
+      setCommsText('');
+  };
+
   const { 
       mode, setMode, loading, error, collision, formData, handleIdentityChange, handleDobChange, handleAgeChange,
       cart, setCart, notes, setNotes,
@@ -47,7 +97,8 @@ export default function EnrollmentFormV2({ onSuccess, onCancel, customerData }: 
         const lead = e.detail;
         if (lead) {
             if (lead.id) setActiveLeadId(lead.id);
-            handleIdentityChange({ target: { name: 'fullName', value: lead.customerName || lead.customer || '' } } as any);
+            handleIdentityChange({ target: { name: 'firstName', value: (lead.customerName || lead.customer || '').split(' ')[0] } } as any);
+            handleIdentityChange({ target: { name: 'lastName', value: (lead.customerName || lead.customer || '').split(' ').slice(1).join(' ') } } as any);
             handleIdentityChange({ target: { name: 'phone', value: lead.phone || '' } } as any);
             if (lead.email) handleIdentityChange({ target: { name: 'email', value: lead.email || '' } } as any);
             if (lead.shippingAddress || lead.address) handleIdentityChange({ target: { name: 'shippingAddress', value: (lead.shippingAddress || lead.address || '') } } as any);
@@ -63,6 +114,13 @@ export default function EnrollmentFormV2({ onSuccess, onCancel, customerData }: 
   const handleDisposition = async (status: string) => {
       sfx.playClick();
       
+      // Compile address
+      const formatAddress = (street: string, city?: string, state?: string, zip?: string) => {
+          return [street, city, state, zip].filter(Boolean).join(', ');
+      };
+      
+      const fullShippingAddress = formatAddress(formData.shippingAddress, formData.shippingCity, formData.shippingState, formData.shippingZip);
+
       const phoneClean = formData.phone.replace(/\D/g, '');
       if (!phoneClean) {
           onCancel();
@@ -79,16 +137,17 @@ export default function EnrollmentFormV2({ onSuccess, onCancel, customerData }: 
       if (targetId) {
           await updateCustomer(targetId, {
               status,
+              address: fullShippingAddress || undefined,
               updatedAt: Date.now()
           });
       } else {
           await addCustomer({
-              firstName: formData.fullName?.split(' ')[0] || 'Unknown',
-              lastName: formData.fullName?.split(' ').slice(1).join(' ') || 'Lead',
-              fullName: formData.fullName || 'Unknown Lead',
+              firstName: formData.firstName || 'Unknown',
+              lastName: formData.lastName || 'Lead',
+              fullName: `${formData.firstName} ${formData.lastName}`.trim() || 'Unknown Lead',
               phone: formData.phone,
               email: formData.email,
-              address: formData.shippingAddress || '',
+              address: fullShippingAddress || '',
               status,
               normalizedPhone: formData.phone.replace(/\D/g, ''),
               normalizedEmail: formData.email.toLowerCase(),
@@ -104,10 +163,15 @@ export default function EnrollmentFormV2({ onSuccess, onCancel, customerData }: 
       }
 
       // Also log disposition as a quick note for audit trail
+      let content = `Disposition Applied: ${status}`;
+      if (status === 'Not Interested' || status === 'Disconnected' || status === 'Declined' || status === 'Closed Lost') {
+          content += `\n\nSystem Note: Automatically enrolled in 30-Day Recovery Drip Campaign.`;
+      }
+
       await addNote({
-          customerName: formData.fullName || 'Unknown Lead',
+          customerName: `${formData.firstName} ${formData.lastName}`.trim() || 'Unknown Lead',
           phone: formData.phone,
-          content: `Disposition Applied: ${status}`,
+          content: content,
           type: 'note',
           subtype: 'manual',
           agentId: currentUser?.id,
@@ -165,7 +229,7 @@ export default function EnrollmentFormV2({ onSuccess, onCancel, customerData }: 
                             'text-status-warning drop-shadow-[0_0_8px_rgba(245,158,11,0.5)]'
                         } />
                         <span className="text-xs font-[700]  tracking-[0.2em] text-text-primary">
-                            {collision.type === 'sale' ? `TERMINAL WARNING: Customer SOLD by ${collision.agent}` : 
+                            {collision.type === 'sale' ? `SYSTEM WARNING: Customer SOLD by ${collision.agent}` : 
                              collision.type === 'mine' ? `REDUNDANCY ALERT: Customer already in YOUR pipeline` : 
                              `COMPETITION DETECTED: Agent ${collision.agent} has an active callback`}
                         </span>
@@ -191,20 +255,78 @@ export default function EnrollmentFormV2({ onSuccess, onCancel, customerData }: 
             )}
 
             <div className="flex-1 overflow-hidden relative z-10 flex flex-col backdrop-blur-3xl p-4 md:p-6 pb-28 xl:pb-6 bg-surface-main/20">
-                {/* Quick Dispositions Action Bar */}
-                <div className="mb-6 w-full relative z-10">
-                    <div className="bg-surface-main/80 backdrop-blur-md border border-border-subtle rounded-2xl p-3 flex flex-wrap justify-center md:justify-start items-center gap-3">
-                        <span className="text-[10px] font-[700]  tracking-widest text-text-muted mr-2">Dispo:</span>
-                        <button onClick={() => handleDisposition('Disconnected')} className="px-4 py-2 bg-amber-500/10 border border-amber-500/20 text-status-warning hover:bg-amber-500 hover:text-text-primary rounded-xl text-[10px] md:text-xs font-bold  tracking-widest transition-all flex items-center gap-2">
-                            <PhoneOff size={14} /> Disconnected
-                        </button>
-                        <button onClick={() => handleDisposition('Not Interested')} className="px-4 py-2 bg-text-muted/10 border border-text-muted/20 text-text-muted hover:bg-text-muted hover:text-text-primary rounded-xl text-[10px] md:text-xs font-bold  tracking-widest transition-all flex items-center gap-2">
-                            <UserMinus size={14} /> Not Interested
-                        </button>
-                        <button onClick={() => handleDisposition('DNC')} className="px-4 py-2 bg-red-500/10 border border-red-500/20 text-status-error hover:bg-red-500 hover:text-text-primary rounded-xl text-[10px] md:text-xs font-bold  tracking-widest transition-all flex items-center gap-2">
-                            <UserX size={14} /> DNC
-                        </button>
+                {/* Quick Dispositions & Communications Action Bar */}
+                <div className="mb-6 w-full relative z-10 space-y-3">
+                    <div className="bg-surface-main/80 backdrop-blur-md border border-border-subtle rounded-2xl p-3 flex flex-wrap justify-between items-center gap-3">
+                        <div className="flex flex-wrap items-center gap-3">
+                            <span className="text-[10px] font-[700] tracking-widest text-text-muted mr-2">Dispo:</span>
+                            <button onClick={() => handleDisposition('Disconnected')} className="px-4 py-2 bg-amber-500/10 border border-amber-500/20 text-status-warning hover:bg-amber-500 hover:text-text-primary rounded-xl text-[10px] md:text-xs font-bold tracking-widest transition-all flex items-center gap-2">
+                                <PhoneOff size={14} /> Disconnected
+                            </button>
+                            <button onClick={() => handleDisposition('Not Interested')} className="px-4 py-2 bg-text-muted/10 border border-text-muted/20 text-text-muted hover:bg-text-muted hover:text-text-primary rounded-xl text-[10px] md:text-xs font-bold tracking-widest transition-all flex items-center gap-2">
+                                <UserMinus size={14} /> Not Interested
+                            </button>
+                            <button onClick={() => handleDisposition('DNC')} className="px-4 py-2 bg-red-500/10 border border-red-500/20 text-status-error hover:bg-red-500 hover:text-text-primary rounded-xl text-[10px] md:text-xs font-bold tracking-widest transition-all flex items-center gap-2">
+                                <UserX size={14} /> DNC
+                            </button>
+                        </div>
+                        
+                        <div className="flex items-center gap-2 border-l border-border-subtle pl-4">
+                            <span className="text-[10px] font-[700] tracking-widest text-text-muted mr-2">Comms:</span>
+                            <button onClick={() => setCommsMode('call')} className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-[10px] uppercase font-[800] tracking-widest transition-colors ${commsMode === 'call' ? 'bg-indigo-500/20 border border-indigo-500/50 text-indigo-400 shadow-sm' : 'bg-surface-alt border border-border-subtle text-text-muted hover:text-text-primary'}`}>
+                                <Phone size={14} /> Call
+                            </button>
+                            <button onClick={() => setCommsMode('sms')} className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-[10px] uppercase font-[800] tracking-widest transition-colors ${commsMode === 'sms' ? 'bg-accent-primary/20 border border-accent-primary/50 text-accent-primary shadow-sm' : 'bg-surface-alt border border-border-subtle text-text-muted hover:text-text-primary'}`}>
+                                <MessageSquare size={14} /> Text
+                            </button>
+                            <button onClick={() => setCommsMode('email')} className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-[10px] uppercase font-[800] tracking-widest transition-colors ${commsMode === 'email' ? 'bg-emerald-500/20 border border-emerald-500/50 text-emerald-400 shadow-sm' : 'bg-surface-alt border border-border-subtle text-text-muted hover:text-text-primary'}`}>
+                                <Mail size={14} /> Email
+                            </button>
+                        </div>
                     </div>
+
+                    {commsMode === 'call' && (
+                        <div className="flex items-center justify-between bg-indigo-500/10 border border-indigo-500/30 rounded-2xl p-4 animate-in fade-in slide-in-from-top-2">
+                            <div className="flex items-center gap-4">
+                                <div className="w-12 h-12 rounded-full bg-indigo-500/20 flex items-center justify-center text-indigo-400 animate-pulse">
+                                    <Phone size={24} />
+                                </div>
+                                <div>
+                                    <p className="text-sm font-[700] tracking-widest text-indigo-300">Call In Progress with {formData.firstName} {formData.lastName}</p>
+                                    <p className="text-xs text-text-muted mt-1">{formData.phone || 'No phone number available'}</p>
+                                </div>
+                            </div>
+                            <div className="flex items-center gap-6">
+                                <span className="text-2xl font-mono text-indigo-400 tracking-widest bg-surface-main px-4 py-2 rounded-xl shadow-inner border border-indigo-500/20">
+                                    {Math.floor(callDuration / 60).toString().padStart(2, '0')}:{(callDuration % 60).toString().padStart(2, '0')}
+                                </span>
+                                <Button variant="danger" className="text-xs font-[700] tracking-widest py-3 px-6 rounded-xl" onClick={handleSendComms}>
+                                    <PhoneOff size={16} className="mr-2" /> End Call
+                                </Button>
+                            </div>
+                        </div>
+                    )}
+
+                    {(commsMode === 'sms' || commsMode === 'email') && (
+                        <div className="flex gap-3 bg-surface-main/80 backdrop-blur-md border border-border-subtle rounded-2xl p-4 animate-in fade-in slide-in-from-top-2">
+                            <textarea
+                                value={commsText}
+                                onChange={(e) => setCommsText(e.target.value)}
+                                placeholder={commsMode === 'sms' ? "Type SMS message to send..." : "Type email content..."}
+                                className="flex-1 bg-surface-alt border border-border-subtle rounded-xl p-4 text-sm text-text-primary focus:border-accent-primary outline-none transition-all resize-none shadow-inner h-24"
+                            />
+                            <div className="flex flex-col gap-2">
+                                <button 
+                                    className="bg-accent-primary hover:bg-accent-secondary disabled:opacity-50 text-white px-6 h-full rounded-xl text-xs font-[700] tracking-widest flex flex-col items-center justify-center gap-2 transition-all shadow-md"
+                                    onClick={handleSendComms}
+                                    disabled={!commsText.trim() || !formData.phone}
+                                >
+                                    <Send size={18} />
+                                    <span>{commsMode === 'sms' ? 'Send SMS' : 'Send Email'}</span>
+                                </button>
+                            </div>
+                        </div>
+                    )}
                 </div>
 
                 {/* 3 Column Grid for Speed Entry */}
@@ -222,7 +344,7 @@ export default function EnrollmentFormV2({ onSuccess, onCancel, customerData }: 
                                 setUseShippingForBilling={setUseShippingForBilling}
                             />
 
-                            <div className="bg-surface-main/60 border border-border-subtle rounded-3xl overflow-hidden shadow-panel p-4 flex flex-col relative">
+                            <Card variant="refraction" className="p-4 flex flex-col relative">
                                 <div className="flex items-center gap-2 mb-3">
                                     <div className="w-8 h-8 rounded-lg bg-rose-500/10 flex items-center justify-center text-rose-500">
                                         <ShieldCheck size={16} />
@@ -249,7 +371,7 @@ export default function EnrollmentFormV2({ onSuccess, onCancel, customerData }: 
                                         );
                                     })}
                                 </div>
-                            </div>
+                            </Card>
                         </div>
 
                         {/* Column 2: Cart & Packages */}
@@ -262,21 +384,21 @@ export default function EnrollmentFormV2({ onSuccess, onCancel, customerData }: 
                                 setNotes={setNotes}
                             />
                             
-                            <div className="bg-surface-main/60 border border-border-subtle rounded-3xl overflow-hidden shadow-panel">
+                            <Card variant="refraction" className="overflow-hidden">
                                 <FinancialVault
                                     financials={financials}
                                     setFinancials={setFinancials}
                                     handleCardInput={handleCardInput}
                                     cardStatus={cardStatus}
-                                    fullName={formData.fullName}
+                                    fullName={`${formData.firstName} ${formData.lastName}`.trim()}
                                 />
-                            </div>
+                            </Card>
                         </div>
 
                         {/* Column 3: Order Summary */}
                         <div className="flex flex-col gap-6">
-                            <div className="w-full bg-surface-main/60 border border-border-subtle rounded-3xl overflow-hidden shadow-panel">
-                                <div className="p-6 border-border-subtle">
+                            <Card variant="refraction" className="w-full">
+                                <div className="p-6">
                                     <ValidationSummary 
                                         formData={formData}
                                         cart={cart}
@@ -304,7 +426,7 @@ export default function EnrollmentFormV2({ onSuccess, onCancel, customerData }: 
                                         </div>
                                     </div>
                                 </div>
-                            </div>
+                            </Card>
                         </div>
 
                     </div>

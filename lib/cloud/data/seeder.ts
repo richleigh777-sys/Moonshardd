@@ -1,4 +1,4 @@
-import { INITIAL_PRODUCT_CONFIG, SYSTEM_ADMIN_ID } from '@/constants';
+import { INITIAL_PRODUCT_CONFIG, SYSTEM_ADMIN_ID } from '../../../constants';
 
 export const seedInfrastructure = () => {
     const servers: any[] = [];

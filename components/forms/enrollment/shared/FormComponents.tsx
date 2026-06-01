@@ -20,7 +20,7 @@ export type FormInputProps = React.DetailedHTMLProps<React.InputHTMLAttributes<H
     status?: 'default' | 'valid' | 'invalid';
 };
 
-export const FormInput = ({ icon: Icon, rightElement, status = 'default', className = "", ...props }: FormInputProps) => {
+export const FormInput = React.forwardRef<HTMLInputElement, FormInputProps>(({ icon: Icon, rightElement, status = 'default', className = "", ...props }: FormInputProps, ref) => {
     const isError = status === 'invalid';
     const isValid = status === 'valid';
 
@@ -49,6 +49,7 @@ export const FormInput = ({ icon: Icon, rightElement, status = 'default', classN
                 <input autoComplete="off" data-lpignore="true" data-prevent-autofill="true" spellCheck={false} 
                     autoCorrect="off"
                     {...props}
+                    ref={ref}
                     className={`
                         w-full bg-transparent border-none outline-none py-2 px-4 
                         ${Icon ? 'pl-9' : 'pl-3'} ${rightElement ? 'pr-9' : 'pr-3'}
@@ -72,7 +73,9 @@ export const FormInput = ({ icon: Icon, rightElement, status = 'default', classN
             </div>
         </div>
     );
-};
+});
+
+FormInput.displayName = 'FormInput';
 
 export const FormSelect = ({ icon: Icon, children, className = "", ...props }: any) => (
     <div className="relative group w-full">

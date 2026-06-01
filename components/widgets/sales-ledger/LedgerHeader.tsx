@@ -23,8 +23,6 @@ interface LedgerHeaderProps {
     importAvailable: boolean;
     density: 'compact' | 'comfortable';
     setDensity: (d: 'compact' | 'comfortable') => void;
-    viewMode?: 'table' | 'map';
-    setViewMode?: (mode: 'table' | 'map') => void;
     isRefreshing?: boolean;
     onRefresh?: () => void;
     allowActions?: boolean;
@@ -33,7 +31,7 @@ interface LedgerHeaderProps {
 export const LedgerHeader: React.FC<LedgerHeaderProps> = React.memo(({ 
     summary, searchTerm, onSearchChange, onToggleFilters, showFilters, 
     onExportFulfillment, onExportPayroll, onConfig, onImport, importAvailable,
-    density, setDensity, viewMode, setViewMode, isRefreshing, onRefresh, allowActions = false
+    density, setDensity, isRefreshing, onRefresh, allowActions = false
 }) => {
     const { currentUser } = useCRM();
     const isSuperAdmin = (currentUser?.level || currentUser?.accessLevel || 0) >= 10;
@@ -106,25 +104,18 @@ export const LedgerHeader: React.FC<LedgerHeaderProps> = React.memo(({
                 {/* Density */}
                 <div className="flex bg-surface-alt/50 p-1 rounded-xl border border-border-subtle">
                     <button 
-                        onClick={() => { setDensity('comfortable'); setViewMode?.('table'); sfx.playClick(); }}
-                        className={`p-2 rounded-lg transition-all ${density === 'comfortable' && viewMode !== 'map' ? 'bg-surface-main text-text-primary shadow-sm ring-1 ring-black/5' : 'text-text-muted hover:text-text-primary'}`}
+                        onClick={() => { setDensity('comfortable'); sfx.playClick(); }}
+                        className={`p-2 rounded-lg transition-all ${density === 'comfortable' ? 'bg-surface-main text-text-primary shadow-sm ring-1 ring-black/5' : 'text-text-muted hover:text-text-primary'}`}
                         title="Comfortable"
                     >
                         <LayoutList size={16}/>
                     </button>
                     <button 
-                        onClick={() => { setDensity('compact'); setViewMode?.('table'); sfx.playClick(); }}
-                        className={`p-2 rounded-lg transition-all ${density === 'compact' && viewMode !== 'map' ? 'bg-surface-main text-text-primary shadow-sm ring-1 ring-black/5' : 'text-text-muted hover:text-text-primary'}`}
+                        onClick={() => { setDensity('compact'); sfx.playClick(); }}
+                        className={`p-2 rounded-lg transition-all ${density === 'compact' ? 'bg-surface-main text-text-primary shadow-sm ring-1 ring-black/5' : 'text-text-muted hover:text-text-primary'}`}
                         title="Compact"
                     >
                         <AlignJustify size={16}/>
-                    </button>
-                    <button 
-                        onClick={() => { setViewMode?.('map'); sfx.playClick(); }}
-                        className={`p-2 rounded-lg transition-all ml-1 ${viewMode === 'map' ? 'bg-emerald-500/10 text-status-success shadow-sm ring-1 ring-emerald-500/20' : 'text-text-muted hover:text-text-primary'}`}
-                        title="Map View"
-                    >
-                        <MapIcon size={16}/>
                     </button>
                 </div>
 

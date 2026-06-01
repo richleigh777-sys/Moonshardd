@@ -40,6 +40,18 @@ export class NexusDataGateway extends BaseRepository {
         return this.systemOpsService.simulateHighLoadTest();
     }
 
+    public async injectSampleLeads() {
+        return this.systemOpsService.injectSampleLeads();
+    }
+
+    public async injectClosedSales() {
+        return this.systemOpsService.injectClosedSales();
+    }
+
+    public async sweepStalledLeads() {
+        return this.systemOpsService.sweepStalledLeads();
+    }
+
     public async logScriptUsage(scriptId: string, outcome: 'win' | 'loss', amount: number) {
         return this.systemOpsService.logScriptUsage(scriptId, outcome, amount);
     }

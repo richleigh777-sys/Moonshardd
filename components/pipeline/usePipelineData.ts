@@ -11,7 +11,7 @@ export const usePipelineData = (sales: Sale[], currentUserId?: string) => {
     const [viewOwn, setViewOwn] = useState(true);
 
     const filteredSales = useMemo(() => {
-        let result = sales;
+        let result = sales.filter(s => s.status !== 'Declined' && s.status !== 'Cancelled');
 
         if (viewOwn && currentUserId) {
             result = result.filter(s => s.agentId === currentUserId);

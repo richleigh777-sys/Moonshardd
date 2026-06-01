@@ -29,40 +29,44 @@ export const MaskedData: React.FC<MaskedDataProps> = ({ value, type = 'phone' })
         return <span className="font-mono">{value}</span>;
     }
 
+    // Role-based permission: Only level 5+ (Admins/Managers) can reveal data
+    const canReveal = (currentUser?.level || 0) >= 5;
+
     return (
         <div className="flex items-center gap-2 group select-none">
             <span className="font-mono">{displayValue}</span>
-            <button 
-                onClick={(e) => {
-                    e.stopPropagation();
-                    if (!revealed) {
-                        try {
-                            const now = Date.now();
-                            const cacheKey = `reveal_tracker_${currentUser?.id}`;
-                            const history: number[] = JSON.parse(localStorage.getItem(cacheKey) || '[]');
-                            const oneHourAgo = now - 60 * 60 * 1000;
-                            const recent = history.filter(t => t > oneHourAgo);
-                            recent.push(now);
-                            localStorage.setItem(cacheKey, JSON.stringify(recent));
+            {canReveal && (
+                <button 
+                    onClick={(e) => {
+                        e.stopPropagation();
+                        if (!revealed) {
+                            try {
+                                const now = Date.now();
+                                const cacheKey = `reveal_tracker_${currentUser?.id}`;
+                                const history: number[] = JSON.parse(localStorage.getItem(cacheKey) || '[]');
+                                const oneHourAgo = now - 60 * 60 * 1000;
+                                const recent = history.filter(t => t > oneHourAgo);
+                                recent.push(now);
+                                localStorage.setItem(cacheKey, JSON.stringify(recent));
 
-                            if (recent.length > 20) {
-                                // Silent alert logic to Level 10 could be dispatched here
-                                window.dispatchEvent(new CustomEvent('DLP_ALERT', { 
-                                    detail: { 
-                                        type: 'EXCESSIVE_REVEAL', 
-                                        user: currentUser?.name, 
-                                        count: recent.length 
-                                    } 
-                                }));
-                            }
-                        } catch (err) { /* silent fail */ }
-                    }
-                    setRevealed(!revealed);
-                }}
-                className="opacity-0 group-hover:opacity-100 p-1 bg-surface-alt hover:bg-surface-main border border-border-subtle rounded transition-all text-text-muted hover:text-accent-primary"
-            >
-                {revealed ? <EyeOff size={14} /> : <Eye size={14} />}
-            </button>
+                                if (recent.length > 20) {
+                                    window.dispatchEvent(new CustomEvent('DLP_ALERT', { 
+                                        detail: { 
+                                            type: 'EXCESSIVE_REVEAL', 
+                                            user: currentUser?.name, 
+                                            count: recent.length 
+                                        } 
+                                    }));
+                                }
+                            } catch (err) { /* silent fail */ }
+                        }
+                        setRevealed(!revealed);
+                    }}
+                    className="opacity-0 group-hover:opacity-100 p-1 bg-surface-alt hover:bg-surface-main border border-border-subtle rounded transition-all text-text-muted hover:text-accent-primary"
+                >
+                    {revealed ? <EyeOff size={14} /> : <Eye size={14} />}
+                </button>
+            )}
         </div>
     );
 };

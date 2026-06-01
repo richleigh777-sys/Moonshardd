@@ -19,7 +19,7 @@ export const EnrollmentHeader: React.FC<EnrollmentHeaderProps> = ({
           <ShoppingCart className="w-3.5 h-3.5" strokeWidth={2.5} />
         </div>
         <div>
-          <h2 className="text-xs font-bold text-text-primary tracking-tight">Sales Entry Terminal</h2>
+          <h2 className="text-xs font-bold text-text-primary tracking-tight">Sales Entry</h2>
           <div className="flex items-center gap-1.5 mt-0.5">
             <span className="text-xs font-semibold text-accent-primary tracking-wide bg-accent-primary/5 px-3 py-1.5 rounded border border-accent-primary/10 flex items-center gap-1">
               <Lock size={16} /> Data Entry V1

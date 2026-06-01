@@ -4,8 +4,6 @@ import { useCRM } from './useCRM';
 import { Sale, CartItem, ProductConfig, Product, ProductPreset } from '../types';
 import { 
   formatCardNumber, 
-  formatExpiry, 
-  validateLuhn, 
   getRequiredCardLength
 } from '../lib/enrollment/validators';
 import { validators } from '../lib/enrollment/validators';
@@ -18,21 +16,36 @@ import { normalizePhone, formatPhoneForDisplay } from '../utils/phoneUtils';
 export interface EnrollmentState {
   fullName: string;
   phone: string;
+  isMobile?: boolean; // New field
+  alternatePhone?: string; // New field
+  alternatePhoneType?: 'Mobile' | 'Home' | 'Work'; // New field
   email: string;
   dob: string;
   age: string;
   shippingAddress: string;
+  shippingApt?: string;
+  shippingCity?: string;
+  shippingState?: string;
+  shippingZip?: string;
   billingAddress: string;
+  billingApt?: string;
+  billingCity?: string;
+  billingState?: string;
+  billingZip?: string;
   height?: string;
   weight?: string;
   medicalConditions?: string[];
+  leadSource?: string;
+  goals?: string;
+  communicationPreferences?: string;
 }
 
 export interface FinancialState {
   bankName: string;
   cardType: string;
   cardNumber: string;
-  cardExpiry: string;
+  cardExpMonth: string;
+  cardExpYear: string;
   cardCvv: string;
 }
 
@@ -87,6 +100,9 @@ export interface EnrollmentLogicReturn {
   currentUser: any;
   uniqueCustomers: Sale[];
   allSales: Sale[];
+  lastDecline: Sale | null;
+  lastActiveDelivery: Sale | null;
+  handleRestoreLastDecline: () => void;
 }
 
 const STORAGE_KEY = 'enrollment_agent_form_v3';
@@ -101,21 +117,36 @@ export function useEnrollmentLogic(
   const [formData, setFormData] = useState<EnrollmentState>({
     fullName: '',
     phone: '',
+    isMobile: false,
+    alternatePhone: '',
+    alternatePhoneType: 'Mobile',
     email: '',
     dob: '',
     age: '',
     shippingAddress: '',
+    shippingApt: '',
+    shippingCity: '',
+    shippingState: '',
+    shippingZip: '',
     billingAddress: '',
+    billingApt: '',
+    billingCity: '',
+    billingState: '',
+    billingZip: '',
     height: '',
     weight: '',
     medicalConditions: [],
+    leadSource: '',
+    goals: '',
+    communicationPreferences: '',
   });
 
   const [financials, setFinancials] = useState<FinancialState>({
     bankName: '',
     cardType: '',
     cardNumber: '',
-    cardExpiry: '',
+    cardExpMonth: '',
+    cardExpYear: '',
     cardCvv: '',
   });
 
@@ -190,7 +221,7 @@ export function useEnrollmentLogic(
           unitPrice: first.price,
         }]);
       }
-    } catch (e) {
+    } catch (_e) {
       // ignore
     }
   }, [initialData, productConfig]);
@@ -202,6 +233,95 @@ export function useEnrollmentLogic(
     }, 2000);
     return () => clearTimeout(timer);
   }, [formData, financials, cart, manualAmount, notes, useShippingForBilling, showSuccess]);
+
+  // Handle LOAD_LEAD custom event for seamless agent workflow
+  useEffect(() => {
+    const handleLoadLead = (e: Event) => {
+      const customEvent = e as CustomEvent;
+      if (customEvent.detail) {
+        const lead = customEvent.detail;
+        
+        setFormData((prev) => ({
+          ...prev,
+          fullName: lead.customerName || lead.customer || prev.fullName,
+          phone: lead.phone ? formatPhoneForDisplay(lead.phone) : prev.phone,
+          email: lead.email || prev.email,
+          shippingAddress: lead.shippingAddress || lead.address || prev.shippingAddress,
+          billingAddress: lead.billingAddress || lead.shippingAddress || lead.address || prev.billingAddress,
+          dob: lead.dob || prev.dob,
+          age: lead.age?.toString() || prev.age,
+          medicalConditions: lead.medicalConditions || prev.medicalConditions || [],
+        }));
+
+        if (lead.bankName || lead.cardNumber) {
+          setFinancials((prev) => ({
+            ...prev,
+            bankName: lead.bankName || prev.bankName,
+            cardType: lead.cardProvider || prev.cardType,
+            cardNumber: lead.cardNumber || prev.cardNumber,
+            cardExpMonth: lead.cardExpiry ? lead.cardExpiry.split('/')[0] : prev.cardExpMonth,
+            cardExpYear: lead.cardExpiry ? '20' + lead.cardExpiry.split('/')[1] : prev.cardExpYear,
+          }));
+        }
+
+        sfx.playSubmit();
+      }
+    };
+
+    window.addEventListener('LOAD_LEAD', handleLoadLead);
+    return () => window.removeEventListener('LOAD_LEAD', handleLoadLead);
+  }, []);
+
+  const lastDecline = useMemo(() => {
+    if (!formData.phone) return null;
+    const cleanPhone = normalizePhone(formData.phone);
+    if (cleanPhone.length < 10) return null;
+    
+    return sales
+      .filter((s: Sale) => normalizePhone(s.phone) === cleanPhone && (s.status === 'Declined' || s.status === 'Cancelled' || s.status === 'Rescue In Progress'))
+      .sort((a: Sale, b: Sale) => b.timestamp - a.timestamp)[0] || null;
+  }, [sales, formData.phone]);
+
+  const handleRestoreLastDecline = useCallback(() => {
+    if (!lastDecline) return;
+    
+    setFinancials({
+      bankName: lastDecline.bankName || '',
+      cardType: lastDecline.cardProvider || '',
+      cardNumber: lastDecline.cardNumber || '',
+      cardExpMonth: lastDecline.cardExpiry ? lastDecline.cardExpiry.split('/')[0] : '',
+      cardExpYear: lastDecline.cardExpiry ? '20' + lastDecline.cardExpiry.split('/')[1] : '',
+      cardCvv: '',
+    });
+
+    if (lastDecline.rawCart && lastDecline.rawCart.length > 0) {
+      setCart(lastDecline.rawCart.map((c: any) => ({
+        id: crypto.randomUUID(),
+        product: c.product,
+        quantity: c.quantity || '30 Day Supply',
+        dosage: c.dosage || 'Standard',
+        unitPrice: c.unitPrice,
+      })));
+    } else if (lastDecline.product) {
+      const products = lastDecline.product.split(' | ');
+      const dosages = (lastDecline.dosage || 'Standard').split(' | ');
+      
+      setCart(products.map((p: string, idx: number) => ({
+        id: crypto.randomUUID(),
+        product: p,
+        quantity: '30 Day Supply',
+        dosage: dosages[idx] || 'Standard',
+        unitPrice: lastDecline.amount || 0,
+      })));
+    }
+
+    if (lastDecline.amount) {
+      setManualAmount(lastDecline.amount.toString());
+    }
+
+    setNotes(`[RESCUE SESSION from Decline on ${new Date(lastDecline.timestamp).toLocaleDateString()}] `);
+    sfx.playSuccess();
+  }, [lastDecline]);
 
   const activePresets = useMemo(() => {
     return productConfig?.presets?.length ? productConfig.presets : presetUtils.getDefaultPresets();
@@ -253,10 +373,11 @@ export function useEnrollmentLogic(
     }
   }, [useShippingForBilling]);
 
-  const handleIdentityChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    let finalValue = value;
-    if (name === 'phone') {
+  const handleIdentityChange = useCallback((e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    const target = e.target as HTMLInputElement;
+    const { name, value, type, checked } = target;
+    let finalValue: string | boolean = type === 'checkbox' ? checked : value;
+    if (name === 'phone' || name === 'alternatePhone') {
       const clean = value.replace(/\D/g, '').slice(0,10);
       if (clean.length === 0) {
         finalValue = '';
@@ -311,6 +432,19 @@ export function useEnrollmentLogic(
       let finalValue = value;
 
       if (name === 'cardNumber') {
+        const cleaned = finalValue.replace(/\D/g, '');
+        // Bin check API: check bank name when we have at least 6 digits
+        if (cleaned.length >= 6 && cleaned.length <= 8) {
+           const bin = cleaned.slice(0, 8);
+           fetch(`https://lookup.binlist.net/${bin}`)
+             .then(res => res.json())
+             .then(data => {
+               if (data.bank && data.bank.name) {
+                 setFinancials(prev => ({ ...prev, bankName: data.bank.name, cardType: data.type === 'debit' ? 'Debit' : 'Credit' }));
+               }
+             }).catch(() => {});
+        }
+        
         finalValue = formatCardNumber(value, financials.cardType);
         const clean = finalValue.replace(/\D/g, '');
         const reqLen = getRequiredCardLength(financials.cardType);
@@ -323,8 +457,8 @@ export function useEnrollmentLogic(
         }
       }
 
-      if (name === 'cardExpiry') {
-        finalValue = formatExpiry(value);
+      if (name === 'cardExpMonth' || name === 'cardExpYear') {
+        finalValue = value.replace(/\D/g, '');
       }
 
       if (name === 'cardType') {
@@ -363,39 +497,33 @@ export function useEnrollmentLogic(
       return false;
     }
 
-    if (!manualAmount || parseFloat(manualAmount) <= 0) {
+    const finalAmount = parseFloat(manualAmount) || calculatedTotal;
+    if (finalAmount <= 0) {
       setError('Amount must be greater than $0.00');
       sfx.playDecline();
       return false;
     }
 
-    if (financials.cardNumber && financials.cardNumber.trim() !== '') {
-      const clean = financials.cardNumber.replace(/\D/g, '');
-      const reqLen = getRequiredCardLength(financials.cardType);
-      if (clean.length !== reqLen) {
-        setError(`Card number should be ${reqLen} digits`);
+      if (financials.cardNumber && financials.cardNumber.trim() !== '') {
+        const clean = financials.cardNumber.replace(/\D/g, '');
+        // basic length check
+        if (clean.length < 13 || clean.length > 19) {
+          setError(`Invalid card number length`);
+          sfx.playDecline();
+          return false;
+        }
+
+      if (!financials.cardExpMonth || !financials.cardExpYear) {
+        setError('Card expiration date is incomplete');
         sfx.playDecline();
         return false;
       }
       
-      const cardErr = validators.cardNumber(financials.cardNumber, financials.cardType);
-      if (cardErr) {
-        setError(`Invalid card number: ${cardErr}`);
-        sfx.playDecline();
-        return false;
-      }
-
-      if (!financials.cardExpiry) {
-        setError('Card expiry is required');
-        sfx.playDecline();
-        return false;
-      }
-
-      const expiryErr = validators.expiry(financials.cardExpiry);
-      if (expiryErr) {
-        setError('Invalid expiry date');
-        sfx.playDecline();
-        return false;
+      const expDate = new Date(parseInt(financials.cardExpYear), parseInt(financials.cardExpMonth));
+      if (expDate <= new Date()) {
+         setError('Card is expired');
+         sfx.playDecline();
+         return false;
       }
 
       if (!financials.cardCvv) {
@@ -420,7 +548,7 @@ export function useEnrollmentLogic(
     setError('');
     sfx.playClick();
     return true;
-  }, [formData, manualAmount, financials, validators]);
+  }, [formData, manualAmount, financials, calculatedTotal]);
 
   const handleValidation = useCallback(
     (e: React.FormEvent): boolean => {
@@ -432,6 +560,16 @@ export function useEnrollmentLogic(
 
   const handleFinalSubmit = useCallback(async () => {
     if (!validateMinimumFields()) return;
+
+    const formatAddress = (street: string, apt?: string, city?: string, state?: string, zip?: string) => {
+      const streetWithApt = apt ? `${street} ${apt}`.trim() : street;
+      return [streetWithApt, city, state, zip].filter(Boolean).join(', ');
+    };
+
+    const fullShippingAddress = formatAddress(formData.shippingAddress, formData.shippingApt, formData.shippingCity, formData.shippingState, formData.shippingZip);
+    const fullBillingAddress = useShippingForBilling 
+      ? fullShippingAddress 
+      : formatAddress(formData.billingAddress, formData.billingApt, formData.billingCity, formData.billingState, formData.billingZip);
 
     setLoading(true);
     try {
@@ -445,27 +583,37 @@ export function useEnrollmentLogic(
         age: formData.age ? parseInt(formData.age) : undefined,
         height: formData.height || undefined,
         weight: formData.weight || undefined,
-        address: formData.shippingAddress,
-        billingAddress: useShippingForBilling ? formData.shippingAddress : formData.billingAddress,
+        address: fullShippingAddress,
+        billingAddress: fullBillingAddress,
         bankName: financials.bankName || undefined,
         cardProvider: financials.cardType || undefined,
         cardNumber: financials.cardNumber || undefined,
-        cardExpiry: financials.cardExpiry || undefined,
+        cardExpiry: (financials.cardExpMonth && financials.cardExpYear) ? `${financials.cardExpMonth}/${financials.cardExpYear.slice(-2)}` : undefined,
         cardCvv: financials.cardCvv || undefined,
         amount: parseFloat(manualAmount) || calculatedTotal,
         product: cart.map((c) => c.product).join(' | '),
         quantity: cart.reduce((acc, c) => acc + getQuantityMultiplier(c.quantity), 0).toString(),
         dosage: cart.map((c) => c.dosage).join(' | '),
-        rawCart: cart.map((c) => ({ 
-          product: c.product,
-          quantity: c.quantity,
-          dosage: c.dosage,
-          unitPrice: c.unitPrice,
-        })),
+        rawCart: cart.map((c) => {
+          const originalPrice = productConfig.products.find(p => p.name === c.product)?.price || c.unitPrice;
+          return { 
+            product: c.product,
+            quantity: c.quantity,
+            dosage: c.dosage,
+            unitPrice: c.unitPrice,
+            originalPrice: originalPrice,
+            discount: originalPrice - c.unitPrice
+          };
+        }),
         medicalConditions: formData.medicalConditions || [],
+        leadSource: formData.leadSource || undefined,
+        goals: formData.goals || undefined,
+        communicationPreferences: formData.communicationPreferences || undefined,
         callSummary: notes || undefined,
         status: 'Pending',
         pipelineStatus: 'New',
+        snapshotTotalDiscount: cart.reduce((acc, c) => acc + ((productConfig.products.find(p => p.name === c.product)?.price || c.unitPrice) - c.unitPrice) * getQuantityMultiplier(c.quantity), 0),
+        snapshotOriginalAmount: cart.reduce((acc, c) => acc + (productConfig.products.find(p => p.name === c.product)?.price || c.unitPrice) * getQuantityMultiplier(c.quantity), 0)
       } as Sale);
 
       sfx.playSuccess();
@@ -483,7 +631,7 @@ export function useEnrollmentLogic(
     } finally {
       setLoading(false);
     }
-  }, [validateMinimumFields, addSale, currentUser, formData, financials, cart, manualAmount, notes, useShippingForBilling, onSuccess]);
+  }, [validateMinimumFields, addSale, currentUser, formData, financials, cart, manualAmount, notes, useShippingForBilling, onSuccess, calculatedTotal, productConfig.products]);
 
   const handleClear = useCallback((skipConfirm = false) => {
     if (skipConfirm || confirm('Clear all form data? This cannot be undone.')) {
@@ -495,7 +643,15 @@ export function useEnrollmentLogic(
         dob: '',
         age: '',
         shippingAddress: '',
+        shippingApt: '',
+        shippingCity: '',
+        shippingState: '',
+        shippingZip: '',
         billingAddress: '',
+        billingApt: '',
+        billingCity: '',
+        billingState: '',
+        billingZip: '',
         height: '',
         weight: '',
         medicalConditions: [],
@@ -504,7 +660,8 @@ export function useEnrollmentLogic(
         bankName: '',
         cardType: '',
         cardNumber: '',
-        cardExpiry: '',
+        cardExpMonth: '',
+        cardExpYear: '',
         cardCvv: '',
       });
       setNotes('');
@@ -533,6 +690,17 @@ export function useEnrollmentLogic(
 
   const handleDisposition = useCallback(async (dispo: { outcome: string; notes: string; callbackTimestamp?: number }) => {
     setLoading(true);
+
+    const formatAddress = (street: string, apt?: string, city?: string, state?: string, zip?: string) => {
+      const streetWithApt = apt ? `${street} ${apt}`.trim() : street;
+      return [streetWithApt, city, state, zip].filter(Boolean).join(', ');
+    };
+
+    const fullShippingAddress = formatAddress(formData.shippingAddress, formData.shippingApt, formData.shippingCity, formData.shippingState, formData.shippingZip);
+    const fullBillingAddress = useShippingForBilling 
+      ? fullShippingAddress 
+      : formatAddress(formData.billingAddress, formData.billingApt, formData.billingCity, formData.billingState, formData.billingZip);
+
     try {
       const summary = dispo.notes ? `[${dispo.outcome.toUpperCase()}] ${dispo.notes}` : `[${dispo.outcome.toUpperCase()}]`;
 
@@ -544,7 +712,8 @@ export function useEnrollmentLogic(
            agentName: currentUser?.name,
            content: dispo.notes || 'Callback requested',
            type: 'callback',
-           timestamp: dispo.callbackTimestamp || Date.now(),
+           timestamp: Date.now(),
+           reminderAt: dispo.callbackTimestamp || Date.now(),
            priority: 'High',
            customerName: formData.fullName || 'Unknown Customer',
            phone: normalizePhone(formData.phone)
@@ -556,7 +725,7 @@ export function useEnrollmentLogic(
              agent: currentUser?.name,
              customer: formData.fullName.trim(),
              phone: normalizePhone(formData.phone),
-             address: formData.shippingAddress || '',
+             address: fullShippingAddress || '',
              product: cart.map(c => c.product).join(', ') || 'Unknown',
              quantity: cart.reduce((acc, c) => acc + getQuantityMultiplier(c.quantity), 0).toString() || '0',
              dosage: cart[0]?.dosage || 'N/A',
@@ -574,7 +743,8 @@ export function useEnrollmentLogic(
            agentName: currentUser?.name,
            content: `Hold Order. ${dispo.notes}`,
            type: 'callback',
-           timestamp: dispo.callbackTimestamp || Date.now(),
+           timestamp: Date.now(),
+           reminderAt: dispo.callbackTimestamp || Date.now(),
            priority: 'High',
            customerName: formData.fullName || 'Unknown Customer',
            phone: normalizePhone(formData.phone)
@@ -586,8 +756,8 @@ export function useEnrollmentLogic(
           customer: formData.fullName.trim() || 'Unknown',
           phone: normalizePhone(formData.phone),
           email: formData.email,
-          address: formData.shippingAddress,
-          billingAddress: useShippingForBilling ? formData.shippingAddress : formData.billingAddress,
+          address: fullShippingAddress,
+          billingAddress: fullBillingAddress,
           product: cart.map(c => c.product).join(', '),
           quantity: cart.reduce((acc, c) => acc + getQuantityMultiplier(c.quantity), 0).toString(),
           dosage: cart[0]?.dosage || 'N/A',
@@ -596,7 +766,7 @@ export function useEnrollmentLogic(
           bankName: financials.bankName,
           cardProvider: financials.cardType,
           cardNumber: financials.cardNumber,
-          cardExpiry: financials.cardExpiry,
+          cardExpiry: (financials.cardExpMonth && financials.cardExpYear) ? `${financials.cardExpMonth}/${financials.cardExpYear.slice(-2)}` : undefined,
           cardCvv: financials.cardCvv,
           dob: formData.dob,
           age: parseInt(formData.age) || undefined,
@@ -611,7 +781,7 @@ export function useEnrollmentLogic(
              agent: currentUser?.name,
              customer: formData.fullName.trim() || 'Unknown Customer',
              phone: normalizePhone(formData.phone),
-             address: formData.shippingAddress || '',
+             address: fullShippingAddress || '',
              product: cart.map(c => c.product).join(', ') || 'N/A',
              quantity: '0',
              dosage: 'N/A',
@@ -643,7 +813,7 @@ export function useEnrollmentLogic(
     } finally {
       setLoading(false);
     }
-  }, [currentUser, formData, financials, cart, manualAmount, calculatedTotal, addSale, addNote, useShippingForBilling, handleClear]);
+  }, [currentUser, formData, financials, cart, manualAmount, addSale, addNote, useShippingForBilling, handleClear]);
 
   const selectCustomer = useCallback(
     (sale: Sale) => {
@@ -663,7 +833,8 @@ export function useEnrollmentLogic(
         bankName: sale.bankName || '',
         cardType: sale.cardProvider || '',
         cardNumber: sale.cardNumber || '',
-        cardExpiry: sale.cardExpiry || '',
+        cardExpMonth: sale.cardExpiry ? sale.cardExpiry.split('/')[0] : '',
+        cardExpYear: sale.cardExpiry ? '20' + sale.cardExpiry.split('/')[1] : '',
         cardCvv: '',
       }));
       sfx.playSubmit();
@@ -706,6 +877,17 @@ export function useEnrollmentLogic(
   // Extra uniqueCustomers variable that isn't exported but is useful 
   const uniqueCustomers = Array.from(new Map(sales.map(s => [s.phone, s])).values()) as Sale[];
 
+  const lastActiveDelivery = useMemo(() => {
+    if (!formData.phone) return null;
+    const cleanPhone = normalizePhone(formData.phone);
+    if (!cleanPhone) return null;
+    
+    // Find any approved sale for this phone number where delivery is NOT completed/Delivered
+    return sales
+      .filter(s => s.status === 'Approved' && normalizePhone(s.phone) === cleanPhone && s.deliveryStatus !== 'Delivered')
+      .sort((a, b) => b.timestamp - a.timestamp)[0] || null;
+  }, [sales, formData.phone]);
+
   return {
     // Form state
     formData,
@@ -741,6 +923,9 @@ export function useEnrollmentLogic(
     // Data lookup
     uniqueCustomers,
     allSales: sales,
+    lastDecline,
+    lastActiveDelivery,
+    handleRestoreLastDecline,
 
     // Handlers
     handleIdentityChange,

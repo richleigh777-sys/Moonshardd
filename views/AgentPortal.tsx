@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React from 'react';
 import { PortalShell } from '../components/layout/PortalShell';
 import { Tabs } from '../components/ui/Tabs';
 import { EntryView } from './EntryView';

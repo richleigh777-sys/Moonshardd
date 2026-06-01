@@ -152,7 +152,7 @@ export const ImportWizard: React.FC<ImportWizardProps> = ({
                                                     onChange={(e) => { sfx.playClick(); setColumnMapping(prev => ({ ...prev, [field.key]: e.target.value })); }}
                                                 >
                                                     <option value="">-- UNMAPPED --</option>
-                                                    {importConfig.headers.map(h => <option key={h} value={h}>{h}</option>)}
+                                                    {importConfig.headers.map((h, i) => <option key={`opt-${i}`} value={h}>{h}</option>)}
                                                 </select>
                                             </div>
                                         </div>
@@ -163,7 +163,7 @@ export const ImportWizard: React.FC<ImportWizardProps> = ({
                     ) : (
                         <div className="overflow-x-auto border border-border-subtle rounded-2xl max-h-[400px] shadow-inner">
                             <table className="w-full text-left border-collapse bg-surface-main">
-                                <thead><tr className="bg-surface-alt text-xs font-[700]  text-text-muted border-b border-border-subtle">{importConfig.headers.map(h => <th key={h} className="p-3 whitespace-nowrap">{h}</th>)}</tr></thead>
+                                <thead><tr className="bg-surface-alt text-xs font-[700]  text-text-muted border-b border-border-subtle">{importConfig.headers.map((h, i) => <th key={`th-${i}`} className="p-3 whitespace-nowrap">{h}</th>)}</tr></thead>
                                 <tbody className="text-xs font-mono text-text-secondary">{importConfig.previewData.map((row, i) => <tr key={i} className="border-b border-border-subtle/30 hover:bg-surface-highlight">{row.map((cell, ci) => <td key={ci} className="p-3 truncate max-w-[150px]">{cell}</td>)}</tr>)}</tbody>
                             </table>
                         </div>
@@ -183,8 +183,8 @@ export const ImportWizard: React.FC<ImportWizardProps> = ({
                                 onChange={(e) => { sfx.playClick(); setTargetAgentId(e.target.value); }}
                                 className="w-full bg-transparent text-xs font-[700] text-text-primary  outline-none cursor-pointer hover:text-accent-primary transition-colors"
                             >
-                                {users.filter(u => u.active).map(a => (
-                                    <option key={a.id} value={a.id} className="bg-surface-main">{a.name} ({a.role})</option>
+                                {users.filter(u => u.active).map((a, i) => (
+                                    <option key={`a-${i}`} value={a.id} className="bg-surface-main">{a.name} ({a.role})</option>
                                 ))}
                             </select>
                         </div>

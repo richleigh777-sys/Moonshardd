@@ -1,6 +1,8 @@
+import { useSystem } from '../../../hooks/useSystem';
 import React, { useState, useMemo } from 'react';
 import { Sale, SystemConfig, User } from '../../../types';
 import { Lightbulb, BarChart3, CheckCircle2, AlertCircle } from 'lucide-react';
+import { Card } from '../../../ui/Base';
 
 interface ScenarioPlannerProps {
   sales: Sale[];
@@ -8,11 +10,12 @@ interface ScenarioPlannerProps {
   systemConfig: SystemConfig;
 }
 
-export const ScenarioPlanner: React.FC<ScenarioPlannerProps> = ({
+export const ScenarioPlanner: React.FC<ScenarioPlannerProps> = ({ 
   sales,
   users,
   systemConfig,
 }) => {
+    const { setToast } = useSystem();
   const [scenario, setScenario] = useState<{
     commissionIncrease: number;
     agentBonus: number;
@@ -61,15 +64,20 @@ export const ScenarioPlanner: React.FC<ScenarioPlannerProps> = ({
   return (
     <div className="space-y-4">
       {/* Sliders */}
-      <div className="bg-slate-800 rounded-lg p-6 border border-slate-700 space-y-6">
-        <h3 className="font-bold text-white text-lg flex items-center gap-2">
-          <Lightbulb className="text-yellow-400" size={24} />
-          Scenario Planning
-        </h3>
+      <Card className="p-6 bg-surface-main border-border-subtle space-y-6">
+        <div>
+          <h3 className="font-bold text-text-primary text-lg flex items-center gap-2">
+            <Lightbulb className="text-amber-400" size={24} />
+            Scenario Planning
+          </h3>
+          <p className="text-xs text-text-muted mt-1">
+            Adjust the sliders below to simulate how changes in commission rates and retention campaign effectiveness would impact overall payroll and profit margins.
+          </p>
+        </div>
 
         {/* Commission Increase */}
         <div>
-          <label className="text-sm font-semibold text-white mb-2 block">
+          <label className="text-sm font-bold text-text-primary mb-2 block">
             Commission Increase: +{scenario.commissionIncrease}%
           </label>
           <input
@@ -81,15 +89,15 @@ export const ScenarioPlanner: React.FC<ScenarioPlannerProps> = ({
             onChange={(e) =>
               setScenario({ ...scenario, commissionIncrease: parseFloat(e.target.value) })
             }
-            className="w-full"
+            className="w-full accent-amber-500 hover:accent-amber-400 focus:accent-amber-500"
           />
-          <p className="text-xs text-slate-400 mt-2">Current: {systemConfig.baseCommission}%</p>
+          <p className="text-xs text-text-muted mt-2">Current System Base: {systemConfig.baseCommission}%</p>
         </div>
 
         {/* Recovery Rate */}
         <div>
-          <label className="text-sm font-semibold text-white mb-2 block">
-            Recovery Campaign Rate: +{scenario.recoveryRate}%
+          <label className="text-sm font-bold text-text-primary mb-2 block">
+            Win-back / CLM Campaign Effectiveness: +{scenario.recoveryRate}%
           </label>
           <input
             type="range"
@@ -100,41 +108,41 @@ export const ScenarioPlanner: React.FC<ScenarioPlannerProps> = ({
             onChange={(e) =>
               setScenario({ ...scenario, recoveryRate: parseFloat(e.target.value) })
             }
-            className="w-full"
+            className="w-full accent-emerald-500"
           />
-          <p className="text-xs text-slate-400 mt-2">
-            Estimated {scenario.recoveryRate}% of declined sales recoverable
+          <p className="text-xs text-text-muted mt-2">
+            Estimated {scenario.recoveryRate}% of pending/stale leads convertible via active CLM Engine pushes
           </p>
         </div>
-      </div>
+      </Card>
 
       {/* Results */}
-      <div className="bg-slate-800 rounded-lg p-6 border border-slate-700">
-        <h3 className="font-bold text-white mb-4 flex items-center gap-2">
-          <BarChart3 className="text-blue-400" size={20} />
-          Impact Analysis
+      <Card className="p-6 bg-surface-main border-border-subtle">
+        <h3 className="font-bold text-text-primary mb-4 flex items-center gap-2">
+          <BarChart3 className="text-blue-500" size={20} />
+          Impact Analysis Projection
         </h3>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {/* Current State */}
-          <div className="bg-slate-700 rounded p-4">
-            <p className="text-xs text-slate-400 uppercase tracking-wider mb-3">Current State</p>
+          <div className="bg-surface-alt rounded-lg p-4 border border-border-subtle">
+            <p className="text-xs text-text-muted font-bold uppercase tracking-wider mb-3">Current Pipeline</p>
             <div className="space-y-2">
-              <div className="flex justify-between">
-                <span className="text-slate-300">Revenue:</span>
-                <span className="font-bold text-white">
+              <div className="flex justify-between items-center">
+                <span className="text-sm text-text-secondary">Expected Revenue:</span>
+                <span className="font-bold font-mono text-text-primary">
                   ${(analysis.currentRevenue / 1000).toFixed(0)}k
                 </span>
               </div>
-              <div className="flex justify-between">
-                <span className="text-slate-300">Payroll:</span>
-                <span className="font-bold text-white">
+              <div className="flex justify-between items-center">
+                <span className="text-sm text-text-secondary">Estimated Payroll:</span>
+                <span className="font-bold font-mono text-text-primary">
                   ${(analysis.currentPayroll / 1000).toFixed(0)}k
                 </span>
               </div>
-              <div className="flex justify-between">
-                <span className="text-slate-300">Margin:</span>
-                <span className="font-bold text-emerald-400">
+              <div className="flex justify-between items-center pt-2 border-t border-border-subtle">
+                <span className="text-sm text-text-secondary">Net Margin:</span>
+                <span className="font-black font-mono text-status-success">
                   {analysis.currentMargin.toFixed(1)}%
                 </span>
               </div>
@@ -142,24 +150,24 @@ export const ScenarioPlanner: React.FC<ScenarioPlannerProps> = ({
           </div>
 
           {/* Projected State */}
-          <div className={`rounded p-4 ${analysis.recommended ? 'bg-green-900 bg-opacity-40 border border-green-700' : 'bg-slate-700'}`}>
-            <p className="text-xs text-slate-400 uppercase tracking-wider mb-3">Projected Impact</p>
+          <div className={`rounded-lg p-4 border transition-colors ${analysis.recommended ? 'bg-status-success/5 border-status-success/30' : 'bg-surface-alt border-border-subtle'}`}>
+            <p className="text-xs text-text-muted font-bold uppercase tracking-wider mb-3">Hypothetical Pipeline</p>
             <div className="space-y-2">
-              <div className="flex justify-between">
-                <span className="text-slate-300">Revenue:</span>
-                <span className="font-bold text-white">
+              <div className="flex justify-between items-center">
+                <span className="text-sm text-text-secondary">Expected Revenue:</span>
+                <span className="font-bold font-mono text-text-primary">
                   ${(analysis.estimatedRevenue / 1000).toFixed(0)}k
                 </span>
               </div>
-              <div className="flex justify-between">
-                <span className="text-slate-300">Payroll:</span>
-                <span className="font-bold text-white">
+              <div className="flex justify-between items-center">
+                <span className="text-sm text-text-secondary">Estimated Payroll:</span>
+                <span className="font-bold font-mono text-text-primary">
                   ${(analysis.newPayroll / 1000).toFixed(0)}k
                 </span>
               </div>
-              <div className="flex justify-between">
-                <span className="text-slate-300">Margin:</span>
-                <span className="font-bold text-emerald-400">
+              <div className="flex justify-between items-center pt-2 border-t border-border-subtle">
+                <span className="text-sm text-text-secondary">Net Margin:</span>
+                <span className="font-black font-mono text-status-success">
                   {analysis.newMargin.toFixed(1)}%
                 </span>
               </div>
@@ -168,30 +176,40 @@ export const ScenarioPlanner: React.FC<ScenarioPlannerProps> = ({
         </div>
 
         {/* Recommendation */}
-        <div className={`mt-4 p-4 rounded border ${
+        <div className={`mt-4 p-4 rounded-lg border transition-colors ${
           analysis.recommended
-            ? 'bg-green-900 bg-opacity-30 border-green-700'
-            : 'bg-yellow-900 bg-opacity-30 border-yellow-700'
+            ? 'bg-status-success/10 border-status-success/30'
+            : 'bg-status-warning/10 border-status-warning/30'
         }`}>
-          <div className="flex items-start gap-2">
-            {analysis.recommended ? (
-              <CheckCircle2 className="text-green-400 flex-shrink-0 mt-1" size={20} />
-            ) : (
-              <AlertCircle className="text-yellow-400 flex-shrink-0 mt-1" size={20} />
-            )}
-            <div>
-              <p className={`font-bold ${analysis.recommended ? 'text-green-300' : 'text-yellow-300'}`}>
-                {analysis.recommended ? '✅ Recommended' : '⚠️ Review'}
-              </p>
-              <p className="text-sm text-slate-300 mt-1">
-                {analysis.recommended
-                  ? `Productivity gain (${analysis.breakeven}%) outweighs commission cost. ROI: ${analysis.roi}%`
-                  : 'Commission increase may exceed margin gains. Consider alternative incentives.'}
-              </p>
-            </div>
+          <div className="flex items-start justify-between gap-3">
+             <div className="flex items-start gap-3">
+                 {analysis.recommended ? (
+                 <CheckCircle2 className="text-status-success flex-shrink-0 mt-0.5" size={20} />
+                 ) : (
+                 <AlertCircle className="text-status-warning flex-shrink-0 mt-0.5" size={20} />
+                 )}
+                 <div>
+                 <p className={`font-bold text-sm ${analysis.recommended ? 'text-status-success' : 'text-status-warning'}`}>
+                     {analysis.recommended ? 'SYSTEM RECOMMENDATION: EXECUTE' : 'SYSTEM RECOMMENDATION: REVIEW'}
+                 </p>
+                 <p className="text-sm text-text-secondary mt-1">
+                     {analysis.recommended
+                     ? `Productivity gain (${analysis.breakeven}%) outweighs theoretical commission cost increase. ROI Profile: +${analysis.roi}%`
+                     : 'Commission increase model exceeds sustainable margin thresholds without a concurrent rise in basic win rate. Avoid.'}
+                 </p>
+                 </div>
+             </div>
+             {analysis.recommended && (
+                 <button 
+                    className="px-4 py-2 bg-status-success hover:bg-emerald-600 text-white rounded-lg text-xs font-bold transition-transform active:scale-95 shadow-md shrink-0"
+                    onClick={() => setToast({ title: "System Notification", message: "Action executed.", type: "info" })}
+                 >
+                    Apply Scenario
+                 </button>
+             )}
           </div>
         </div>
-      </div>
+      </Card>
     </div>
   );
 };

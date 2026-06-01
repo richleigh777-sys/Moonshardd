@@ -67,26 +67,7 @@ export const ServerGateway: React.FC = () => {
         setIsPurging(true);
         sfx.playSubmit();
         
-        const sequence = [
-            `INIT_DESTRUCTION_SEQUENCE --target=${targetServer.id}`,
-            "BYPASSING_SAFETY_PROTOCOLS...",
-            "FLUSHING_MEM_BUFFERS...",
-            "DROPPING_TABLES: [users, sales, logs]...",
-            "SEVERING_UPLINK...",
-            "PURGE_COMPLETE."
-        ];
-
-        for (const log of sequence) {
-            await new Promise(r => setTimeout(r, 600)); // Dramatic delay
-            setPurgeLogs(prev => [...prev, log]);
-            sfx.playClick(); // Little tick sound
-        }
-
-        sfx.playDecline(); // Final destructive sound
         await nexusGateway.deleteServer(targetServer.id);
-        
-        // Brief pause to show complete state
-        await new Promise(r => setTimeout(r, 800));
         
         setIsDeleteOpen(false);
         setTargetServer(null);
@@ -187,23 +168,14 @@ export const ServerGateway: React.FC = () => {
                 <div className={`w-full max-w-md bg-[#120505] border-2 border-red-900/50 rounded-3xl p-8 shadow-[0_0_100px_rgba(239,68,68,0.2)] transform transition-all duration-300 ${isDeleteOpen ? 'scale-100' : 'scale-95'}`}>
                     
                     {isPurging ? (
-                        // TERMINAL PURGE SEQUENCE VIEW
-                        <div className="flex flex-col h-[320px]">
-                            <div className="flex items-center gap-3 text-status-error mb-4 border-b border-red-900/30 pb-4">
-                                <Terminal size={20} className="animate-pulse" />
-                                <h2 className="text-sm font-[700]  tracking-[0.2em] animate-pulse">Destruction In Progress</h2>
+                        <div className="flex flex-col items-center justify-center h-[320px]">
+                            <div className="p-4 bg-red-500/10 rounded-2xl border border-red-500/20 mb-4 animate-pulse">
+                                <Trash2 size={32} className="text-status-error" />
                             </div>
-                            <div className="flex-1 bg-surface-alt rounded-xl p-4 font-mono text-xs text-status-error/80 overflow-y-auto custom-scrollbar space-y-1.5 border border-red-900/20 shadow-inner">
-                                {purgeLogs.map((log, i) => (
-                                    <div key={i} className="animate-in slide-in-from-left-2 duration-75">
-                                        <span className="opacity-50 mr-2">{'>'}</span>{log}
-                                    </div>
-                                ))}
-                                <div ref={purgeLogEndRef} className="h-4 w-2 bg-red-500 animate-pulse mt-2"></div>
-                            </div>
-                            <div className="mt-4 h-1 w-full bg-red-900/20 rounded-full overflow-hidden">
-                                <div className="h-full bg-red-600 animate-[progress_4s_ease-in-out_forwards]" style={{width: '100%'}}></div>
-                            </div>
+                            <h2 className="text-sm font-bold text-text-primary mb-2">Deleting Server...</h2>
+                            <p className="text-xs text-text-muted text-center max-w-[250px]">
+                                This server and all of its associated data are being permanently removed.
+                            </p>
                         </div>
                     ) : (
                         // CONFIRMATION VIEW

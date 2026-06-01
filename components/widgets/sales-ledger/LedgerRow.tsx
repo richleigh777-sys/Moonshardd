@@ -108,18 +108,19 @@ const ExpandedDetail = ({ sale, onAction }: { sale: Sale, onAction: (action: str
                             <p className="text-xs font-bold text-text-primary font-mono">{sale.dob || 'Unknown'}</p>
                         </div>
                     </div>
-                    <div className="border-t border-border-subtle/50 p-3 flex justify-between items-center bg-surface-alt/20">
-                         <span className="text-xs font-bold text-text-muted">Height / Weight</span>
-                         <span className="text-xs font-bold text-text-primary capitalize">{sale.height || '--'} / {sale.weight || '--'}</span>
+                    <div className="flex flex-wrap gap-2 p-3 border-t border-border-subtle/50 bg-surface-alt/20 min-h-[48px]">
+                        {[
+                            ...(sale.height || sale.weight ? [[sale.height, sale.weight].filter(Boolean).join(' / ')] : []),
+                            ...(sale.medicalConditions || [])
+                        ].map((c, i) => (
+                            <span key={i} className="px-2.5 py-1 rounded-lg bg-surface-main border border-border-subtle text-xs font-bold text-text-secondary shadow-sm flex items-center gap-1.5">
+                                <div className="w-1 h-1 rounded-full bg-accent-primary"></div> {c}
+                            </span>
+                        ))}
+                        {!(sale.height || sale.weight) && (!sale.medicalConditions || sale.medicalConditions.length === 0) && (
+                            <span className="text-xs text-text-muted italic opacity-50">No conditions tagged</span>
+                        )}
                     </div>
-                </div>
-                
-                <div className="flex flex-wrap gap-2">
-                    {sale.medicalConditions?.length ? sale.medicalConditions.map((c, i) => (
-                        <span key={i} className="px-2.5 py-1 rounded-lg bg-surface-main border border-border-subtle text-xs font-bold text-text-secondary shadow-sm flex items-center gap-1.5">
-                            <div className="w-1 h-1 rounded-full bg-accent-primary"></div> {c}
-                        </span>
-                    )) : <span className="text-xs text-text-muted italic opacity-50">No conditions tagged</span>}
                 </div>
             </div>
 
@@ -206,11 +207,24 @@ export const LedgerRow: React.FC<LedgerRowProps> = React.memo(({
             
             case 'trackingId': return <CellRenderers.TrackingCell value={val} isEditing={false} onChange={() => {}} onAction={onAction} />;
             case 'deliveryStatus': return <CellRenderers.DeliveryStatusCell value={val} isEditing={false} onChange={() => {}} />;
-            case 'address': 
-            case 'billingAddress': return <CellRenderers.AddressCell value={val} isEditing={false} onChange={() => {}} />;
+            case 'address':
+            case 'shippingAddress': 
+            case 'billingAddress': return <CellRenderers.AddressCell value={val} row={sale} isEditing={false} onChange={() => {}} />;
+            
+            case 'city':
+            case 'state':
+            case 'zip': 
+            case 'shippingCity':
+            case 'shippingState':
+            case 'shippingZip':
+            case 'billingCity':
+            case 'billingState':
+            case 'billingZip': 
+            case 'height':
+            case 'weight': return <CellRenderers.TextCell value={val} isEditing={false} onChange={() => {}} />;
             
             case 'age': return <CellRenderers.BioCell value={val} row={sale} isEditing={false} onChange={() => {}} />;
-            case 'medicalConditions': return <CellRenderers.TagsCell value={val} isEditing={false} onChange={() => {}} />;
+            case 'medicalConditions': return <CellRenderers.TagsCell value={val} row={sale} isEditing={false} onChange={() => {}} />;
             case 'dob': return <CellRenderers.DateStringCell value={val} isEditing={false} onChange={() => {}} />;
 
             case 'status': return <CellRenderers.StatusCell value={val} isEditing={false} onChange={() => {}} />;
@@ -231,43 +245,44 @@ export const LedgerRow: React.FC<LedgerRowProps> = React.memo(({
         }
     };
 
-    const pad = density === 'compact' ? 'p-2' : 'p-4';
+    const pad = density === 'compact' ? 'px-2 py-1.5' : 'px-4 py-3';
 
     return (
-        <React.Fragment>
-            <tr 
-                ref={measureRef}
-                data-index={dataIndex}
-                style={style}
-                onContextMenu={onContextMenu}
-                className={`group transition-all duration-200 border-l-2 ${className || ''} ${isSelected ? 'bg-accent-primary/5 border-l-accent-primary' : isExpanded ? 'bg-surface-alt/30 border-l-transparent' : 'hover:bg-surface-alt/40 border-l-transparent hover:border-l-border-subtle'}`}
-            >
-                <td className={`${pad} text-center w-12`}>
-                    <button onClick={(e) => { e.stopPropagation(); onToggle(); }} className={`transition-all ${isSelected ? 'text-accent-primary' : 'text-border-subtle group-hover:text-text-muted'}`}>
+        <tbody 
+            ref={measureRef}
+            data-index={dataIndex}
+            className={`group transition-colors duration-150 border-b border-border-subtle/50 ${className || ''} ${isSelected ? 'bg-accent-primary/5' : isExpanded ? 'bg-surface-alt/50' : 'bg-surface-main hover:bg-surface-highlight'}`}
+            style={style}
+        >
+            <tr onContextMenu={onContextMenu} className={`border-l-[3px] ${isSelected ? 'border-l-accent-primary' : 'border-l-transparent'}`}>
+                <td className={`${pad} text-center w-12 align-middle`}>
+                    <button onClick={(e) => { e.stopPropagation(); onToggle(); }} className={`transition-all ${isSelected ? 'text-accent-primary scale-110' : 'text-border-subtle group-hover:text-text-muted hover:scale-110'}`}>
                         {isSelected ? <CheckSquare size={16}/> : <Square size={16}/>}
                     </button>
                 </td>
-                <td className={`${pad} w-10 text-center`}>
+                <td className={`${pad} w-10 text-center align-middle`}>
                     <button 
                         onClick={(e) => { e.stopPropagation(); setIsExpanded(!isExpanded); }} 
-                        className={`p-1 rounded-lg hover:bg-surface-highlight transition-all ${isExpanded ? 'rotate-90 text-accent-primary bg-surface-highlight' : 'text-text-muted'}`}
+                        className={`p-1 rounded-md hover:bg-surface-alt transition-transform ${isExpanded ? 'rotate-90 text-accent-primary bg-surface-alt' : 'text-text-muted'}`}
                     >
                         <ChevronRight size={16} />
                     </button>
                 </td>
                 {activeColumns.map(col => (
-                    <td key={col} className={`${pad} text-xs align-middle border-r border-transparent group-hover:border-border-subtle/30 last:border-0`}>
-                        {renderCell(col)}
+                    <td key={col} className={`${pad} text-xs align-middle border-r border-transparent group-hover:border-border-subtle/30 last:border-0 truncate`}>
+                        <div className="truncate w-full block">
+                            {renderCell(col)}
+                        </div>
                     </td>
                 ))}
-                <td className={`${pad} text-right pr-6`}>
+                <td className={`${pad} text-right pr-6 align-middle`}>
                     <div className="relative flex justify-end">
                         <button 
                             onClick={(e) => { 
                                 e.stopPropagation(); 
                                 onContextMenu(e);
                             }}
-                            className="p-2 hover:bg-surface-alt rounded-lg text-text-muted transition-colors opacity-0 group-hover:opacity-100"
+                            className="p-1.5 hover:bg-surface-alt rounded-md text-text-muted transition-colors opacity-0 group-hover:opacity-100"
                         >
                             <MoreVertical size={16}/>
                         </button>
@@ -275,12 +290,12 @@ export const LedgerRow: React.FC<LedgerRowProps> = React.memo(({
                 </td>
             </tr>
             {isExpanded && (
-                <tr style={style ? { ...style, display: 'none' } : undefined}>
-                    <td colSpan={100} className="p-0 border-t border-border-subtle">
+                <tr>
+                    <td colSpan={activeColumns.length + 3} className="p-0 border-b border-border-subtle">
                         <ExpandedDetail sale={sale} onAction={allowActions ? onAction : () => {}} />
                     </td>
                 </tr>
             )}
-        </React.Fragment>
+        </tbody>
     );
 });

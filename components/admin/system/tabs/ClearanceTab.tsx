@@ -67,7 +67,7 @@ export const ClearanceTab: React.FC<ClearanceTabProps> = ({ config, onChange, is
                 <div className="space-y-4">
                     <div className="flex items-center gap-2 pb-2 border-b border-border-subtle">
                         <UserCheck size={16} className="text-text-muted"/>
-                        <h5 className="text-xs font-[700]  text-text-primary tracking-widest">Agent Terminals</h5>
+                        <h5 className="text-xs font-[700]  text-text-primary tracking-widest">Agent Views</h5>
                     </div>
                     <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
                         {AGENT_TERMINALS.map(term => (
@@ -85,7 +85,7 @@ export const ClearanceTab: React.FC<ClearanceTabProps> = ({ config, onChange, is
                 <div className="space-y-4">
                     <div className="flex items-center gap-2 pb-2 border-b border-border-subtle">
                         <Briefcase size={16} className="text-text-muted"/>
-                        <h5 className="text-xs font-[700]  text-text-primary tracking-widest">Manager Terminals</h5>
+                        <h5 className="text-xs font-[700]  text-text-primary tracking-widest">Manager Views</h5>
                     </div>
                     <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
                         {MANAGER_TERMINALS.map(term => (

@@ -1,11 +1,10 @@
 import path from 'path';
 import { defineConfig as defineViteConfig, loadEnv } from 'vite';
-import { defineConfig as defineVitestConfig, mergeConfig } from 'vitest/config';
 import react from '@vitejs/plugin-react';
 
-export default defineVitestConfig(({ mode }) => {
+export default defineViteConfig(({ mode }) => {
     const env = loadEnv(mode, '.', '');
-    const viteConfig = defineViteConfig({
+    return {
       server: {
         port: 3000,
         host: '0.0.0.0',
@@ -20,29 +19,7 @@ export default defineVitestConfig(({ mode }) => {
         }
       },
       build: {
-        rollupOptions: {
-          output: {
-            manualChunks(id) {
-              if (id.includes('node_modules')) {
-                if (id.includes('lucide-react')) return 'vendor-lucide';
-                if (id.includes('@radix-ui')) return 'vendor-radix';
-                if (id.includes('recharts')) return 'vendor-charts';
-                if (id.includes('framer-motion') || id.includes('motion')) return 'vendor-motion';
-                if (id.includes('firebase')) return 'vendor-firebase';
-                return 'vendor';
-              }
-            }
-          }
-        }
+        outDir: 'dist'
       }
-    });
-
-    return mergeConfig(viteConfig, {
-      test: {
-        globals: true,
-        environment: 'jsdom',
-        setupFiles: './test/setup.ts',
-        css: true,
-      },
-    });
+    };
 });

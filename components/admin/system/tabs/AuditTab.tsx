@@ -1,10 +1,13 @@
+import { useSystem } from '../../../../hooks/useSystem';
 import React, { useMemo, useState } from 'react';
 import { Card } from '../../../ui/Base';
 import { ShieldAlert, Search, AlertTriangle, TrendingDown, Activity } from 'lucide-react';
 import { useCRM } from '../../../../hooks/useCRM';
 import { getDailyHours } from '../../../../views/utils/crmLogic';
 
-export const AuditTab: React.FC = () => {
+export const AuditTab: React.FC = () => { 
+    const { setToast } = useSystem();
+
     const { users, sales, attendance } = useCRM();
     const [searchQuery, setSearchQuery] = useState('');
     const [filterLevel, setFilterLevel] = useState<'all' | 'high' | 'medium' | 'low'>('all');
@@ -135,6 +138,7 @@ export const AuditTab: React.FC = () => {
                                 <th className="px-6 py-4 border-b border-border-subtle text-xs font-[700]  text-text-muted tracking-widest">Time</th>
                                 <th className="px-6 py-4 border-b border-border-subtle text-xs font-[700]  text-text-muted tracking-widest text-right">Yield/hr</th>
                                 <th className="px-6 py-4 border-b border-border-subtle text-xs font-[700]  text-text-muted tracking-widest">Flags</th>
+                                <th className="px-6 py-4 border-b border-border-subtle text-xs font-[700]  text-text-muted tracking-widest text-right">Action</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-border-subtle">
@@ -174,10 +178,18 @@ export const AuditTab: React.FC = () => {
                                             <span className="text-xs text-status-success font-bold  tracking-wider">No Flags</span>
                                         )}
                                     </td>
+                                    <td className="px-6 py-4 align-middle text-right">
+                                        <button 
+                                            className="px-3 py-1.5 bg-surface-alt hover:bg-surface-highlight text-text-primary rounded-lg text-xs font-bold transition-colors border border-border-subtle shadow-sm"
+                                            onClick={() => setToast({ title: "System Notification", message: "Action executed.", type: "info" })}
+                                        >
+                                            Intervene
+                                        </button>
+                                    </td>
                                 </tr>
                             )) : (
                                 <tr>
-                                    <td colSpan={5} className="px-6 py-12 text-center text-text-muted">
+                                    <td colSpan={6} className="px-6 py-12 text-center text-text-muted">
                                         <ShieldAlert size={32} className="mx-auto mb-3 opacity-20" />
                                         <p className="text-sm font-bold  tracking-widest">No matching records found.</p>
                                     </td>

@@ -4,7 +4,7 @@ import { Sale } from '../../../types';
 import { sfx } from '../../../lib/soundService';
 
 export const useLedgerLayout = () => {
-    const DEFAULT_ORDER = ['date', 'agent', 'customer', 'phone', 'product', 'amount', 'bankNetwork', 'cardNumber', 'cardExpiry', 'cardCvv', 'status', 'pipelineStatus', 'orderId', 'qaScore', 'declineReason'];
+    const DEFAULT_ORDER = ['date', 'agent', 'customer', 'phone', 'address', 'city', 'state', 'zip', 'product', 'amount', 'bankNetwork', 'cardNumber', 'cardExpiry', 'cardCvv', 'status', 'pipelineStatus', 'orderId', 'qaScore', 'declineReason', 'callSummary'];
     const DEFAULT_VISIBLE = DEFAULT_ORDER.reduce((acc, k) => ({...acc, [k]: true}), {});
 
     const [preferences, setPreferences] = useState<{order: string[], visible: Record<string, boolean>}>(() => {

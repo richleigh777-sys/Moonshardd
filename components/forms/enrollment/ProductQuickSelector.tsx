@@ -76,7 +76,7 @@ export function ProductQuickSelector({ products, presets, quantities, onAdd, onQ
     <div className="flex flex-col gap-4">
       {/* Presets */}
       {presets && presets.length > 0 && (
-        <Card className="p-4 bg-surface-main border-border-subtle shadow-sm">
+        <Card variant="refraction" className="p-4 bg-surface-main border-border-subtle shadow-sm">
           <h4 className="text-xs font-black text-text-muted mb-3 uppercase tracking-widest flex items-center gap-2">
             <Package size={14} className="text-indigo-400" /> Quick Add Presets
           </h4>
@@ -103,7 +103,7 @@ export function ProductQuickSelector({ products, presets, quantities, onAdd, onQ
       )}
 
       {/* Manual Selection */}
-      <Card className="p-4 bg-surface-main border-border-subtle shadow-sm flex flex-col gap-5">
+      <Card variant="refraction" className="p-4 bg-surface-main border-border-subtle shadow-sm flex flex-col gap-5">
         <h4 className="text-xs font-black text-text-muted uppercase tracking-widest flex items-center gap-2">
           <Package size={14} className="text-indigo-400" /> Manual Selection
         </h4>

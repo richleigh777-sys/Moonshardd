@@ -29,6 +29,41 @@ export const OperationalRhythm: React.FC<OperationalRhythmProps> = ({ notes, sal
     // Connect stats to Live Commission Calculation
     const statsInfo = useAgentStats(sales, currentUser, systemConfig);
 
+    // Extract top AI predicted lead based on SmartQueue scoring logic
+    const topPredictedLead = useMemo(() => {
+        const nowMs = new Date().getTime();
+        const scoredLeads = sales
+            .filter(s => s.status !== 'Approved' && s.status !== 'Declined' && s.pipelineStatus !== 'Closed Won' && s.pipelineStatus !== 'Closed Lost')
+            .map(s => {
+                let score = 50;
+                let reason = "Standard Pipeline";
+                let urgency: 'high' | 'medium' | 'low' = 'low';
+                
+                if (s.pipelineStatus === 'Retention') { score += 30; reason = "Approaching Churn"; urgency = 'high'; }
+                else if (s.pipelineStatus === 'Reorder') { score += 25; reason = "Supply Empty"; urgency = 'high'; }
+                else if (s.pipelineStatus === 'Rebuttal') { score += 20; reason = "In-progress Negotiation"; urgency = 'medium'; }
+                else if (s.pipelineStatus === 'Referral') { score += 15; reason = "Warm Lead"; urgency = 'medium'; }
+
+                const elapsedDays = (nowMs - s.timestamp) / (1000 * 60 * 60 * 24);
+                if (elapsedDays < 1) {
+                    score += 20;
+                    urgency = 'high';
+                    if (reason === "Standard Pipeline") reason = "Fresh Lead < 24h";
+                } else if (elapsedDays > 30) score -= 20;
+
+                if (s.callSummary) score += 10;
+                if (s.age && s.age > 45) score += 5;
+                if (s.medicalConditions && s.medicalConditions.length > 0) score += 10;
+                if (s.height && s.weight) score += 5;
+
+                score = Math.min(99, Math.max(1, score));
+                return { ...s, score, reason, urgency };
+            })
+            .sort((a, b) => b.score - a.score);
+
+        return scoredLeads.length > 0 ? scoredLeads[0] : null;
+    }, [sales]);
+
     const handleSubmitIntake = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!intakeData.name || !intakeData.phone) return;
@@ -178,7 +213,62 @@ export const OperationalRhythm: React.FC<OperationalRhythmProps> = ({ notes, sal
                 </div>
             )}
 
-            {/* Next Engagement Card */}
+            {/* Priority Leads - AI Recommended */}
+            {topPredictedLead && (
+                <div className="relative group mt-6">
+                    <div className="absolute -inset-0.5 bg-gradient-to-r from-status-success/30 to-emerald-500/30 rounded-3xl blur opacity-20 group-hover:opacity-40 transition duration-1000 group-hover:duration-200"></div>
+                    <Card variant="panel" className="relative p-6 md:p-8 bg-surface-main/90 border-emerald-500/30 flex flex-col md:flex-row items-center gap-6 overflow-hidden">
+                        <div className="absolute -left-10 -top-10 p-8 opacity-5">
+                            <Activity size={180} className="text-emerald-500" />
+                        </div>
+                        
+                        <div className="w-16 h-16 shrink-0 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-status-success relative">
+                            <Sparkles size={28} />
+                            {topPredictedLead.score >= 80 && (
+                                <div className="absolute -top-2 -right-2">
+                                    <span className="flex h-4 w-4 relative">
+                                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-status-error opacity-75"></span>
+                                        <span className="relative inline-flex rounded-full h-4 w-4 bg-status-error flex items-center justify-center">
+                                            <ShieldAlert size={8} className="text-white" />
+                                        </span>
+                                    </span>
+                                </div>
+                            )}
+                        </div>
+
+                        <div className="flex-1 text-center md:text-left z-10">
+                            <div className="flex flex-wrap items-center justify-center md:justify-start gap-2 mb-2">
+                                <span className={`px-2 py-0.5 rounded text-[10px] uppercase font-[800] tracking-widest ${
+                                    topPredictedLead.urgency === 'high' ? 'bg-status-error/10 border border-status-error/20 text-status-error' : 'bg-status-success/10 border border-status-success/20 text-status-success'
+                                }`}>
+                                    Score: {topPredictedLead.score}
+                                </span>
+                                <span className="px-2 py-0.5 rounded bg-surface-alt/50 text-text-secondary text-[10px] uppercase font-[800] tracking-widest border border-border-subtle">
+                                    {topPredictedLead.pipelineStatus || 'New Lead'}
+                                </span>
+                            </div>
+                            <h3 className="text-xl font-[700] text-text-primary tracking-tight mb-1">
+                                {topPredictedLead.customer}
+                            </h3>
+                            <p className="text-xs text-text-muted">
+                                <span className="font-bold text-text-secondary">AI Prediction:</span> {topPredictedLead.reason}
+                            </p>
+                        </div>
+
+                        <div className="flex flex-col gap-2 min-w-[200px] z-10 w-full md:w-auto mt-4 md:mt-0">
+                            <Button 
+                                onClick={() => { onLoadLead(topPredictedLead); sfx.playSubmit(); }}
+                                className="w-full bg-emerald-500 hover:bg-emerald-600 text-white border-none py-4 rounded-xl flex items-center justify-center gap-2 group/btn shadow-lg shadow-emerald-500/20"
+                            >
+                                <span className="font-[700] tracking-widest text-xs uppercase">Claim Recommended Deal</span>
+                                <ChevronRight size={14} className="group-hover/btn:translate-x-1 transition-transform" />
+                            </Button>
+                        </div>
+                    </Card>
+                </div>
+            )}
+
+            {/* Next Engagement Card (Manual Protocols) */}
             {myProtocols.length > 0 ? (
                 <div className="relative group">
                     <div className="absolute -inset-0.5 bg-gradient-to-r from-accent-primary to-indigo-500 rounded-3xl blur opacity-20 group-hover:opacity-40 transition duration-1000 group-hover:duration-200"></div>

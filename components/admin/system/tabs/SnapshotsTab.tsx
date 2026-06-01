@@ -1,3 +1,4 @@
+import { useSystem } from '../../../../hooks/useSystem';
 import React, { useState } from 'react';
 import { Card, Button } from '../../../ui/Base';
 import { Package, Download, Upload, Copy, Settings, Check, Globe, LayoutTemplate, Share2 } from 'lucide-react';
@@ -19,7 +20,9 @@ const mockSnapshots: Snapshot[] = [
     { id: 'snap_3', name: 'SaaS Onboarding', description: 'Standard B2B SaaS onboarding sequences, support pipelines, and customer health scoring fields.', version: 'v3.0', moduleCount: 22, size: '4.8 MB', lastUpdated: '1 month ago' },
 ];
 
-export const SnapshotsTab = () => {
+export const SnapshotsTab = () => { 
+    const { setToast } = useSystem();
+
     const [snapshots] = useState<Snapshot[]>(mockSnapshots);
     const [deployingId, setDeployingId] = useState<string | null>(null);
     const [exportingId, setExportingId] = useState<string | null>(null);
@@ -30,7 +33,7 @@ export const SnapshotsTab = () => {
         setTimeout(() => {
             sfx.playSuccess();
             setDeployingId(null);
-            alert('Snapshot deployed successfully to the current sub-account!');
+            setToast({ title: "Alert", message: "Snapshot deployed successfully to the current sub-account!", type: "warning" });
         }, 1500);
     };
 

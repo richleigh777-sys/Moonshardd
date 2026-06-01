@@ -55,6 +55,18 @@ export const SmartQueue: React.FC<SmartQueueProps> = ({ sales, onEngage }) => {
                     score -= 20;
                 }
 
+                // Interaction history (mock)
+                if (s.callSummary) {
+                    score += 10;
+                }
+                
+                // Demographic data (age/medical conditions)
+                if (s.age && s.age > 45) score += 5;
+                if (s.medicalConditions && s.medicalConditions.length > 0) score += 10;
+                if (s.height && s.weight) score += 5; // Has some medical profile data
+
+                score = Math.min(99, Math.max(1, score));
+
                 return { ...s, score, reason, urgency };
             })
             .sort((a, b) => b.score - a.score);
@@ -120,8 +132,13 @@ export const SmartQueue: React.FC<SmartQueueProps> = ({ sales, onEngage }) => {
                             <div key={lead.id} className="p-3 bg-surface-main/30 border border-border-subtle hover:border-accent-primary/20 transition-all rounded-2xl group flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between z-10 relative">
                                 
                                 <div className="flex items-center gap-4 flex-1 w-full">
-                                    <div className="w-8 h-8 rounded-full border border-border-strong flex items-center justify-center font-[700] text-xs text-text-muted bg-surface-alt shrink-0">
-                                        {idx + 1}
+                                    <div className={`w-10 h-10 rounded-xl border flex items-center justify-center font-[800] text-[10px] sm:text-xs shrink-0 flex-col tracking-widest ${
+                                        lead.score >= 80 ? 'border-status-success text-status-success bg-status-success/10' :
+                                        lead.score >= 60 ? 'border-status-warning text-status-warning bg-status-warning/10' :
+                                        'border-border-strong text-text-muted bg-surface-alt'
+                                    }`}>
+                                        <span className="leading-none">{lead.score}</span>
+                                        <span className="text-[7px] uppercase mt-0.5 opacity-80">Score</span>
                                     </div>
                                     <div className="flex flex-col">
                                         <div className="flex items-center gap-2">

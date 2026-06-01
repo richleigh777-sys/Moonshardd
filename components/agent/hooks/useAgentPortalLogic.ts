@@ -4,6 +4,7 @@ import { useCRM } from '../../../hooks/useCRM';
 import { useSystem } from '../../../hooks/useSystem';
 import { sfx } from '../../../lib/soundService';
 import { triggerLeadStagnationProtocol } from '../../../lib/protocolService';
+import { realtimeClient } from '../../../lib/realtimeClient';
 
 export const useAgentPortalLogic = () => {
     const { currentUser } = useAuth();
@@ -18,6 +19,20 @@ export const useAgentPortalLogic = () => {
     const [showCalculator, setShowCalculator] = useState(false);
     const [showScratchpad, setShowScratchpad] = useState(false);
     const [showTimeSheet, setShowTimeSheet] = useState(false);
+
+    useEffect(() => {
+        const unsubscribe = realtimeClient.subscribe((event) => {
+            if (event.type === 'FLASH_DIRECTIVE') {
+                sfx.playError(); // Use error sound for urgent alert
+                setToast({
+                    title: 'FLASH DIRECTIVE',
+                    message: event.payload?.message || 'Emergency Broadcast Received',
+                    type: 'error'
+                });
+            }
+        });
+        return unsubscribe;
+    }, [setToast]);
 
     const allowedTerminals = useMemo(() => {
         return systemConfig.permissions?.agent || [

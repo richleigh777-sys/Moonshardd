@@ -5,20 +5,22 @@ import { Pool } from 'pg';
 
 // We implement connection pooling to handle high-velocity CRM interactions securely.
 // Ensure DATABASE_URL is set in the environment variables.
-const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
-  // Enhanced security: enforce SSL in production networks 
-  // (adjust settings based on your infrastructure provider)
-  ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : undefined,
-  max: 20, // Max clients in the pool
-  idleTimeoutMillis: 30000,
-  connectionTimeoutMillis: 2000,
-});
+let pool: Pool | null = null;
+if (process.env.DATABASE_URL) {
+  pool = new Pool({
+    connectionString: process.env.DATABASE_URL,
+    ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : undefined,
+    max: 20,
+    idleTimeoutMillis: 30000,
+    connectionTimeoutMillis: 2000,
+  });
 
-pool.on('error', (err, client) => {
-  console.error('Unexpected error on idle database client', err);
-  process.exit(-1);
-});
+  pool.on('error', (err, client) => {
+    console.error('Unexpected error on idle database client', err);
+  });
+} else {
+  console.warn("DATABASE_URL is not set. Database operations will fail if called.");
+}
 
 /**
  * Execute a query securely using parameterized statements to prevent SQL injection.
@@ -27,6 +29,7 @@ pool.on('error', (err, client) => {
  * @returns QueryResult
  */
 export const query = async (text: string, params?: any[]) => {
+  if (!pool) throw new Error("Database not connected. Provide DATABASE_URL.");
   const start = Date.now();
   try {
     const res = await pool.query(text, params);
@@ -50,6 +53,7 @@ export const query = async (text: string, params?: any[]) => {
  * @param callback A function containing the transactional queries
  */
 export const transaction = async <T>(callback: (client: any) => Promise<T>): Promise<T> => {
+  if (!pool) throw new Error("Database not connected. Provide DATABASE_URL.");
   const client = await pool.connect();
   try {
     await client.query('BEGIN');

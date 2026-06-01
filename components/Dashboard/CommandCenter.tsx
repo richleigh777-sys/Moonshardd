@@ -1,31 +1,52 @@
-import React, { useContext } from 'react';
+import React, { useContext, useState } from 'react';
 import { useSmartLeadQueue } from '../../hooks/useSmartLeadQueue';
 import { useTodayStats } from '../../hooks/useTodayStats';
 import { useContextualHelp } from '../../hooks/useContextualHelp';
 import { AuthContext } from '../../context/AuthContextCore';
+import { sfx } from '../../lib/soundService';
 
 export const CommandCenter: React.FC = () => {
   const leads = useSmartLeadQueue();
   const stats = useTodayStats();
   const help = useContextualHelp();
   const { currentUser } = useContext(AuthContext)!;
+  const [skippedIds, setSkippedIds] = useState<string[]>([]);
 
-  const nextAction = leads[0];
+  const nextAction = leads.find(l => !skippedIds.includes(l.id));
 
   const handleCall = async (leadId: string) => {
-    // Implement actual call functionality
-    console.log('Calling lead:', leadId);
-    // You could integrate with Twilio or another VoIP service
+    if (!nextAction) return;
+    sfx.playPhoneRing();
+    window.dispatchEvent(new CustomEvent('NAVIGATE', { detail: 'enrollment' }));
+    window.dispatchEvent(new CustomEvent('LOAD_LEAD', { 
+      detail: {
+        customerName: nextAction.customer,
+        phone: nextAction.phone,
+        email: nextAction.email || '',
+        shippingAddress: nextAction.address || '',
+        dob: nextAction.dob || '',
+        medicalConditions: nextAction.medicalConditions || []
+      } 
+    }));
   };
 
   const handleText = async (leadId: string) => {
-    console.log('Texting lead:', leadId);
-    // You could integrate with Twilio SMS
+    if (!nextAction) return;
+    sfx.playClick();
+    window.dispatchEvent(new CustomEvent('NAVIGATE', { detail: 'chat' }));
+    // Open chat thread with customer name
+    setTimeout(() => {
+      window.dispatchEvent(new CustomEvent('SELECT_CHAT_CUSTOMER', { 
+        detail: { customerName: nextAction.customer, phone: nextAction.phone } 
+      }));
+    }, 100);
   };
 
   const handleSkip = () => {
-    // Mark lead as seen and show next
-    console.log('Skipping lead');
+    if (nextAction) {
+      sfx.playTrash();
+      setSkippedIds(prev => [...prev, nextAction.id]);
+    }
   };
 
   return (

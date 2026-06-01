@@ -39,9 +39,12 @@ export const useServerManager = () => {
     const createNewServer = useCallback(async (name: string, region: string) => {
         const newServer = await nexusGateway.createServer(name, region);
         if (newServer) {
-            // The subscription will update the list
+            setServerList(prev => {
+                if (prev.find(s => s.id === newServer.id)) return prev;
+                return [...prev, newServer];
+            });
         }
-    }, []);
+    }, [setServerList]);
 
     return useMemo(() => ({
         activeServer,

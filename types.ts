@@ -77,9 +77,20 @@ export interface Customer {
     normalizedPhone: string;
     normalizedEmail: string;
     addressFingerprint: string;
+    shippingAddress?: string;
+    shippingApt?: string;
+    shippingCity?: string;
+    shippingState?: string;
+    shippingZip?: string;
+    billingAddress?: string;
+    billingApt?: string;
+    billingCity?: string;
+    billingState?: string;
+    billingZip?: string;
     accountId?: string; // Many-to-One: Contact belongs to one Account
     ltv: number;
     orderCount: number;
+    declineCount?: number;
     lastOrderDate: number;
     firstSource: string;
     tags: string[];
@@ -88,12 +99,20 @@ export interface Customer {
     emails: string[];
     age?: number;
     dob?: string;
+    height?: string;
+    weight?: string;
+    medicalConditions?: string[];
     followUpDate?: number;
     callbackTime?: number;
     updatedAt?: number;
     createdAt?: number;
     agentId?: string;
     status?: string;
+    
+    // Profile Enrichment Fields
+    leadSource?: string;
+    goals?: string;
+    communicationPreferences?: string;
 }
 
 /**
@@ -112,7 +131,17 @@ export interface Sale {
     phone: string;
     email?: string;
     address: string;
+    city?: string;
+    state?: string;
+    zip?: string;
+    shippingAddress?: string;
+    shippingCity?: string;
+    shippingState?: string;
+    shippingZip?: string;
     billingAddress?: string;
+    billingCity?: string;
+    billingState?: string;
+    billingZip?: string;
     product: string;
     quantity: string;
     dosage: string;
@@ -152,6 +181,13 @@ export interface Sale {
     updatedAt?: number;
     qaScore?: number;
     qaNotes?: string;
+    
+    // Snapshot metrics & Enrichment
+    snapshotTotalDiscount?: number;
+    snapshotOriginalAmount?: number;
+    leadSource?: string;
+    goals?: string;
+    communicationPreferences?: string;
 }
 
 export interface CartItem {
@@ -160,6 +196,9 @@ export interface CartItem {
     quantity: string;
     dosage: string;
     unitPrice: number;
+    // Hardcoded snapshot values
+    discount?: number;
+    originalPrice?: number;
 }
 
 export interface User {
@@ -265,6 +304,7 @@ export interface SystemConfig {
     clawbackWindow?: number; // Days for chargeback liability
     overtimeThreshold?: number; // Hours per week before OT
     breakDurationMinutes: number;
+    reorderPolicyDays?: number; // Days before a customer can be sold to again
     spiffRules?: SpiffRule[];
     medicalConditions?: string[];
     maintenanceMode?: boolean;
@@ -317,6 +357,8 @@ export interface SystemConfig {
         users: number;
         latency: number;
         type: 'enterprise' | 'independent';
+        accessKey?: string;
+        ipEndpoint?: string;
     }[];
 }
 
@@ -524,13 +566,22 @@ export interface Task {
 }
 
 export interface SalesFormData {
-    fullName: string;
+    firstName: string;
+    lastName: string;
     phone: string;
     email: string;
     dob?: string;
     age?: string;
     shippingAddress: string;
+    shippingApt?: string;
+    shippingCity?: string;
+    shippingState?: string;
+    shippingZip?: string;
     billingAddress: string;
+    billingApt?: string;
+    billingCity?: string;
+    billingState?: string;
+    billingZip?: string;
     bankName?: string;
     cardProvider?: string;
     cardNumber?: string;

@@ -1,12 +1,13 @@
 import React, { useMemo, useState } from 'react';
 import { Sale, User } from '../../../types';
-import { CheckCircle2, XCircle, Eye, Clock } from 'lucide-react';
+import { CheckCircle2, XCircle, Eye, Clock, AlertTriangle } from 'lucide-react';
+import { DECLINE_REASONS } from '../../../constants';
 
 interface DashboardApprovalPanelProps {
   sales: Sale[];
   users: User[];
   onApprove: (saleId: string) => void;
-  onDecline: (saleId: string) => void;
+  onDecline: (saleId: string, reason: string, status: 'Declined' | 'Cancelled') => void;
 }
 
 export const DashboardApprovalPanel: React.FC<DashboardApprovalPanelProps> = ({
@@ -16,6 +17,7 @@ export const DashboardApprovalPanel: React.FC<DashboardApprovalPanelProps> = ({
   onDecline,
 }) => {
   const [expandedId, setExpandedId] = useState<string | null>(null);
+  const [declineReason, setDeclineReason] = useState<string>(DECLINE_REASONS[0]);
 
   const pendingSales = useMemo(() => {
     return sales
@@ -112,6 +114,19 @@ export const DashboardApprovalPanel: React.FC<DashboardApprovalPanelProps> = ({
                   </div>
                 </div>
 
+                <div>
+                  <p className="text-xs text-slate-400 uppercase tracking-wider mb-1">Decline/Cancel Reason</p>
+                  <select 
+                    value={declineReason}
+                    onChange={(e) => setDeclineReason(e.target.value)}
+                    className="w-full bg-slate-700 text-white p-2 rounded text-sm border border-slate-600"
+                  >
+                    {DECLINE_REASONS.map(reason => (
+                      <option key={reason} value={reason}>{reason}</option>
+                    ))}
+                  </select>
+                </div>
+
                 {sale.callSummary && (
                   <div className="bg-slate-700 rounded p-2">
                     <p className="text-xs text-slate-400 uppercase tracking-wider mb-1">Notes</p>
@@ -129,11 +144,18 @@ export const DashboardApprovalPanel: React.FC<DashboardApprovalPanelProps> = ({
                     Approve
                   </button>
                   <button
-                    onClick={() => onDecline(sale.id)}
+                    onClick={() => onDecline(sale.id, declineReason, 'Declined')}
                     className="flex-1 flex items-center justify-center gap-2 bg-red-600 hover:bg-red-700 text-white font-semibold py-2 rounded transition-colors"
                   >
                     <XCircle size={18} />
                     Decline
+                  </button>
+                  <button
+                    onClick={() => onDecline(sale.id, declineReason, 'Cancelled')}
+                    className="flex-1 flex items-center justify-center gap-2 bg-slate-600 hover:bg-slate-700 text-white font-semibold py-2 rounded transition-colors"
+                  >
+                    <AlertTriangle size={18} />
+                    Cancel
                   </button>
                 </div>
               </div>

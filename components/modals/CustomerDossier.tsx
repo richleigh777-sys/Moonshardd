@@ -1,7 +1,7 @@
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { CustomerProfile } from '../../utils/intelligence';
-import { X, Trophy, Calendar, DollarSign, Package, Phone, Mail, MapPin, ShieldCheck, Briefcase, FileText, CheckCircle2 } from 'lucide-react';
+import { X, Trophy, Calendar, DollarSign, Package, Phone, Mail, MapPin, ShieldCheck, Briefcase, FileText, CheckCircle2, MessageSquare, Send, PhoneOff } from 'lucide-react';
 import { Card } from '../ui/Base';
 import { useCRM } from '../../hooks/useCRM';
 
@@ -11,10 +11,59 @@ interface CustomerDossierProps {
 }
 
 type TabMode = 'overview' | 'timeline' | 'financials';
+type CommsMode = 'none' | 'call' | 'sms' | 'email';
 
 export const CustomerDossier: React.FC<CustomerDossierProps> = ({ profile, onClose }) => {
-  const { notes, auditLogs } = useCRM();
+  const { notes, auditLogs, addNote } = useCRM();
   const [activeTab, setActiveTab] = useState<TabMode>('overview');
+  const [commsMode, setCommsMode] = useState<CommsMode>('none');
+  const [commsText, setCommsText] = useState('');
+  const [callDuration, setCallDuration] = useState(0);
+
+  useEffect(() => {
+    let timer: any;
+    if (commsMode === 'call') {
+      timer = setInterval(() => setCallDuration(p => p + 1), 1000);
+    } else {
+      setCallDuration(0);
+    }
+    return () => clearInterval(timer);
+  }, [commsMode]);
+
+  const handleSendComms = async () => {
+    if (!profile) return;
+    
+    let content = '';
+    let reason = '';
+    
+    if (commsMode === 'sms') {
+      if (!commsText.trim()) return;
+      reason = 'Outbound SMS';
+      content = `Message Sent: "${commsText}"`;
+    } else if (commsMode === 'email') {
+      if (!commsText.trim()) return;
+      reason = 'Outbound Email';
+      content = `Email Sent:\n\n${commsText}`;
+    } else if (commsMode === 'call') {
+      reason = 'Outbound Call';
+      const m = Math.floor(callDuration / 60).toString().padStart(2, '0');
+      const s = (callDuration % 60).toString().padStart(2, '0');
+      content = `Call completed. Duration: ${m}:${s}`;
+    }
+
+    await addNote({
+      type: 'note',
+      priority: 'Low',
+      customerName: profile.name,
+      phone: profile.phone,
+      content,
+      reason
+    } as any);
+
+    setCommsMode('none');
+    setCommsText('');
+    setActiveTab('timeline'); // Auto switch to timeline to see the log
+  };
 
   // --- SINGLE SOURCE OF TRUTH AGGREGATION ---
   const timelineEvents = useMemo(() => {
@@ -98,9 +147,22 @@ export const CustomerDossier: React.FC<CustomerDossierProps> = ({ profile, onClo
                 </div>
             </div>
             
-            <button onClick={onClose} className="p-3 bg-surface-highlight hover:bg-surface-alt text-text-muted hover:text-text-primary rounded-xl transition-all border border-transparent hover:border-border-subtle z-20">
-                <X size={24} />
-            </button>
+            <div className="relative z-20 flex items-center gap-3">
+                <div className="flex bg-surface-main rounded-xl p-1 border border-border-subtle shadow-sm mr-4">
+                    <button onClick={() => setCommsMode('call')} className={`px-4 py-2 rounded-lg text-xs font-[700] tracking-widest flex items-center gap-2 transition-all ${commsMode === 'call' ? 'bg-accent-primary text-white' : 'text-text-secondary hover:text-text-primary hover:bg-surface-alt'}`}>
+                        <Phone size={14} /> Call
+                    </button>
+                    <button onClick={() => setCommsMode('sms')} className={`px-4 py-2 rounded-lg text-xs font-[700] tracking-widest flex items-center gap-2 transition-all ${commsMode === 'sms' ? 'bg-accent-primary text-white' : 'text-text-secondary hover:text-text-primary hover:bg-surface-alt'}`}>
+                        <MessageSquare size={14} /> Text
+                    </button>
+                    <button onClick={() => setCommsMode('email')} className={`px-4 py-2 rounded-lg text-xs font-[700] tracking-widest flex items-center gap-2 transition-all ${commsMode === 'email' ? 'bg-accent-primary text-white' : 'text-text-secondary hover:text-text-primary hover:bg-surface-alt'}`}>
+                        <Mail size={14} /> Email
+                    </button>
+                </div>
+                <button onClick={onClose} className="p-3 bg-surface-highlight hover:bg-surface-alt text-text-muted hover:text-text-primary rounded-xl transition-all border border-transparent hover:border-border-subtle z-20">
+                    <X size={24} />
+                </button>
+            </div>
         </div>
 
         {/* TABS */}
@@ -117,6 +179,69 @@ export const CustomerDossier: React.FC<CustomerDossierProps> = ({ profile, onClo
                 </button>
             ))}
         </div>
+
+        {/* COMMS COMPOSER */}
+        {commsMode !== 'none' && (
+            <div className="bg-surface-main p-4 border-b border-border-subtle shrink-0 animate-in slide-in-from-top-2 duration-200">
+                <div className="flex gap-4 items-start">
+                    {commsMode === 'call' && (
+                        <div className="flex-1 flex items-center justify-between bg-surface-alt p-4 rounded-xl border border-accent-primary/50">
+                            <div className="flex items-center gap-4">
+                                <div className="w-12 h-12 rounded-full bg-accent-primary/20 flex items-center justify-center text-accent-primary animate-pulse">
+                                    <Phone size={24} />
+                                </div>
+                                <div>
+                                    <p className="text-sm font-[700] text-text-primary tracking-widest">Ongoing Call with {profile.name}</p>
+                                    <p className="text-xs text-text-secondary mt-1">{profile.phone || 'No phone number available'}</p>
+                                </div>
+                            </div>
+                            <div className="flex items-center gap-6">
+                                <span className="text-2xl font-mono text-text-primary bg-surface-main px-4 py-2 rounded-lg border border-border-subtle tracking-widest">
+                                    {Math.floor(callDuration / 60).toString().padStart(2, '0')}:{(callDuration % 60).toString().padStart(2, '0')}
+                                </span>
+                                <button onClick={handleSendComms} className="bg-status-error hover:bg-red-600 text-white px-6 py-3 rounded-lg text-xs font-[700] tracking-widest flex items-center gap-2 transition-all">
+                                    <PhoneOff size={16} /> End & Log Call
+                                </button>
+                            </div>
+                        </div>
+                    )}
+                    
+                    {commsMode === 'sms' && (
+                        <div className="flex-1 flex gap-3">
+                            <textarea
+                                value={commsText}
+                                onChange={(e) => setCommsText(e.target.value)}
+                                placeholder="Write your text message here..."
+                                className="flex-1 bg-surface-alt border border-border-subtle rounded-xl p-4 text-sm resize-none h-24 focus:border-accent-primary outline-none transition-colors"
+                            />
+                            <div className="flex flex-col gap-2">
+                                <button onClick={handleSendComms} disabled={!commsText.trim()} className="bg-accent-primary hover:bg-accent-secondary disabled:opacity-50 text-white px-6 h-full rounded-xl text-xs font-[700] tracking-widest flex flex-col items-center justify-center gap-2 transition-all">
+                                    <Send size={18} />
+                                    <span>Send SMS</span>
+                                </button>
+                            </div>
+                        </div>
+                    )}
+
+                    {commsMode === 'email' && (
+                        <div className="flex-1 flex gap-3">
+                            <textarea
+                                value={commsText}
+                                onChange={(e) => setCommsText(e.target.value)}
+                                placeholder="Write your email body here..."
+                                className="flex-1 bg-surface-alt border border-border-subtle rounded-xl p-4 text-sm resize-none h-32 focus:border-accent-primary outline-none transition-colors"
+                            />
+                            <div className="flex flex-col gap-2">
+                                <button onClick={handleSendComms} disabled={!commsText.trim()} className="bg-accent-primary hover:bg-accent-secondary disabled:opacity-50 text-white px-6 h-full rounded-xl text-xs font-[700] tracking-widest flex flex-col items-center justify-center gap-2 transition-all">
+                                    <Send size={18} />
+                                    <span>Send Email</span>
+                                </button>
+                            </div>
+                        </div>
+                    )}
+                </div>
+            </div>
+        )}
 
         <div className="flex-1 overflow-y-auto p-8 custom-scrollbar bg-surface-alt/10">
             {activeTab === 'overview' && (

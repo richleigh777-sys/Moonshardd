@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { ShoppingCart, Edit3, ChevronDown, ChevronUp, PackageOpen } from 'lucide-react';
+import React from 'react';
+import { ShoppingCart, Edit3, PackageOpen } from 'lucide-react';
 import { CartItem } from '../../../../types';
 import { ProductQuickSelector } from '../ProductQuickSelector';
 import { CartPreview } from '../CartPreview';
@@ -26,8 +26,6 @@ export function ProductBasketEnhanced({
   quantities,
   calculatedTotal
 }: Props) {
-  const [isExpanded, setIsExpanded] = useState(cart.length === 0); // Open by default if empty
-
   const handleAdd = (item: CartItem) => {
     setCart((prev) => [...prev, item]);
   };
@@ -53,51 +51,36 @@ export function ProductBasketEnhanced({
   return (
     <div className="flex flex-col gap-4">
       {/* Header/Toggle Card */}
-      <Card 
-        className="bg-surface-main border-border-subtle shadow-sm cursor-pointer hover:border-indigo-500/30 transition-colors overflow-hidden relative"
-        onClick={() => setIsExpanded(!isExpanded)}
+      <div 
+        className="mb-4"
       >
-        <div className="p-4 flex items-center justify-between">
+        <div className="flex items-center justify-between pb-3 border-b border-border-subtle">
           <div className="flex items-center gap-3">
-             <div className={`p-2 rounded-lg ${cart.length > 0 ? 'bg-status-success/20 text-status-success' : 'bg-surface-alt text-text-muted'}`}>
+             <div className={`p-2.5 rounded-xl ${cart.length > 0 ? 'bg-status-success/10 text-status-success' : 'bg-surface-alt text-text-muted border border-border-subtle'}`}>
                 <ShoppingCart size={20} />
              </div>
              <div>
-               <h3 className="font-black text-sm tracking-widest text-text-primary">
-                 ORDER DESK
+               <h3 className="font-bold text-lg tracking-tight text-text-primary">
+                 Order Contents
                </h3>
-               {cart.length > 0 && (
-                 <p className="text-xs text-text-muted mt-0.5">
-                   {cart.length} {cart.length === 1 ? 'item' : 'items'} in cart
-                 </p>
-               )}
+               <p className="text-sm text-text-muted mt-0.5">
+                 Select the products and configure dosages
+               </p>
              </div>
           </div>
           <div className="flex items-center gap-4">
-             {cart.length > 0 && !isExpanded && (
-               <div className="text-right mr-2">
-                 <span className="block text-[10px] uppercase font-bold text-text-muted tracking-wide">Total</span>
-                 <span className="block font-black text-emerald-400">${calculatedTotal.toFixed(2)}</span>
+             {cart.length > 0 && (
+               <div className="text-right">
+                 <span className="block text-xs font-medium text-text-muted tracking-wide">Basket Total</span>
+                 <span className="block font-black text-xl tracking-tight text-status-success">${calculatedTotal.toFixed(2)}</span>
                </div>
              )}
-             <button className="text-text-muted hover:text-indigo-400 transition-colors p-1 relative">
-                {notes && <span className="absolute top-0 right-0 w-2 h-2 bg-amber-500 rounded-full" />}
-                {isExpanded ? <ChevronUp size={24} /> : <ChevronDown size={24} />}
-             </button>
           </div>
         </div>
-        
-        {/* Progress bar visual tied to cart status */}
-        <div className="h-1 w-full bg-surface-alt">
-          <div 
-             className={`h-full transition-all duration-1000 ${cart.length > 0 ? 'bg-status-success w-full' : 'w-0'}`} 
-          />
-        </div>
-      </Card>
+      </div>
 
-      {/* Expanded Content View */}
-      {isExpanded && (
-        <div className="animate-in slide-in-from-top-4 fade-in duration-300 flex flex-col gap-6">
+      {/* Content View */}
+      <div className="animate-in slide-in-from-top-4 fade-in duration-300 flex flex-col gap-6">
           <ProductQuickSelector
             products={activeProducts}
             presets={activePresets}
@@ -117,7 +100,7 @@ export function ProductBasketEnhanced({
             />
           </div>
 
-          <Card className="p-4 bg-surface-main border-border-subtle shadow-sm flex flex-col gap-3">
+          <Card variant="refraction" className="p-4 bg-surface-main border-border-subtle shadow-sm flex flex-col gap-3">
              <div className="flex items-center justify-between">
                 <label className="text-[11px] font-bold text-text-muted tracking-widest flex items-center gap-1.5 uppercase">
                    <Edit3 size={14} className="text-indigo-400" /> ORDER NOTES
@@ -133,8 +116,7 @@ export function ProductBasketEnhanced({
                className="w-full bg-surface-alt/50 border border-border-subtle rounded-xl p-3 text-sm text-text-primary outline-none focus:border-indigo-500/50 resize-y min-h-[80px]"
              />
           </Card>
-        </div>
-      )}
+      </div>
     </div>
   );
 }

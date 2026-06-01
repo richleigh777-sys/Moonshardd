@@ -35,7 +35,7 @@ export const CallbackProtocol: React.FC<CallbackProtocolProps> = ({
                 onAddNote={async (n) => { await addNote(n); onCancel(); }} 
                 currentUser={currentUser} 
                 initialData={{
-                    name: formData.fullName,
+                    name: formData.firstName ? `${formData.firstName} ${formData.lastName}`.trim() : '',
                     phone: formData.phone,
                     address: formData.shippingAddress,
                     medicalConditions: selectedConditions

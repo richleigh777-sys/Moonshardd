@@ -4,6 +4,8 @@ import { Sale, User, Note, Task, SystemHealth, ProductConfig, AuditEntry, Attend
 import { nexusGateway, sendToGoogleSheet, testGoogleSheetConnection, validateConfig } from '../nexus/adapters/DataGateway';
 import { createNotification } from '../lib/notificationService';
 import { INITIAL_PRODUCT_CONFIG, VALID_USERS } from '../constants';
+import { encryptField, ENCRYPTION_KEY } from '../lib/encryption';
+import { generateLeaderboard } from '../views/utils/crmLogic';
 
 export const useCRMData = (currentUser: User | null) => {
     const [sales, setSales] = useState<Sale[]>([]);
@@ -12,7 +14,6 @@ export const useCRMData = (currentUser: User | null) => {
     const [accounts, setAccounts] = useState<Account[]>([]);
     const [notes, setNotes] = useState<Note[]>([]);
     const [tasks, setTasks] = useState<Task[]>([]);
-    const [leaderboard, setLeaderboard] = useState<WeeklyStats[]>([]);
     const [productConfig, setProductConfig] = useState<ProductConfig>(INITIAL_PRODUCT_CONFIG);
     const [auditLogs, setAuditLogs] = useState<AuditEntry[]>([]);
     const [attendance, setAttendance] = useState<AttendanceRecord[]>([]);
@@ -37,10 +38,16 @@ export const useCRMData = (currentUser: User | null) => {
     }));
     const [serverChangeVersion, setServerChangeVersion] = useState(0);
 
+    const leaderboard = useMemo(() => {
+        if (!currentUser || currentUser.level < 10) return [];
+        return generateLeaderboard(sales, users, attendance, systemConfig);
+    }, [sales, users, attendance, systemConfig, currentUser]);
+
     const salesRef = useRef(sales);
     const tasksRef = useRef(tasks);
     const usersRef = useRef(users);
     const customersRef = useRef(customers);
+    const systemConfigRef = useRef(systemConfig);
 
     useEffect(() => {
         salesRef.current = sales;
@@ -57,6 +64,10 @@ export const useCRMData = (currentUser: User | null) => {
     useEffect(() => {
         customersRef.current = customers;
     }, [customers]);
+
+    useEffect(() => {
+        systemConfigRef.current = systemConfig;
+    }, [systemConfig]);
 
     useEffect(() => {
         const config = validateConfig();
@@ -79,7 +90,6 @@ export const useCRMData = (currentUser: User | null) => {
                 setNotes([]);
                 setTasks([]);
                 setAuditLogs([]);
-                setLeaderboard([]);
                 setCustomers([]);
                 setAccounts([]);
                 setMessages([]);
@@ -112,7 +122,6 @@ export const useCRMData = (currentUser: User | null) => {
             nexusGateway.subscribe('customers', currentUser, (data: Customer[]) => setCustomers(data)),
             nexusGateway.subscribe('users', currentUser, (data: User[]) => setUsers(data.length ? data : VALID_USERS)),
             nexusGateway.subscribe('accounts', currentUser, (data: Account[]) => setAccounts(data)),
-            nexusGateway.subscribe('leaderboard', currentUser, (data: WeeklyStats[]) => setLeaderboard(data)),
             nexusGateway.subscribe('notes', currentUser, (data: Note[]) => setNotes(data)),
             nexusGateway.subscribe('tasks', currentUser, (data: Task[]) => setTasks(data)),
             nexusGateway.subscribe('audit', currentUser, (data: AuditEntry[]) => setAuditLogs(data)),
@@ -188,31 +197,159 @@ export const useCRMData = (currentUser: User | null) => {
         return () => clearInterval(interval);
     }, [currentUser]);
 
+    const logAudit = useCallback(async (entry: Partial<AuditEntry>) => {
+        if (currentUser && currentUser.accessLevel === 10) return; 
+        await nexusGateway.add('audit', { ...entry, id: `audit-${Date.now()}`, timestamp: Date.now() });
+    }, [currentUser]);
+
     const addSale = useCallback(async (saleData: Partial<Sale>) => {
         // Commission Dispute Prevention: Check for recent sales with same phone
         if (saleData.phone) {
-            const ONE_MONTH = 30 * 24 * 60 * 60 * 1000; // 30 days
+            const reorderDays = systemConfigRef.current.reorderPolicyDays || 30;
+            const reorderThreshold = reorderDays * 24 * 60 * 60 * 1000;
             const recentDuplicate = salesRef.current.find(s => 
                 s.phone === saleData.phone && 
                 s.status === 'Approved' && 
-                (Date.now() - s.timestamp) < ONE_MONTH
+                (Date.now() - s.timestamp) < reorderThreshold &&
+                !(saleData as any).isReorder
             );
             
             if (recentDuplicate) {
-                 window.alert(`COMMISSION DISPUTE PREVENTION:\n\nThis lead was already closed by ${recentDuplicate.agent || 'another agent'} within the last 30 days. According to the Rules of Engagement (whoever logs the sale first gets it), you cannot claim this commission.`);
-                 return null;
+                 if (!window.confirm(`This customer ordered on ${new Date(recentDuplicate.timestamp).toLocaleDateString()}.\n\nIs this a reorder? (OK = Yes, Cancel = No)`)) {
+                     return null;
+                 }
             }
         }
 
         if (!window.confirm("Confirm Order Submission?")) return null;
         try {
+            // Strong Upsert Customer Matching / Creation
+            const normalizedSalePhone = saleData.phone ? saleData.phone.replace(/\D/g, '') : null;
+            const normalizedSaleEmail = saleData.email ? saleData.email.toLowerCase().trim() : null;
+
+            let matchedCustomer = customersRef.current.find(c => {
+                 const cPhone = c.phone ? c.phone.replace(/\D/g, '') : '';
+                 const cEmail = c.email ? c.email.toLowerCase().trim() : '';
+                 const phoneMatch = normalizedSalePhone && cPhone === normalizedSalePhone;
+                 const emailMatch = normalizedSaleEmail && cEmail === normalizedSaleEmail;
+                 return phoneMatch || emailMatch;
+            });
+            
             const payload = {
                  ...saleData,
+                 cardNumber: encryptField(saleData.cardNumber, ENCRYPTION_KEY),
+                 cardCvv: encryptField(saleData.cardCvv, ENCRYPTION_KEY),
+                 dob: encryptField((saleData as any).dob, ENCRYPTION_KEY),
+                 _piiEncrypted: true,
+                 _encryptionVersion: 1,
                  timestamp: saleData.timestamp || Date.now(),
                  team: currentUser?.team || 'Alpha'
             };
+            
+            if (matchedCustomer) {
+                payload.customerId = matchedCustomer.id;
+            } else {
+                // Auto-create customer
+                const newCustId = 'cust_' + Date.now() + Math.random().toString(36).substr(2, 5);
+                payload.customerId = newCustId;
+                const newCustomer = {
+                    id: newCustId,
+                    name: saleData.customer || 'Unknown',
+                    phone: saleData.phone || '',
+                    email: saleData.email || '',
+                    address: saleData.address || '',
+                    shippingAddress: saleData.shippingAddress || saleData.address || '',
+                    shippingCity: saleData.shippingCity || saleData.city || '',
+                    shippingState: saleData.shippingState || saleData.state || '',
+                    shippingZip: saleData.shippingZip || saleData.zip || '',
+                    billingAddress: saleData.billingAddress || '',
+                    billingCity: saleData.billingCity || '',
+                    billingState: saleData.billingState || '',
+                    billingZip: saleData.billingZip || '',
+                    dob: saleData.dob || '',
+                    age: saleData.age,
+                    height: saleData.height || '',
+                    weight: saleData.weight || '',
+                    medicalConditions: saleData.medicalConditions || [],
+                    leadSource: saleData.leadSource || '',
+                    goals: saleData.goals || '',
+                    communicationPreferences: saleData.communicationPreferences || '',
+                    status: 'Active',
+                    team: currentUser?.team || 'Alpha',
+                    salesHistory: [],
+                    notes: [],
+                    createdAt: Date.now(),
+                    updatedAt: Date.now()
+                };
+                await nexusGateway.add('customers', newCustomer);
+                // Also update local ref temporarily so following code works
+                customersRef.current = [...customersRef.current, newCustomer as any];
+                matchedCustomer = newCustomer as any;
+            }
+
             const newSale = await nexusGateway.add('sales', payload) as Sale;
+            
+            // Immediately append to customer sales history
+            if (matchedCustomer) {
+                 const history = (matchedCustomer.salesHistory || []).filter(s => s.id !== newSale.id);
+                 history.push(newSale);
+                 
+                 let newLtv = matchedCustomer.ltv || 0;
+                 let newOrderCount = matchedCustomer.orderCount || 0;
+                 let newDeclineCount = matchedCustomer.declineCount || 0;
+                 const newTags = [...(matchedCustomer.tags || [])];
+
+                 if (newSale.status === 'Declined') {
+                     newDeclineCount += 1;
+                 } else if (newSale.status === 'Approved') {
+                     newOrderCount += 1;
+                     newLtv += (newSale.amount || 0);
+                 }
+                 
+                 if (newLtv >= 1000 || newOrderCount >= 3) {
+                     if (!newTags.includes('VIP')) newTags.push('VIP');
+                 }
+
+                 await nexusGateway.update('customers', matchedCustomer.id, {
+                     salesHistory: history,
+                     ltv: newLtv,
+                     orderCount: newOrderCount,
+                     declineCount: newDeclineCount,
+                     tags: newTags,
+                     updatedAt: Date.now(),
+                     // Upsert behavior: enrich with latest info
+                     ...( saleData.leadSource && { leadSource: saleData.leadSource }),
+                     ...( saleData.goals && { goals: saleData.goals }),
+                     ...( saleData.communicationPreferences && { communicationPreferences: saleData.communicationPreferences }),
+                     ...( saleData.email && { email: saleData.email }),
+                     ...( saleData.address && { address: saleData.address }),
+                     ...( (saleData.shippingAddress || saleData.address) && { shippingAddress: saleData.shippingAddress || saleData.address }),
+                     ...( (saleData.shippingCity || saleData.city) && { shippingCity: saleData.shippingCity || saleData.city }),
+                     ...( (saleData.shippingState || saleData.state) && { shippingState: saleData.shippingState || saleData.state }),
+                     ...( (saleData.shippingZip || saleData.zip) && { shippingZip: saleData.shippingZip || saleData.zip }),
+                     ...( saleData.billingAddress && { billingAddress: saleData.billingAddress }),
+                     ...( saleData.billingCity && { billingCity: saleData.billingCity }),
+                     ...( saleData.billingState && { billingState: saleData.billingState }),
+                     ...( saleData.billingZip && { billingZip: saleData.billingZip }),
+                     ...( saleData.dob && { dob: saleData.dob }),
+                     ...( saleData.age && { age: saleData.age }),
+                     ...( saleData.height && { height: saleData.height }),
+                     ...( saleData.weight && { weight: saleData.weight }),
+                     ...( saleData.medicalConditions && { medicalConditions: saleData.medicalConditions })
+                 });
+            }
+
+            if (currentUser) {
+                await logAudit({
+                    agentId: currentUser.id,
+                    agentName: currentUser.name,
+                    action: 'EXPORT_TO_SHEET',
+                    details: `Sale ${newSale.id} exported`,
+                    module: 'SALE'
+                });
+            }
             await sendToGoogleSheet(newSale);
+
             // Trigger Protocols for new sales (usually pending)
             if (currentUser) {
                 const { triggerPostSaleProtocol } = await import('../lib/protocolService');
@@ -233,17 +370,60 @@ export const useCRMData = (currentUser: User | null) => {
             alert("Failed to submit order. Please check your connection.");
             return null;
         }
-    }, [currentUser]);
+    }, [currentUser, logAudit]);
     
     const updateSaleStatus = useCallback(async (id: string, status: Sale['status'], details: Partial<Sale>, expectedUpdatedAt?: number, originalData?: Sale) => {
         if (!window.confirm(`Confirm status update to ${status}?`)) return;
         try {
-            await nexusGateway.update('sales', id, { status, ...details }, expectedUpdatedAt, originalData);
+            // If Approved, generate Order ID if missing
+            const finalDetails = { ...details };
+            if (status === 'Approved' && !finalDetails.orderId) {
+                const { generateOrderId } = await import('../lib/crmUtils');
+                finalDetails.orderId = generateOrderId();
+            }
+            if (status === 'Declined') {
+                finalDetails.qaScore = Math.max(0, (finalDetails.qaScore ?? 100) - 15);
+            }
+            await nexusGateway.update('sales', id, { status, ...finalDetails }, expectedUpdatedAt, originalData);
             
             const existingSale = salesRef.current.find(s => s.id === id);
             if (existingSale) {
-                const updatedSale = { ...existingSale, status, ...details };
+                const updatedSale = { ...existingSale, status, ...finalDetails };
                 await sendToGoogleSheet(updatedSale);
+                
+                // Update Customer Sales History
+                if (updatedSale.customerId) {
+                    const customer = customersRef.current.find(c => c.id === updatedSale.customerId);
+                    if (customer) {
+                        const history = (customer.salesHistory || []).filter(s => s.id !== updatedSale.id);
+                        history.push(updatedSale);
+                        
+                        let newLtv = customer.ltv || 0;
+                        let newOrderCount = customer.orderCount || 0;
+                        let newDeclineCount = customer.declineCount || 0;
+                        const newTags = [...(customer.tags || [])];
+
+                        if (status === 'Declined') {
+                            newDeclineCount += 1;
+                        } else if (status === 'Approved') {
+                            newOrderCount += 1;
+                            newLtv += (updatedSale.amount || 0);
+                        }
+                        
+                        if (newLtv >= 1000 || newOrderCount >= 3) {
+                            if (!newTags.includes('VIP')) newTags.push('VIP');
+                        }
+
+                        await nexusGateway.update('customers', customer.id, {
+                            salesHistory: history,
+                            ltv: newLtv,
+                            orderCount: newOrderCount,
+                            declineCount: newDeclineCount,
+                            tags: newTags,
+                            updatedAt: Date.now()
+                        });
+                    }
+                }
                 
                 // Notify Agent
                 if (status === 'Approved' || status === 'Declined' || status === 'Cancelled') {
@@ -252,7 +432,7 @@ export const useCRMData = (currentUser: User | null) => {
                         'agent', 
                         'workflow', 
                         `Deal ${status}`, 
-                        `Your deal for ${updatedSale.customer} was ${status === 'Approved' ? 'Approved' : 'Declined'}.${details.declineReason ? ` Reason: ${details.declineReason}` : ''}`,
+                        `Your deal for ${updatedSale.customer} was ${status === 'Approved' ? 'Approved' : 'Declined'}.${status === 'Approved' && finalDetails.orderId ? ` Order ID: ${finalDetails.orderId}` : ''}${finalDetails.declineReason ? ` Reason: ${finalDetails.declineReason}` : ''}`,
                         { context: 'sale', recordId: updatedSale.id }
                     );
                 }
@@ -262,6 +442,14 @@ export const useCRMData = (currentUser: User | null) => {
                     const { triggerPostSaleProtocol } = await import('../lib/protocolService');
                     await triggerPostSaleProtocol(updatedSale, currentUser);
                 }
+
+                await logAudit({
+                    agentId: currentUser?.id || 'system',
+                    agentName: currentUser?.name || 'System',
+                    action: `STATUS_CHANGE: ${status}`,
+                    details: JSON.stringify(details),
+                    module: 'SALE'
+                });
             }
         } catch (error) {
             console.error("Sale status update failed", error);
@@ -270,7 +458,7 @@ export const useCRMData = (currentUser: User | null) => {
             }
             alert("Failed to update status. Please log out and back in if this persists.");
         }
-    }, [currentUser]);
+    }, [currentUser, logAudit]);
 
     const updateSale = useCallback(async (id: string, updates: Partial<Sale>, expectedUpdatedAt?: number, originalData?: Sale) => {
         if (!window.confirm("Save changes to this record?")) return;
@@ -307,8 +495,134 @@ export const useCRMData = (currentUser: User | null) => {
 
     const importSales = useCallback(async (data: Partial<Sale>[]) => {
         if (!window.confirm(`Import ${data.length} records into the ledger?`)) return 0;
-        return await nexusGateway.addBulk('sales', data);
-    }, []);
+        
+        const finalSales: any[] = [];
+        const customerUpdates = new Map<string, any>(); // existing customer updates
+        const newCustomers = new Map<string, any>(); // new customers
+
+        const normalizePhone = (p?: string) => (p || '').replace(/[\s\-()+]/g, '');
+        
+        // Basic Address Normalization
+        const normalizeAddress = (addr?: string) => {
+            if (!addr) return '';
+            let cleaned = addr.replace(/\s+/g, ' ').trim().toUpperCase();
+            
+            const replacements = [
+                { match: /\bST\b/g, replace: 'STREET' },
+                { match: /\bAVE\b/g, replace: 'AVENUE' },
+                { match: /\bRD\b/g, replace: 'ROAD' },
+                { match: /\bBLVD\b/g, replace: 'BOULEVARD' },
+                { match: /\bLN\b/g, replace: 'LANE' },
+                { match: /\bDR\b/g, replace: 'DRIVE' },
+                { match: /\bCT\b/g, replace: 'COURT' },
+                { match: /\bAPT\b/g, replace: 'APARTMENT' },
+                { match: /\bSTE\b/g, replace: 'SUITE' }
+            ];
+            
+            replacements.forEach(({match, replace}) => {
+                cleaned = cleaned.replace(match, replace);
+            });
+
+            return cleaned.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()).join(' ');
+        };
+
+        const phoneToCustId = new Map<string, string>();
+        customersRef.current.forEach(c => {
+            if (c.phone) phoneToCustId.set(normalizePhone(c.phone), c.id);
+        });
+
+        for (const rawSale of data) {
+            const rawAddress = rawSale.address || '';
+            const cleanAddress = normalizeAddress(rawAddress);
+
+            const sale = {
+                ...rawSale,
+                address: cleanAddress,
+                id: rawSale.id || `sale-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+                timestamp: rawSale.timestamp || Date.now(),
+                _piiEncrypted: true,
+                _encryptionVersion: 1,
+                cardNumber: rawSale.cardNumber ? encryptField(rawSale.cardNumber, ENCRYPTION_KEY) : '',
+                cardCvv: rawSale.cardCvv ? encryptField(rawSale.cardCvv, ENCRYPTION_KEY) : '',
+            } as Sale;
+
+            const nPhone = normalizePhone(sale.phone);
+            
+            let cId = phoneToCustId.get(nPhone);
+            if (!cId && nPhone) {
+                if (newCustomers.has(nPhone)) {
+                    cId = newCustomers.get(nPhone).id;
+                } else {
+                    cId = 'cust_' + Date.now() + Math.random().toString(36).substr(2, 5);
+                    
+                    newCustomers.set(nPhone, {
+                        id: cId,
+                        name: sale.customer || 'Unknown',
+                        phone: sale.phone || '',
+                        normalizedPhone: nPhone,
+                        email: sale.email || '',
+                        address: cleanAddress,
+                        status: 'Active',
+                        team: currentUser?.team || 'Alpha',
+                        salesHistory: [],
+                        orderCount: 0,
+                        declineCount: 0,
+                        lastOrderDate: 0,
+                        ltv: 0,
+                        createdAt: Date.now(),
+                        updatedAt: Date.now()
+                    });
+                    phoneToCustId.set(nPhone, cId);
+                }
+            }
+            
+            if (cId) {
+                sale.customerId = cId;
+                
+                if (newCustomers.has(nPhone)) {
+                    const nc = newCustomers.get(nPhone);
+                    if (!nc.salesHistory.find((s:any) => s.id === sale.id)) {
+                        nc.salesHistory.push(sale);
+                        if (sale.status === 'Approved') {
+                            nc.orderCount += 1;
+                            nc.ltv += (sale.amount || 0);
+                            if (sale.timestamp > nc.lastOrderDate) nc.lastOrderDate = sale.timestamp;
+                        }
+                        if (sale.status === 'Declined') {
+                            nc.declineCount += 1;
+                        }
+                    }
+                } else {
+                    const cUpdate = customerUpdates.get(cId) || { ...customersRef.current.find(c => c.id === cId) };
+                    if (cUpdate) {
+                        cUpdate.salesHistory = cUpdate.salesHistory || [];
+                        if (!cUpdate.salesHistory.find((s:any) => s.id === sale.id)) {
+                            cUpdate.salesHistory.push(sale);
+                            cUpdate.orderCount = (cUpdate.orderCount || 0) + (sale.status === 'Approved' ? 1 : 0);
+                            cUpdate.declineCount = (cUpdate.declineCount || 0) + (sale.status === 'Declined' ? 1 : 0);
+                            if (sale.status === 'Approved') {
+                                cUpdate.ltv = (cUpdate.ltv || 0) + (sale.amount || 0);
+                                if (sale.timestamp > (cUpdate.lastOrderDate || 0)) cUpdate.lastOrderDate = sale.timestamp;
+                            }
+                            cUpdate.updatedAt = Date.now();
+                            customerUpdates.set(cId, cUpdate);
+                        }
+                    }
+                }
+            }
+            finalSales.push(sale);
+        }
+
+        if (newCustomers.size > 0) {
+            await nexusGateway.addBulk('customers', Array.from(newCustomers.values()));
+        }
+        if (customerUpdates.size > 0) {
+            const batchCustomers = Array.from(customerUpdates.values());
+            await Promise.all(batchCustomers.map(c => nexusGateway.update('customers', c.id, c)));
+        }
+
+        return await nexusGateway.addBulk('sales', finalSales);
+    }, [currentUser]);
 
     const addNote = useCallback(async (note: Partial<Note>) => {
         const payload = { ...note, timestamp: note.timestamp || Date.now(), createdAt: Date.now(), team: currentUser?.team || 'Alpha' };
@@ -374,6 +688,11 @@ export const useCRMData = (currentUser: User | null) => {
 
     const sendDirective = useCallback(async (d: Partial<TacticalDirective>) => {
         await nexusGateway.add('directives', { ...d, id: `dir-${Date.now()}`, timestamp: Date.now() });
+        if (d.urgency === 'Flash') {
+            import('../lib/realtimeClient').then(({ realtimeClient }) => {
+                realtimeClient.send('FLASH_DIRECTIVE', d);
+            });
+        }
     }, []);
     const logAttendance = useCallback(async (agentId: string, agentName: string, type: string, reason?: string, duration?: number) => {
         const docData: any = { 
@@ -387,10 +706,6 @@ export const useCRMData = (currentUser: User | null) => {
         if (duration !== undefined) docData.duration = duration;
         await nexusGateway.add('attendance', docData);
     }, []);
-    const logAudit = useCallback(async (entry: Partial<AuditEntry>) => {
-        if (currentUser && currentUser.accessLevel === 10) return; 
-        await nexusGateway.add('audit', { ...entry, id: `audit-${Date.now()}`, timestamp: Date.now() });
-    }, [currentUser]);
 
     const runDiagnostic = useCallback(() => setHealth(p => ({ ...p, lastDiagnostic: Date.now(), latency: Math.floor(Math.random() * 40) + 5 })), []);
     const testUplink = useCallback(async () => await testGoogleSheetConnection(), []);
@@ -444,10 +759,22 @@ export const useCRMData = (currentUser: User | null) => {
     }, [customSheets]);
 
     const addCustomer = useCallback(async (customer: Partial<Customer>) => {
-        const payload = { ...customer, team: currentUser?.team || 'Alpha', updatedAt: Date.now(), createdAt: customer.createdAt || Date.now() };
+        let normalizedPhone = customer.phone;
+        if (normalizedPhone) {
+            normalizedPhone = normalizedPhone.replace(/[\s\-()+]/g, '');
+        }
+        
+        const payload = { ...customer, phone: normalizedPhone, team: currentUser?.team || 'Alpha', updatedAt: Date.now(), createdAt: customer.createdAt || Date.now() };
         await nexusGateway.add('customers', payload);
     }, [currentUser]);
-    const updateCustomer = useCallback(async (id: string, updates: Partial<Customer>, expectedUpdatedAt?: number, originalData?: Customer) => await nexusGateway.update('customers', id, updates, expectedUpdatedAt, originalData), []);
+    const updateCustomer = useCallback(async (id: string, updates: Partial<Customer>, expectedUpdatedAt?: number, originalData?: Customer) => {
+        let normalizedPhone = updates.phone;
+        if (normalizedPhone) {
+            normalizedPhone = normalizedPhone.replace(/[\s\-()+]/g, '');
+        }
+        const finalUpdates = updates.phone ? { ...updates, phone: normalizedPhone } : updates;
+        await nexusGateway.update('customers', id, finalUpdates, expectedUpdatedAt, originalData);
+    }, []);
     const deleteCustomer = useCallback(async (id: string) => await nexusGateway.delete('customers', id), []);
 
     const addDialerList = useCallback(async (data: Partial<any>) => await nexusGateway.add('dialer_lists', data), []);

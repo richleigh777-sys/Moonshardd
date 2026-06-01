@@ -4,6 +4,7 @@ import { Card, Button, Badge } from '../ui/Base';
 import { useCRM } from '../../hooks/useCRM';
 import { useAuth } from '../../hooks/useAuth';
 import { sfx } from '../../lib/soundService';
+import { MaskedData } from '../ui/MaskedData';
 
 export const ActionCenter: React.FC<{ onEngage?: (data: any) => void }> = ({ onEngage }) => {
     const { notes, customers, sales, deleteNote } = useCRM();
@@ -263,7 +264,9 @@ export const ActionCenter: React.FC<{ onEngage?: (data: any) => void }> = ({ onE
                                         </div>
                                         <div className="truncate">
                                             <p className="text-sm font-bold text-text-primary truncate">{i.customerName}</p>
-                                            <p className="text-xs font-mono text-text-muted mt-1 truncate">{i.phone || 'No phone data'}</p>
+                                            <div className="text-xs font-mono text-text-muted mt-1 truncate" onClick={(e) => e.stopPropagation()}>
+                                                {i.phone ? <MaskedData value={i.phone} type="phone" /> : 'No phone data'}
+                                            </div>
                                         </div>
                                     </div>
                                     <Button variant="primary" className="px-3 md:px-4 py-2 shrink-0 bg-emerald-500 hover:bg-emerald-600 shadow-emerald-500/20" onClick={(e) => { e.stopPropagation(); handleCall(i); }}>

@@ -27,23 +27,35 @@ export const CallbackManager: React.FC = () => {
     const audioLoopRef = useRef<any>(null);
 
     // Audio Loop Management
-    const startAlarm = () => {
-        // Play immediately
-        sfx.playPhoneRing();
-        // Loop every 4 seconds until silenced or empty
-        if (!audioLoopRef.current) {
-            audioLoopRef.current = setInterval(() => {
-                sfx.playPhoneRing();
-            }, 4000);
-        }
-    };
-
-    const stopAlarm = () => {
+    const loopCount = useRef(0);
+    
+    const stopAlarm = React.useCallback(() => {
         if (audioLoopRef.current) {
             clearInterval(audioLoopRef.current);
             audioLoopRef.current = null;
         }
-    };
+    }, []);
+
+    const startAlarm = React.useCallback(() => {
+        // Play immediately
+        sfx.playPhoneRing();
+        loopCount.current = 1;
+        // Loop every 4 seconds until silenced or empty, max 5 times.
+        if (!audioLoopRef.current) {
+            audioLoopRef.current = setInterval(() => {
+                if (loopCount.current >= 5) {
+                    stopAlarm();
+                    return;
+                }
+                sfx.playPhoneRing();
+                loopCount.current++;
+            }, 4000);
+        }
+    }, [stopAlarm]);
+
+    useEffect(() => {
+        return () => stopAlarm();
+    }, [stopAlarm]);
 
     useEffect(() => {
         if (!currentUser) return;
@@ -101,15 +113,15 @@ export const CallbackManager: React.FC = () => {
 
         const interval = setInterval(checkCallbacks, 5000);
         return () => clearInterval(interval);
-    }, [notes, currentUser]);
-
+    }, [notes, currentUser, startAlarm]);
+    
     // Stop alarm if no unsilenced alerts exist
     useEffect(() => {
         const unsilencedCount = activeAlerts.filter(a => !a.silenced).length;
         if (unsilencedCount === 0) {
             stopAlarm();
         }
-    }, [activeAlerts]);
+    }, [activeAlerts, stopAlarm]);
 
     // -- ACTIONS --
 

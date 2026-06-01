@@ -1,3 +1,4 @@
+import { useSystem } from '../../../hooks/useSystem';
 
 import React, { useState } from 'react';
 import { Sparkles, TrendingUp, AlertCircle, CheckCircle2, Megaphone, History } from 'lucide-react';
@@ -14,7 +15,9 @@ interface StrategicInsightCardProps {
     serverId: string;
 }
 
-export const StrategicInsightCard: React.FC<StrategicInsightCardProps> = ({ sales, users, notes, serverId }) => {
+export const StrategicInsightCard: React.FC<StrategicInsightCardProps> = ({ 
+ sales, users, notes, serverId }) => {
+    const { setToast } = useSystem();
     const [insight, setInsight] = useState<any>(null);
     const [loading, setLoading] = useState(false);
     const [isBroadcasting, setIsBroadcasting] = useState(false);
@@ -102,7 +105,7 @@ Evaluation Parameters:
                 createdAt: Date.now(),
                 type: 'alert'
             });
-            alert("Strategic Insight Broadcast to War Room");
+            setToast({ title: "Alert", message: "Strategic Insight Broadcast to War Room", type: "warning" });
         } catch (error) {
             handleFirestoreError(error, OperationType.CREATE, path);
         } finally {

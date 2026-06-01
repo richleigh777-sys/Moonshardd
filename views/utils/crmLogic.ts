@@ -330,6 +330,27 @@ export const generateLeaderboard = (
   }));
 };
 
+export const generateTeamLeaderboard = (sales: Sale[], users: User[]): {teamName: string, totalRevenue: number, approvedCount: number, declinedCount: number, members: User[], agentCount: number}[] => {
+    const teams = new Map<string, Sale[]>();
+    
+    sales.forEach(s => {
+        const teamName = s.team || 'Unassigned';
+        if (!teams.has(teamName)) teams.set(teamName, []);
+        teams.get(teamName)!.push(s);
+    });
+    
+    return Array.from(teams.entries()).map(([teamName, teamSales]) => ({
+        teamName,
+        totalRevenue: teamSales
+            .filter(s => s.status === 'Approved')
+            .reduce((sum, s) => sum + (Number(s.amount) || 0), 0),
+        approvedCount: teamSales.filter(s => s.status === 'Approved').length,
+        declinedCount: teamSales.filter(s => s.status === 'Declined').length,
+        members: users.filter(u => u.team === teamName),
+        agentCount: users.filter(u => u.team === teamName && u.role === 'agent').length,
+    }));
+};
+
 export const getCutoffStatus = (cutoffDay: number) => {
     const now = new Date();
     const today = now.getDate();

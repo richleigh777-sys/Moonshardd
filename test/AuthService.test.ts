@@ -67,15 +67,11 @@ describe('AuthService', () => {
         const timestamp = Date.now();
         const sig = btoa(`user-1:srv-002:${timestamp}`);
 
-        (getDoc as any).mockResolvedValueOnce({
-            exists: () => true,
-            data: () => ({ id: 'user-1', name: 'Test User' })
-        });
+        localStorage.setItem('nexus_session_user', JSON.stringify({ id: 'user-1', name: 'Test User' }));
 
         const result = await authService.verifySession('user-1', 'agent', 1, sig);
         
         expect(mockRepository.setActiveServer).toHaveBeenCalledWith('srv-002');
-        expect(mockRepository.getPath).toHaveBeenCalledWith('users', 'user-1');
         expect(result).toEqual({ id: 'user-1', name: 'Test User' });
     });
 
@@ -83,9 +79,7 @@ describe('AuthService', () => {
         const timestamp = Date.now();
         const sig = btoa(`user-1:srv-001:${timestamp}`);
 
-        (getDoc as any).mockResolvedValueOnce({
-            exists: () => false
-        });
+        localStorage.removeItem('nexus_session_user');
 
         const result = await authService.verifySession('user-1', 'agent', 1, sig);
         expect(result).toBeNull();

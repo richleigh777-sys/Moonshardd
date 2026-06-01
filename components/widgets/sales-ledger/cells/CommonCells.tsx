@@ -1,5 +1,6 @@
 
 import React, { useState } from 'react';
+import { useAuth } from '../../../../hooks/useAuth';
 import { 
     Clock, Phone, Mail, Truck, 
     Hash, Landmark, Activity, FileText, 
@@ -157,6 +158,7 @@ export const BankCell: React.FC<CellProps> = ({ value, isEditing, onChange, row 
 };
 
 export const SecureCell: React.FC<CellProps> = ({ value, isEditing, onChange }) => {
+    const { currentUser } = useAuth();
     const [visible, setVisible] = useState(false);
 
     if (isEditing) {
@@ -168,7 +170,7 @@ export const SecureCell: React.FC<CellProps> = ({ value, isEditing, onChange }) 
                     onChange={e => onChange(e.target.value)} 
                     type={visible ? 'text' : 'password'}
                 />
-                <button onMouseDown={() => setVisible(true)} onMouseUp={() => setVisible(false)} onMouseLeave={() => setVisible(false)} className="absolute right-1 top-1.5 text-text-muted hover:text-text-primary"><Eye size={14}/></button>
+                <button onMouseDown={() => { if((currentUser?.level || 0) >= 10) setVisible(true); }} onMouseUp={() => setVisible(false)} onMouseLeave={() => setVisible(false)} className="absolute right-1 top-1.5 text-text-muted hover:text-text-primary"><Eye size={14}/></button>
             </div>
         );
     }
@@ -182,7 +184,9 @@ export const SecureCell: React.FC<CellProps> = ({ value, isEditing, onChange }) 
                     <span className="tracking-widest">
                         {visible ? value : (value.length > 4 ? `•••• ${value.slice(-4)}` : '•••')}
                     </span>
-                    <button onMouseDown={() => setVisible(true)} onMouseUp={() => setVisible(false)} onMouseLeave={() => setVisible(false)} className="ml-auto text-text-muted hover:text-text-primary"><Eye size={14}/></button>
+                    {(currentUser?.level || 0) >= 10 && (
+                        <button onMouseDown={() => setVisible(true)} onMouseUp={() => setVisible(false)} onMouseLeave={() => setVisible(false)} className="ml-auto text-text-muted hover:text-text-primary"><Eye size={14}/></button>
+                    )}
                 </>
             ) : <span className="opacity-30">-</span>}
         </div>
@@ -247,8 +251,8 @@ export const ContactCell: React.FC<CellProps> = ({ value, isEditing, onChange })
             <div className={`p-1 rounded bg-surface-alt border border-border-subtle ${isPhone ? 'text-status-success' : 'text-blue-500'}`}>
                 {isPhone ? <Phone size={16} fill="currentColor"/> : <Mail size={16} fill="currentColor"/>}
             </div>
-            <div className="truncate text-xs font-mono font-bold text-text-secondary group-hover:text-text-primary transition-colors select-none">
-                {maskPII(value, isPhone ? 'phone' : 'email')}
+            <div className="truncate text-xs font-mono font-bold text-text-secondary group-hover:text-text-primary transition-colors select-none" onClick={(e) => e.stopPropagation()}>
+                <MaskedData value={value} type={isPhone ? 'phone' : 'email'} />
             </div>
         </div>
     );
@@ -269,26 +273,55 @@ export const BioCell: React.FC<CellProps> = ({ row }) => (
 
 // --- 4. LOGISTICS & PRODUCT (The Goods) ---
 
-export const ProductCell: React.FC<CellProps> = ({ value, row }) => (
-    <div className="flex flex-col justify-center">
-        <div className="flex items-center gap-1.5">
-            <Package size={16} className="text-accent-primary"/>
-            <span className="text-xs font-[700] text-text-primary truncate max-w-[140px]  tracking-tight" title={value}>
-                {value}
-            </span>
-        </div>
-        <div className="flex items-center gap-1.5 mt-0.5 ml-4">
-            <span className="text-sm font-bold text-text-muted  bg-surface-alt px-3 py-1.5 rounded border border-border-subtle">
-                {row?.quantity || '1'} Unit
-            </span>
-            {row?.dosage && (
-                <span className="text-sm font-bold text-text-muted  opacity-70">
-                    {row.dosage}
+export const ProductCell: React.FC<CellProps> = ({ value, row }) => {
+    if (row?.rawCart && Array.isArray(row.rawCart) && row.rawCart.length > 0) {
+        return (
+            <div className="flex flex-col justify-center gap-2">
+                {row.rawCart.map((item: any, idx: number) => (
+                    <div key={idx} className="flex flex-col gap-1 pr-2">
+                        <div className="flex items-center gap-1.5">
+                            <Package size={14} className="text-accent-primary shrink-0"/>
+                            <span className="text-[11px] font-[700] text-text-primary truncate max-w-[140px] tracking-tight" title={item.product}>
+                                {item.product}
+                            </span>
+                        </div>
+                        <div className="flex items-center gap-1.5 ml-4">
+                            <span className="text-[10px] font-bold text-text-muted bg-surface-alt px-1.5 py-0.5 rounded border border-border-subtle">
+                                Qty: {item.quantity}
+                            </span>
+                            {item.dosage && (
+                                <span className="text-[10px] font-bold text-text-muted opacity-70">
+                                    {item.dosage}
+                                </span>
+                            )}
+                        </div>
+                    </div>
+                ))}
+            </div>
+        );
+    }
+    
+    return (
+        <div className="flex flex-col justify-center">
+            <div className="flex items-center gap-1.5">
+                <Package size={16} className="text-accent-primary shrink-0"/>
+                <span className="text-xs font-[700] text-text-primary truncate max-w-[140px] tracking-tight" title={value}>
+                    {value}
                 </span>
-            )}
+            </div>
+            <div className="flex items-center gap-1.5 mt-0.5 ml-5">
+                <span className="text-[11px] font-bold text-text-muted bg-surface-alt px-1.5 py-0.5 rounded border border-border-subtle">
+                    Qty: {row?.quantity || '1'}
+                </span>
+                {row?.dosage && (
+                    <span className="text-[11px] font-bold text-text-muted opacity-70">
+                        {row.dosage}
+                    </span>
+                )}
+            </div>
         </div>
-    </div>
-);
+    );
+};
 
 export const TrackingCell: React.FC<CellProps> = ({ value, isEditing, onChange, onAction }) => {
     if (isEditing) {
@@ -379,8 +412,14 @@ export const NoteCell: React.FC<CellProps> = ({ value, isEditing, onChange }) =>
     );
 };
 
-export const TagsCell: React.FC<CellProps> = ({ value }) => {
-    const tags = Array.isArray(value) ? value : [];
+export const TagsCell: React.FC<CellProps> = ({ value, row }) => {
+    const tags = Array.isArray(value) ? [...value] : [];
+    
+    if (row && (row.height || row.weight)) {
+        const hwInfo = [row.height, row.weight].filter(Boolean).join(' / ');
+        tags.unshift(hwInfo);
+    }
+    
     if (tags.length === 0) return <span className="text-text-muted opacity-20">-</span>;
 
     return (
@@ -395,7 +434,7 @@ export const TagsCell: React.FC<CellProps> = ({ value }) => {
     );
 };
 
-export const AddressCell: React.FC<CellProps> = ({ value, isEditing, onChange }) => {
+export const AddressCell: React.FC<CellProps> = ({ value, row, isEditing, onChange }) => {
     if (isEditing) {
         return (
             <input autoComplete="off" data-lpignore="true" data-prevent-autofill="true" spellCheck={false} 
@@ -406,19 +445,39 @@ export const AddressCell: React.FC<CellProps> = ({ value, isEditing, onChange })
         );
     }
     
-    // Extract City/State for quick view
+    // Check if we have structured data
+    const isShipping = row?.shippingAddress === value && value;
+    const isBilling = row?.billingAddress === value && value;
+    const isAddress = row?.address === value && value;
+
+    const street = value || '';
+    const city = isBilling ? row?.billingCity : (isShipping ? row?.shippingCity : (isAddress ? row?.city : ''));
+    const state = isBilling ? row?.billingState : (isShipping ? row?.shippingState : (isAddress ? row?.state : ''));
+    const zip = isBilling ? row?.billingZip : (isShipping ? row?.shippingZip : (isAddress ? row?.zip : ''));
+
+    const hasStructured = city || state || zip;
+
+    // Extract City/State for quick view fallback
     const parts = (value || '').split(',');
-    const quickLoc = parts.length > 2 ? `${parts[parts.length-3]}, ${parts[parts.length-2]}` : value;
+    const quickLoc = hasStructured ? `${city || ''}, ${state || ''}` : (parts.length > 2 ? `${parts[parts.length-3]}, ${parts[parts.length-2]}` : value);
 
     return (
         <div className="group relative">
-            <div className="flex items-center gap-1.5 text-xs text-text-secondary">
+            <div className="flex items-center gap-1.5 text-xs text-text-secondary cursor-pointer">
                 <MapPin size={16} className="text-text-muted group-hover:text-accent-primary transition-colors shrink-0"/>
                 <span className="truncate max-w-[140px] group-hover:text-text-primary transition-colors">{quickLoc || '-'}</span>
             </div>
             {/* Full Address Tooltip */}
-            <div className="absolute left-0 top-full mt-1 w-48 p-2 bg-surface-main border border-border-subtle rounded-lg shadow-xl opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity z-50">
-                <p className="text-xs text-text-primary leading-relaxed">{value}</p>
+            <div className="absolute left-0 top-full mt-1 w-56 p-3 bg-surface-main border border-border-subtle rounded-xl shadow-2xl opacity-0 group-hover:opacity-100 pointer-events-none transition-all duration-200 translate-y-1 group-hover:translate-y-0 z-50 flex flex-col gap-1.5">
+                {hasStructured ? (
+                     <>
+                         <div className="text-[10px] font-bold text-text-muted uppercase tracking-wider mb-1 px-1 bg-surface-alt py-0.5 rounded w-max">Full Address</div>
+                         <div className="font-medium text-xs text-text-primary px-1">{street}</div>
+                         <div className="text-xs text-text-secondary px-1">{[city, state].filter(Boolean).join(', ')} {zip}</div>
+                     </>
+                ) : (
+                    <p className="text-xs text-text-primary leading-relaxed">{value}</p>
+                )}
             </div>
         </div>
     );

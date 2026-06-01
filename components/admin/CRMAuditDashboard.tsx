@@ -1,8 +1,13 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { User, Sale, Note, SystemConfig, DataHealthReport } from '../../types';
-import { AlertTriangle, Activity, Database, Link, Check, RefreshCw, Trash2, Filter, Layers, FileSearch, CheckCircle2, BookOpen, Inbox } from 'lucide-react';
+import { 
+    AlertTriangle, Activity, Database, Link, Check, RefreshCw, Trash2, Filter, 
+    Layers, FileSearch, CheckCircle2, BookOpen, Inbox, CalendarRange, Search, 
+    Calendar, UserCheck, ChevronDown, ChevronUp, Clock
+} from 'lucide-react';
 import { Card } from '../ui/Base';
 import { useCRM } from '../../hooks/useCRM';
+import { useAuth } from '../../hooks/useAuth';
 
 interface CRMAuditDashboardProps {
     users: User[];
@@ -11,9 +16,52 @@ interface CRMAuditDashboardProps {
 }
 
 export const CRMAuditDashboard: React.FC<CRMAuditDashboardProps> = ({ users, sales, notes }) => {
+    const { currentUser } = useAuth();
     const { dataHealthReports, executeDataHealthAction, undoDataHealthAction, executeFullDataHealthReport } = useCRM();
-    const [activeTab, setActiveTab] = useState<'data' | 'usage' | 'alignment' | 'reports'>('data');
+    const [activeTab, setActiveTab] = useState<'data' | 'usage' | 'alignment' | 'reports' | 'callbacks'>('data');
     const [activeAction, setActiveAction] = useState<string | null>(null);
+
+    // Global Callback timeline states
+    const [searchQuery, setSearchQuery] = useState('');
+    const [filterAgent, setFilterAgent] = useState('');
+    const [expandedId, setExpandedId] = useState<number | null>(null);
+
+    const groupedCallbacks = useMemo(() => {
+        const groups: Record<string, { customerName: string; phone: string; timeline: Note[] }> = {};
+        
+        notes.forEach(note => {
+            const key = note.phone || note.customerName || 'Unknown Customer';
+            if (!groups[key]) {
+                groups[key] = {
+                    customerName: note.customerName || 'Unknown Customer',
+                    phone: note.phone || '',
+                    timeline: []
+                };
+            }
+            groups[key].timeline.push(note);
+        });
+
+        return Object.values(groups).map(g => {
+            const sortedTimeline = [...g.timeline].sort((a,b) => b.timestamp - a.timestamp);
+            return {
+                ...g,
+                timeline: sortedTimeline,
+                lastInteraction: sortedTimeline[0]?.timestamp || 0,
+                lastAgent: sortedTimeline[0]?.agentName || 'Unknown',
+                lastContent: sortedTimeline[0]?.content || '',
+                activeCallback: sortedTimeline.find(n => n.type === 'callback' && n.reminderAt && !n.reminderDismissed)
+            };
+        }).sort((a, b) => b.lastInteraction - a.lastInteraction);
+    }, [notes]);
+
+    const filteredGrouped = useMemo(() => {
+        return groupedCallbacks.filter(g => {
+            const matchesSearch = g.customerName.toLowerCase().includes(searchQuery.toLowerCase()) || 
+                                  g.phone.includes(searchQuery);
+            const matchesAgent = filterAgent === '' || g.timeline.some(n => n.agentName.toLowerCase().includes(filterAgent.toLowerCase()));
+            return matchesSearch && matchesAgent;
+        });
+    }, [groupedCallbacks, searchQuery, filterAgent]);
 
     const missingEmails = sales.filter(s => !s.email || s.email.trim() === '').length;
     const duplicatedCustomers = sales.filter(s => s.customer).length - new Set(sales.map(s => s.customer)).size; // simplistic estimation
@@ -75,6 +123,18 @@ export const CRMAuditDashboard: React.FC<CRMAuditDashboardProps> = ({ users, sal
                     </div>
                     <Inbox size={24} className={activeTab === 'reports' ? 'text-accent-secondary' : 'text-text-muted'} />
                 </button>
+                {currentUser?.level === 10 && (
+                    <button 
+                        onClick={() => setActiveTab('callbacks')}
+                        className={`flex-1 p-4 rounded-xl border flex items-center justify-between text-left transition-all ${activeTab === 'callbacks' ? 'bg-[#4f46e5]/5 text-[#818cf8] border-[#4f46e5]' : 'bg-surface-base border-border-subtle hover:bg-surface-highlight'}`}
+                    >
+                         <div>
+                             <h3 className="font-semibold text-lg">Global Callback Ledger</h3>
+                             <p className="text-sm opacity-80 mt-1">{notes.filter(n => n.type === 'callback').length} pending callbacks</p>
+                        </div>
+                        <CalendarRange size={24} className={activeTab === 'callbacks' ? 'text-[#818cf8]' : 'text-text-muted'} />
+                    </button>
+                )}
             </div>
 
             <div className="flex-1 bg-surface-base border border-border-subtle rounded-xl p-6">
@@ -378,6 +438,128 @@ export const CRMAuditDashboard: React.FC<CRMAuditDashboardProps> = ({ users, sal
                                     Enable Automated Operations
                                 </button>
                             </div>
+                        </div>
+                    </div>
+                )}
+
+                {activeTab === 'callbacks' && (
+                    <div className="space-y-6 animate-in fade-in slide-in-from-bottom-2">
+                        <div className="flex items-center justify-between border-b border-border-subtle pb-4">
+                            <div className="flex items-center gap-3">
+                                <CalendarRange className="text-[#818cf8]" size={20} />
+                                <div>
+                                    <h2 className="text-xl font-bold">Global Customer Callback Timeline</h2>
+                                    <p className="text-sm text-text-secondary mt-1">
+                                        Overall interactions timeline across all agents. Click customers to expand their interaction events history.
+                                    </p>
+                                </div>
+                            </div>
+                            <span className="text-[10px] uppercase font-bold bg-[#4f46e5]/20 text-[#818cf8] border border-border-subtle rounded-full px-2.5 py-1">
+                                Admin Level {currentUser?.level} View
+                            </span>
+                        </div>
+
+                        {/* Search & Filter */}
+                        <div className="flex flex-col sm:flex-row gap-3">
+                            <div className="relative flex-1">
+                                <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted" />
+                                <input
+                                    type="text"
+                                    placeholder="Search by customer name or phone..."
+                                    value={searchQuery}
+                                    onChange={e => setSearchQuery(e.target.value)}
+                                    className="w-full bg-surface-alt border border-border-subtle rounded-xl pl-9 pr-4 py-2 text-xs text-text-primary focus:border-indigo-500 outline-none"
+                                />
+                            </div>
+                            <div className="relative w-full sm:w-64">
+                                <UserCheck size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted" />
+                                <input
+                                    type="text"
+                                    placeholder="Filter by agent..."
+                                    value={filterAgent}
+                                    onChange={e => setFilterAgent(e.target.value)}
+                                    className="w-full bg-surface-alt border border-border-subtle rounded-xl pl-9 pr-4 py-2 text-xs text-text-primary focus:border-indigo-500 outline-none"
+                                />
+                            </div>
+                        </div>
+
+                        {/* Timeline list */}
+                        <div className="space-y-3 max-h-[550px] overflow-y-auto pr-1">
+                            {filteredGrouped.length === 0 ? (
+                                <div className="p-12 text-center border border-dashed border-border-subtle rounded-2xl text-text-muted text-xs">
+                                    No records found matching filters.
+                                </div>
+                            ) : (
+                                filteredGrouped.map((item, idx) => {
+                                    const isExpanded = expandedId === idx;
+                                    return (
+                                        <div key={idx} className="bg-surface-alt/25 border border-border-subtle rounded-2xl overflow-hidden transition-all duration-150">
+                                            {/* Accordion header */}
+                                            <div 
+                                                onClick={() => setExpandedId(isExpanded ? null : idx)}
+                                                className="flex flex-col sm:flex-row sm:items-center justify-between p-4 bg-surface-alt/45 border-b border-border-subtle/30 cursor-pointer hover:bg-surface-alt/70 transition-colors gap-3 select-none"
+                                            >
+                                                <div className="flex-1 min-w-0">
+                                                    <div className="flex items-center gap-2 flex-wrap">
+                                                        <h4 className="font-bold text-sm text-text-primary">{item.customerName}</h4>
+                                                        {item.phone && <span className="text-[10px] font-mono text-text-muted bg-surface-main px-1.5 py-0.5 rounded border border-border-subtle/50">{item.phone}</span>}
+                                                        {item.activeCallback && (
+                                                            <span className="text-[10px] font-bold bg-[#4f46e5]/10 text-[#818cf8] border border-[#4f46e5]/20 px-2.5 py-0.5 rounded-full flex items-center gap-1">
+                                                                <Clock size={10} /> Callback Set: {new Date(item.activeCallback.reminderAt!).toLocaleString()}
+                                                            </span>
+                                                        )}
+                                                    </div>
+                                                    <p className="text-xs text-text-secondary mt-1 truncate">
+                                                        Last interaction: <span className="text-text-primary font-semibold">{item.lastContent}</span>
+                                                    </p>
+                                                </div>
+                                                <div className="flex items-center gap-4 self-end sm:self-auto uppercase tracking-wider shrink-0 text-[10px] font-bold text-text-muted">
+                                                    <div>
+                                                        Touched <span className="text-[#818cf8]">{item.timeline.length} time(s)</span> (Last touch: {item.lastAgent})
+                                                    </div>
+                                                    {isExpanded ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+                                                </div>
+                                            </div>
+
+                                            {/* Details Feed showing vertical timeline */}
+                                            {isExpanded && (
+                                                <div className="p-4 bg-surface-main/30 border-t border-border-subtle/35 space-y-4 animate-in slide-in-from-top-2 duration-150">
+                                                    <div className="relative border-l-2 border-border-subtle ml-3.5 space-y-4 py-1">
+                                                        {item.timeline.map((note, noteIdx) => (
+                                                            <div key={note.id || noteIdx} className="relative pl-6">
+                                                                {/* Dot */}
+                                                                <div className={`absolute -left-[5px] top-1.5 w-2 h-2 rounded-full border ${
+                                                                    note.type === 'callback' ? 'bg-[#818cf8] border-[#4f46e5] shadow shadow-[#818cf8]/50' : 'bg-text-muted border-border-strong'
+                                                                }`} />
+                                                                
+                                                                <div className="bg-surface-alt/70 border border-border-subtle/40 rounded-xl p-3 max-w-2xl text-xs">
+                                                                    <div className="flex items-center justify-between flex-wrap gap-2 mb-1.5">
+                                                                        <div className="flex items-center gap-2">
+                                                                            <span className="font-extrabold text-[#818cf8]">{note.agentName}</span>
+                                                                            <span className="text-[9px] uppercase tracking-widest font-bold px-1.5 py-0.5 bg-surface-main text-text-muted rounded border border-border-subtle/30">
+                                                                                {note.type.toUpperCase()}
+                                                                            </span>
+                                                                        </div>
+                                                                        <span className="text-[10px] font-mono text-text-muted">
+                                                                            {new Date(note.timestamp).toLocaleString()}
+                                                                        </span>
+                                                                    </div>
+                                                                    <p className="text-text-primary font-medium leading-relaxed">{note.content}</p>
+                                                                    {note.reminderAt && (
+                                                                        <p className="text-[10px] font-bold text-[#818cf8] mt-2 flex items-center gap-1.5">
+                                                                            <Calendar size={11} /> Scheduled for: {new Date(note.reminderAt).toLocaleString()} {note.reminderDismissed && <span className="opacity-50 font-normal">(dismissed)</span>}
+                                                                        </p>
+                                                                    )}
+                                                                </div>
+                                                            </div>
+                                                        ))}
+                                                    </div>
+                                                </div>
+                                            )}
+                                        </div>
+                                    );
+                                })
+                            )}
                         </div>
                     </div>
                 )}

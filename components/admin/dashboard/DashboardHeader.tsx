@@ -73,8 +73,8 @@ export const DashboardHeader: React.FC<DashboardHeaderProps> = ({ health, onTogg
                         }`}
                         title="Toggle Setup Tools"
                     >
-                        <Terminal size={16} className={areTerminalsOpen ? "opacity-50" : "animate-pulse"} />
-                        {areTerminalsOpen ? 'Hide Tools' : 'Open Tools'}
+                        <Activity size={16} className={areTerminalsOpen ? "opacity-50" : "animate-pulse"} />
+                        {areTerminalsOpen ? 'Hide Controls' : 'Open Controls'}
                     </button>
                 )}
                 <button

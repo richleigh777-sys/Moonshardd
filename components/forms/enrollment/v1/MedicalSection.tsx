@@ -14,7 +14,7 @@ export const MedicalSection: React.FC<MedicalSectionProps> = ({
   activeMedicalConditions,
 }) => {
   return (
-    <Card variant="panel" className="shrink-0 p-5 border-border-subtle shadow-md flex flex-col bg-surface-main relative overflow-hidden rounded-xl">
+    <Card variant="refraction" className="shrink-0 p-5 border-border-subtle shadow-md flex flex-col bg-surface-main relative overflow-hidden rounded-xl">
       <div className="absolute inset-0 bg-gradient-to-l from-rose-500/5 to-transparent pointer-events-none"></div>
       
       <div className="flex items-center gap-3 border-b border-border-subtle pb-4 mb-5 relative z-10">

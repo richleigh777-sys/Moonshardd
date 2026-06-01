@@ -96,7 +96,7 @@ export const ReviewModal: React.FC<ReviewModalProps> = ({
           <div>
             <p className="text-sm font-bold text-yellow-300">Note</p>
             <p className="text-xs text-yellow-200 mt-1">
-              Admin will process payment through third-party terminal and label the transaction result.
+              Admin will process payment through external systems and label the transaction result.
             </p>
           </div>
         </div>

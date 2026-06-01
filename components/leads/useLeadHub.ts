@@ -14,11 +14,18 @@ export const useLeadHub = (notes: Note[] = []) => {
         
         if (searchQuery) {
             const q = searchQuery.toLowerCase();
-            filtered = filtered.filter(n => 
-                n.customerName?.toLowerCase().includes(q) || 
-                n.phone?.includes(q) ||
-                n.content?.toLowerCase().includes(q)
-            );
+            const normalizedQ = searchQuery.replace(/[\s\-()+]/g, '');
+            const isNumericSearch = /^\d+$/.test(normalizedQ);
+
+            filtered = filtered.filter(n => {
+                if (isNumericSearch && n.phone) {
+                    const normalizedPhone = n.phone.replace(/[\s\-()+]/g, '');
+                    if (normalizedPhone.includes(normalizedQ)) return true;
+                }
+                return n.customerName?.toLowerCase().includes(q) || 
+                       n.phone?.includes(q) ||
+                       n.content?.toLowerCase().includes(q);
+            });
         }
 
         if (filterPriority !== 'All') {

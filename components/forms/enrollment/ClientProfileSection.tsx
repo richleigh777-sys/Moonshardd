@@ -18,10 +18,66 @@ export const ClientProfileSection: React.FC<ClientProfileSectionProps> = ({
     formData, handleIdentityChange, handleAgeChange, handleDobChange,
     useShippingForBilling, setUseShippingForBilling, customerTime, onPasteParse
 }) => {
+    const handleAddressBlur = (e: React.FocusEvent<HTMLTextAreaElement>) => {
+        const text = e.target.value.replace(/\r?\n/g, ', ').replace(/\s+/g, ' ').trim();
+        if (!text) return;
+
+        const toTitleCase = (str: string) => str.replace(/\w\S*/g, (txt) => txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase());
+        
+        let street = text;
+        let city = '';
+        let state = '';
+        let zip = '';
+
+        const parts = text.split(',').map(s => s.trim()).filter(Boolean);
+        if (parts.length >= 2) {
+            street = toTitleCase(parts[0]);
+            if (parts.length >= 3) {
+                 city = toTitleCase(parts[1]);
+                 const stateZip = parts[2].split(' ');
+                 if (stateZip.length >= 2) {
+                     zip = stateZip.pop() || '';
+                     state = stateZip.join(' ').toUpperCase();
+                 } else {
+                     state = stateZip[0].toUpperCase();
+                 }
+            } else {
+                 const stateZip = parts[1].split(' ');
+                 if (stateZip.length >= 3) {
+                     city = toTitleCase(stateZip.slice(0, -2).join(' '));
+                     zip = stateZip.pop() || '';
+                     state = stateZip.pop()?.toUpperCase() || '';
+                 } else if (stateZip.length >= 2) {
+                     zip = stateZip.pop() || '';
+                     state = stateZip.join(' ').toUpperCase();
+                 }
+            }
+        } else {
+            const words = text.split(' ');
+            if (words.length >= 4) {
+               zip = words.pop() || '';
+               state = (words.pop() || '').toUpperCase();
+               city = toTitleCase(words.pop() || '');
+               street = toTitleCase(words.join(' '));
+            } else {
+               street = toTitleCase(text);
+            }
+        }
+        
+        const formatAddr = [street, city, state ? state : null, zip ? zip : null].filter(Boolean).join(', ');
+
+        handleIdentityChange({ target: { name: e.target.name, value: formatAddr } } as any);
+        if (e.target.name === 'shippingAddress') {
+             handleIdentityChange({ target: { name: 'shippingCity', value: city } } as any);
+             handleIdentityChange({ target: { name: 'shippingState', value: state } } as any);
+             handleIdentityChange({ target: { name: 'shippingZip', value: zip } } as any);
+        }
+    };
+
     return (
         <div className="flex gap-4 flex-1 min-h-0">
             {/* IDENTITY COLUMN */}
-            <Card variant="panel" className="flex-1 p-0 border-border-subtle flex flex-col bg-surface-main overflow-hidden relative group">
+            <Card variant="refraction" className="flex-1 p-0 flex flex-col overflow-hidden relative group">
                 <div className="p-2 border-b border-border-subtle flex items-center justify-between bg-surface-alt/20 shrink-0">
                     <div className="flex items-center gap-1.5">
                         <div className="p-1 bg-accent-primary/10 rounded-md text-accent-primary">
@@ -39,18 +95,23 @@ export const ClientProfileSection: React.FC<ClientProfileSectionProps> = ({
                 <div className="flex-1 overflow-y-auto custom-scrollbar p-2 space-y-2">
                     <div className="grid grid-cols-2 gap-2">
                         <div>
-                            <FormLabel icon={User}>Full Name</FormLabel>
-                            <FormInput name="fullName" value={formData.fullName} onChange={handleIdentityChange} placeholder="First Last" className="font-bold h-7 text-xs" />
+                            <FormLabel icon={User}>First Name</FormLabel>
+                            <FormInput name="firstName" value={formData.firstName || ''} onChange={handleIdentityChange} placeholder="First" className="font-bold h-7 text-xs" />
                         </div>
+                        <div>
+                            <FormLabel icon={User} className="invisible">Last Name</FormLabel>
+                            <FormInput name="lastName" value={formData.lastName || ''} onChange={handleIdentityChange} placeholder="Last" className="font-bold h-7 text-xs" />
+                        </div>
+                    </div>
+                    <div className="grid grid-cols-2 gap-2">
                         <div>
                             <FormLabel icon={Phone}>Direct Line</FormLabel>
                             <FormInput name="phone" value={formData.phone} onChange={handleIdentityChange} placeholder="(555) 000-0000" className="font-mono tracking-wide h-7 text-xs" />
                         </div>
-                    </div>
-                    
-                    <div>
-                        <FormLabel icon={Mail}>Email Uplink</FormLabel>
-                        <FormInput name="email" value={formData.email} onChange={handleIdentityChange} placeholder="client@email.com" className="h-7 text-xs" />
+                        <div>
+                            <FormLabel icon={Mail}>Email Uplink</FormLabel>
+                            <FormInput name="email" value={formData.email} onChange={handleIdentityChange} placeholder="client@email.com" className="h-7 text-xs" />
+                        </div>
                     </div>
 
                     <div className="grid grid-cols-4 gap-2 p-2 bg-surface-alt/30 rounded-lg border border-border-subtle/50">
@@ -63,7 +124,7 @@ export const ClientProfileSection: React.FC<ClientProfileSectionProps> = ({
             </Card>
 
             {/* LOGISTICS COLUMN */}
-            <Card variant="panel" className="flex-1 p-0 border-border-subtle flex flex-col bg-surface-main overflow-hidden">
+            <Card variant="refraction" className="flex-1 p-0 flex flex-col overflow-hidden">
                 <div className="p-2 border-b border-border-subtle flex items-center justify-between bg-surface-alt/20 shrink-0">
                     <div className="flex items-center gap-1.5">
                         <div className="p-1 bg-accent-secondary/10 rounded-md text-accent-secondary">
@@ -85,6 +146,7 @@ export const ClientProfileSection: React.FC<ClientProfileSectionProps> = ({
                             name="shippingAddress" 
                             value={formData.shippingAddress} 
                             onChange={handleIdentityChange as any} 
+                            onBlur={handleAddressBlur}
                             placeholder="Street, City, State ZIP" 
                             className="w-full h-14 bg-surface-alt/40 border border-border-subtle rounded-lg p-2 text-xs font-medium text-text-primary outline-none focus:border-accent-primary focus:bg-surface-main transition-all resize-none shadow-inner leading-tight"
                         />
@@ -108,6 +170,7 @@ export const ClientProfileSection: React.FC<ClientProfileSectionProps> = ({
                                     name="billingAddress" 
                                     value={formData.billingAddress} 
                                     onChange={handleIdentityChange as any} 
+                                    onBlur={handleAddressBlur}
                                     placeholder="Billing Address..." 
                                     className="w-full h-12 bg-surface-alt/40 border border-border-subtle rounded-lg p-2 text-xs font-medium text-text-primary outline-none focus:border-accent-primary focus:bg-surface-main transition-all resize-none shadow-inner leading-tight"
                                 />

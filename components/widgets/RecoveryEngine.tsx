@@ -11,6 +11,7 @@ import { sfx } from '../../lib/soundService';
 import { useCRM } from '../../hooks/useCRM';
 import { CallbackForm } from '../forms/CallbackForm';
 import { useSystem } from '../../hooks/useSystem';
+import { MaskedData } from '../ui/MaskedData';
 
 interface Props {
   sales: Sale[];
@@ -136,7 +137,9 @@ export const RecoveryEngine = ({ sales, onAction }: Props) => {
                                 <div className="flex justify-between items-start mb-2">
                                     <div className="min-w-0 pr-2">
                                         <span className={`font-bold text-sm block truncate ${isSelected ? 'text-text-primary' : 'text-text-secondary'}`}>{op.customer}</span>
-                                        <span className="text-xs font-mono text-text-muted block">{op.phone}</span>
+                                        <div className="text-xs font-mono text-text-muted block mt-0.5" onClick={(e) => e.stopPropagation()}>
+                                            <MaskedData value={op.phone} type="phone" />
+                                        </div>
                                     </div>
                                     <div className="flex flex-col items-end shrink-0">
                                         <span className={`text-xs font-[700]  px-2.5 py-1 rounded-lg border mb-1 ${isFresh ? 'text-status-success border-status-success/30 bg-emerald-500/10' : 'text-status-warning border-status-warning/30 bg-amber-500/10'}`}>

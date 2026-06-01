@@ -2,10 +2,13 @@ import React, { useState } from 'react';
 import { useSmartLeadQueue } from '../../hooks/useSmartLeadQueue';
 import { SmartLead, LeadPriority } from '../../types/uiState';
 import { LeadCard } from './LeadCard';
+import { nexusGateway } from '../../nexus/adapters/DataGateway';
+import { sfx } from '../../lib/soundService';
 
 export const SmartLeadQueue: React.FC = () => {
   const leads = useSmartLeadQueue();
   const [expandedSection, setExpandedSection] = useState<LeadPriority>('urgent');
+  const [isInjecting, setIsInjecting] = useState(false);
 
   const groupedLeads = {
     urgent: leads.filter((l) => l.priority === 'urgent'),
@@ -14,10 +17,32 @@ export const SmartLeadQueue: React.FC = () => {
     low: leads.filter((l) => l.priority === 'low'),
   };
 
+  const handleInjectMockLeads = async () => {
+    setIsInjecting(true);
+    try {
+      await nexusGateway.injectSampleLeads();
+      sfx.playSuccess();
+    } catch (e) {
+      sfx.playDecline();
+      console.error(e);
+    } finally {
+      setIsInjecting(false);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 p-4 pb-24">
       <div className="max-w-2xl mx-auto">
-        <h1 className="text-2xl font-bold text-white mb-2">Lead Queue</h1>
+        <div className="flex items-center justify-between mb-2">
+           <h1 className="text-2xl font-bold text-white">Lead Queue</h1>
+           <button 
+             onClick={handleInjectMockLeads} 
+             disabled={isInjecting}
+             className="px-3 py-1 bg-indigo-500/20 text-indigo-400 font-bold text-xs uppercase tracking-wider rounded border border-indigo-500/30 hover:bg-indigo-500/30 disabled:opacity-50 transition-colors"
+           >
+             {isInjecting ? 'Loading...' : '+ Inject 20 Mock Leads'}
+           </button>
+        </div>
         <p className="text-slate-400 mb-6">Prioritized by score and urgency</p>
 
         {/* URGENT */}

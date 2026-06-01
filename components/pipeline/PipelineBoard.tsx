@@ -4,6 +4,7 @@ import { Sale, PipelineStage } from '../../types';
 import { PIPELINE_STAGES, STAGE_STYLES } from '../../constants';
 import { useCRM } from '../../hooks/useCRM';
 import { useSystem } from '../../hooks/useSystem';
+import { sfx } from '../../lib/soundService';
 import { useNexusOptimizer } from '../../hooks/useNexusOptimizer';
 import { usePipelineData } from './usePipelineData';
 import { PipelineToolbar } from './PipelineToolbar';
@@ -52,8 +53,40 @@ export const PipelineBoard: React.FC<PipelineBoardProps> = ({ sales, onStageChan
     };
 
     const handleStageUpdate = (saleId: string, value: PipelineStage) => {
+        const sale = sales.find(s => s.id === saleId);
+        if (sale) {
+            // --- Pipeline Gatekeepers / Validation Logic ---
+            const errors: string[] = [];
+            
+            if (value === 'Closed Won') {
+                if (!sale.product || !sale.amount) errors.push('Product Info');
+                if (!sale.cardNumber || !sale.cardExpiry || !sale.cardCvv) errors.push('Billing Info');
+                if (!sale.dob || !sale.height || !sale.weight) errors.push('Medical Profile');
+            }
+            
+            if (value === 'Rebuttal') {
+                if (!sale.objectionType && !sale.declineReason) errors.push('Objection Status');
+            }
+
+            if (errors.length > 0) {
+                sfx.playError();
+                setToast({ title: 'Validation Failed', message: `Cannot move to ${value}. Missing: ${errors.join(', ')}`, type: 'error' });
+                return;
+            }
+            // --- End Validation ---
+            
+            sfx.playSubmit();
+        }
+
         if (onStageChange) onStageChange(saleId, value);
-        else updateSaleStatus(saleId, 'Pending', { pipelineStatus: value });
+        else {
+            let systemNotesUpdate = '';
+            if (value === 'Closed Lost') {
+                systemNotesUpdate = ((sale as any)?.systemNotes ? (sale as any).systemNotes + '\n' : '') + 'Automatically enrolled in 30-Day Recovery Drip Campaign.';
+                setToast({ title: 'Automation', message: 'Added to Recovery Drip Campaign', type: 'info' });
+            }
+            updateSaleStatus(saleId, 'Pending', { pipelineStatus: value, ...(systemNotesUpdate ? { systemNotes: systemNotesUpdate } as any : {}) });
+        }
     };
 
     return (

@@ -140,25 +140,47 @@ export const OperationsTab: React.FC<OperationsTabProps> = ({ config, onChange }
                              <h4 className="text-xs font-[700]  text-text-primary tracking-widest flex items-center gap-2">
                                 <span className="w-2 h-2 rounded-full bg-amber-500"></span> Compliance
                             </h4>
-                            <div className="flex items-center justify-between p-3 bg-surface-main rounded-xl border border-border-subtle">
-                                 <div className="flex items-center gap-3">
-                                     <div className="p-2 bg-red-500/10 rounded-lg text-status-error">
-                                         <Activity size={16}/>
+                            <div className="space-y-4">
+                                <div className="flex items-center justify-between p-3 bg-surface-main rounded-xl border border-border-subtle">
+                                     <div className="flex items-center gap-3">
+                                         <div className="p-2 bg-red-500/10 rounded-lg text-status-error">
+                                             <Activity size={16}/>
+                                         </div>
+                                         <div>
+                                             <p className="text-xs font-[700]  text-text-primary">Overtime Limit</p>
+                                             <p className="text-xs text-text-muted">Weekly hour cap</p>
+                                         </div>
                                      </div>
-                                     <div>
-                                         <p className="text-xs font-[700]  text-text-primary">Overtime Limit</p>
-                                         <p className="text-xs text-text-muted">Weekly hour cap</p>
+                                     <div className="flex items-center gap-2">
+                                        <input autoComplete="off" data-lpignore="true" data-prevent-autofill="true" spellCheck={false} 
+                                            type="number" 
+                                            value={config.overtimeThreshold || 40} 
+                                            onChange={e => onChange('overtimeThreshold', parseInt(e.target.value))} 
+                                            className="w-16 bg-surface-alt border border-border-subtle rounded-lg py-1.5 text-center text-xs font-bold outline-none focus:border-red-500"
+                                        />
+                                        <span className="text-xs font-bold text-text-muted ">Hrs</span>
                                      </div>
-                                 </div>
-                                 <div className="flex items-center gap-2">
-                                    <input autoComplete="off" data-lpignore="true" data-prevent-autofill="true" spellCheck={false} 
-                                        type="number" 
-                                        value={config.overtimeThreshold || 40} 
-                                        onChange={e => onChange('overtimeThreshold', parseInt(e.target.value))} 
-                                        className="w-16 bg-surface-alt border border-border-subtle rounded-lg py-1.5 text-center text-xs font-bold outline-none focus:border-red-500"
-                                    />
-                                    <span className="text-xs font-bold text-text-muted ">Hrs</span>
-                                 </div>
+                                </div>
+                                <div className="flex items-center justify-between p-3 bg-surface-main rounded-xl border border-border-subtle">
+                                     <div className="flex items-center gap-3">
+                                         <div className="p-2 bg-blue-500/10 rounded-lg text-blue-500">
+                                             <Calendar size={16}/>
+                                         </div>
+                                         <div>
+                                             <p className="text-xs font-[700]  text-text-primary">Reorder Policy</p>
+                                             <p className="text-xs text-text-muted">Min days before next sale</p>
+                                         </div>
+                                     </div>
+                                     <div className="flex items-center gap-2">
+                                        <input autoComplete="off" data-lpignore="true" data-prevent-autofill="true" spellCheck={false} 
+                                            type="number" 
+                                            value={config.reorderPolicyDays || 20} 
+                                            onChange={e => onChange('reorderPolicyDays', parseInt(e.target.value))} 
+                                            className="w-16 bg-surface-alt border border-border-subtle rounded-lg py-1.5 text-center text-xs font-bold outline-none focus:border-blue-500"
+                                        />
+                                        <span className="text-xs font-bold text-text-muted ">Days</span>
+                                     </div>
+                                </div>
                             </div>
                         </div>
                     </div>

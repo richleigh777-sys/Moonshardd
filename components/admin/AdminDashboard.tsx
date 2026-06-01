@@ -11,6 +11,7 @@ import { DashboardApprovalPanel } from './dashboard/DashboardApprovalPanel';
 import { DashboardAgentSupportPanel } from './dashboard/DashboardAgentSupportPanel';
 import { DashboardRevenueOptimization } from './dashboard/DashboardRevenueOptimization';
 import { DashboardStrategicAnalytics } from './dashboard/DashboardStrategicAnalytics';
+import { DashboardTerminalZone } from './dashboard/financials/DashboardTerminalZone';
 import { ScenarioPlanner } from './tools/ScenarioPlanner';
 import { AuditExplorer } from './tools/AuditExplorer';
 import { PredictiveAlerts } from './tools/PredictiveAlerts';
@@ -51,7 +52,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
   const systemConfig = propSystemConfig || crmSystemConfig || { baseCommission: 15, shiftStart: '09:00', shiftEnd: '17:00', cutoffDay1: 15, cutoffDay2: 30, breakDurationMinutes: 60 };
 
   const handleApproveSale = onApproveSale || ((id: string) => updateSaleStatus(id, 'Approved', {}));
-  const handleDeclineSale = onDeclineSale || ((id: string) => updateSaleStatus(id, 'Declined', {}));
+  const handleDeclineSale = onDeclineSale || ((id: string, reason: string, status: 'Declined' | 'Cancelled') => updateSaleStatus(id, status, { declineReason: reason }));
   // fallback for testing
   const handleSendMessage = onSendMessage || ((id: string, msg: string) => console.log('Mail to', id, msg));
 
@@ -61,6 +62,14 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
         health={health}
         onToggleTerminals={onToggleTerminals}
         areTerminalsOpen={areTerminalsOpen}
+      />
+
+      <DashboardTerminalZone
+          areTerminalsOpen={areTerminalsOpen || false}
+          onBroadcast={onBroadcast}
+          health={health}
+          onRunDiagnostics={onRunDiagnostics}
+          onTestUplink={onTestUplink}
       />
 
       {/* Tab Navigation */}
@@ -118,7 +127,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
       {/* TAB 2: OPERATIONS */}
       {activeTab === 'operations' && (
         <div className="space-y-4">
-          <DashboardLiveOpsBoard sales={sales} users={users} notes={notes} />
+          <DashboardLiveOpsBoard sales={sales} users={users} notes={notes} onBroadcast={onBroadcast} />
         </div>
       )}
 
@@ -133,8 +142,8 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
       {activeTab === 'tools' && (
         <div className="space-y-4">
           
-          {/* Master Settings Terminal / System Config */}
-          <div className="mb-6 h-[700px] border border-red-500/20 rounded-2xl overflow-hidden shadow-[0_0_40px_rgba(239,68,68,0.1)]">
+          {/* System Configuration */}
+          <div className="mb-6 h-[700px] border border-border-strong rounded-2xl overflow-hidden shadow-sm">
             <SystemConfigPanel 
               config={systemConfig} 
               onUpdate={async (newConfig) => {

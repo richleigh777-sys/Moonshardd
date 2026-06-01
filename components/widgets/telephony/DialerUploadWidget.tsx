@@ -1,3 +1,4 @@
+import { useSystem } from '../../../hooks/useSystem';
 import React, { useState, useRef } from 'react';
 import { FileSpreadsheet, CheckCircle, Database, Server, Activity, ArrowUpRight, Link2, KeyRound, Sparkles, Merge, UserPlus } from 'lucide-react';
 import { useCRM } from '../../../hooks/useCRM';
@@ -18,7 +19,9 @@ const SYSTEM_FIELDS = [
     // Note: Since dedupe needs all customers, we fetch them just-in-time
 import { nexusGateway } from '../../../nexus/adapters/DataGateway';
 
-export const DialerUploadWidget = () => {
+export const DialerUploadWidget = () => { 
+    const { setToast } = useSystem();
+
     const { addDialerList, currentUser } = useCRM();
     const [step, setStep] = useState<'upload' | 'mapping' | 'dedup' | 'success'>('upload');
     const [isDragging, setIsDragging] = useState(false);
@@ -39,7 +42,7 @@ export const DialerUploadWidget = () => {
     const handleFileSelect = async (file: File) => {
         if (!file) return;
         if (!file.name.endsWith('.csv')) {
-            alert("Only CSV files are supported for Dialer Data Lists.");
+            setToast({ title: "Alert", message: "Only CSV files are supported for Dialer Data Lists.", type: "warning" });
             return;
         }
 
@@ -72,14 +75,14 @@ export const DialerUploadWidget = () => {
         } catch (err) {
             console.error("Parse error", err);
             sfx.playError();
-            alert("Error parsing CSV. Ensure it is valid text.");
+            setToast({ title: "Alert", message: "Error parsing CSV. Ensure it is valid text.", type: "warning" });
         }
     };
 
     const runDeduplicationEngine = async () => {
         const missing = SYSTEM_FIELDS.filter(f => f.required && !mapping[f.key]);
         if (missing.length > 0) {
-            alert(`Please map the following required fields: ${missing.map(m => m.label).join(', ')}`);
+            setToast({ title: "Alert", message: `Please map the following required fields: ${missing.map(m => m.label).join(', ')}`, type: "warning" });
             return;
         }
 
@@ -110,7 +113,7 @@ export const DialerUploadWidget = () => {
         } catch (err) {
             console.error(err);
             sfx.playError();
-            alert("Error running deduplication engine.");
+            setToast({ title: "Alert", message: "Error running deduplication engine.", type: "warning" });
         } finally {
             setIsUploading(false);
         }
@@ -216,7 +219,7 @@ export const DialerUploadWidget = () => {
         } catch (err) {
             console.error("Upload error", err);
             sfx.playError();
-            alert("Error finalizing data injection.");
+            setToast({ title: "Alert", message: "Error finalizing data injection.", type: "warning" });
         } finally {
             setIsUploading(false);
             if (fileInputRef.current) fileInputRef.current.value = '';

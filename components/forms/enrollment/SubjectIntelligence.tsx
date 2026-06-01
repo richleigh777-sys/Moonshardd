@@ -34,6 +34,7 @@ export const SubjectIntelligence: React.FC<SubjectIntelligenceProps> = ({
             handleAgeChange={handleAgeChange}
             useShippingForBilling={useShippingForBilling}
             setUseShippingForBilling={setUseShippingForBilling}
+            autoFillFromCustomer={() => {}}
         />
     </div>
 );

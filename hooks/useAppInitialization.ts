@@ -31,8 +31,13 @@ export const useAppInitialization = () => {
                         console.warn("Session invalid, logging out.");
                         logout();
                     }
-                } catch (e) {
-                    console.error("Session verification failed", e);
+                } catch (e: any) {
+                    const isOffline = e instanceof Error && (e.message.toLocaleLowerCase().includes("offline") || e.message.toLocaleLowerCase().includes("network") || e.message.toLocaleLowerCase().includes("unavailable"));
+                    const isOfflineCode = e?.code === 'unavailable' || e?.code === 'failed-precondition';
+                    
+                    if (!isOffline && !isOfflineCode) {
+                        console.error("Session verification failed", e);
+                    }
                     // Do not logout on transient network errors, only on explicit invalidation
                 }
             } else {

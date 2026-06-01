@@ -1,3 +1,4 @@
+import { useSystem } from '../../hooks/useSystem';
 import React, { useState } from 'react';
 import { Package, Plus, Trash2, Edit2, GripVertical, CheckCircle2, Search, Settings } from 'lucide-react';
 import { ProductPreset, ProductConfig } from '../../types';
@@ -10,6 +11,7 @@ interface Props {
 }
 
 export function PresetManager({ productConfig, onUpdateConfig }: Props) {
+    const { setToast } = useSystem();
   const [presets, setPresets] = useState<ProductPreset[]>(productConfig.presets || []);
   const [searchQuery, setSearchQuery] = useState('');
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -23,8 +25,8 @@ export function PresetManager({ productConfig, onUpdateConfig }: Props) {
   const filteredPresets = presets.filter(p => p.name.toLowerCase().includes(searchQuery.toLowerCase()));
 
   const handleSave = () => {
-    if (!name.trim()) return alert("Preset name is required");
-    if (items.length === 0) return alert("At least one product must be included");
+    if (!name.trim()) return setToast({ title: "Alert", message: "Preset name is required", type: "warning" });
+    if (items.length === 0) return setToast({ title: "Alert", message: "At least one product must be included", type: "warning" });
 
     const newPreset: ProductPreset = {
       id: editingId || crypto.randomUUID(),

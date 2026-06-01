@@ -7,6 +7,7 @@ import { getPhoneTime } from '../../views/utils/crmLogic';
 import { sfx } from '../../lib/soundService';
 import { LeadTimeline } from './LeadTimeline';
 import { useCRM } from '../../hooks/useCRM';
+import { useAuth } from '../../hooks/useAuth';
 import { getCustomerStrategicBriefing, BriefingResponse } from '../../services/aiService';
 
 interface LeadDetailProps {
@@ -18,7 +19,24 @@ interface LeadDetailProps {
 type Tab = 'Briefing' | 'History' | 'Details';
 
 export const LeadDetail: React.FC<LeadDetailProps> = ({ activeLead, onMarkDone, onEngage }) => {
-    const { callLogs, notes: allNotes, customers, updateNote } = useCRM();
+    const { currentUser } = useAuth();
+    const { callLogs, notes: rawNotes, customers, updateNote, sales } = useCRM();
+
+    const allNotes = useMemo(() => {
+        if (currentUser?.role === 'agent') {
+            return rawNotes.filter(n => n.agentId === currentUser.id);
+        }
+        return rawNotes;
+    }, [rawNotes, currentUser]);
+
+    const leadPhone = activeLead?.phone;
+    const recentTransactions = useMemo(() => {
+        if (!leadPhone) return [];
+        return sales
+            .filter(s => s.phone === leadPhone)
+            .sort((a, b) => b.timestamp - a.timestamp)
+            .slice(0, 3);
+    }, [sales, leadPhone]);
     const [activeTab, setActiveTab] = useState<Tab>('Briefing');
     const [isGenerating, setIsGenerating] = useState(false);
     const [briefing, setBriefing] = useState<BriefingResponse | null>(null);
@@ -131,9 +149,49 @@ export const LeadDetail: React.FC<LeadDetailProps> = ({ activeLead, onMarkDone, 
                         </div>
                         <div className="text-right">
                             <div className="text-2xl font-mono font-[700] text-text-primary tracking-wider">{activeLead.phone}</div>
-                            <button onClick={() => { navigator.clipboard.writeText(activeLead.phone || ''); sfx.playConfirm(); }} className="text-xs font-[700] text-accent-primary  tracking-widest hover:brightness-125 mt-1 transition-all">Copy Connection String</button>
                         </div>
                     </div>
+
+                    {/* Recent Transactions Contextual Banner */}
+                    {recentTransactions.length > 0 && (
+                        <div className="bg-surface-alt/40 border border-border-subtle rounded-3xl p-5 mb-8">
+                            <p className="text-xs font-[700] text-text-muted tracking-widest mb-4 flex items-center gap-2">
+                                <ShoppingBag size={16}/> LAST 3 TRANSACTIONS
+                            </p>
+                            <div className="grid gap-3">
+                                {recentTransactions.map((tx, idx) => (
+                                    <div key={idx} className="bg-surface-main border border-border-subtle rounded-2xl p-4 flex items-center justify-between gap-4 transition-colors hover:border-text-muted/30">
+                                        <div>
+                                            <div className="flex items-center gap-2.5 mb-1.5">
+                                                <span className={`px-2 py-0.5 rounded text-[10px] uppercase tracking-widest font-bold ${
+                                                    tx.status === 'Approved' ? 'bg-status-success/15 text-status-success border border-status-success/30' :
+                                                    tx.status === 'Declined' ? 'bg-status-error/15 text-status-error border border-status-error/30' :
+                                                    'bg-status-warning/15 text-status-warning border border-status-warning/30'
+                                                }`}>
+                                                    {tx.status}
+                                                </span>
+                                                <span className="text-xs font-bold text-text-primary">{new Date(tx.timestamp).toLocaleDateString()}</span>
+                                                <span className="text-[10px] text-text-muted font-bold tracking-widest uppercase break-all">Agent #{tx.agentId} • {tx.product}</span>
+                                            </div>
+                                            {(tx.status === 'Approved' && tx.deliveryStatus) && (
+                                                <p className="text-xs text-text-secondary mt-1 font-medium flex items-center gap-1.5">
+                                                    Package Status: <span className="font-bold text-emerald-400">{tx.deliveryStatus}</span>
+                                                </p>
+                                            )}
+                                            {(tx.status === 'Declined' && tx.declineReason) && (
+                                                <p className="text-xs text-text-secondary mt-1 font-medium flex items-center gap-1.5 line-clamp-1">
+                                                    Decline Reason: <span className="font-bold text-rose-400">{tx.declineReason}</span>
+                                                </p>
+                                            )}
+                                        </div>
+                                        <div className="text-right shrink-0">
+                                            <div className="text-sm font-bold text-text-primary font-mono">${tx.amount.toFixed(2)}</div>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    )}
 
                     {/* Navigation Tabs */}
                     <div className="flex gap-1 p-1 bg-surface-alt rounded-2xl border border-border-subtle max-w-fit">

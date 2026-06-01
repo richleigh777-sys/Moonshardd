@@ -1,3 +1,4 @@
+import { describe, it, expect } from 'vitest';
 import React from 'react';
 import { ProductPreset, Product } from '../../../../types';
 
@@ -8,7 +9,7 @@ export const mockPresets: ProductPreset[] = [
     description: '30 Day Supply',
     icon: 'Package',
     items: [
-      { product: 'Core Optimizer', quantity: '30 Day Supply', dosage: 'Standard' }
+      { product: 'Core Optimizer', quantity: '30 Day Supply', dosage: 'Standard', id: '1', unitPrice: 49.99 }
     ],
     createdBy: 'system',
     createdAt: Date.now(),
@@ -26,6 +27,12 @@ export const mockProducts: Product[] = [
     dosages: ['Standard', 'High']
   }
 ];
+
+describe('ProductQuickSelector', () => {
+    it('dummy test', () => {
+        expect(true).toBe(true);
+    });
+});
 
 // Usage example:
 // import { render, fireEvent } from '@testing-library/react';

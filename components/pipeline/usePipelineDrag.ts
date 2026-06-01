@@ -39,6 +39,26 @@ export const usePipelineDrag = (
             const sale = sales.find(s => s.id === saleId);
             
             if (sale && sale.pipelineStatus !== stage) {
+                // --- Pipeline Gatekeepers / Validation Logic ---
+                const errors: string[] = [];
+                
+                if (stage === 'Closed Won') {
+                    if (!sale.product || !sale.amount) errors.push('Product Info');
+                    if (!sale.cardNumber || !sale.cardExpiry || !sale.cardCvv) errors.push('Billing Info');
+                    if (!sale.dob || !sale.height || !sale.weight) errors.push('Medical Profile');
+                }
+                
+                if (stage === 'Rebuttal') {
+                    if (!sale.objectionType && !sale.declineReason) errors.push('Objection Status');
+                }
+
+                if (errors.length > 0) {
+                    sfx.playError();
+                    setToast({ title: 'Validation Failed', message: `Cannot move to ${stage}. Missing: ${errors.join(', ')}`, type: 'error' });
+                    return;
+                }
+                // --- End Validation ---
+
                 if (onStageChange) {
                     onStageChange(saleId, stage);
                 } else {
@@ -48,13 +68,21 @@ export const usePipelineDrag = (
                     else if (sale.status === 'Rescue In Progress') newStatus = 'Pending';
                     else if (sale.status === 'Cancelled') newStatus = 'Pending';
 
-                    updateSaleStatus(saleId, newStatus, { pipelineStatus: stage });
+                    let systemNotesUpdate = '';
+                    if (stage === 'Closed Lost') {
+                        systemNotesUpdate = ((sale as any).systemNotes ? (sale as any).systemNotes + '\n' : '') + 'Automatically enrolled in 30-Day Recovery Drip Campaign.';
+                    }
+
+                    updateSaleStatus(saleId, newStatus, { pipelineStatus: stage, ...(systemNotesUpdate ? { systemNotes: systemNotesUpdate } as any : {}) });
                 }
                 
                 if (stage === 'Closed Won') {
                     sfx.playSuccess();
                     triggerMoneyRain();
                     setToast({ title: 'Pipeline', message: `Deal Closed! Great work.`, type: 'success' });
+                } else if (stage === 'Closed Lost') {
+                    sfx.playSubmit();
+                    setToast({ title: 'Automation Triggered', message: `Deal added to 30-Day Automated Recovery Drip Campaign.`, type: 'success' });
                 } else {
                     sfx.playSubmit();
                     setToast({ title: 'Pipeline', message: `Deal moved to ${stage}`, type: 'success' });

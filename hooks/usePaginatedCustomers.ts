@@ -17,11 +17,18 @@ export const usePaginatedCustomers = (searchQuery: string = '', limitCount: numb
             let filteredData = data;
             if (searchQuery) {
                 const lowerQ = searchQuery.toLowerCase();
-                filteredData = data.filter((c: any) => 
-                    c.name?.toLowerCase().includes(lowerQ) ||
-                    c.phone?.includes(lowerQ) ||
-                    c.email?.toLowerCase().includes(lowerQ)
-                );
+                const normalizedQ = searchQuery.replace(/[\s\-()+]/g, '');
+                const isNumericSearch = /^\d+$/.test(normalizedQ);
+
+                filteredData = data.filter((c: any) => {
+                    if (isNumericSearch && c.phone) {
+                        const normalizedPhone = c.phone.replace(/[\s\-()+]/g, '');
+                        if (normalizedPhone.includes(normalizedQ)) return true;
+                    }
+                    return c.name?.toLowerCase().includes(lowerQ) ||
+                           c.phone?.includes(lowerQ) ||
+                           c.email?.toLowerCase().includes(lowerQ);
+                });
             }
             
             return { data: filteredData, lastDoc };

@@ -47,14 +47,14 @@ export const triggerPostSaleProtocol = async (sale: Sale, agent: User) => {
         });
     }
 
-    // 3. Declined Sale -> Salvage Protocol
+    // 3. Declined Sale -> Callback Protocol
     if (sale.status === 'Declined') {
         protocols.push({
             agentId: agent.id,
             agentName: agent.name,
             customerName: sale.customer,
             phone: sale.phone,
-            type: 'protocol',
+            type: 'callback',
             subtype: 'salvage',
             content: `Salvage Operation: Attempt to rescue declined order for ${sale.customer}. Reason: ${sale.declineReason || 'Unknown'}.`,
             priority: 'High',

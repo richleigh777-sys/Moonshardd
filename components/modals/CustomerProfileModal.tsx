@@ -1,6 +1,6 @@
 
-import React, { useMemo, useState } from 'react';
-import { User, ShoppingBag, Clock, Shield, Mail, Phone, MapPin, TrendingUp, Award, Calendar, Activity, AlertTriangle, ArrowUpRight, Zap, Link, Eye, EyeOff, Hash, UserIcon, FileText, ChevronDown, ChevronRight, CheckCircle2, Ticket } from 'lucide-react';
+import React, { useMemo, useState, useEffect } from 'react';
+import { User, ShoppingBag, Clock, Shield, Mail, Phone, MapPin, TrendingUp, Award, Calendar, Activity, AlertTriangle, ArrowUpRight, Zap, Link, Eye, EyeOff, Hash, UserIcon, FileText, ChevronDown, ChevronRight, CheckCircle2, Ticket, MessageSquare, Send, PhoneOff } from 'lucide-react';
 import { Modal } from '../ui/Modal';
 import { Sale } from '../../types';
 import { Badge, Button } from '../ui/Base';
@@ -18,15 +18,74 @@ interface CustomerProfileModalProps {
     role: 'admin' | 'agent';
 }
 
+type CommsMode = 'note' | 'call' | 'sms' | 'email';
+
 export const CustomerProfileModal: React.FC<CustomerProfileModalProps> = ({ 
     isOpen, onClose, phone, allSales, onLoadToWorkspace, role 
 }) => {
     const { currentUser } = useAuth();
     const { customers, notes, addNote } = useCRM();
     const [now] = React.useState(() => Date.now());
-    const [isRevealed, setIsRevealed] = useState(true);
+    
+    // Privacy constraints
+    const isSuperAdmin = (currentUser?.level || 0) >= 10;
+    const [isRevealed, setIsRevealed] = useState(isSuperAdmin);
+    
     const [expandedRows, setExpandedRows] = useState<Set<string>>(new Set());
     const [newNote, setNewNote] = useState('');
+    const [commsMode, setCommsMode] = useState<CommsMode>('note');
+    const [callDuration, setCallDuration] = useState(0);
+
+    useEffect(() => {
+        let timer: any;
+        if (commsMode === 'call') {
+            timer = setInterval(() => setCallDuration(p => p + 1), 1000);
+        } else {
+            setCallDuration(0);
+        }
+        return () => clearInterval(timer);
+    }, [commsMode]);
+
+    const handleSendComms = async () => {
+        if (!currentUser) return;
+        
+        let content = '';
+        let reason = '';
+        const subtype = undefined;
+        
+        if (commsMode === 'note') {
+            if (!newNote.trim()) return;
+            reason = 'Agent Note';
+            content = newNote.trim();
+        } else if (commsMode === 'sms') {
+            if (!newNote.trim()) return;
+            reason = 'Outbound SMS';
+            content = `Message Sent: "${newNote.trim()}"`;
+        } else if (commsMode === 'email') {
+            if (!newNote.trim()) return;
+            reason = 'Outbound Email';
+            content = `Email Sent:\n\n${newNote.trim()}`;
+        } else if (commsMode === 'call') {
+            reason = 'Outbound Call';
+            const m = Math.floor(callDuration / 60).toString().padStart(2, '0');
+            const s = (callDuration % 60).toString().padStart(2, '0');
+            content = `Call completed. Duration: ${m}:${s}`;
+        }
+
+        await addNote({
+            agentId: currentUser.id,
+            agentName: currentUser.name,
+            content,
+            type: 'note',
+            priority: 'Low',
+            phone: phone,
+            customerName: displayName,
+            reason
+        } as any);
+
+        setCommsMode('note');
+        setNewNote('');
+    };
 
     const toggleRow = (id: string) => {
         setExpandedRows(prev => {
@@ -61,7 +120,7 @@ export const CustomerProfileModal: React.FC<CustomerProfileModalProps> = ({
                 s.status === 'Approved' || 
                 s.status === 'Declined' || 
                 s.status === 'Cancelled'
-            ).sort((a, b) => b.timestamp - a.timestamp);
+            ).sort((a, b) => b.timestamp - a.timestamp).slice(0, 3);
         }
 
         return rawHistory.sort((a, b) => b.timestamp - a.timestamp);
@@ -112,21 +171,6 @@ export const CustomerProfileModal: React.FC<CustomerProfileModalProps> = ({
         return notes.filter(n => normalizePhone(n.phone || '') === cleanPhone).sort((a, b) => b.timestamp - a.timestamp);
     }, [notes, phone]);
 
-    const handleAddNote = async () => {
-        if (!newNote.trim() || !currentUser) return;
-        await addNote({
-            agentId: currentUser.id,
-            agentName: currentUser.name,
-            content: newNote.trim(),
-            type: 'note',
-            priority: 'Low',
-            phone: phone,
-            customerName: displayName,
-            timestamp: Date.now()
-        });
-        setNewNote('');
-    };
-
     const handleEngage = () => {
         if (onLoadToWorkspace) {
             const sourceSale = customerHistory.find(s => s.status === 'Approved') || customerHistory[0];
@@ -169,13 +213,15 @@ export const CustomerProfileModal: React.FC<CustomerProfileModalProps> = ({
                                     <h2 className="text-2xl font-[700] text-text-primary tracking-tight truncate">
                                         {isRevealed ? displayName : maskPII(displayName, 'text')}
                                     </h2>
-                                    <button 
-                                        onClick={() => setIsRevealed(!isRevealed)}
-                                        className="p-1 px-2 flex items-center gap-1.5 rounded-lg bg-surface-alt/50 hover:bg-surface-alt text-xs font-[700]  tracking-widest text-text-muted hover:text-accent-primary transition-all border border-border-subtle"
-                                    >
-                                        {isRevealed ? <EyeOff size={16} /> : <Eye size={16} />}
-                                        {isRevealed ? 'Hide PII' : 'Reveal PII'}
-                                    </button>
+                                    {isSuperAdmin && (
+                                        <button 
+                                            onClick={() => setIsRevealed(!isRevealed)}
+                                            className="p-1 px-2 flex items-center gap-1.5 rounded-lg bg-surface-alt/50 hover:bg-surface-alt text-xs font-[700] tracking-widest text-text-muted hover:text-accent-primary transition-all border border-border-subtle"
+                                        >
+                                            {isRevealed ? <EyeOff size={16} /> : <Eye size={16} />}
+                                            {isRevealed ? 'Hide PII' : 'Reveal PII'}
+                                        </button>
+                                    )}
                                     <span className={`px-2.5 py-1 rounded text-xs font-[700]  tracking-widest border ${metrics.tierColor}`}>
                                         {metrics.tier} Member
                                     </span>
@@ -233,10 +279,10 @@ export const CustomerProfileModal: React.FC<CustomerProfileModalProps> = ({
                 </div>
 
                 {/* METRICS GRID */}
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
                     <div className="p-4 glass-panel rounded-xl hover:bg-surface-highlight/10 transition-colors group">
                         <p className="text-[10px] uppercase font-bold text-text-muted flex items-center gap-2 mb-2 tracking-widest">
-                            <Award size={14} /> Lifetime Value
+                            <Award size={14} /> Liftetime Value
                         </p>
                         <p className="text-2xl font-[700] text-text-primary num-font group-hover:text-status-success transition-colors">
                             ${metrics.totalSpent.toLocaleString()}
@@ -252,13 +298,21 @@ export const CustomerProfileModal: React.FC<CustomerProfileModalProps> = ({
                     </div>
                     <div className="p-4 glass-panel rounded-xl hover:bg-surface-highlight/10 transition-colors group">
                         <p className="text-[10px] uppercase font-bold text-text-muted flex items-center gap-2 mb-2 tracking-widest">
-                            <ShoppingBag size={14} /> Frequency
+                            <ShoppingBag size={14} /> Approved
                         </p>
                         <p className="text-2xl font-[700] text-text-primary num-font focus-expand">
                             {metrics.orderCount} <span className="text-xs text-text-muted font-bold font-sans tracking-tight">Orders</span>
                         </p>
                     </div>
                     <div className="p-4 glass-panel rounded-xl hover:bg-surface-highlight/10 transition-colors group">
+                        <p className="text-[10px] uppercase font-bold text-status-error flex items-center gap-2 mb-2 tracking-widest">
+                            <AlertTriangle size={14} /> Declined
+                        </p>
+                        <p className="text-2xl font-[700] text-status-error num-font focus-expand">
+                            {customerHistory.filter(s => s.status === 'Declined' || s.status === 'Cancelled').length} <span className="text-xs text-text-muted font-bold font-sans tracking-tight">Orders</span>
+                        </p>
+                    </div>
+                    <div className="p-4 glass-panel rounded-xl hover:bg-surface-highlight/10 transition-colors group col-span-2 md:col-span-1">
                         <p className="text-[10px] uppercase font-bold text-text-muted flex items-center gap-2 mb-2 tracking-widest">
                             <Clock size={14} /> Since Last Order
                         </p>
@@ -339,18 +393,69 @@ export const CustomerProfileModal: React.FC<CustomerProfileModalProps> = ({
                                 ))
                             )}
                         </div>
-                        <div className="p-3 bg-surface-alt border-t border-border-subtle flex gap-2">
-                            <input
-                                type="text"
-                                value={newNote}
-                                onChange={(e) => setNewNote(e.target.value)}
-                                onKeyDown={(e) => e.key === 'Enter' && handleAddNote()}
-                                placeholder="Add a secure internal note..."
-                                className="flex-1 bg-surface-main border border-border-subtle rounded-lg px-3 py-2 text-xs text-text-primary focus:border-accent-primary outline-none transition-colors"
-                            />
-                            <Button variant="primary" className="px-4 text-xs font-bold tracking-wider" onClick={handleAddNote}>
-                                Log Note
-                            </Button>
+                        
+                        {/* UNIFIED COMMS CENTER */}
+                        <div className="bg-surface-alt border-t border-border-subtle p-3 flex flex-col gap-2 relative transition-all">
+                            <div className="flex gap-2 mb-1">
+                                <button onClick={() => setCommsMode('note')} className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[10px] uppercase font-[800] tracking-widest transition-colors ${commsMode === 'note' ? 'bg-surface-main border border-border-subtle text-text-primary shadow-sm' : 'text-text-muted hover:text-text-primary'}`}>
+                                    <FileText size={14} /> Note
+                                </button>
+                                <button onClick={() => setCommsMode('call')} className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[10px] uppercase font-[800] tracking-widest transition-colors ${commsMode === 'call' ? 'bg-indigo-500/20 border border-indigo-500/50 text-indigo-400 shadow-sm' : 'text-text-muted hover:text-text-primary'}`}>
+                                    <Phone size={14} /> Call
+                                </button>
+                                <button onClick={() => setCommsMode('sms')} className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[10px] uppercase font-[800] tracking-widest transition-colors ${commsMode === 'sms' ? 'bg-accent-primary/20 border border-accent-primary/50 text-accent-primary shadow-sm' : 'text-text-muted hover:text-text-primary'}`}>
+                                    <MessageSquare size={14} /> SMS
+                                </button>
+                                <button onClick={() => setCommsMode('email')} className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[10px] uppercase font-[800] tracking-widest transition-colors ${commsMode === 'email' ? 'bg-emerald-500/20 border border-emerald-500/50 text-emerald-400 shadow-sm' : 'text-text-muted hover:text-text-primary'}`}>
+                                    <Mail size={14} /> Email
+                                </button>
+                            </div>
+
+                            {commsMode === 'call' ? (
+                                <div className="flex items-center justify-between bg-indigo-500/10 border border-indigo-500/30 rounded-xl p-3">
+                                    <div className="flex items-center gap-3">
+                                        <div className="w-10 h-10 rounded-full bg-indigo-500/20 flex items-center justify-center text-indigo-400 animate-pulse">
+                                            <Phone size={18} />
+                                        </div>
+                                        <div>
+                                            <p className="text-xs font-[700] tracking-widest text-indigo-300">Call In Progress</p>
+                                            <p className="text-[10px] text-text-muted mt-0.5">{isRevealed ? phone : maskPII(phone, 'phone')}</p>
+                                        </div>
+                                    </div>
+                                    <div className="flex items-center gap-4">
+                                        <span className="text-xl font-mono text-indigo-400 tracking-widest bg-surface-main px-3 py-1.5 rounded shadow-inner">
+                                            {Math.floor(callDuration / 60).toString().padStart(2, '0')}:{(callDuration % 60).toString().padStart(2, '0')}
+                                        </span>
+                                        <Button variant="danger" className="text-xs font-[700] tracking-widest" onClick={handleSendComms}>
+                                            <PhoneOff size={14} className="mr-1" /> End Call
+                                        </Button>
+                                    </div>
+                                </div>
+                            ) : (
+                                <div className="flex gap-2">
+                                    <textarea
+                                        value={newNote}
+                                        onChange={(e) => setNewNote(e.target.value)}
+                                        onKeyDown={(e) => e.key === 'Enter' && !e.shiftKey && (e.preventDefault(), handleSendComms())}
+                                        placeholder={
+                                            commsMode === 'sms' ? "Type SMS message..." :
+                                            commsMode === 'email' ? "Type email body..." :
+                                            "Add a secure internal note..."
+                                        }
+                                        className={`flex-1 bg-surface-main border border-border-subtle rounded-lg px-3 py-2 text-xs text-text-primary focus:border-accent-primary outline-none transition-all resize-none shadow-inner ${
+                                            commsMode !== 'note' ? 'min-h-[80px]' : 'h-10'
+                                        }`}
+                                    />
+                                    <Button 
+                                        variant="primary" 
+                                        className="px-4 text-xs font-bold tracking-wider" 
+                                        onClick={handleSendComms}
+                                        disabled={!newNote.trim()}
+                                    >
+                                        {commsMode === 'sms' ? 'Send SMS' : commsMode === 'email' ? 'Send Email' : 'Log Note'}
+                                    </Button>
+                                </div>
+                            )}
                         </div>
                     </div>
                 </div>
@@ -439,6 +544,12 @@ export const CustomerProfileModal: React.FC<CustomerProfileModalProps> = ({
                                                                     </div>
                                                                     <div className="text-xs text-text-secondary leading-relaxed p-3 bg-surface-alt rounded-lg border border-border-subtle/50">
                                                                         {sale.callSummary || <span className="italic opacity-50">No summary notes provided for this transaction.</span>}
+                                                                        {(sale.status === 'Declined' || sale.status === 'Cancelled') && sale.declineReason && (
+                                                                            <div className="mt-3 pt-3 border-t border-border-subtle">
+                                                                                <div className="text-[10px] uppercase font-bold text-status-error mb-1 tracking-widest">Reason</div>
+                                                                                <div className="text-status-error font-medium">{sale.declineReason}</div>
+                                                                            </div>
+                                                                        )}
                                                                     </div>
                                                                 </div>
                                                                 <div className="space-y-3">

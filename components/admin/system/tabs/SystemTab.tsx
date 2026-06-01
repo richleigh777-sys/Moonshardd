@@ -1,3 +1,4 @@
+import { useSystem } from '../../../../hooks/useSystem';
 
 import React from 'react';
 import { ShieldAlert, AlertCircle, ShieldCheck, Leaf, Trash2, ServerCrash, RefreshCw, Database } from 'lucide-react';
@@ -16,6 +17,7 @@ interface SystemTabProps {
 }
 
 export const SystemTab: React.FC<SystemTabProps> = ({ config, onChange }) => {
+    const { setToast } = useSystem();
     return (
         <section className="space-y-10 animate-in fade-in slide-in-from-right-4 duration-500">
             <SectionHeader icon={ShieldAlert} title="Core Infrastructure" sub="Critical System Controls" color="text-status-error" />
@@ -127,7 +129,7 @@ export const SystemTab: React.FC<SystemTabProps> = ({ config, onChange }) => {
                                 onClick={async () => {
                                     if(confirm("Confirm destructive seed? This will overwrite core server configs.")) {
                                         await nexusGateway.seed();
-                                        alert("Nexus Seed Successful. Please refresh.");
+                                        setToast({ title: "Alert", message: "Nexus Seed Successful. Please refresh.", type: "warning" });
                                     }
                                 }}
                             >

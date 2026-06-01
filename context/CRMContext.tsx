@@ -34,16 +34,28 @@ export const CRMProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         }
     }, [currentUser, dataHook]);
 
-    const [drafts, setDrafts] = useState<Record<string, any>>({});
+    const [drafts, setDrafts] = useState<Record<string, any>>(() => {
+        try {
+            const saved = localStorage.getItem('crm_drafts');
+            return saved ? JSON.parse(saved) : {};
+        } catch {
+            return {};
+        }
+    });
 
     const updateDraft = useCallback((key: string, data: any) => {
-        setDrafts(prev => ({ ...prev, [key]: data }));
+        setDrafts(prev => {
+            const next = { ...prev, [key]: data };
+            localStorage.setItem('crm_drafts', JSON.stringify(next));
+            return next;
+        });
     }, []);
 
     const clearDraft = useCallback((key: string) => {
         setDrafts(prev => {
             const next = { ...prev };
             delete next[key];
+            localStorage.setItem('crm_drafts', JSON.stringify(next));
             return next;
         });
     }, []);

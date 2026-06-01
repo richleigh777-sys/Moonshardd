@@ -11,7 +11,6 @@ import { ColumnConfigModal } from './sales-ledger/ColumnConfigModal';
 import { ImportWizard } from './sales-ledger/ImportWizard';
 import { CustomerProfileModal } from '../modals/CustomerProfileModal';
 import { useSalesLedgerUI } from './sales-ledger/useSalesLedgerUI';
-import { LedgerMap } from './sales-ledger/LedgerMap';
 import { useCRM } from '../../hooks/useCRM';
 
 interface SalesLedgerProps {
@@ -37,9 +36,10 @@ export const SalesLedger: React.FC<SalesLedgerProps> = ({ sales = [], onAction, 
     const { systemConfig } = useCRM();
 
     const [selectedProfilePhone, setSelectedProfilePhone] = React.useState<string | null>(null);
-    const [viewMode, setViewMode] = React.useState<'table' | 'map'>('table');
 
-    const restrictedColumns = !allowActions ? (systemConfig?.level10Config?.restrictedAgentColumns || []) : [];
+    const restrictedColumns = React.useMemo(() => {
+        return !allowActions ? (systemConfig?.level10Config?.restrictedAgentColumns || []) : [];
+    }, [allowActions, systemConfig?.level10Config?.restrictedAgentColumns]);
 
     const safeVisibleColumns = React.useMemo(() => {
         if (!restrictedColumns.length) return columnPreferences.visible;
@@ -63,6 +63,14 @@ export const SalesLedger: React.FC<SalesLedgerProps> = ({ sales = [], onAction, 
     return (
         <div className="flex flex-col h-full gap-4 animate-in fade-in duration-500 relative">
             <input autoComplete="off" data-lpignore="true" data-prevent-autofill="true" spellCheck={false} ref={fileInputRef} type="file" className="hidden" accept=".csv" onChange={handleFileChange} />
+
+            {restrictedColumns.length > 0 && (
+                <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3 flex items-center gap-2 m-2">
+                    <p className="text-sm text-yellow-800">
+                        {restrictedColumns.length} columns are restricted for agent-level access. Contact admin to request visibility.
+                    </p>
+                </div>
+            )}
 
             <LedgerHeader 
                 summary={summary}
@@ -104,8 +112,6 @@ export const SalesLedger: React.FC<SalesLedgerProps> = ({ sales = [], onAction, 
                 importAvailable={!!onImport}
                 density={density}
                 setDensity={setDensity}
-                viewMode={viewMode}
-                setViewMode={setViewMode}
                 isRefreshing={isRefreshing}
                 onRefresh={handleRefresh}
                 allowActions={allowActions}
@@ -122,16 +128,13 @@ export const SalesLedger: React.FC<SalesLedgerProps> = ({ sales = [], onAction, 
             )}
 
             <div className={`flex-1 min-h-0 bg-surface-main border border-border-subtle rounded-2xl overflow-hidden shadow-2xl flex flex-col relative transition-opacity duration-300`}>
-                {viewMode === 'map' ? (
-                    <LedgerMap sales={processedSales} onAction={handleSafeAction} />
-                ) : (
-                    <LedgerTable 
-                        sales={paginatedSales}
-                        columnOrder={columnPreferences.order}
-                        visibleColumns={safeVisibleColumns}
-                        sortConfig={sortConfig}
-                        handleSort={handleSort}
-                        selectedIds={selectedIds}
+                <LedgerTable 
+                    sales={paginatedSales}
+                    columnOrder={columnPreferences.order}
+                    visibleColumns={safeVisibleColumns}
+                    sortConfig={sortConfig}
+                    handleSort={handleSort}
+                    selectedIds={selectedIds}
                         toggleSelect={(id) => {
                             const newSet = new Set(selectedIds);
                             if (newSet.has(id)) newSet.delete(id); else newSet.add(id);
@@ -150,19 +153,16 @@ export const SalesLedger: React.FC<SalesLedgerProps> = ({ sales = [], onAction, 
                         density={density}
                         isLoading={isRefreshing}
                     />
-                )}
                 
-                {viewMode === 'table' && (
-                    <SummaryFooter 
-                        count={processedSales.length} 
-                        approved={summary.approved} 
-                        pending={summary.pending} 
-                        total={summary.total}
-                        currentPage={currentPage}
-                        totalPages={totalPages}
-                        onPageChange={handlePageChange}
-                    />
-                )}
+                <SummaryFooter 
+                    count={processedSales.length} 
+                    approved={summary.approved} 
+                    pending={summary.pending} 
+                    total={summary.total}
+                    currentPage={currentPage}
+                    totalPages={totalPages}
+                    onPageChange={handlePageChange}
+                />
             </div>
 
             {selectedIds.size > 0 && allowActions && (

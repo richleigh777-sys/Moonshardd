@@ -51,7 +51,7 @@ export const AgentScriptHub: React.FC = () => {
                     </div>
                     <div>
                         <h3 className="text-sm font-[700] text-text-primary  tracking-widest drop-shadow-md">
-                            Sales Script Terminal
+                            Sales Scripts
                         </h3>
                         <p className="text-[10px] font-bold text-text-muted  tracking-[0.2em] flex items-center gap-1.5 mt-0.5">
                             <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.2)] dark:shadow-[0_0_8px_rgba(16,185,129,0.5)] animate-pulse"></span>

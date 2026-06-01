@@ -4,21 +4,24 @@ import { Fingerprint } from 'lucide-react';
 import { BiographicalSector } from './sectors/BiographicalSector';
 import { LogisticsSector } from './sectors/LogisticsSector';
 
+import { Card } from '../../ui/Base';
+
 interface IdentityPanelProps {
     formData: any;
     handleIdentityChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
     handleDobChange: (val: string) => void;
     handleAgeChange: (val: string) => void;
+    autoFillFromCustomer: (customer: any) => void;
     useShippingForBilling: boolean;
     setUseShippingForBilling: (val: boolean) => void;
 }
 
 export const IdentityPanel: React.FC<IdentityPanelProps> = ({ 
-    formData, handleIdentityChange, handleDobChange, handleAgeChange,
+    formData, handleIdentityChange, handleDobChange, handleAgeChange, autoFillFromCustomer,
     useShippingForBilling, setUseShippingForBilling
 }) => {
     return (
-        <div className="w-full bg-surface-main/40 backdrop-blur-3xl text-text-primary border border-border-subtle rounded-3xl overflow-hidden shadow-panel">
+        <Card variant="refraction" className="w-full text-text-primary overflow-hidden">
             {/* Header */}
             <div className="px-4 py-3 border-b border-border-subtle flex items-center justify-between bg-transparent">
                 <div className="flex items-center gap-3">
@@ -37,6 +40,7 @@ export const IdentityPanel: React.FC<IdentityPanelProps> = ({
                         handleIdentityChange={handleIdentityChange} 
                         handleDobChange={handleDobChange} 
                         handleAgeChange={handleAgeChange} 
+                        autoFillFromCustomer={autoFillFromCustomer}
                     />
                 </div>
 
@@ -50,6 +54,6 @@ export const IdentityPanel: React.FC<IdentityPanelProps> = ({
                     />
                 </div>
             </div>
-        </div>
+        </Card>
     );
 };

@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { 
     Settings, Clock, DollarSign, Save, Lock, Globe, Database,
-    Tag, Sparkles, RefreshCw, ChevronRight, ShieldAlert, Terminal, Package, Target
+    Tag, Sparkles, RefreshCw, ChevronRight, ShieldAlert, Terminal, Package, Target, Network
 } from 'lucide-react';
 import { Card, Button } from '../ui/Base';
 import { SystemConfig, Sale, Note } from '../../types';
@@ -25,6 +25,7 @@ import { HygieneTab } from './system/tabs/HygieneTab';
 import { SnapshotsTab } from './system/tabs/SnapshotsTab';
 import { PlaybooksTab } from './system/tabs/PlaybooksTab';
 import { AuditTab } from './system/tabs/AuditTab';
+import { EcosystemTab } from './system/tabs/EcosystemTab';
 
 interface SystemConfigPanelProps {
     config: SystemConfig;
@@ -33,7 +34,7 @@ interface SystemConfigPanelProps {
     notes: Note[];
 }
 
-type ConfigTab = 'operations' | 'financials' | 'crm' | 'clearance' | 'integrations' | 'taxonomy' | 'experience' | 'system' | 'command' | 'hygiene' | 'snapshots' | 'playbooks' | 'audit';
+type ConfigTab = 'operations' | 'financials' | 'crm' | 'clearance' | 'integrations' | 'taxonomy' | 'experience' | 'system' | 'command' | 'hygiene' | 'snapshots' | 'playbooks' | 'audit' | 'ecosystem';
 
 
 export const SystemConfigPanel = ({ config, onUpdate, sales, notes }: SystemConfigPanelProps) => {
@@ -98,7 +99,8 @@ export const SystemConfigPanel = ({ config, onUpdate, sales, notes }: SystemConf
         { id: 'snapshots', label: 'Snapshots', icon: Package, color: 'text-accent-secondary' },
         { id: 'audit', label: 'Deep Scan & Audit', icon: ShieldAlert, color: 'text-status-error' },
         { id: 'system', label: 'System Core', icon: ShieldAlert, color: 'text-status-error' },
-        { id: 'command', label: 'Command Deck', icon: Terminal, color: 'text-red-600', hidden: !isSuperAdmin },
+        { id: 'command', label: 'System Controls', icon: Settings, color: 'text-status-error', hidden: !isSuperAdmin },
+        { id: 'ecosystem', label: 'Systems Mapping', icon: Network, color: 'text-cyan-500' },
     ].filter(item => !item.hidden) as { id: ConfigTab, label: string, icon: any, color: string }[];
 
 
@@ -193,6 +195,7 @@ export const SystemConfigPanel = ({ config, onUpdate, sales, notes }: SystemConf
                             {activeTab === 'audit' && <AuditTab />}
                             {activeTab === 'system' && <SystemTab config={localConfig} onChange={handleChange} />}
                             {activeTab === 'command' && <CommandDeckTab />}
+                            {activeTab === 'ecosystem' && <EcosystemTab />}
                         </div>
                     </div>
                 </div>

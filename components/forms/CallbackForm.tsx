@@ -39,6 +39,10 @@ export const CallbackForm: React.FC<CallbackFormProps> = ({ onAddNote, currentUs
         }
     }, [initialData]);
 
+    const [hClicks, setHClicks] = useState(0);
+    const [dClicks, setDClicks] = useState(0);
+    const [wClicks, setWClicks] = useState(0);
+
     // Countdown and Alarm Engine (3-second ring 5 mins before)
     useEffect(() => {
         if (!targetTimestamp) {
@@ -80,15 +84,75 @@ export const CallbackForm: React.FC<CallbackFormProps> = ({ onAddNote, currentUs
         };
     }, [targetTimestamp]);
 
-    const addTime = (ms: number) => {
+    const addHours = (h: number) => {
         sfx.playClick();
-        notifiedRef.current = false;
-        setTargetTimestamp(prev => (prev && prev > Date.now() ? prev : Date.now()) + ms);
+        setHClicks(prev => prev + h);
+        setTargetTimestamp(prev => {
+            const base = (prev && prev > Date.now()) ? prev : Date.now();
+            return base + (h * 3600000);
+        });
+    };
+
+    const addDays = (d: number) => {
+        sfx.playClick();
+        setDClicks(prev => prev + d);
+        setTargetTimestamp(prev => {
+            const base = (prev && prev > Date.now()) ? prev : Date.now();
+            return base + (d * 86400000);
+        });
+    };
+
+    const addWeeks = (w: number) => {
+        sfx.playClick();
+        setWClicks(prev => prev + w);
+        setTargetTimestamp(prev => {
+            const base = (prev && prev > Date.now()) ? prev : Date.now();
+            return base + (w * 604800000);
+        });
+    };
+
+    const clearOffsets = () => {
+        sfx.playTrash();
+        setHClicks(0);
+        setDClicks(0);
+        setWClicks(0);
+        setTargetTimestamp(null);
+    };
+
+    const handleOutcomeClick = (outcome: string) => {
+        sfx.playConfirm();
+        const timestampStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        const textToAppend = `[Attempted: ${outcome} @ ${timestampStr}]`;
+        
+        setFormData(prev => {
+            const alreadyLogged = prev.agentNotes.includes(textToAppend);
+            const nextNotes = alreadyLogged 
+                ? prev.agentNotes 
+                : prev.agentNotes 
+                    ? `${prev.agentNotes}\n${textToAppend}`
+                    : textToAppend;
+
+            return {
+                ...prev,
+                reason: outcome === 'No Answer' ? 'Disconnected / No Answer' :
+                        outcome === 'Busy' ? 'Driving / Busy' :
+                        outcome === 'Left a Voicemail' ? 'Left Voicemail' :
+                        'Declined Recovery',
+                agentNotes: nextNotes
+            };
+        });
     };
 
     const reasons = [
         "Package Update", "Driving / Busy", "No Funds Available", "Wants to Think",
-        "Spouse Approval", "Researching Competitor", "Disconnected / No Answer", "Declined Recovery"
+        "Spouse Approval", "Researching Competitor", "Disconnected / No Answer", "Declined Recovery", "Left Voicemail"
+    ];
+
+    const outcomes = [
+        { label: 'No Answer', outcome: 'No Answer', color: 'hover:border-amber-500/50 hover:bg-amber-500/10 hover:text-amber-400' },
+        { label: 'Busy', outcome: 'Busy', color: 'hover:border-indigo-500/50 hover:bg-indigo-500/10 hover:text-indigo-400' },
+        { label: 'Left a Voicemail', outcome: 'Left a Voicemail', color: 'hover:border-emerald-500/50 hover:bg-emerald-500/10 hover:text-emerald-400' },
+        { label: 'Not Interested', outcome: 'Not Interested', color: 'hover:border-red-500/50 hover:bg-red-500/10 hover:text-red-400' }
     ];
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -124,6 +188,9 @@ export const CallbackForm: React.FC<CallbackFormProps> = ({ onAddNote, currentUs
                 if (!initialData) {
                     setFormData({ name: '', phone: '', reason: 'Package Update', notes: '', agentNotes: '' });
                     setTargetTimestamp(null);
+                    setHClicks(0);
+                    setDClicks(0);
+                    setWClicks(0);
                 }
                 notifiedRef.current = false;
             }, 2500);
@@ -176,29 +243,86 @@ export const CallbackForm: React.FC<CallbackFormProps> = ({ onAddNote, currentUs
                     </div>
                 </div>
 
+                {/* QUICK OUTCOMES / WHAT HAPPENED SECTION */}
+                <div className="space-y-3">
+                    <label className="text-xs font-[700]  text-text-muted tracking-widest ml-1 flex items-center gap-1.5">
+                        <Check size={16} className="text-emerald-500" /> Quick Outcome Logs (Auto-Fills Notes)
+                    </label>
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                        {outcomes.map(item => (
+                            <button
+                                key={item.label}
+                                type="button"
+                                onClick={() => handleOutcomeClick(item.outcome)}
+                                className={`
+                                    py-2 px-3 bg-surface-alt border border-border-subtle rounded-xl 
+                                    text-[10px] font-[700] tracking-wider text-text-secondary transition-all 
+                                    active:scale-95 shadow-sm text-center truncate ${item.color}
+                                `}
+                            >
+                                {item.label}
+                            </button>
+                        ))}
+                    </div>
+                </div>
+
                 {/* TEMPORAL OFFSET */}
                 <div className="space-y-3">
                     <label className="text-xs font-[700]  text-text-muted tracking-widest ml-1 flex items-center gap-2">
-                        <Clock size={16} className="text-status-warning" /> Offset Interval (Additive)
+                        <Clock size={16} className="text-status-warning" /> Offset Timer (Compounding additive clicks)
                     </label>
-                    <div className="grid grid-cols-4 gap-2">
-                        <button type="button" onClick={() => addTime(1800000)} className="h-10 bg-surface-alt hover:bg-amber-500 hover:text-black border border-border-subtle rounded-lg text-xs font-[700]  tracking-widest transition-all active:scale-95 shadow-sm">30m</button>
-                        <button type="button" onClick={() => addTime(3600000)} className="h-10 bg-surface-alt hover:bg-amber-500 hover:text-black border border-border-subtle rounded-lg text-xs font-[700]  tracking-widest transition-all active:scale-95 shadow-sm">1h</button>
-                        <button type="button" onClick={() => addTime(86400000)} className="h-10 bg-surface-alt hover:bg-amber-500 hover:text-black border border-border-subtle rounded-lg text-xs font-[700]  tracking-widest transition-all active:scale-95 shadow-sm">1d</button>
-                        <button type="button" onClick={() => addTime(604800000)} className="h-10 bg-surface-alt hover:bg-amber-500 hover:text-black border border-border-subtle rounded-lg text-xs font-[700]  tracking-widest transition-all active:scale-95 shadow-sm">1w</button>
+                    <div className="grid grid-cols-3 gap-2">
+                        <button 
+                            type="button" 
+                            onClick={() => addHours(1)} 
+                            className="relative h-12 bg-surface-alt hover:bg-amber-500 hover:text-black border border-border-subtle rounded-xl text-xs font-[700] tracking-widest transition-all active:scale-95 shadow-sm overflow-hidden"
+                        >
+                            <span className="relative z-10 flex flex-col items-center justify-center">
+                                <span>+1 HOUR</span>
+                                {hClicks > 0 && <span className="text-[10px] text-amber-900 font-bold opacity-85">({hClicks} added)</span>}
+                            </span>
+                        </button>
+                        <button 
+                            type="button" 
+                            onClick={() => addDays(1)} 
+                            className="relative h-12 bg-surface-alt hover:bg-amber-500 hover:text-black border border-border-subtle rounded-xl text-xs font-[700] tracking-widest transition-all active:scale-95 shadow-sm overflow-hidden"
+                        >
+                            <span className="relative z-10 flex flex-col items-center justify-center">
+                                <span>+1 DAY</span>
+                                {dClicks > 0 && <span className="text-[10px] text-amber-900 font-bold opacity-85">({dClicks} added)</span>}
+                            </span>
+                        </button>
+                        <button 
+                            type="button" 
+                            onClick={() => addWeeks(1)} 
+                            className="relative h-12 bg-surface-alt hover:bg-amber-500 hover:text-black border border-border-subtle rounded-xl text-xs font-[700] tracking-widest transition-all active:scale-95 shadow-sm overflow-hidden"
+                        >
+                            <span className="relative z-10 flex flex-col items-center justify-center">
+                                <span>+1 WEEK</span>
+                                {wClicks > 0 && <span className="text-[10px] text-amber-900 font-bold opacity-85">({wClicks} added)</span>}
+                            </span>
+                        </button>
                     </div>
+
                     {targetTimestamp && (
                         <div className="flex items-center justify-between p-3 bg-amber-500/5 border border-amber-500/20 rounded-xl animate-in slide-in-from-top-1">
                             <div className="flex items-center gap-3">
                                 <Calendar size={16} className="text-status-warning" />
                                 <div>
-                                    <p className="text-xs font-[700] text-text-muted  tracking-widest">Scheduled Window</p>
+                                    <p className="text-xs font-[700] text-text-muted  tracking-widest">Scheduled Window (Offset-based)</p>
                                     <p className="text-xs font-bold text-text-primary num-font">
                                         {new Date(targetTimestamp).toLocaleDateString()} @ {new Date(targetTimestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                                     </p>
                                 </div>
                             </div>
-                            <button onClick={() => setTargetTimestamp(null)} className="p-1.5 text-text-muted hover:text-status-error transition-colors"><Plus size={16} className="rotate-45" /></button>
+                            <button 
+                                type="button" 
+                                onClick={clearOffsets} 
+                                className="p-1.5 text-text-muted hover:text-status-error transition-colors"
+                                title="Reset offsets"
+                            >
+                                <Plus size={16} className="rotate-45" />
+                            </button>
                         </div>
                     )}
                 </div>
@@ -219,10 +343,10 @@ export const CallbackForm: React.FC<CallbackFormProps> = ({ onAddNote, currentUs
                             <StickyNote size={16} /> Agent Notes
                         </label>
                         <textarea 
-                            className="bg-surface-alt border border-border-subtle text-text-primary p-3 text-xs font-medium w-full outline-none rounded-xl focus:border-amber-500 transition-all resize-none h-20 shadow-inner"
+                            className="bg-surface-alt border border-border-subtle text-text-primary p-3 text-sm font-medium w-full outline-none rounded-xl focus:border-amber-500 transition-all resize-none h-24 shadow-inner"
                             value={formData.agentNotes}
                             onChange={e => setFormData({...formData, agentNotes: e.target.value})}
-                            placeholder="Enter tactical intel for the follow-up..."
+                            placeholder="Tactical intelligence for the callback. Outcome indicators can append logs above..."
                         />
                     </div>
                 </div>

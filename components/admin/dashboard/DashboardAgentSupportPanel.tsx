@@ -1,6 +1,6 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import { Sale, User, SystemConfig } from '../../../types';
-import { AlertTriangle, Send, BarChart3, Zap } from 'lucide-react';
+import { AlertTriangle, Send, BarChart3, Zap, Clock, Activity, Target } from 'lucide-react';
 
 interface DashboardAgentSupportPanelProps {
   sales: Sale[];
@@ -15,6 +15,9 @@ export const DashboardAgentSupportPanel: React.FC<DashboardAgentSupportPanelProp
   systemConfig,
   onSendMessage,
 }) => {
+  const [expandedAgentId, setExpandedAgentId] = useState<string | null>(null);
+  const [toastMessage, setToastMessage] = useState<string | null>(null);
+
   const agentsNeedingSupport = useMemo(() => {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
@@ -26,19 +29,28 @@ export const DashboardAgentSupportPanel: React.FC<DashboardAgentSupportPanelProp
     return agents
       .map((agent) => {
         const todaysSales = sales.filter(
-          (s) => s.agentId === agent.id && s.timestamp >= todayMs && s.status === 'Approved'
+          (s) => s.agentId === agent.id && s.timestamp >= todayMs
         );
-        const count = todaysSales.length;
-        const isBelow = count < dailyGoal;
-        const deficit = dailyGoal - count;
+        const approvedCount = todaysSales.filter((s) => s.status === 'Approved').length;
+        const totalCount = todaysSales.length;
+        
+        // Calculate basic stats for the expansion panel
+        const pendingCount = todaysSales.filter((s) => s.status === 'Pending').length;
+        const declinedCount = todaysSales.filter((s) => s.status === 'Declined' || s.status === 'Cancelled').length;
+        
+        const isBelow = approvedCount < dailyGoal;
+        const deficit = dailyGoal - approvedCount;
 
         return {
           agent,
-          todaysSales: count,
+          todaysSales: approvedCount,
+          totalCount,
+          pendingCount,
+          declinedCount,
           deficit,
           isBelow,
-          revenue: todaysSales.reduce((sum, s) => sum + s.amount, 0),
-          performance: (count / dailyGoal) * 100,
+          revenue: todaysSales.filter(s => s.status === 'Approved').reduce((sum, s) => sum + s.amount, 0),
+          performance: (approvedCount / dailyGoal) * 100,
         };
       })
       .filter((a) => a.isBelow)
@@ -56,6 +68,12 @@ export const DashboardAgentSupportPanel: React.FC<DashboardAgentSupportPanelProp
     }
   };
 
+  const handleSendMessage = (agentId: string, message: string) => {
+    onSendMessage(agentId, message);
+    setToastMessage("Direct encouragement message dispatched to agent console.");
+    setTimeout(() => setToastMessage(null), 3000);
+  };
+
   if (agentsNeedingSupport.length === 0) {
     return (
       <div className="bg-slate-800 rounded-lg p-6 border border-slate-700 text-center">
@@ -67,7 +85,15 @@ export const DashboardAgentSupportPanel: React.FC<DashboardAgentSupportPanelProp
   }
 
   return (
-    <div className="bg-slate-800 rounded-lg border border-slate-700 overflow-hidden">
+    <div className="bg-slate-800 rounded-lg border border-slate-700 overflow-hidden relative">
+      {/* Internal Toast Overlay */}
+      {toastMessage && (
+        <div className="absolute top-4 left-1/2 -translate-x-1/2 z-50 bg-green-500/90 text-white text-xs font-bold px-4 py-2 rounded-full shadow-lg flex items-center gap-2 animate-in slide-in-from-top-2">
+          <Send size={14} />
+          {toastMessage}
+        </div>
+      )}
+
       {/* Header */}
       <div className="bg-gradient-to-r from-orange-900 to-orange-800 p-4 border-b border-orange-700">
         <div className="flex items-center gap-2">
@@ -80,53 +106,94 @@ export const DashboardAgentSupportPanel: React.FC<DashboardAgentSupportPanelProp
       </div>
 
       {/* Agents List */}
-      <div className="divide-y divide-slate-700">
-        {agentsNeedingSupport.map(({ agent, todaysSales, deficit, revenue, performance }) => (
-          <div key={agent.id} className="p-4">
+      <div className="divide-y divide-slate-700 max-h-[400px] overflow-y-auto">
+        {agentsNeedingSupport.map(({ agent, todaysSales, totalCount, pendingCount, declinedCount, deficit, revenue, performance }) => (
+          <div key={agent.id} className="p-4 flex flex-col gap-3 transition-colors hover:bg-slate-700/30">
             {/* Header Row */}
-            <div className="flex items-start justify-between mb-3">
+            <div className="flex items-start justify-between">
               <div>
-                <p className="font-semibold text-white">{agent.name}</p>
-                <p className="text-xs text-slate-400 mt-1">
-                  {todaysSales}/5 sales • ${revenue.toLocaleString()} revenue
+                <div className="flex items-center gap-2">
+                  <p className="font-semibold text-white">{agent.name}</p>
+                  <span className={`w-2 h-2 rounded-full ${agent.currentStatus === 'online' ? 'bg-green-500' : 'bg-slate-500'}`}></span>
+                </div>
+                <p className="text-xs text-slate-400 mt-1 flex items-center gap-2">
+                  <span>{todaysSales}/5 sales</span>
+                  <span className="opacity-50">•</span>
+                  <span className="text-emerald-400">${revenue.toLocaleString()} rev</span>
                 </p>
               </div>
               <div className="text-right">
-                <div className="text-2xl font-black text-orange-400">{deficit}</div>
-                <p className="text-xs text-slate-400">more needed</p>
+                <div className="text-2xl font-black text-orange-400 leading-none">{deficit}</div>
+                <p className="text-[10px] text-slate-400 uppercase tracking-widest mt-1">gap</p>
               </div>
             </div>
 
             {/* Progress Bar */}
-            <div className="w-full bg-slate-700 rounded-full h-2 mb-3">
+            <div className="w-full bg-slate-700/50 rounded-full h-1.5 overflow-hidden">
               <div
-                className="h-2 rounded-full bg-orange-500 transition-all"
+                className="h-full rounded-full bg-orange-500 transition-all duration-1000 ease-out"
                 style={{ width: `${Math.min(100, performance)}%` }}
               />
             </div>
 
             {/* Suggestion */}
-            <div className="bg-slate-700 rounded p-2 mb-3">
-              <p className="text-xs text-slate-300">{getSuggestion(agent, deficit, revenue)}</p>
+            <div className="bg-slate-750 border border-slate-700/50 rounded p-2.5">
+              <p className="text-xs text-slate-300 flex items-start gap-2">
+                <Activity size={14} className="text-blue-400 shrink-0 mt-0.5" />
+                {getSuggestion(agent, deficit, revenue)}
+              </p>
             </div>
 
+            {/* Expanded Stats Section */}
+            {expandedAgentId === agent.id && (
+              <div className="animate-in slide-in-from-top-2 fade-in duration-200">
+                <div className="grid grid-cols-3 gap-2 mb-3">
+                  <div className="bg-slate-900/50 rounded p-2 text-center border border-slate-700 text-xs">
+                    <p className="text-slate-400 mb-1">Total</p>
+                    <p className="text-white font-mono font-bold">{totalCount}</p>
+                  </div>
+                  <div className="bg-slate-900/50 rounded p-2 text-center border border-slate-700 text-xs">
+                     <p className="text-slate-400 mb-1">Pending</p>
+                     <p className="text-yellow-400 font-mono font-bold">{pendingCount}</p>
+                  </div>
+                  <div className="bg-slate-900/50 rounded p-2 text-center border border-slate-700 text-xs">
+                     <p className="text-slate-400 mb-1">Dropped</p>
+                     <p className="text-red-400 font-mono font-bold">{declinedCount}</p>
+                  </div>
+                </div>
+                {declinedCount > pendingCount && (
+                  <p className="text-[10px] text-red-300 bg-red-900/20 p-2 rounded mb-3 border border-red-900/50">
+                     <AlertTriangle size={12} className="inline mr-1 relative -top-[1px]"/>
+                     High drop rate detected today. Check recent script compliance.
+                  </p>
+                )}
+              </div>
+            )}
+
             {/* Quick Actions */}
-            <div className="flex gap-2">
+            <div className="flex gap-2 mt-1">
               <button
                 onClick={() =>
-                  onSendMessage(
+                  handleSendMessage(
                     agent.id,
                     `Hey ${agent.name}! You're ${deficit} sales away from quota. Let's push hard! 💪`
                   )
                 }
-                className="flex-1 flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold py-2 rounded transition-colors"
+                className="flex-1 flex items-center justify-center gap-2 bg-blue-600/90 hover:bg-blue-600 text-white text-xs py-2 px-3 rounded-md transition-colors border border-blue-500/50"
               >
-                <Send size={16} />
+                <Send size={14} />
                 Encourage
               </button>
-              <button className="flex-1 flex items-center justify-center gap-2 bg-slate-700 hover:bg-slate-600 text-white text-sm font-semibold py-2 rounded transition-colors">
-                <BarChart3 size={16} />
-                View Stats
+              <button 
+                onClick={() => setExpandedAgentId(expandedAgentId === agent.id ? null : agent.id)}
+                className={`flex-1 flex items-center justify-center gap-2 text-xs py-2 px-3 rounded-md transition-colors border ${
+                  expandedAgentId === agent.id 
+                    ? 'bg-slate-700 text-white border-slate-600' 
+                    : 'bg-slate-800 text-slate-300 border-slate-700 hover:bg-slate-700 hover:text-white'
+                }`}
+              >
+                <BarChart3 size={14} />
+                {expandedAgentId === agent.id ? 'Hide Stats' : 'View Stats'}
               </button>
             </div>
           </div>

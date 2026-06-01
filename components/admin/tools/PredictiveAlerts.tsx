@@ -1,6 +1,8 @@
+import { useSystem } from '../../../hooks/useSystem';
 import React, { useMemo } from 'react';
 import { Sale, User, Note } from '../../../types';
 import { AlertTriangle, TrendingDown, Users, Zap } from 'lucide-react';
+import { Card } from '../../../ui/Base';
 
 interface PredictiveAlertsProps {
   sales: Sale[];
@@ -8,11 +10,12 @@ interface PredictiveAlertsProps {
   notes: Note[];
 }
 
-export const PredictiveAlerts: React.FC<PredictiveAlertsProps> = ({
+export const PredictiveAlerts: React.FC<PredictiveAlertsProps> = ({ 
   sales,
   users,
   notes,
 }) => {
+    const { setToast } = useSystem();
   const alerts = useMemo(() => {
     const allAlerts: Array<{
       type: string;
@@ -46,7 +49,7 @@ export const PredictiveAlerts: React.FC<PredictiveAlertsProps> = ({
     const last7Revenue = last7Days.filter((s) => s.status === 'Approved').reduce((sum, s) => sum + s.amount, 0);
     const last14Revenue = last14Days.filter((s) => s.status === 'Approved').reduce((sum, s) => sum + s.amount, 0);
 
-    if (last7Revenue < last14Revenue * 0.7) {
+    if (last14Revenue > 0 && last7Revenue < last14Revenue * 0.7) {
       allAlerts.push({
         type: 'revenue',
         severity: 'high',
@@ -58,7 +61,7 @@ export const PredictiveAlerts: React.FC<PredictiveAlertsProps> = ({
 
     // System capacity alert
     const onlineAgents = agents.filter((a) => a.currentStatus === 'online').length;
-    if (onlineAgents < Math.ceil(agents.length * 0.5)) {
+    if (agents.length > 0 && onlineAgents < Math.ceil(agents.length * 0.5)) {
       allAlerts.push({
         type: 'capacity',
         severity: 'medium',
@@ -89,59 +92,64 @@ export const PredictiveAlerts: React.FC<PredictiveAlertsProps> = ({
     });
   }, [sales, users, notes]);
 
-  const getSeverityColor = (severity: string) => {
+  const getSeverityStyle = (severity: string) => {
     switch (severity) {
       case 'high':
-        return 'bg-red-900 border-red-700';
+        return 'bg-status-error/10 border-status-error/30';
       case 'medium':
-        return 'bg-yellow-900 border-yellow-700';
+        return 'bg-status-warning/10 border-status-warning/30';
       case 'low':
-        return 'bg-blue-900 border-blue-700';
+        return 'bg-accent-primary/10 border-accent-primary/30';
       default:
-        return 'bg-slate-800 border-slate-700';
+        return 'bg-surface-alt border-border-subtle';
     }
   };
 
   const getSeverityIcon = (severity: string) => {
     switch (severity) {
       case 'high':
-        return <AlertTriangle className="text-red-400" size={20} />;
+        return <AlertTriangle className="text-status-error" size={20} />;
       case 'medium':
-        return <Zap className="text-yellow-400" size={20} />;
+        return <Zap className="text-status-warning" size={20} />;
       case 'low':
-        return <TrendingDown className="text-blue-400" size={20} />;
+        return <TrendingDown className="text-accent-primary" size={20} />;
       default:
-        return <Users className="text-slate-400" size={20} />;
+        return <Users className="text-text-muted" size={20} />;
     }
   };
 
   return (
-    <div className="space-y-3">
-      {alerts.length > 0 ? (
-        alerts.map((alert, idx) => (
-          <div
-            key={idx}
-            className={`rounded-lg p-4 border ${getSeverityColor(alert.severity)} bg-opacity-40`}
-          >
-            <div className="flex items-start gap-3">
-              {getSeverityIcon(alert.severity)}
-              <div className="flex-1">
-                <h4 className="font-bold text-white">{alert.title}</h4>
-                <p className="text-sm text-slate-300 mt-1">{alert.description}</p>
-                <button className="mt-2 text-sm font-semibold text-white hover:underline">
-                  → {alert.action}
-                </button>
+    <Card className="p-4 bg-surface-main border-border-subtle">
+      <div className="space-y-3">
+        {alerts.length > 0 ? (
+          alerts.map((alert, idx) => (
+            <div
+              key={idx}
+              className={`rounded-lg p-4 border ${getSeverityStyle(alert.severity)}`}
+            >
+              <div className="flex items-start gap-3">
+                {getSeverityIcon(alert.severity)}
+                <div className="flex-1">
+                  <h4 className="font-bold text-text-primary">{alert.title}</h4>
+                  <p className="text-sm text-text-secondary mt-1">{alert.description}</p>
+                  <button 
+                    className="mt-2 text-sm font-bold text-text-primary hover:underline group-hover:text-amber-400"
+                    onClick={() => setToast({ title: "System Notification", message: "Action executed.", type: "info" })}
+                  >
+                    → {alert.action}
+                  </button>
+                </div>
               </div>
             </div>
+          ))
+        ) : (
+          <div className="bg-surface-alt rounded-lg p-6 border border-border-subtle text-center">
+            <Zap className="mx-auto text-status-success mb-3" size={32} />
+            <p className="font-bold text-text-primary">No Alerts</p>
+            <p className="text-sm text-text-muted mt-1">Ecosystem metrics within healthy parameters.</p>
           </div>
-        ))
-      ) : (
-        <div className="bg-slate-800 rounded-lg p-6 border border-slate-700 text-center">
-          <Zap className="mx-auto text-green-400 mb-3" size={32} />
-          <p className="font-semibold text-white">No Alerts</p>
-          <p className="text-sm text-slate-400 mt-1">Everything looks good!</p>
-        </div>
-      )}
-    </div>
+        )}
+      </div>
+    </Card>
   );
 };

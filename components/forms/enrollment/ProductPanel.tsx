@@ -4,6 +4,7 @@ import { Plus, Command, Package } from 'lucide-react';
 import { CartItem, ProductConfig } from '../../../types';
 import { sfx } from '../../../lib/soundService';
 import { BasketLineItems } from './sectors/BasketLineItems';
+import { Card } from '../../ui/Base';
 
 interface ProductPanelProps {
     cart: CartItem[];
@@ -54,7 +55,7 @@ export const ProductPanel: React.FC<ProductPanelProps> = ({
     };
 
     return (
-        <div className="w-full bg-surface-main/40 backdrop-blur-3xl text-text-primary border border-border-subtle rounded-3xl overflow-hidden shadow-panel">
+        <Card variant="refraction" className="w-full text-text-primary overflow-hidden">
             {/* Header */}
             <div className="px-4 py-3 border-b border-border-subtle flex items-center justify-between bg-transparent">
                 <div className="flex items-center gap-3">
@@ -94,6 +95,7 @@ export const ProductPanel: React.FC<ProductPanelProps> = ({
                     />
                 </div>
             </div>
-        </div>
+        </Card>
     );
 };
+

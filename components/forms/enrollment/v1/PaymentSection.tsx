@@ -1,5 +1,5 @@
 import React from 'react';
-import { Lock, CreditCard, Eye, AlertTriangle, CheckCircle } from 'lucide-react';
+import { Lock, CreditCard, AlertTriangle, CheckCircle } from 'lucide-react';
 import { Card } from '../../../ui/Base';
 
 interface PaymentSectionProps {
@@ -18,12 +18,12 @@ export const PaymentSection: React.FC<PaymentSectionProps> = ({
   cardStatus,
   showCvv,
   setShowCvv,
-  bankOptions,
-  cardProviders,
+  bankOptions: _bankOptions,
+  cardProviders: _cardProviders,
 }) => {
   return (
     <Card
-      variant="panel"
+      variant="refraction"
       className="shrink-0 p-5 border-border-subtle shadow-md flex flex-col bg-surface-main h-auto relative group overflow-hidden rounded-xl"
     >
       <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/10 via-transparent to-transparent pointer-events-none"></div>
@@ -49,46 +49,31 @@ export const PaymentSection: React.FC<PaymentSectionProps> = ({
         {/* Bank & Card Type */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <label className="text-[11px] font-bold text-text-muted tracking-widest mb-1.5 block">ISSUING BANK</label>
-            <select
+            <input
               name="bankName"
+              readOnly
               value={financials.bankName}
-              onChange={handleFinancialChange}
-              className="w-full bg-surface-alt/70 border border-border-subtle rounded-xl px-4 py-3 text-sm font-bold text-text-primary outline-none focus:border-emerald-500/50 focus:ring-4 focus:ring-emerald-500/10 focus:bg-surface-main transition-all cursor-pointer"
-            >
-              <option value="">Select Bank...</option>
-              {bankOptions.map((bank) => (
-                <option key={bank} value={bank}>
-                  {bank}
-                </option>
-              ))}
-            </select>
+              placeholder="Auto-detected Issuing Bank"
+              className="w-full bg-surface-alt/70 border border-border-subtle rounded-xl px-4 py-3 text-sm font-bold text-text-primary outline-none focus:border-emerald-500/50 focus:ring-4 focus:ring-emerald-500/10 transition-all cursor-not-allowed opacity-80"
+            />
           </div>
 
           <div>
-            <label className="text-[11px] font-bold text-text-muted tracking-widest mb-1.5 block">CARD NETWORK</label>
             <select
               name="cardType"
               value={financials.cardType}
               onChange={handleFinancialChange}
               className="w-full bg-surface-alt/70 border border-border-subtle rounded-xl px-4 py-3 text-sm font-bold text-text-primary outline-none focus:border-emerald-500/50 focus:ring-4 focus:ring-emerald-500/10 focus:bg-surface-main transition-all cursor-pointer"
             >
-              <option value="">Select Type...</option>
-              {cardProviders.map((provider) => (
-                <option key={provider} value={provider}>
-                  {provider}
-                </option>
-              ))}
+              <option value="">Select Card Type...</option>
+              <option value="Credit">Credit Card</option>
+              <option value="Debit">Debit Card</option>
             </select>
           </div>
         </div>
 
         {/* Card Number */}
         <div>
-          <label className="text-[11px] font-bold text-text-muted tracking-widest mb-1.5 flex justify-between">
-            <span>CARD NUMBER</span>
-            {cardStatus === 'invalid' && <span className="text-status-error text-[10px]">INVALID LENGTH</span>}
-          </label>
           <div className="relative group">
             <CreditCard
               className={`absolute left-4 top-1/2 -translate-y-1/2 transition-colors ${cardStatus === 'valid' ? 'text-status-success' : 'text-text-muted group-focus-within:text-emerald-500'}`}
@@ -97,9 +82,10 @@ export const PaymentSection: React.FC<PaymentSectionProps> = ({
             <input
               type="text"
               name="cardNumber"
+              autoComplete="new-password"
               value={financials.cardNumber}
               onChange={handleFinancialChange}
-              placeholder="0000 0000 0000 0000"
+              placeholder="Card Number"
               maxLength={19}
               className={`w-full bg-surface-alt/70 border rounded-xl pl-11 pr-10 py-3 text-sm font-mono tracking-widest outline-none transition-all shadow-inner ${
                 cardStatus === 'valid'
@@ -113,47 +99,66 @@ export const PaymentSection: React.FC<PaymentSectionProps> = ({
               <CheckCircle className="absolute right-4 top-1/2 -translate-y-1/2 text-status-success" size={16} />
             )}
             {cardStatus === 'invalid' && (
-              <AlertTriangle className="absolute right-4 top-1/2 -translate-y-1/2 text-status-error" size={16} />
+              <span className="absolute right-4 top-1/2 -translate-y-1/2 flex items-center gap-1.5 text-status-error">
+                <span className="text-[10px] font-bold">INVALID LENGTH</span>
+                <AlertTriangle size={16} />
+              </span>
             )}
           </div>
         </div>
 
         {/* Expiry & CVV */}
-        <div className="grid grid-cols-2 lg:grid-cols-[2fr_1fr] gap-4">
+        <div className="grid grid-cols-2 lg:grid-cols-[2fr_1fr] gap-4 mt-2">
           <div>
-            <label className="text-[11px] font-bold text-text-muted tracking-widest mb-1.5 block">EXPIRY (MM/YY)</label>
-            <input
-              type="text"
-              name="cardExpiry"
-              value={financials.cardExpiry}
-              onChange={handleFinancialChange}
-              placeholder="MM/YY"
-              maxLength={5}
-              className="w-full bg-surface-alt/70 border border-border-subtle rounded-xl px-4 py-3 text-sm font-mono text-center outline-none focus:border-emerald-500/50 focus:ring-4 focus:ring-emerald-500/10 focus:bg-surface-main transition-all"
-            />
+            <div className="flex items-center gap-2">
+              <select
+                name="cardExpMonth"
+                autoComplete="off"
+                value={financials.cardExpMonth || ''}
+                onChange={handleFinancialChange}
+                className="w-1/2 bg-surface-alt/70 border border-border-subtle rounded-xl px-2 py-3 text-sm font-mono text-center outline-none focus:border-emerald-500/50 focus:ring-4 focus:ring-emerald-500/10 transition-all cursor-pointer"
+              >
+                <option value="">Month</option>
+                {Array.from({length: 12}).map((_, i) => (
+                  <option key={i+1} value={(i+1).toString().padStart(2, '0')}>{(i+1).toString().padStart(2, '0')}</option>
+                ))}
+              </select>
+              <span className="text-text-muted font-bold text-lg">/</span>
+              <select
+                name="cardExpYear"
+                autoComplete="off"
+                value={financials.cardExpYear || ''}
+                onChange={handleFinancialChange}
+                className="w-1/2 bg-surface-alt/70 border border-border-subtle rounded-xl px-2 py-3 text-sm font-mono text-center outline-none focus:border-emerald-500/50 focus:ring-4 focus:ring-emerald-500/10 transition-all cursor-pointer"
+              >
+                <option value="">Year</option>
+                {Array.from({length: 9}).map((_, i) => (
+                  <option key={i} value={(2026 + i).toString()}>{2026 + i}</option>
+                ))}
+              </select>
+            </div>
           </div>
 
           <div>
-            <label className="text-[11px] font-bold text-text-muted tracking-widest mb-1.5 flex justify-between items-center">
-              <span>CVV</span>
-              <button
-                type="button"
-                onClick={() => setShowCvv(!showCvv)}
-                className="text-[10px] text-emerald-500 hover:text-emerald-400 font-bold uppercase transition-colors"
-              >
-                {showCvv ? 'HIDE' : 'SHOW'}
-              </button>
-            </label>
             <div className="relative">
               <input
                 type={showCvv ? 'text' : 'password'}
                 name="cardCvv"
+                autoComplete="new-password"
                 value={financials.cardCvv}
                 onChange={handleFinancialChange}
-                placeholder="***"
+                placeholder="CVV"
                 maxLength={4}
-                className="w-full bg-surface-alt/70 border border-border-subtle rounded-xl px-4 py-3 text-sm font-mono text-center outline-none focus:border-emerald-500/50 focus:ring-4 focus:ring-emerald-500/10 focus:bg-surface-main transition-all"
+                className="w-full bg-surface-alt/70 border border-border-subtle rounded-xl px-4 py-3 pb-3 text-sm font-mono text-center outline-none focus:border-emerald-500/50 focus:ring-4 focus:ring-emerald-500/10 focus:bg-surface-main transition-all"
               />
+              <button
+                type="button"
+                onClick={() => setShowCvv(!showCvv)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] text-emerald-500 hover:text-emerald-400 font-bold uppercase transition-colors"
+                title="Toggle CVV Visibility"
+              >
+                {showCvv ? 'HIDE' : 'SHOW'}
+              </button>
             </div>
           </div>
         </div>
@@ -163,7 +168,7 @@ export const PaymentSection: React.FC<PaymentSectionProps> = ({
             <Lock size={12}/>
           </div>
           <p className="text-xs leading-relaxed font-medium">
-            Details remain encrypted locally. Admin personnel will review and process payment through terminal.
+            Details remain encrypted locally. Admin personnel will review and process payment through a secure gateway.
           </p>
         </div>
       </div>

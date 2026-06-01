@@ -63,6 +63,8 @@ describe('EnrollmentForm Component', () => {
                 { id: 'p1', name: 'Product A', price: 100, dosages: ['10mg', '20mg'] },
                 { id: 'p2', name: 'Product B', price: 200, dosages: ['5mg'] },
             ],
+            quantities: ['30 Day Supply', '60 Day Supply', '90 Day Supply'],
+            presets: []
         },
         sales: [],
         systemConfig: {
@@ -80,6 +82,16 @@ describe('EnrollmentForm Component', () => {
     beforeEach(() => {
         vi.clearAllMocks();
         localStorage.clear();
+        
+        let uuidCounter = 0;
+        // Mock crypto.randomUUID
+        Object.defineProperty(globalThis, 'crypto', {
+            value: {
+                randomUUID: () => `test-uuid-${++uuidCounter}`,
+            },
+            configurable: true
+        });
+
         (CRMHook.useCRM as any).mockReturnValue(mockCRMContext);
         (AuthHook.useAuth as any).mockReturnValue(mockAuthContext);
         
@@ -91,19 +103,19 @@ describe('EnrollmentForm Component', () => {
     it('renders the form correctly', () => {
         render(<EnrollmentForm onSuccess={mockOnSuccess} onCancel={mockOnCancel} />);
         
-        expect(screen.getByText('Enrollment Terminal')).toBeInTheDocument();
-        expect(screen.getByText('Active Total')).toBeInTheDocument();
-        expect(screen.queryByPlaceholderText('Find Identity via Name or Phone...')).not.toBeInTheDocument(); // Modal is closed
+        expect(screen.getByText('Sales Entry')).toBeInTheDocument();
+        expect(screen.getByText('Order Total')).toBeInTheDocument();
+        expect(screen.queryByPlaceholderText('Search by name, phone, or ID...')).not.toBeInTheDocument(); // Modal is closed
     });
 
     it('updates identity fields correctly', () => {
         render(<EnrollmentForm onSuccess={mockOnSuccess} onCancel={mockOnCancel} />);
         
-        const nameInput = screen.getByPlaceholderText(/First Last/i) as HTMLInputElement;
+        const nameInput = screen.getByPlaceholderText(/Full Name \*/i) as HTMLInputElement;
         fireEvent.change(nameInput, { target: { value: 'John Doe' } });
         expect(nameInput.value).toBe('John Doe');
 
-        const phoneInput = screen.getByPlaceholderText(/\(555\) 000-0000/i) as HTMLInputElement;
+        const phoneInput = screen.getByPlaceholderText(/Phone \*/i) as HTMLInputElement;
         fireEvent.change(phoneInput, { target: { value: '5551234567' } });
         // Assuming formatUSAPhone formats it
         expect(phoneInput.value).toBe('(555) 123-4567'); 
@@ -118,18 +130,18 @@ describe('EnrollmentForm Component', () => {
         
         // Wait for initial effect to set cart
         await waitFor(() => {
-            const totalDisplay = screen.getByText('$100.00');
-            expect(totalDisplay).toBeInTheDocument();
+            const totalDisplays = screen.getAllByText(/\$100\.00/i);
+            expect(totalDisplays.length).toBeGreaterThan(0);
         });
     });
 
     it('validates form submission', () => {
         render(<EnrollmentForm onSuccess={mockOnSuccess} onCancel={mockOnCancel} />);
         
-        const submitButton = screen.getByText('Authorize Transaction');
+        const submitButton = screen.getByText(/Confirm Details & Payment/i);
         fireEvent.click(submitButton);
         
-        expect(screen.getByText(/Missing Identity or Payment data/i)).toBeInTheDocument();
+        expect(screen.getByText(/Customer name is required before payment/i)).toBeInTheDocument();
         expect(SoundService.sfx.playDecline).toHaveBeenCalled();
     });
 
@@ -138,48 +150,64 @@ describe('EnrollmentForm Component', () => {
         
         expect(screen.queryByText('Intelligence Lookup')).not.toBeInTheDocument();
 
-        const historyButton = screen.getByRole('button', { name: /history lookup/i });
+        const historyButton = screen.getByText('Find Existing Customer');
         fireEvent.click(historyButton);
         
-        expect(screen.getByPlaceholderText('Find Identity via Name or Phone...')).toBeVisible();
+        expect(screen.getByPlaceholderText('Search by name, phone, or ID...')).toBeVisible();
     });
 
     it('handles successful submission', async () => {
         render(<EnrollmentForm onSuccess={mockOnSuccess} onCancel={mockOnCancel} />);
         
         // Fill out form
-        const nameInput = screen.getByPlaceholderText(/First Last/i);
+        const nameInput = screen.getByPlaceholderText(/Full Name \*/i);
         fireEvent.change(nameInput, { target: { value: 'Jane Doe' } });
         
-        const phoneInput = screen.getByPlaceholderText(/\(555\) 000-0000/i);
+        const phoneInput = screen.getByPlaceholderText(/Phone \*/i);
         fireEvent.change(phoneInput, { target: { value: '5559876543' } });
         
-        // Fill payment
-        fireEvent.change(screen.getByPlaceholderText('0000 0000 0000 0000'), { target: { value: '4111111111111111' } }); // Visa
-        fireEvent.change(screen.getByPlaceholderText('MM/YY'), { target: { value: '12/30' } });
-        fireEvent.change(screen.getByPlaceholderText('***'), { target: { value: '123' } });
+        // Proceed to payment modal
+        const proceedButton = screen.getByText(/Confirm Details & Payment/i);
+        fireEvent.click(proceedButton);
         
-        // Click Authorize
-        const submitButton = screen.getByText('Authorize Transaction');
+        // Fill payment
+        fireEvent.change(screen.getByPlaceholderText('Card Number'), { target: { value: '4111111111111111' } }); // Visa
+        
+        const monthSelect = document.querySelector('select[name="cardExpMonth"]') as HTMLSelectElement;
+        if (monthSelect) fireEvent.change(monthSelect, { target: { value: '12' } });
+        
+        const yearSelect = document.querySelector('select[name="cardExpYear"]') as HTMLSelectElement;
+        if (yearSelect) fireEvent.change(yearSelect, { target: { value: '2026' } });
+        
+        fireEvent.change(screen.getByPlaceholderText('CVV'), { target: { value: '123' } });
+        
+        // Click Review & Submit
+        const submitButton = screen.getByText(/Review & Submit Order/i);
         fireEvent.click(submitButton);
         
         // Expect review modal to appear
         await waitFor(() => {
-            expect(screen.getByText('Pre-Transmission Check')).toBeInTheDocument();
+            expect(screen.getByText('Review Order')).toBeInTheDocument();
         });
         
         // Confirm submission in ReviewModal
-        const confirmButton = screen.getByText('Commit Transaction');
+        const confirmButton = screen.getByText('Submit Order');
         fireEvent.click(confirmButton);
         
         await waitFor(() => {
             expect(mockCRMContext.addSale).toHaveBeenCalled();
         });
 
-        // Click Dashboard to trigger onSuccess
-        const dashboardButton = screen.getByText('Dashboard');
-        fireEvent.click(dashboardButton);
+        await waitFor(() => {
+            expect(screen.getByText(/Order Successfully Submitted!/i)).toBeInTheDocument();
+        });
+
+        // Click Start Next Caller to trigger onSuccess
+        const nextCallerButton = screen.getByText(/Close & Start Next Lead/i);
+        fireEvent.click(nextCallerButton);
         
-        expect(mockOnSuccess).toHaveBeenCalled();
+        await waitFor(() => {
+            expect(mockOnSuccess).toHaveBeenCalled();
+        });
     });
 });

@@ -32,7 +32,8 @@ export function useTodayStats(): DailyStats {
     );
 
     const totalRevenue = todaysSales.reduce((sum, sale) => sum + (sale.amount || 0), 0);
-    const commissionRate = (currentUser as any).commissionRate || 0.15;
+    const rawRate = (currentUser as any).commissionRate || 15;
+    const commissionRate = rawRate > 1 ? rawRate / 100 : rawRate;
     const commission = Math.round(totalRevenue * commissionRate);
 
     const dailyGoal = 5;

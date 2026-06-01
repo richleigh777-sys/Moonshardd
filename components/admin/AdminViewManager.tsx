@@ -1,6 +1,6 @@
 import { TabContent } from '../ui/Tabs';
 import { AdminDashboard } from './AdminDashboard';
-import EnrollmentForm from '../forms/EnrollmentForm';
+import EnrollmentFormV2 from '../forms/EnrollmentFormV2';
 import { PipelineBoard } from '../pipeline/PipelineBoard';
 import { RetentionView } from '../../views/RetentionView';
 import { SalesLedger } from '../widgets/SalesLedger';
@@ -70,7 +70,7 @@ export const AdminViewManager: React.FC<AdminTerminalManagerProps> = ({
                     />
                 </TabContent>
             )}
-            {isAllowed('enrollment') && <TabContent value="enrollment" className="w-full h-full"><EnrollmentForm onSuccess={() => setView('ledger')} onCancel={() => setView('overview')} /></TabContent>}
+            {isAllowed('enrollment') && <TabContent value="enrollment" className="w-full h-full"><EnrollmentFormV2 onSuccess={() => setView('ledger')} onCancel={() => setView('overview')} /></TabContent>}
             {isAllowed('pipeline') && <TabContent value="pipeline" className="w-full h-full"><PipelineBoard sales={sales} /></TabContent>}
             {isAllowed('retention') && <TabContent value="retention" className="w-full h-full"><RetentionView sales={sales} /></TabContent>}
             {isAllowed('ledger') && (

@@ -7,7 +7,6 @@ import { useSystem } from '../hooks/useSystem';
 import { Card, Badge } from '../components/ui/Base';
 import { VisualEngine } from '../components/widgets/VisualEngine';
 import { ActionCenter } from '../components/widgets/ActionCenter';
-import { SmartSuggestions } from '../components/widgets/SmartSuggestions';
 import { MiniLeaderboard } from '../components/widgets/MiniLeaderboard';
 import { PersonalMetricTerminal } from '../components/widgets/PersonalMetricTerminal';
 import { useAgentStats } from '../components/agent/hooks/useAgentStats';
@@ -36,7 +35,7 @@ const StatCard = memo(({ label, value, icon: Icon, trend }: any) => (
 
 import { WidgetContainer } from '../components/agent/WidgetContainer';
 
-export const DashView: React.FC<{ sales: Sale[], onEngage?: (data: any) => void }> = ({ sales, onEngage }) => {
+export const DashView: React.FC<{ sales: Sale[] }> = ({ sales }) => {
   const { currentUser } = useAuth();
   const { systemConfig } = useCRM();
   const { theme } = useSystem();
@@ -128,6 +127,38 @@ export const DashView: React.FC<{ sales: Sale[], onEngage?: (data: any) => void 
               </div>
           </Card>
       ),
+      'revenue_chart': (
+          <VisualEngine 
+              sales={stats.mySales} 
+              theme={theme} 
+          />
+      ),
+      'personal_terminal': (
+          <PersonalMetricTerminal 
+              revenue={stats.dailyRev}
+              winRate={stats.winRate}
+              hours={currentUser?.dailyHours || 8}
+              commission={stats.totalCommission}
+              spiffs={stats.totalSpiffs}
+              pending={stats.estPendingComm}
+          />
+      ),
+      'action_center': (
+          <ActionCenter 
+              onEngage={(item) => {
+                  window.dispatchEvent(new CustomEvent('NAVIGATE', { detail: 'enrollment' }));
+                  window.dispatchEvent(new CustomEvent('LOAD_LEAD', { 
+                    detail: {
+                      customerName: item.customerName,
+                      phone: item.phone,
+                      email: item.email || '',
+                      shippingAddress: item.shippingAddress || '',
+                      reason: item.reason || ''
+                    } 
+                  }));
+              }}
+          />
+      ),
       'team_leaderboard': (
            <div className="h-[380px] w-full">
                 <MiniLeaderboard />
@@ -198,11 +229,14 @@ export const DashView: React.FC<{ sales: Sale[], onEngage?: (data: any) => void 
             
             {/* LEFT COLUMN */}
             <div className="col-span-12 xl:col-span-8 flex flex-col gap-6">
+                {!pinnedWidgets.includes('revenue_chart') && renderWidget('revenue_chart')}
+                {!pinnedWidgets.includes('action_center') && renderWidget('action_center')}
                 {!pinnedWidgets.includes('activity_table') && renderWidget('activity_table')}
             </div>
 
             {/* RIGHT COLUMN */}
             <div className="col-span-12 xl:col-span-4 flex flex-col gap-6">
+                {!pinnedWidgets.includes('personal_terminal') && renderWidget('personal_terminal')}
                 {!pinnedWidgets.includes('team_leaderboard') && renderWidget('team_leaderboard')}
             </div>
         </div>

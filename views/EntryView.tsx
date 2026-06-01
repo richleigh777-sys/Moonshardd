@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
 import { ArrowLeft, Zap, CheckCircle } from 'lucide-react';
-import EnrollmentForm from '../components/forms/EnrollmentForm';
+import EnrollmentFormV2 from '../components/forms/EnrollmentFormV2';
 import { sfx } from '../lib/soundService';
 
 interface EntryViewProps {
@@ -48,12 +48,9 @@ export const EntryView: React.FC<EntryViewProps> = ({ onBack }) => {
             {/* Main Content Area */}
             <div className="flex-1 overflow-hidden relative bg-surface-alt/20 p-6 flex justify-center">
                 <div className="w-full max-w-7xl h-full flex flex-col relative z-10">
-                    <EnrollmentForm 
+                    <EnrollmentFormV2 
                         onSuccess={handleSuccess} 
                         onCancel={onBack}
-                        initialData={{
-                            fullName: '', phone: '', email: '', shippingAddress: '', billingAddress: ''
-                        }}
                     />
                 </div>
                 

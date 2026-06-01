@@ -12,7 +12,7 @@ import { CartItem, Sale } from '../../../../types';
 import { formatUSAPhone } from '../../../../views/utils/formatters';
 
 export const useEnrollment = (onSuccess: () => void, customerData?: any) => {
-    const { addSale, sales, notes: allNotes, productConfig, systemConfig, drafts, updateDraft, clearDraft } = useCRM();
+    const { addSale, sales, notes: allNotes, productConfig, systemConfig, drafts, updateDraft, clearDraft, customers, updateCustomer, addCustomer } = useCRM();
     const { currentUser } = useAuth();
     
     const [loading, setLoading] = useState(false);
@@ -24,13 +24,22 @@ export const useEnrollment = (onSuccess: () => void, customerData?: any) => {
     const savedDraft = drafts['enrollment'] || {};
 
     const [formData, setFormData] = useState({
-        fullName: savedDraft.formData?.fullName || '', 
+        firstName: savedDraft.formData?.firstName || '', 
+        lastName: savedDraft.formData?.lastName || '', 
         phone: savedDraft.formData?.phone || '', 
         email: savedDraft.formData?.email || '', 
         dob: savedDraft.formData?.dob || '', 
         age: savedDraft.formData?.age || '',
         shippingAddress: savedDraft.formData?.shippingAddress || '', 
+        shippingApt: savedDraft.formData?.shippingApt || '',
+        shippingCity: savedDraft.formData?.shippingCity || '',
+        shippingState: savedDraft.formData?.shippingState || '',
+        shippingZip: savedDraft.formData?.shippingZip || '',
         billingAddress: savedDraft.formData?.billingAddress || '', 
+        billingApt: savedDraft.formData?.billingApt || '',
+        billingCity: savedDraft.formData?.billingCity || '',
+        billingState: savedDraft.formData?.billingState || '',
+        billingZip: savedDraft.formData?.billingZip || '',
         height: savedDraft.formData?.height || '',
         weight: savedDraft.formData?.weight || '',
         medicalConditions: savedDraft.formData?.medicalConditions || []
@@ -112,7 +121,8 @@ export const useEnrollment = (onSuccess: () => void, customerData?: any) => {
         if (customerData) {
             setFormData(prev => ({
                 ...prev,
-                fullName: customerData.fullName || prev.fullName,
+                firstName: customerData.firstName || (customerData.fullName ? customerData.fullName.split(' ')[0] : prev.firstName),
+                lastName: customerData.lastName || (customerData.fullName ? customerData.fullName.substring(customerData.fullName.indexOf(' ') + 1) : prev.lastName),
                 phone: formatUSAPhone(customerData.phone || prev.phone),
                 email: customerData.email || prev.email,
                 shippingAddress: customerData.shippingAddress || prev.shippingAddress,
@@ -183,30 +193,84 @@ export const useEnrollment = (onSuccess: () => void, customerData?: any) => {
 
     const handleSubmit = async () => {
         setError('');
-        if (!formData.fullName || !formData.phone) {
-            setError('System Check: Identity verification incomplete (Name & Phone required).');
+        
+        // --- Strict Point-of-Entry Data Validation ---
+        const missingFields: string[] = [];
+        
+        if (!formData.firstName || !formData.lastName || !formData.phone) {
+            missingFields.push('Identity Verification (Name & Phone)');
+        }
+        if (!formData.shippingAddress || !formData.shippingCity || !formData.shippingState || !formData.shippingZip) {
+            missingFields.push('Complete Shipping Address');
+        }
+        if (!useShippingForBilling && (!formData.billingAddress || !formData.billingCity || !formData.billingState || !formData.billingZip)) {
+            missingFields.push('Complete Billing Address');
+        }
+        if (cart.length === 0) {
+            missingFields.push('Product Selection');
+        }
+        if (!financials.cardNumber || !financials.cardExpiry || !financials.cardCvv) {
+            missingFields.push('Complete Payment Information');
+        }
+        if (!formData.dob || !formData.height || !formData.weight) {
+            missingFields.push('Medical Profile (DOB, Height, Weight)');
+        }
+
+        if (missingFields.length > 0) {
+            setError(`Validation Failed. Missing required fields: ${missingFields.join(', ')}`);
             sfx.playError();
             return;
         }
+        // --- End Validation ---
 
         setLoading(true);
         try {
-            const newSale: Partial<Sale> = {
+            const formatAddress = (street: string, apt?: string, city?: string, state?: string, zip?: string) => {
+                const streetWithApt = apt ? `${street} ${apt}` : street;
+                return [streetWithApt, city, state, zip].filter(Boolean).join(', ');
+            };
+            
+            const parsedShippingStreet = formData.shippingAddress.split(',')[0].trim();
+            const parsedBillingStreet = formData.billingAddress.split(',')[0].trim();
+            
+            const streetAndAptShipping = formData.shippingApt ? `${parsedShippingStreet} ${formData.shippingApt}` : parsedShippingStreet;
+            const streetAndAptBilling = formData.billingApt ? `${parsedBillingStreet} ${formData.billingApt}` : parsedBillingStreet;
+
+            const isDeclined = financials.cardNumber && cardStatus === 'invalid';
+            const firstCartItem = cart.length > 0 ? cart[0] : { product: 'Unknown Product', quantity: '1', dosage: '' };
+            
+            const newSale: Partial<Sale> & any = {
                 agentId: currentUser?.id,
-                customer: formData.fullName,
+                agent: currentUser?.name || 'Unknown Agent',
+                team: currentUser?.team || 'Alpha',
+                customer: `${formData.firstName} ${formData.lastName}`.trim(),
                 phone: normalizePhone(formData.phone),
                 email: formData.email,
-                address: formData.shippingAddress,
-                billingAddress: useShippingForBilling ? formData.shippingAddress : formData.billingAddress,
+                address: streetAndAptShipping,
+                city: formData.shippingCity,
+                state: formData.shippingState,
+                zip: formData.shippingZip,
+                shippingAddress: streetAndAptShipping,
+                shippingCity: formData.shippingCity,
+                shippingState: formData.shippingState,
+                shippingZip: formData.shippingZip,
+                billingAddress: useShippingForBilling ? streetAndAptShipping : streetAndAptBilling,
+                billingCity: useShippingForBilling ? formData.shippingCity : formData.billingCity,
+                billingState: useShippingForBilling ? formData.shippingState : formData.billingState,
+                billingZip: useShippingForBilling ? formData.shippingZip : formData.billingZip,
                 dob: formData.dob,
-                age: parseInt(formData.age),
+                age: parseInt(formData.age) || undefined,
                 height: formData.height,
                 weight: formData.weight,
                 medicalConditions: formData.medicalConditions,
                 amount: grandTotal,
+                product: firstCartItem.product,
+                quantity: firstCartItem.quantity,
+                dosage: firstCartItem.dosage || '',
+                rawCart: cart,
                 callSummary: notes,
-                status: 'Pending',
-                pipelineStatus: 'Closed Won',
+                status: isDeclined ? 'Declined' : 'Pending',
+                pipelineStatus: isDeclined ? 'Declined' : 'Closed Won',
                 bankName: financials.bankName,
                 cardProvider: financials.cardType,
                 cardNumber: financials.cardNumber,
@@ -215,6 +279,13 @@ export const useEnrollment = (onSuccess: () => void, customerData?: any) => {
             };
             await addSale(newSale);
             
+            if (isDeclined) {
+                setError('Transaction Declined: Invalid card verification.');
+                sfx.playError();
+                setLoading(false);
+                return;
+            }
+
             // Generate stack format and copy to clipboard
             const { generateInternalStackFormat } = await import('../../../../views/utils/formatters');
             const stackFormat = generateInternalStackFormat({
@@ -254,9 +325,36 @@ export const useEnrollment = (onSuccess: () => void, customerData?: any) => {
         }
     };
 
+    const autoFillFromCustomer = useCallback((customer: any) => {
+        setFormData(prev => ({
+            ...prev,
+            firstName: customer.firstName || prev.firstName,
+            lastName: customer.lastName || prev.lastName,
+            phone: customer.phone || prev.phone,
+            email: customer.email || prev.email,
+            dob: customer.dob || prev.dob,
+            age: customer.age?.toString() || prev.age,
+            height: customer.height || prev.height,
+            weight: customer.weight || prev.weight,
+            medicalConditions: customer.medicalConditions || prev.medicalConditions,
+            shippingAddress: customer.shippingAddress || prev.shippingAddress,
+            shippingApt: customer.shippingApt || prev.shippingApt,
+            shippingCity: customer.shippingCity || prev.shippingCity,
+            shippingState: customer.shippingState || prev.shippingState,
+            shippingZip: customer.shippingZip || prev.shippingZip,
+            billingAddress: customer.billingAddress || prev.billingAddress,
+            billingApt: customer.billingApt || prev.billingApt,
+            billingCity: customer.billingCity || prev.billingCity,
+            billingState: customer.billingState || prev.billingState,
+            billingZip: customer.billingZip || prev.billingZip,
+        }));
+        setUseShippingForBilling(customer.useShippingForBilling ?? true);
+        sfx.playSuccess();
+    }, [setFormData, setUseShippingForBilling]);
+
     return {
         mode, setMode, loading, error, collision,
-        formData, setFormData, handleIdentityChange, handleDobChange, handleAgeChange,
+        formData, setFormData, handleIdentityChange, handleDobChange, handleAgeChange, autoFillFromCustomer,
         cart, setCart, notes, setNotes,
         useShippingForBilling, setUseShippingForBilling,
         customerTime, grandTotal, productConfig, handleSubmit,
