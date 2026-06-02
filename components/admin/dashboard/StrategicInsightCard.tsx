@@ -82,6 +82,7 @@ Evaluation Parameters:
                 })
             });
 
+            if (!res.ok) throw new Error("API returned " + res.status);
             const data = await res.json();
             if (data.text) {
                 setInsight(JSON.parse(data.text.trim()));

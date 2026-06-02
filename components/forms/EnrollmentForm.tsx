@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { DollarSign, Check, Search, AlertTriangle, MessageSquare, Loader, ShoppingCart } from 'lucide-react';
+import { DollarSign, Check, Search, AlertTriangle, MessageSquare, Loader, ShoppingCart, X } from 'lucide-react';
 import { useEnrollmentLogic } from '../../hooks/useEnrollmentLogic';
 import { TOP_US_BANKS, CARD_PROVIDERS } from '../../constants';
 import { Button, Card } from '../ui/Base';
@@ -34,7 +34,6 @@ export default function EnrollmentForm({
   const [showClearConfirm, setShowClearConfirm] = useState(false);
   const [showPaymentModal, setShowPaymentModal] = useState(false);
 
-  // Partial validation for Step 1
   const handleProceedToPayment = () => {
     if (!logic.formData.fullName || logic.formData.fullName.trim().length < 2) {
       logic.setError('Customer name is required before payment');
@@ -57,7 +56,7 @@ export default function EnrollmentForm({
   };
 
   return (
-    <div id="enrollment-form-container" className="w-full h-full animate-in fade-in duration-500 overflow-hidden flex flex-col bg-surface-main relative">
+    <div id="enrollment-form-container" className="w-full h-full animate-in fade-in duration-500 overflow-hidden flex flex-col bg-gradient-to-b from-surface-main to-surface-alt/50 relative">
       {/* Header */}
       <EnrollmentHeader
         manualAmount={logic.manualAmount || String(logic.calculatedTotal)}
@@ -65,51 +64,53 @@ export default function EnrollmentForm({
         onClear={() => setShowClearConfirm(true)}
       />
 
-      {/* Main Content */}
-      <div className="flex-1 min-h-0 p-4 lg:p-6 overflow-y-auto custom-scrollbar bg-surface-alt/10">
-        <div className="max-w-7xl mx-auto flex flex-col lg:flex-row gap-6 pb-20 items-start">
-          
-            {/* LEFT COLUMN: Identity & Medical */}
-            <div className="w-full lg:w-7/12 flex flex-col gap-6 relative order-2 lg:order-1">
-              {/* Customer Search Bar (Triggers Lookup) */}
+      {/* Main Content - Improved Layout */}
+      <div className="flex-1 min-h-0 p-3 sm:p-4 lg:p-6 overflow-y-auto custom-scrollbar bg-surface-alt/10">
+        <div className="max-w-8xl mx-auto">
+          {/* Responsive Grid Layout */}
+          <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-12 gap-4 lg:gap-6 pb-24 lg:pb-8">
+            
+            {/* LEFT COLUMN: Identity & Medical (7 columns on lg) */}
+            <div className="md:col-span-2 lg:col-span-7 flex flex-col gap-4 lg:gap-6">
+              {/* Customer Search Card - Enhanced */}
               <div 
                 onClick={() => {
                   setIsLookupOpen(true);
                   sfx.playClick();
                 }}
-                className="w-full bg-surface-alt/50 border border-border-subtle/50 hover:border-indigo-500/50 hover:bg-surface-alt rounded-2xl p-4 flex items-center justify-between cursor-pointer group transition-all shadow-sm"
+                className="w-full bg-gradient-to-br from-indigo-500/10 to-indigo-500/5 border border-indigo-500/30 hover:border-indigo-500/60 hover:from-indigo-500/15 hover:to-indigo-500/10 rounded-2xl p-4 sm:p-5 flex items-center justify-between cursor-pointer group transition-all shadow-sm hover:shadow-lg"
               >
-                 <div className="flex items-center gap-4">
-                    <div className="p-2.5 bg-indigo-500/10 rounded-xl text-indigo-500 group-hover:scale-110 group-hover:bg-indigo-500/20 transition-all shadow-sm border border-indigo-500/20">
-                       <Search size={20} strokeWidth={2.5} />
-                    </div>
-                    <div>
-                      <h3 className="text-sm font-black text-text-primary tracking-wide group-hover:text-indigo-400 transition-colors">Find Existing Customer</h3>
-                      <p className="text-[11px] text-text-muted mt-0.5 font-medium">Search history to auto-fill identity & medical info</p>
-                    </div>
-                 </div>
-                 <div className="hidden sm:flex text-[10px] font-bold text-text-muted bg-surface-main px-3 py-1.5 rounded-lg border border-border-subtle uppercase tracking-widest group-hover:border-indigo-500/30 group-hover:text-indigo-400 transition-colors shadow-sm">
-                   Quick Lookup
-                 </div>
+                <div className="flex items-center gap-3 sm:gap-4 min-w-0 flex-1">
+                  <div className="p-2.5 bg-indigo-500/20 rounded-xl text-indigo-400 group-hover:scale-110 group-hover:bg-indigo-500/30 transition-all shadow-sm border border-indigo-500/30 flex-shrink-0">
+                    <Search size={20} strokeWidth={2.5} />
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <h3 className="text-sm sm:text-base font-black text-text-primary tracking-wide group-hover:text-indigo-300 transition-colors line-clamp-1">Find Existing Customer</h3>
+                    <p className="text-[11px] sm:text-xs text-text-muted mt-1 font-medium line-clamp-1">Search history to auto-fill identity & medical info</p>
+                  </div>
+                </div>
+                <div className="hidden sm:flex text-[10px] font-bold text-text-muted bg-surface-main/60 px-3 py-2 rounded-lg border border-border-subtle uppercase tracking-widest group-hover:border-indigo-500/50 flex-shrink-0">
+                  Quick Lookup
+                </div>
               </div>
 
-              {/* Dynamic Intel Recovery Glance Alert for Un-Converted / Declined clients */}
+              {/* Hot Lead Recovery Alert */}
               {logic.lastDecline && (
-                <div id="hot-lead-alert-glance" className="w-full bg-rose-500/10 border border-rose-500/30 rounded-2xl p-5 text-left relative overflow-hidden shadow-md animate-in slide-in-from-top-4 duration-300">
-                  <div className="absolute top-0 right-0 w-32 h-32 bg-rose-500/5 rounded-full blur-2xl pointer-events-none"></div>
+                <div className="w-full bg-gradient-to-br from-rose-500/15 to-rose-500/5 border border-rose-500/40 rounded-2xl p-4 sm:p-5 text-left relative overflow-hidden shadow-sm animate-in slide-in-from-top duration-300">
+                  <div className="absolute top-0 right-0 w-32 h-32 bg-rose-500/10 rounded-full blur-3xl pointer-events-none -mr-20 -mt-20"></div>
                   
-                  <div className="flex items-start gap-3.5 relative z-10">
-                    <div className="p-2.5 bg-rose-500/20 rounded-xl text-rose-400 border border-rose-500/30 animate-pulse mt-1 shrink-0">
+                  <div className="flex items-start gap-3 sm:gap-4 relative z-10">
+                    <div className="p-2.5 bg-rose-500/25 rounded-xl text-rose-400 border border-rose-500/40 animate-pulse mt-0.5 flex-shrink-0">
                       <AlertTriangle size={20} strokeWidth={2.5} />
                     </div>
                     <div className="flex-grow min-w-0">
-                      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-                        <div>
-                          <span className="inline-block bg-rose-500/25 text-rose-400 font-extrabold text-[9px] tracking-widest px-2.5 py-1 rounded-md uppercase border border-rose-500/30">
+                      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 sm:gap-3">
+                        <div className="flex-1">
+                          <span className="inline-block bg-rose-500/30 text-rose-300 font-extrabold text-[9px] sm:text-[10px] tracking-widest px-2.5 py-1.5 rounded-md uppercase border border-rose-500/40 mb-2">
                             🔴 HOT RECOVERY LEAD
                           </span>
-                          <h4 className="text-sm font-black text-text-primary tracking-wide mt-1.5 flex items-center gap-1.5">
-                            Prior Decline: <span className="text-rose-400">{logic.lastDecline.declineReason || 'Unknown Bank Decline'}</span>
+                          <h4 className="text-xs sm:text-sm font-black text-text-primary tracking-wide mt-1.5 flex items-center gap-1.5 flex-wrap">
+                            Prior Decline: <span className="text-rose-400 font-black">{logic.lastDecline.declineReason || 'Unknown Bank Decline'}</span>
                           </h4>
                         </div>
                         
@@ -117,100 +118,94 @@ export default function EnrollmentForm({
                           onClick={() => {
                             logic.handleRestoreLastDecline();
                           }}
-                          className="px-4 py-2 bg-rose-600 hover:bg-rose-500 text-white font-extrabold text-xs rounded-xl shadow-lg hover:shadow-rose-600/30 cursor-pointer transition-all active:scale-95 whitespace-nowrap border border-rose-500/30 ml-auto sm:ml-0"
+                          className="px-3 sm:px-4 py-2 bg-rose-600 hover:bg-rose-500 text-white font-extrabold text-[11px] sm:text-xs rounded-xl shadow-lg hover:shadow-rose-600/40 cursor-pointer transition-all active:scale-95 whitespace-nowrap flex-shrink-0"
                         >
-                          ⚡ Restore Cart & Card
+                          ⚡ Restore
                         </button>
                       </div>
 
                       <p className="text-xs text-text-muted mt-2 font-medium">
-                        Processed on {new Date(logic.lastDecline.timestamp).toLocaleDateString()} for <strong className="text-rose-400">${Number(logic.lastDecline.amount).toFixed(2)}</strong>.
+                        {new Date(logic.lastDecline.timestamp).toLocaleDateString()} • <span className="text-rose-400 font-bold">${Number(logic.lastDecline.amount).toFixed(2)}</span>
                       </p>
-                      
-                      {logic.lastDecline.callSummary && (
-                        <div className="mt-3 bg-surface-main/60 border border-border-subtle p-3 rounded-xl text-xs leading-relaxed text-text-secondary">
-                          <span className="font-bold text-[10px] text-text-muted tracking-wider uppercase block mb-1">Last Interaction Notes:</span>
-                          "{logic.lastDecline.callSummary}"
-                        </div>
-                      )}
                     </div>
                   </div>
                 </div>
               )}
 
+              {/* Undelivered Package Warning */}
               {logic.lastActiveDelivery && (
-                <div id="undelivered-package-warning" className="w-full bg-amber-500/10 border border-amber-500/30 rounded-2xl p-5 text-left relative overflow-hidden shadow-md animate-in slide-in-from-top-4 duration-300">
-                  <div className="absolute top-0 right-0 w-32 h-32 bg-amber-500/5 rounded-full blur-2xl pointer-events-none"></div>
+                <div className="w-full bg-gradient-to-br from-amber-500/15 to-amber-500/5 border border-amber-500/40 rounded-2xl p-4 sm:p-5 text-left relative overflow-hidden shadow-sm animate-in slide-in-from-top duration-300 delay-100">
+                  <div className="absolute top-0 right-0 w-32 h-32 bg-amber-500/10 rounded-full blur-3xl pointer-events-none -mr-20 -mt-20"></div>
                   
-                  <div className="flex items-start gap-3.5 relative z-10">
-                    <div className="p-2.5 bg-amber-500/20 rounded-xl text-status-warning border border-amber-500/30 mt-1 shrink-0">
+                  <div className="flex items-start gap-3 sm:gap-4 relative z-10">
+                    <div className="p-2.5 bg-amber-500/25 rounded-xl text-status-warning border border-amber-500/40 mt-0.5 flex-shrink-0">
                       <AlertTriangle size={20} strokeWidth={2.5} />
                     </div>
                     <div className="flex-grow min-w-0">
-                      <div>
-                        <span className="inline-block bg-amber-500/25 text-status-warning font-extrabold text-[9px] tracking-widest px-2.5 py-1 rounded-md uppercase border border-amber-500/30">
-                          ⚠️ ACTIVE UNDELIVERED TRANSACTION
-                        </span>
-                        <h4 className="text-sm font-black text-text-primary tracking-wide mt-1.5 flex items-center gap-1.5">
-                          Previous Package Status: <span className="text-status-warning">{logic.lastActiveDelivery.deliveryStatus || 'Processing / In-Transit'}</span>
-                        </h4>
-                      </div>
-
-                      <p className="text-xs text-text-muted mt-2 font-medium">
-                        An approved order for <strong className="text-status-warning">{logic.lastActiveDelivery.product}</strong> was submitted on {new Date(logic.lastActiveDelivery.timestamp).toLocaleDateString()}, and has NOT been marked as delivered yet. 
+                      <span className="inline-block bg-amber-500/30 text-status-warning font-extrabold text-[9px] sm:text-[10px] tracking-widest px-2.5 py-1.5 rounded-md uppercase border border-amber-500/40 mb-2">
+                        ⚠️ UNDELIVERED TRANSACTION
+                      </span>
+                      <h4 className="text-xs sm:text-sm font-black text-text-primary tracking-wide mt-1.5 flex items-center gap-1.5 flex-wrap">
+                        Previous: <span className="text-status-warning font-black">{logic.lastActiveDelivery.product}</span>
+                      </h4>
+                      <p className="text-xs text-text-muted mt-2 font-medium line-clamp-2">
+                        Order submitted {new Date(logic.lastActiveDelivery.timestamp).toLocaleDateString()} - awaiting delivery
                       </p>
-                      
-                      <div className="mt-3 bg-surface-main/60 border border-border-subtle p-3 rounded-xl text-xs leading-relaxed text-text-secondary">
-                        <span className="font-extrabold text-[10px] text-text-muted tracking-wider uppercase block mb-1">⚠️ TEAM COMPLIANCE POLICY GUIDELINE:</span>
-                        "1-Time Ship per Transaction." To prevent user confusion and double-billing doubt, we do NOT ship any additional packages/upsells until they have received their previous package. Please verify with the customer if they have already received their order before completing a new sale.
-                      </div>
                     </div>
                   </div>
                 </div>
               )}
 
-              {/* Identity */}
-              <IdentitySection
-                formData={logic.formData}
-                handleIdentityChange={logic.handleIdentityChange}
-                handleAgeChange={logic.handleAgeChange}
-                handleDobChange={logic.handleDobChange}
-                useShippingForBilling={logic.useShippingForBilling}
-                setUseShippingForBilling={logic.setUseShippingForBilling}
-                onPasteParse={logic.handlePasteParse}
-              />
+              {/* Identity Section */}
+              <div className="relative">
+                <IdentitySection
+                  formData={logic.formData}
+                  handleIdentityChange={logic.handleIdentityChange}
+                  handleAgeChange={logic.handleAgeChange}
+                  handleDobChange={logic.handleDobChange}
+                  useShippingForBilling={logic.useShippingForBilling}
+                  setUseShippingForBilling={logic.setUseShippingForBilling}
+                  onPasteParse={logic.handlePasteParse}
+                />
+              </div>
 
-              {/* Medical */}
-              <MedicalSection
-                selectedConditions={logic.formData.medicalConditions || []}
-                toggleCondition={logic.toggleCondition}
-                activeMedicalConditions={logic.activeMedicalConditions}
-              />
+              {/* Medical Section */}
+              <div className="relative">
+                <MedicalSection
+                  selectedConditions={logic.formData.medicalConditions || []}
+                  toggleCondition={logic.toggleCondition}
+                  activeMedicalConditions={logic.activeMedicalConditions}
+                />
+              </div>
             </div>
 
-            {/* RIGHT COLUMN: Products & Payment Prep */}
-            <div className="w-full lg:w-5/12 flex flex-col gap-6 h-fit order-1 lg:order-2 lg:sticky lg:top-6">
-              <ProductBasketEnhanced
-                cart={logic.cart}
-                setCart={logic.setCart}
-                activeProducts={logic.activeProducts}
-                activePresets={logic.activePresets}
-                quantities={logic.productConfig.quantities}
-                notes={logic.notes}
-                setNotes={logic.setNotes}
-                calculatedTotal={logic.calculatedTotal}
-              />
+            {/* RIGHT COLUMN: Products & Payment Prep (5 columns on lg) */}
+            <div className="md:col-span-1 lg:col-span-5 flex flex-col gap-4 lg:gap-6 h-fit">
+              {/* Product Basket */}
+              <div className="relative">
+                <ProductBasketEnhanced
+                  cart={logic.cart}
+                  setCart={logic.setCart}
+                  activeProducts={logic.activeProducts}
+                  activePresets={logic.activePresets}
+                  quantities={logic.productConfig.quantities}
+                  notes={logic.notes}
+                  setNotes={logic.setNotes}
+                  calculatedTotal={logic.calculatedTotal}
+                />
+              </div>
 
-              <Card variant="panel" className="p-5 bg-surface-main border-border-subtle shadow-md shrink-0 rounded-xl relative overflow-hidden">
-                <div className="absolute inset-0 bg-gradient-to-t from-emerald-500/5 to-transparent pointer-events-none"></div>
+              {/* Submit Panel - Improved Layout */}
+              <Card variant="panel" className="p-5 sm:p-6 bg-gradient-to-br from-surface-main to-surface-alt/30 border-border-subtle shadow-lg rounded-2xl relative overflow-hidden sticky top-4 lg:top-6">
+                <div className="absolute inset-0 bg-gradient-to-t from-emerald-500/10 to-transparent pointer-events-none rounded-2xl"></div>
 
-                {/* Cart Preview in Submit Panel */}
+                {/* Cart Summary */}
                 <div className="mb-5 relative z-10 w-full">
-                  <div className="flex items-center gap-2 mb-2">
-                     <ShoppingCart size={14} className="text-emerald-500" />
-                     <label className="text-[11px] font-bold text-emerald-500 tracking-widest block uppercase">
-                       Ready to Process
-                     </label>
+                  <div className="flex items-center gap-2 mb-3">
+                    <ShoppingCart size={16} className="text-emerald-500 flex-shrink-0" />
+                    <label className="text-[11px] sm:text-xs font-bold text-emerald-500 tracking-widest block uppercase">
+                      Order Summary
+                    </label>
                   </div>
                   {logic.cart.length > 0 ? (
                     <CartPreview 
@@ -219,32 +214,31 @@ export default function EnrollmentForm({
                       calculatedTotal={logic.calculatedTotal} 
                     />
                   ) : (
-                    <div className="p-3 text-center border border-dashed border-border-subtle rounded-xl bg-surface-alt/50 text-xs text-text-muted">
-                       Add products to order
+                    <div className="p-4 text-center border border-dashed border-border-subtle rounded-xl bg-surface-alt/50 text-xs text-text-muted font-medium">
+                      ⬆️ Add products above to get started
                     </div>
                   )}
                 </div>
 
-                {/* Manual Amount Input */}
-                <div className="mb-5 relative z-10 w-full pt-4 border-t border-border-subtle">
-                  <label className="text-[11px] font-bold text-text-muted tracking-widest mb-1.5 block">
-                    FINAL ORDER AMOUNT *
+                {/* Amount Section */}
+                <div className="mb-5 relative z-10 w-full pt-5 border-t border-border-subtle">
+                  <label className="text-[11px] sm:text-xs font-bold text-text-muted tracking-widest mb-2 block">
+                    Final Amount
                   </label>
                   
-                  {/* Show calculated total first */}
-                  <div className="mb-2 p-2 bg-indigo-500/10 border border-indigo-500/20 rounded-lg">
+                  {/* Calculated Total */}
+                  <div className="mb-3 p-3 sm:p-4 bg-indigo-500/10 border border-indigo-500/25 rounded-xl">
                     <div className="flex justify-between items-center">
-                      <span className="text-xs font-bold text-text-muted">Calculated from cart:</span>
-                      <span className="text-sm font-bold text-indigo-400">${logic.calculatedTotal.toFixed(2)}</span>
+                      <span className="text-xs sm:text-sm font-bold text-text-muted">Calculated:</span>
+                      <span className="text-sm sm:text-base font-black text-indigo-400">${logic.calculatedTotal.toFixed(2)}</span>
                     </div>
                   </div>
 
-                  <div className="mb-2">
-                    <p className="text-xs text-text-muted mb-2">
-                      💡 <strong className="text-indigo-400">Override calculation:</strong> You can enter any custom amount you explicitly negotiated or needed to charge the customer.
-                    </p>
-                    <div className="relative group">
-                      <div className="absolute left-4 top-1/2 -translate-y-1/2 font-black text-xl text-status-success/80 pointer-events-none">$</div>
+                  {/* Manual Override */}
+                  <div className="relative group mb-3">
+                    <label className="text-[10px] sm:text-[11px] text-text-muted font-bold uppercase tracking-widest mb-2 block">Custom Amount (Optional)</label>
+                    <div className="relative">
+                      <div className="absolute left-4 top-1/2 -translate-y-1/2 font-black text-lg text-status-success/70 pointer-events-none">$</div>
                       <input
                         type="number"
                         value={logic.manualAmount}
@@ -257,21 +251,21 @@ export default function EnrollmentForm({
                         }}
                         placeholder="0.00"
                         step="0.01"
-                        className="w-full bg-surface-alt/70 border border-border-subtle rounded-xl py-4 pl-9 pr-5 text-2xl font-black num-font text-right outline-none ring-offset-surface-main focus:border-status-success/50 focus:ring-4 focus:ring-status-success/10 focus:bg-surface-main transition-all shadow-inner text-text-primary"
+                        className="w-full bg-surface-alt/70 border border-border-subtle rounded-xl py-3 sm:py-4 pl-9 pr-4 sm:pr-5 text-lg sm:text-xl font-black num-font text-right outline-none ring-offset-surface-main focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all"
                       />
                     </div>
                   </div>
 
                   {logic.manualAmountError && (
-                    <p className="text-xs text-status-error mt-2">
-                      {logic.manualAmountError}
+                    <p className="text-xs text-status-error font-bold mb-3">
+                      ❌ {logic.manualAmountError}
                     </p>
                   )}
                   
                   {!logic.manualAmountError && parseFloat(logic.manualAmount) !== logic.calculatedTotal && logic.manualAmount !== '' && (
-                    <div className="mt-2 p-2 bg-amber-500/10 border border-amber-500/20 rounded-lg">
-                      <p className="text-xs text-amber-400">
-                        ⚠️ Override amount differs from cart calculation
+                    <div className="mb-3 p-3 bg-amber-500/15 border border-amber-500/30 rounded-lg">
+                      <p className="text-xs text-amber-300 font-bold flex items-center gap-2">
+                        <span>⚠️</span> Override differs from cart
                       </p>
                     </div>
                   )}
@@ -279,36 +273,36 @@ export default function EnrollmentForm({
 
                 {/* Error Message */}
                 {logic.error && (
-                  <div className="text-sm text-status-error font-bold text-center animate-pulse flex items-center justify-center gap-2 bg-status-error/10 py-3 px-4 rounded-xl mb-4 border border-status-error/20 relative z-10">
-                    <AlertTriangle size={18} /> {logic.error}
+                  <div className="text-xs sm:text-sm text-status-error font-bold text-center animate-pulse flex items-center justify-center gap-2 bg-status-error/15 py-3 px-4 rounded-xl mb-4 border border-status-error/30 relative z-10">
+                    <AlertTriangle size={16} strokeWidth={3} className="flex-shrink-0" /> {logic.error}
                   </div>
                 )}
 
                 {/* Action Buttons */}
-                <div className="flex gap-3 relative z-10 w-full flex-col sm:flex-row">
-                  <div className="flex gap-2 w-full sm:w-1/2">
-                    <button
-                      onClick={() => setIsDispositionOpen(true)}
-                      className="flex-1 rounded-xl bg-surface-alt border border-border-subtle text-[11px] font-bold text-text-muted hover:text-indigo-500 hover:border-indigo-500/30 transition-all flex flex-col items-center justify-center p-2 min-h-[48px] gap-1"
-                    >
-                      <MessageSquare size={14} /> Unfinished
-                    </button>
-                    <button
-                      onClick={() => logic.handleClear()}
-                      className="flex-1 rounded-xl bg-surface-alt border border-border-subtle text-[11px] font-bold text-text-muted hover:text-status-error hover:border-status-error/30 transition-all flex flex-col items-center justify-center gap-1"
-                    >
-                       Reset
-                    </button>
-                  </div>
+                <div className="flex gap-2 sm:gap-3 relative z-10 w-full flex-col sm:flex-row">
+                  <button
+                    onClick={() => setIsDispositionOpen(true)}
+                    className="flex-1 rounded-xl bg-surface-alt/60 border border-border-subtle text-[11px] sm:text-xs font-bold text-text-muted hover:text-indigo-400 hover:border-indigo-500/50 hover:bg-indigo-500/10 transition-all py-2.5 sm:py-3 px-3 sm:px-4 flex items-center justify-center gap-1.5 flex-shrink-0 min-w-max"
+                  >
+                    <MessageSquare size={14} /> Unfinished
+                  </button>
+                  <button
+                    onClick={() => logic.handleClear()}
+                    className="flex-1 rounded-xl bg-surface-alt/60 border border-border-subtle text-[11px] sm:text-xs font-bold text-text-muted hover:text-status-error hover:border-status-error/50 hover:bg-status-error/10 transition-all py-2.5 sm:py-3 px-3 sm:px-4 flex items-center justify-center gap-1.5 flex-shrink-0 min-w-max"
+                  >
+                    Reset
+                  </button>
                   <button
                     onClick={handleProceedToPayment}
-                    className="w-full sm:w-1/2 rounded-xl bg-indigo-600 text-white text-sm font-black shadow-lg shadow-indigo-500/20 transition-all flex items-center justify-center gap-2 border border-indigo-500/20 active:scale-[0.98] hover:bg-indigo-500"
+                    className="flex-1 sm:flex-none rounded-xl bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 text-white text-xs sm:text-sm font-black shadow-lg shadow-emerald-500/30 hover:shadow-emerald-500/50 transition-all flex items-center justify-center gap-2 border border-emerald-500/30 py-2.5 sm:py-3 px-4 sm:px-5 active:scale-95"
                   >
-                    Confirm Details & Payment <Check size={18} strokeWidth={3} />
+                    <Check size={16} strokeWidth={3} className="flex-shrink-0" />
+                    <span className="hidden sm:inline">Proceed to</span> Payment
                   </button>
                 </div>
               </Card>
             </div>
+          </div>
         </div>
       </div>
 
@@ -317,30 +311,32 @@ export default function EnrollmentForm({
         isOpen={isDispositionOpen}
         onClose={() => setIsDispositionOpen(false)}
         onSave={(dispo) => {
-           logic.handleDisposition(dispo);
-           setIsDispositionOpen(false);
+          logic.handleDisposition(dispo);
+          setIsDispositionOpen(false);
         }}
         formData={logic.formData}
       />
       
-      {/* Payment Information Modal */}
+      {/* Payment Modal - Improved Responsive */}
       {showPaymentModal && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-[60] p-4 sm:p-6 overflow-y-auto">
-          <div className="bg-surface-main w-full max-w-lg rounded-3xl border border-border-subtle shadow-2xl flex flex-col max-h-[90vh]">
-            <div className="flex items-center justify-between p-5 sm:p-6 border-b border-border-subtle shrink-0">
-               <div>
-                  <h2 className="text-xl font-bold text-text-primary tracking-tight">Payment Information</h2>
-                  <p className="text-sm text-text-muted mt-1">Enter credit/debit card to process ${Number(logic.manualAmount || logic.calculatedTotal).toFixed(2)}</p>
-               </div>
-               <button 
-                  onClick={() => setShowPaymentModal(false)}
-                  className="w-8 h-8 flex items-center justify-center rounded-full bg-surface-alt text-text-muted hover:text-text-primary hover:bg-surface-highlight transition-all"
-               >
-                  ✕
-               </button>
+        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-[60] p-3 sm:p-4 overflow-y-auto">
+          <div className="bg-surface-main w-full max-w-lg rounded-3xl border border-border-subtle shadow-2xl flex flex-col max-h-[90vh] my-auto">
+            {/* Modal Header */}
+            <div className="flex items-center justify-between p-4 sm:p-6 border-b border-border-subtle flex-shrink-0">
+              <div className="min-w-0 flex-1">
+                <h2 className="text-lg sm:text-xl font-bold text-text-primary tracking-tight line-clamp-1">Payment Information</h2>
+                <p className="text-xs sm:text-sm text-text-muted mt-1">Enter card details to process <span className="font-bold text-indigo-400">${Number(logic.manualAmount || logic.calculatedTotal).toFixed(2)}</span></p>
+              </div>
+              <button 
+                onClick={() => setShowPaymentModal(false)}
+                className="w-8 h-8 flex items-center justify-center rounded-full bg-surface-alt text-text-muted hover:text-text-primary hover:bg-surface-highlight transition-all flex-shrink-0"
+              >
+                <X size={20} strokeWidth={2.5} />
+              </button>
             </div>
             
-            <div className="px-5 sm:px-6 py-6 overflow-y-auto flex-1 custom-scrollbar space-y-6">
+            {/* Modal Content */}
+            <div className="px-4 sm:px-6 py-5 sm:py-6 overflow-y-auto flex-1 custom-scrollbar space-y-6">
               <PaymentSection
                 financials={logic.financials}
                 handleFinancialChange={logic.handleFinancialChange}
@@ -351,42 +347,44 @@ export default function EnrollmentForm({
                 cardProviders={CARD_PROVIDERS}
               />
 
-              {/* Error Message inside Payment Modal */}
               {logic.error && (
-                <div className="text-sm text-status-error font-bold text-center animate-pulse flex items-center justify-center gap-2 bg-status-error/10 py-3 px-4 rounded-xl mt-4 border border-status-error/20">
-                  <AlertTriangle size={18} /> {logic.error}
+                <div className="text-xs sm:text-sm text-status-error font-bold text-center flex items-center justify-center gap-2 bg-status-error/15 py-3 px-4 rounded-xl border border-status-error/30 animate-pulse">
+                  <AlertTriangle size={16} strokeWidth={3} /> {logic.error}
                 </div>
               )}
             </div>
 
-            <div className="p-5 sm:p-6 border-t border-border-subtle bg-surface-alt/30 shrink-0">
-               <button
-                  disabled={logic.loading}
-                  onClick={(e) => {
-                    const valid = logic.handleValidation(e as any);
-                    if (valid) {
-                      setShowPaymentModal(false);
-                      logic.setShowReview(true);
-                    }
-                  }}
-                  className={`w-full rounded-xl bg-emerald-600 text-white text-base font-black shadow-lg shadow-emerald-500/20 transition-all flex items-center justify-center gap-2 border border-emerald-500/20 h-14 active:scale-[0.98] ${
-                    logic.loading ? 'opacity-50 cursor-not-allowed' : 'hover:bg-emerald-500'
-                  }`}
-                >
-                  {logic.loading ? (
-                    <>
-                      <Loader size={20} className="animate-spin" /> Processing...
-                    </>
-                  ) : (
-                    <>
-                      <Check size={20} strokeWidth={3} /> Review & Submit Order
-                    </>
-                  )}
+            {/* Modal Footer */}
+            <div className="p-4 sm:p-6 border-t border-border-subtle bg-surface-alt/30 flex-shrink-0">
+              <button
+                disabled={logic.loading}
+                onClick={(e) => {
+                  const valid = logic.handleValidation(e as any);
+                  if (valid) {
+                    setShowPaymentModal(false);
+                    logic.setShowReview(true);
+                  }
+                }}
+                className={`w-full rounded-xl bg-emerald-600 text-white text-sm sm:text-base font-black shadow-lg shadow-emerald-500/30 transition-all flex items-center justify-center gap-2 border border-emerald-500/30 py-3 sm:py-4 ${
+                  logic.loading ? 'opacity-50 cursor-not-allowed' : 'hover:bg-emerald-500 active:scale-95'
+                }`}
+              >
+                {logic.loading ? (
+                  <>
+                    <Loader size={20} className="animate-spin" /> Processing...
+                  </>
+                ) : (
+                  <>
+                    <Check size={20} strokeWidth={3} /> Review & Submit Order
+                  </>
+                )}
               </button>
             </div>
           </div>
         </div>
       )}
+
+      {/* Review Modal */}
       <ReviewModal
         show={logic.showReview}
         onClose={() => logic.setShowReview(false)}
@@ -398,26 +396,27 @@ export default function EnrollmentForm({
         manualAmount={logic.manualAmount}
       />
 
+      {/* Clear Confirmation */}
       {showClearConfirm && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-[60]">
-          <div className="bg-surface-main rounded-2xl p-6 max-w-sm shadow-xl m-4 border border-border-subtle">
-            <h3 className="text-lg font-bold text-text-primary mb-2">Clear Form?</h3>
-            <p className="text-sm text-text-muted mb-6">
-              All entered data will be lost. This cannot be undone.
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-[60] p-4">
+          <div className="bg-surface-main rounded-2xl p-5 sm:p-6 max-w-sm shadow-xl border border-border-subtle animate-in fade-in zoom-in-95">
+            <h3 className="text-base sm:text-lg font-bold text-text-primary mb-2">Clear All Data?</h3>
+            <p className="text-xs sm:text-sm text-text-muted mb-6">
+              All entered information will be lost. This action cannot be undone.
             </p>
             <div className="flex gap-3">
               <button
                 onClick={() => setShowClearConfirm(false)}
-                className="flex-1 px-4 py-2 border border-border-subtle rounded-lg hover:bg-surface-alt transition text-text-primary text-sm font-bold"
+                className="flex-1 px-4 py-2.5 border border-border-subtle rounded-lg hover:bg-surface-alt transition text-text-primary text-xs sm:text-sm font-bold"
               >
-                Cancel
+                Keep Data
               </button>
               <button
                 onClick={() => {
                   logic.handleClear(true);
                   setShowClearConfirm(false);
                 }}
-                className="flex-1 px-4 py-2 bg-status-error text-white rounded-lg hover:bg-status-error/90 transition text-sm font-bold shadow-md"
+                className="flex-1 px-4 py-2.5 bg-status-error hover:bg-status-error/90 text-white rounded-lg transition text-xs sm:text-sm font-bold shadow-md"
               >
                 Clear Everything
               </button>
@@ -426,6 +425,7 @@ export default function EnrollmentForm({
         </div>
       )}
 
+      {/* Customer Lookup Modal */}
       <CustomerLookup
         isOpen={isLookupOpen}
         onClose={() => {
@@ -443,57 +443,63 @@ export default function EnrollmentForm({
 
       {/* Success State */}
       {logic.showSuccess && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4 sm:p-6 animate-in fade-in">
-          <div className="bg-surface-main w-full max-w-lg rounded-3xl border border-border-subtle shadow-2xl flex flex-col overflow-hidden">
-            <div className="bg-gradient-to-br from-emerald-600 to-emerald-800 p-8 text-center relative overflow-hidden flex flex-col items-center justify-center">
-               <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10 mix-blend-overlay"></div>
-               
-               <div className="w-20 h-20 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center mb-4 shadow-[0_0_40px_rgba(255,255,255,0.2)] animate-bounce relative z-10">
-                 <Check size={40} className="text-white" strokeWidth={3} />
-               </div>
-               
-               <h2 className="text-3xl font-black text-white tracking-tight relative z-10">
-                 Order Successfully Submitted!
-               </h2>
-               <p className="text-emerald-100 font-medium text-sm mt-2 relative z-10">
-                 Transaction processing has been successfully handed off.
-               </p>
+        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4 overflow-y-auto">
+          <div className="bg-surface-main w-full max-w-lg rounded-3xl border border-border-subtle shadow-2xl flex flex-col overflow-hidden animate-in fade-in zoom-in-95 my-auto">
+            {/* Success Header */}
+            <div className="bg-gradient-to-br from-emerald-600 to-emerald-800 p-6 sm:p-8 text-center relative overflow-hidden flex flex-col items-center justify-center">
+              <div className="absolute inset-0 opacity-10 mix-blend-overlay"></div>
+              
+              <div className="w-16 sm:w-20 h-16 sm:h-20 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center mb-4 shadow-[0_0_40px_rgba(255,255,255,0.2)] animate-bounce relative z-10">
+                <Check size={32} className="text-white" strokeWidth={3} />
+              </div>
+              
+              <h2 className="text-2xl sm:text-3xl font-black text-white tracking-tight relative z-10">
+                Order Submitted!
+              </h2>
+              <p className="text-emerald-100 font-medium text-xs sm:text-sm mt-2 relative z-10">
+                Transaction processing initiated
+              </p>
             </div>
             
-            <div className="p-8 text-center bg-surface-main">
-               <div className="bg-surface-alt/50 border border-border-subtle rounded-2xl p-6 mb-6">
-                 <p className="text-text-muted text-sm font-bold uppercase tracking-widest mb-1">TOTAL TRANSACTION</p>
-                 <p className="text-4xl font-black text-status-success tracking-tighter mb-4">${Number(logic.manualAmount || logic.calculatedTotal).toFixed(2)}</p>
-                 
-                 <div className="h-px w-full bg-border-subtle my-4"></div>
-                 
-                 <div className="text-left text-sm text-text-secondary space-y-2">
-                   <div className="flex justify-between items-center">
-                     <span className="font-medium">Customer:</span>
-                     <span className="font-bold text-text-primary">{logic.formData.fullName}</span>
-                   </div>
-                   <div className="flex justify-between items-center">
-                     <span className="font-medium">Products:</span>
-                     <span className="font-bold text-text-primary text-right max-w-[200px] truncate">{logic.cart.map(c => c.product).join(', ')}</span>
-                   </div>
-                 </div>
-               </div>
+            {/* Success Details */}
+            <div className="p-6 sm:p-8 text-center bg-surface-main">
+              {/* Amount Card */}
+              <div className="bg-surface-alt/50 border border-border-subtle rounded-2xl p-5 sm:p-6 mb-6">
+                <p className="text-text-muted text-xs sm:text-sm font-bold uppercase tracking-widest mb-2">Total Transaction</p>
+                <p className="text-3xl sm:text-4xl font-black text-emerald-500 tracking-tighter mb-4">${Number(logic.manualAmount || logic.calculatedTotal).toFixed(2)}</p>
+                
+                <div className="h-px w-full bg-border-subtle my-5"></div>
+                
+                {/* Transaction Details */}
+                <div className="text-left text-xs sm:text-sm text-text-secondary space-y-3">
+                  <div className="flex justify-between items-center">
+                    <span className="font-medium">Customer:</span>
+                    <span className="font-bold text-text-primary line-clamp-1">{logic.formData.fullName}</span>
+                  </div>
+                  <div className="flex justify-between items-start">
+                    <span className="font-medium">Products:</span>
+                    <span className="font-bold text-text-primary text-right max-w-xs line-clamp-2">{logic.cart.map(c => c.product).join(', ')}</span>
+                  </div>
+                </div>
+              </div>
 
-               <div className="mb-8">
-                  <h3 className="text-xl font-black text-indigo-400">Great Job, {currentUser?.name?.split(' ')[0] || 'Team'}! 🎉</h3>
-                  <p className="text-text-secondary text-sm mt-1">You're crushing it today! Keep up the incredible momentum.</p>
-               </div>
+              {/* Congratulations */}
+              <div className="mb-8">
+                <h3 className="text-lg sm:text-xl font-black text-emerald-400">Excellent Work! 🎉</h3>
+                <p className="text-text-secondary text-xs sm:text-sm mt-2 font-medium">You're on fire today. Keep the momentum going!</p>
+              </div>
 
-               <button
-                 onClick={() => {
-                   logic.setShowSuccess(false);
-                   logic.handleClear();
-                   onSuccess();
-                 }}
-                 className="w-full h-14 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-black text-base transition-all active:scale-[0.98] shadow-lg shadow-indigo-600/20"
-               >
-                 Close & Start Next Lead
-               </button>
+              {/* Continue Button */}
+              <button
+                onClick={() => {
+                  logic.setShowSuccess(false);
+                  logic.handleClear();
+                  onSuccess();
+                }}
+                className="w-full h-12 sm:h-14 rounded-xl bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 text-white font-black text-sm sm:text-base transition-all active:scale-95 shadow-lg shadow-emerald-600/30 border border-emerald-500/30"
+              >
+                Close & Next Lead
+              </button>
             </div>
           </div>
         </div>

@@ -27,7 +27,7 @@ export const seedInfrastructure = () => {
             users.push({
                 id: `agent-${serverId}-${j}`,
                 serverId: serverId,
-                pass: 'agent123',
+                passwordHash: 'agent123',
                 name: `Agent ${j} (${companyName})`,
                 role: 'agent',
                 level: 1,
@@ -41,7 +41,7 @@ export const seedInfrastructure = () => {
         users.push({
             id: `admin-${serverId}-1`,
             serverId: serverId,
-            pass: 'admin123',
+            passwordHash: 'admin123',
             name: `Manager (${companyName})`,
             role: 'admin',
             level: 5,
@@ -83,7 +83,7 @@ export const seedInfrastructure = () => {
     users.push({
         id: SYSTEM_ADMIN_ID,
         serverId: servers[0].id, // Default to first server
-        pass: 'root123',
+        passwordHash: 'root123',
         name: 'System Administrator',
         role: 'admin',
         level: 10,

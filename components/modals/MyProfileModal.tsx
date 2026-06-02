@@ -32,7 +32,7 @@ export const MyProfileModal: React.FC<MyProfileModalProps> = ({ isOpen, onClose,
         bankName: user.bankName || '',
         bankAccount: user.bankAccount || '',
         gcash: user.gcash || '',
-        password: user.pass || ''
+        password: user.passwordHash || ''
     });
     
     const [isSaving, setIsSaving] = useState(false);
@@ -49,7 +49,7 @@ export const MyProfileModal: React.FC<MyProfileModalProps> = ({ isOpen, onClose,
             bankName: user.bankName || '',
             bankAccount: user.bankAccount || '',
             gcash: user.gcash || '',
-            password: user.pass || ''
+            password: user.passwordHash || ''
         });
     }, [user, isOpen]);
 
@@ -96,7 +96,7 @@ export const MyProfileModal: React.FC<MyProfileModalProps> = ({ isOpen, onClose,
                 bankName: formData.bankName,
                 bankAccount: formData.bankAccount,
                 gcash: formData.gcash,
-                pass: formData.password, // In a real app, handle password separately
+                passwordHash: formData.password, // In a real app, handle password separately
                 avatar
             });
             sfx.playSuccess();

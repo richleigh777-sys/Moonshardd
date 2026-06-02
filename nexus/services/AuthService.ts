@@ -49,7 +49,16 @@ export class AuthService {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ email: userId, password: userPass })
             });
-            const data = await res.json();
+
+            // Safely parse JSON to prevent crashing on 502 Gateway HTML pages
+            let data: any = {};
+            const contentType = res.headers.get('content-type');
+            if (contentType && contentType.includes('application/json')) {
+                data = await res.json();
+            } else {
+                const text = await res.text();
+                throw new Error(res.ok ? "Unexpected response format" : `Server returned status ${res.status}`);
+            }
             
             if (!res.ok) {
                 // Return fallback error if Postgres API complains
@@ -65,7 +74,7 @@ export class AuthService {
                role: data.user.role || 'agent', 
                level: data.user.clearance || 1,
                name: userId,
-               pass: '',
+               passwordHash: '',
                status: 'active',
                accessLevel: data.user.clearance || 1,
                commissionRate: 15,
@@ -93,7 +102,7 @@ export class AuthService {
                    role: 'admin', 
                    level: 10,
                    name: 'System Root',
-                   pass: '',
+                   passwordHash: '',
                    status: 'active',
                    accessLevel: 10,
                    commissionRate: 0,

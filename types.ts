@@ -204,7 +204,7 @@ export interface CartItem {
 export interface User {
     id: string;
     serverId: string; // Tenant Isolation Key
-    pass: string;
+    passwordHash?: string;
     name: string;
     role: UserRole;
     level: number; // 1-5 for Agents, 5-10 for Admins. Level 10 is Super Admin.

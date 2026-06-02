@@ -1,5 +1,5 @@
-import { Sale, Customer } from '@/types';
-import { normalizePhone, normalizeEmail, createAddressFingerprint } from '@/views/utils/dataSanitizer';
+import { Sale, Customer } from '../../../types.ts';
+import { normalizePhone, normalizeEmail, createAddressFingerprint } from '../../../views/utils/dataSanitizer.ts';
 
 export const rebuildCustomersFromSales = (sales: Sale[], currentCustomers: Customer[], serverId: string) => {
     const serverSales = sales.filter(s => s.serverId === serverId);

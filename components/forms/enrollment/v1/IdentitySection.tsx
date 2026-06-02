@@ -47,7 +47,10 @@ export const IdentitySection: React.FC<IdentityProps> = ({
           postalCode: formData.shippingZip
         })
       });
-      const data = await res.json();
+      let data: any = { success: false };
+      if (res.ok) {
+          try { data = await res.json(); } catch(e) {}
+      }
       
       if (data.success && data.validation) {
         setAddressValidationResult({
@@ -101,7 +104,10 @@ export const IdentitySection: React.FC<IdentityProps> = ({
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ phoneNumber: digits })
         })
-        .then(res => res.json())
+        .then(async res => {
+           if (res.ok) return await res.json();
+           return { success: false };
+        })
         .then(data => {
           if (data.success && data.lookup) {
             setPhoneTypeStr(data.lookup.type);

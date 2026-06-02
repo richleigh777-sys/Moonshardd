@@ -53,13 +53,13 @@ export class GlobalErrorBoundary extends Component<GlobalErrorBoundaryProps, Glo
 
     public render() {
     if (this.state.hasError) {
-      let displayMessage = this.state.error?.message || 'An unexpected error occurred.';
+      let displayMessage = (this.state.error?.message?.toString()) || 'An unexpected error occurred.';
       let operationType = '';
       let path = '';
 
       // Attempt to parse Firestore JSON error
       try {
-        if (displayMessage.startsWith('{')) {
+        if (typeof displayMessage === 'string' && displayMessage.startsWith('{')) {
           const parsed = JSON.parse(displayMessage);
           displayMessage = parsed.error || displayMessage;
           operationType = parsed.operationType || '';

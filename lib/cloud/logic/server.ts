@@ -1,4 +1,4 @@
-import { User, Sale, Server } from '@/types';
+import { User, Sale, Server } from '../../../types.ts';
 
 export const getServerStats = (users: User[], sales: Sale[], serverId: string) => {
     const serverUsers = users.filter(u => u.serverId === serverId);

@@ -1,7 +1,9 @@
 import express from "express";
 import path from "path";
 import cors from "cors";
-import bcrypt from "bcryptjs";
+import bcrypt from "bcrypt";
+import helmet from "helmet";
+import rateLimit from "express-rate-limit";
 import { GoogleGenAI } from "@google/genai";
 import { query } from "./lib/db.ts"; // Secure DB Gateway
 import { initializeRealtime } from "./lib/realtime.ts"; // WebSocket Hub
@@ -39,8 +41,27 @@ async function startServer() {
   const app = express();
   const PORT = 3000;
 
-  app.use(cors());
-  app.use(express.json({ limit: '50mb' }));
+  app.use(cors({ origin: process.env.CORS_ORIGIN || '*' })); // Restrict CORS
+  
+  // Security Headers
+  app.use(helmet({
+    contentSecurityPolicy: false // disable CSP in development due to Vite
+  }));
+
+  // Trust proxy for rate limiting behind Cloud Run/load balancers
+  app.set('trust proxy', 1);
+
+  // Rate Limiting
+  const limiter = rateLimit({
+    windowMs: 15 * 60 * 1000,
+    max: 10000, // limit each IP to 10000 requests per windowMs
+    // @ts-ignore
+    validate: { xForwardedForHeader: false, default: true },
+    message: { error: 'Too many requests, please try again later.' }
+  });
+  app.use('/api', limiter);
+
+  app.use(express.json({ limit: '1mb' }));
 
   // --- 1. Custom Credential Engine ---
   
@@ -116,48 +137,6 @@ async function startServer() {
                   // Ignore if crm_documents not set up yet
               }
 
-              // Special bypass for simulation accounts from Login screen
-              if (email.startsWith('admin-srv') || email.startsWith('agent-srv')) {
-                  const role = email.startsWith('admin') ? 'admin' : 'agent';
-                  const clearance = role === 'admin' ? 8 : 1;
-                  const salt = await bcrypt.genSalt(10);
-                  const hash = await bcrypt.hash(password, salt);
-                  
-                  const ins = await query(
-                      `INSERT INTO users (email, password_hash, role, clearance_level, team) VALUES ($1, $2, $3, $4, $5) RETURNING id, role, clearance_level, team`,
-                      [email, hash, role, clearance, 'Alpha']
-                  );
-                  const user = ins.rows[0];
-                  
-                  // Also mirror to crm_documents so it shows up in Roster!
-                  try {
-                      await query(`
-                          INSERT INTO crm_documents (id, collection_name, data, updated_at) 
-                          VALUES ($1, 'users', $2, NOW())
-                          ON CONFLICT (collection_name, id) DO UPDATE SET data = EXCLUDED.data, updated_at = NOW()
-                      `, [email, JSON.stringify({
-                          id: email,
-                          name: email.split('@')[0] || email,
-                          role,
-                          level: clearance,
-                          accessLevel: clearance,
-                          team: 'Alpha',
-                          status: 'active',
-                          currentStatus: 'online',
-                          active: true,
-                          pass: password,
-                          commissionRate: 15
-                      })]);
-                  } catch (e) {
-                      console.error("Failed to mirror dummy account to crm_documents", e);
-                  }
-
-                  return res.json({ 
-                      message: "Simulation Account Initialized", 
-                      token: "simulated_jwt_token",
-                      user: { id: email, role: user.role, clearance: user.clearance_level, team: user.team }
-                  });
-              }
               return res.status(401).json({ error: "Invalid credentials." });
           }
 

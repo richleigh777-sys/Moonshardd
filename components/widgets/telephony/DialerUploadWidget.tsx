@@ -101,6 +101,7 @@ export const DialerUploadWidget = () => {
                 })
             });
 
+            if (!res.ok) throw new Error("API returned " + res.status);
             const data = await res.json();
             if (!data.success) {
                 throw new Error(data.error);

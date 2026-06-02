@@ -47,7 +47,7 @@ export const OperativeRoster: React.FC<OperativeRosterProps> = ({
 
     const handleOpenEdit = (user: User | null = null) => {
         sfx.playClick();
-        setEditingUser(user ? { ...user } : { id: '', name: '', pass: '', role: 'agent', level: 1, accessLevel: 1, active: true, team: 'General', commissionRate: 15 });
+        setEditingUser(user ? { ...user } : { id: '', name: '', role: 'agent', level: 1, accessLevel: 1, active: true, team: 'General', commissionRate: 15 });
         setIsEditModalOpen(true);
     };
 

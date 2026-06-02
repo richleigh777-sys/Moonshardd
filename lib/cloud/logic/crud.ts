@@ -1,6 +1,6 @@
-import { Server, ProductConfig, SystemConfig, Sale } from '@/types';
-import { INITIAL_PRODUCT_CONFIG } from '@/constants';
-import { generateTransactionFingerprint } from '@/views/utils/dataSanitizer';
+import { Server, ProductConfig, SystemConfig, Sale } from '../../../types.ts';
+import { INITIAL_PRODUCT_CONFIG } from '../../../constants.ts';
+import { generateTransactionFingerprint } from '../../../views/utils/dataSanitizer.ts';
 
 export const createServer = async (name: string, region: string) => {
     const serverId = `srv-${Date.now()}-${Math.random().toString(36).substr(2, 5)}`;

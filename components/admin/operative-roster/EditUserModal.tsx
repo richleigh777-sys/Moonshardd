@@ -149,10 +149,10 @@ export const EditUserModal: React.FC<EditUserModalProps> = ({ isOpen, onClose, u
                                         className="font-mono bg-surface-main"
                                     />
                                     <Input 
-                                        label="Access Key" 
+                                        label="Access Key (Leave blank to keep)" 
                                         type="password"
-                                        value={formData.pass || ''} 
-                                        onChange={e => setFormData({...formData, pass: e.target.value})} 
+                                        value={formData.passwordHash || ''} 
+                                        onChange={e => setFormData({...formData, passwordHash: e.target.value})} 
                                         placeholder="Secure Cipher"
                                     />
                                 </div>

@@ -138,7 +138,7 @@ describe('EnrollmentForm Component', () => {
     it('validates form submission', () => {
         render(<EnrollmentForm onSuccess={mockOnSuccess} onCancel={mockOnCancel} />);
         
-        const submitButton = screen.getByText(/Confirm Details & Payment/i);
+        const submitButton = screen.getByText(/Payment/, { selector: 'button' });
         fireEvent.click(submitButton);
         
         expect(screen.getByText(/Customer name is required before payment/i)).toBeInTheDocument();
@@ -167,7 +167,7 @@ describe('EnrollmentForm Component', () => {
         fireEvent.change(phoneInput, { target: { value: '5559876543' } });
         
         // Proceed to payment modal
-        const proceedButton = screen.getByText(/Confirm Details & Payment/i);
+        const proceedButton = screen.getByText(/Payment/i, { selector: 'button' });
         fireEvent.click(proceedButton);
         
         // Fill payment
@@ -199,11 +199,11 @@ describe('EnrollmentForm Component', () => {
         });
 
         await waitFor(() => {
-            expect(screen.getByText(/Order Successfully Submitted!/i)).toBeInTheDocument();
+            expect(screen.getByText(/Order Submitted!/i)).toBeInTheDocument();
         });
 
         // Click Start Next Caller to trigger onSuccess
-        const nextCallerButton = screen.getByText(/Close & Start Next Lead/i);
+        const nextCallerButton = screen.getByText(/Close & Next Lead/i, { selector: 'button' });
         fireEvent.click(nextCallerButton);
         
         await waitFor(() => {

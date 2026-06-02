@@ -23,22 +23,28 @@ const API_KEY =
   '';
 
 const App: React.FC = () => {
+    const content = (
+        <QueryClientProvider client={queryClient}>
+            <AuthProvider>
+                <SystemProvider>
+                    <CRMProvider>
+                        <CRMPerformanceProvider>
+                            <MainContent />
+                        </CRMPerformanceProvider>
+                    </CRMProvider>
+                </SystemProvider>
+            </AuthProvider>
+        </QueryClientProvider>
+    );
+
     return (
-        <APIProvider apiKey={API_KEY} version="weekly">
-            <GlobalErrorBoundary>
-                <QueryClientProvider client={queryClient}>
-                    <AuthProvider>
-                        <SystemProvider>
-                            <CRMProvider>
-                                <CRMPerformanceProvider>
-                                    <MainContent />
-                                </CRMPerformanceProvider>
-                            </CRMProvider>
-                        </SystemProvider>
-                    </AuthProvider>
-                </QueryClientProvider>
-            </GlobalErrorBoundary>
-        </APIProvider>
+        <GlobalErrorBoundary>
+            {API_KEY ? (
+                <APIProvider apiKey={API_KEY} version="weekly">
+                    {content}
+                </APIProvider>
+            ) : content}
+        </GlobalErrorBoundary>
     );
 };
 

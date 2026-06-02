@@ -9,7 +9,7 @@ export const mockPresets: ProductPreset[] = [
     description: '30 Day Supply',
     icon: 'Package',
     items: [
-      { product: 'Core Optimizer', quantity: '30 Day Supply', dosage: 'Standard', id: '1', unitPrice: 49.99 }
+      { product: 'Core Optimizer', quantity: '30 Day Supply', dosage: 'Standard' }
     ],
     createdBy: 'system',
     createdAt: Date.now(),

@@ -1,5 +1,5 @@
-import { User, Server } from '@/types';
-import { SYSTEM_ADMIN_ID } from '@/constants';
+import { User, Server } from '../../../types.ts';
+import { SYSTEM_ADMIN_ID } from '../../../constants.ts';
 
 export const authenticateUser = async (
     users: User[], 
@@ -17,7 +17,7 @@ export const authenticateUser = async (
 
     const user = users.find(u => u.id === userId && u.serverId === companyId);
     if (!user) throw new Error('User not found on this server');
-    if (user.pass !== userPass) throw new Error('Invalid User Password');
+    if (user.passwordHash !== userPass) throw new Error('Invalid User Password');
     if (!user.active) throw new Error('User account is disabled');
 
     if (currentActiveServerId !== companyId) {
@@ -34,7 +34,7 @@ export const authenticateRootUser = async (
 ) => {
     const user = users.find(u => u.id === userId && u.id === SYSTEM_ADMIN_ID);
     if (!user) throw new Error('Root user not found');
-    if (user.pass !== userPass) throw new Error('Invalid Root Password');
+    if (user.passwordHash !== userPass) throw new Error('Invalid Root Password');
 
     // Root can access any server, but we stay on current or default
     return user;

@@ -172,7 +172,10 @@ export const LogisticsSector: React.FC<Props> = ({ formData, handleIdentityChang
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ addressLines: [rawString] })
             });
-            const data = await res.json();
+            let data: any = { success: false };
+            if (res.ok) {
+                try { data = await res.json(); } catch(e) {}
+            }
             if (data.success && data.validation && data.validation.components) {
                 return {
                     components: data.validation.components,
