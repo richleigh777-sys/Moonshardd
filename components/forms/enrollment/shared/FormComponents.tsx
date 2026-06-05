@@ -46,15 +46,16 @@ export const FormInput = React.forwardRef<HTMLInputElement, FormInputProps>(({ i
                     </div>
                 )}
                 
-                <input autoComplete="off" data-lpignore="true" data-prevent-autofill="true" spellCheck={false} 
+                <input 
+                    spellCheck={false} 
                     autoCorrect="off"
                     {...props}
                     ref={ref}
                     className={`
                         w-full bg-transparent border-none outline-none py-2 px-4 
                         ${Icon ? 'pl-9' : 'pl-3'} ${rightElement ? 'pr-9' : 'pr-3'}
-                        text-xs font-bold text-text-primary placeholder:text-text-muted/20 
-                        tracking-tight disabled:opacity-40
+                        text-sm font-medium text-text-primary placeholder:text-text-muted/40 
+                        tracking-normal disabled:opacity-40
                         ${className}
                     `}
                 />

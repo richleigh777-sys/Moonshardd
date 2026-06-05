@@ -1,7 +1,6 @@
 /// <reference types="@types/google.maps" />
-import React, { useState, useEffect, useRef, useMemo } from 'react';
-import { MapPin, ShieldCheck, Globe, Crosshair, Check, Sparkles } from 'lucide-react';
-import { FormInput, FormLabel, FormSelect } from '../shared/FormComponents';
+import React, { useState, useEffect, useRef } from 'react';
+import { MapPin, ShieldCheck, Globe, Check, Sparkles } from 'lucide-react';
 import { useMapsLibrary } from '@vis.gl/react-google-maps';
 import { useCRM } from '../../../../hooks/useCRM';
 
@@ -23,16 +22,12 @@ interface Props {
 export const LogisticsSector: React.FC<Props> = ({ formData, handleIdentityChange, useShippingForBilling, setUseShippingForBilling }) => {
     const [suggestedShipping, setSuggestedShipping] = useState<{street: string, city: string, state: string, zip: string} | null>(null);
     const [suggestedBilling, setSuggestedBilling] = useState<{street: string, city: string, state: string, zip: string} | null>(null);
-    const [showShippingDetails, setShowShippingDetails] = useState(false);
-    const [showBillingDetails, setShowBillingDetails] = useState(false);
 
     const { customers } = useCRM();
 
     const places = useMapsLibrary('places');
     const shippingInputRef = useRef<HTMLInputElement>(null);
     const billingInputRef = useRef<HTMLInputElement>(null);
-    const shippingAutocompleteRef = useRef<google.maps.places.Autocomplete | null>(null);
-    const billingAutocompleteRef = useRef<google.maps.places.Autocomplete | null>(null);
 
     const handlePlaceSelection = (place: google.maps.places.PlaceResult, type: 'shipping' | 'billing') => {
         if (!place.address_components) return;
@@ -45,21 +40,11 @@ export const LogisticsSector: React.FC<Props> = ({ formData, handleIdentityChang
 
         place.address_components.forEach(component => {
             const types = component.types;
-            if (types.includes('street_number')) {
-                streetNumber = component.long_name;
-            }
-            if (types.includes('route')) {
-                route = component.short_name || component.long_name;
-            }
-            if (types.includes('locality') || types.includes('sublocality_level_1')) {
-                city = component.long_name;
-            }
-            if (types.includes('administrative_area_level_1')) {
-                state = component.short_name;
-            }
-            if (types.includes('postal_code')) {
-                zip = component.long_name;
-            }
+            if (types.includes('street_number')) streetNumber = component.long_name;
+            if (types.includes('route')) route = component.short_name || component.long_name;
+            if (types.includes('locality') || types.includes('sublocality_level_1')) city = component.long_name;
+            if (types.includes('administrative_area_level_1')) state = component.short_name;
+            if (types.includes('postal_code')) zip = component.long_name;
         });
 
         const address = `${streetNumber} ${route}`.trim();
@@ -76,37 +61,23 @@ export const LogisticsSector: React.FC<Props> = ({ formData, handleIdentityChang
 
     useEffect(() => {
         if (!places || !shippingInputRef.current) return;
-        const options = {
+        const autocomplete = new places.Autocomplete(shippingInputRef.current, {
             fields: ['address_components', 'formatted_address'],
             types: ['address']
-        };
-        const autocomplete = new places.Autocomplete(shippingInputRef.current, options);
-        shippingAutocompleteRef.current = autocomplete;
-        const listener = autocomplete.addListener('place_changed', () => {
-            const place = autocomplete.getPlace();
-            handlePlaceSelection(place, 'shipping');
         });
-        return () => {
-            google.maps.event.removeListener(listener);
-        };
+        const listener = autocomplete.addListener('place_changed', () => handlePlaceSelection(autocomplete.getPlace(), 'shipping'));
+        return () => google.maps.event.removeListener(listener);
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [places]);
 
     useEffect(() => {
         if (!places || !billingInputRef.current) return;
-        const options = {
+        const autocomplete = new places.Autocomplete(billingInputRef.current, {
             fields: ['address_components', 'formatted_address'],
             types: ['address']
-        };
-        const autocomplete = new places.Autocomplete(billingInputRef.current, options);
-        billingAutocompleteRef.current = autocomplete;
-        const listener = autocomplete.addListener('place_changed', () => {
-            const place = autocomplete.getPlace();
-            handlePlaceSelection(place, 'billing');
         });
-        return () => {
-            google.maps.event.removeListener(listener);
-        };
+        const listener = autocomplete.addListener('place_changed', () => handlePlaceSelection(autocomplete.getPlace(), 'billing'));
+        return () => google.maps.event.removeListener(listener);
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [places]);
 
@@ -116,11 +87,7 @@ export const LogisticsSector: React.FC<Props> = ({ formData, handleIdentityChang
         const text = input.replace(/\r?\n/g, ', ').replace(/\s+/g, ' ').trim();
         if (!text) return null;
 
-        let street = text;
-        let city = '';
-        let state = '';
-        let zip = '';
-
+        let street = text, city = '', state = '', zip = '';
         const parts = text.split(',').map(s => s.trim()).filter(Boolean);
         if (parts.length >= 2) {
             street = toTitleCase(parts[0]);
@@ -130,9 +97,7 @@ export const LogisticsSector: React.FC<Props> = ({ formData, handleIdentityChang
                  if (stateZip.length >= 2) {
                      zip = stateZip.pop() || '';
                      state = stateZip.join(' ').toUpperCase();
-                 } else {
-                     state = stateZip[0].toUpperCase();
-                 }
+                 } else { state = stateZip[0].toUpperCase(); }
             } else {
                  const stateZip = parts[1].split(' ');
                  if (stateZip.length >= 3) {
@@ -147,68 +112,18 @@ export const LogisticsSector: React.FC<Props> = ({ formData, handleIdentityChang
         } else {
             const words = text.split(' ');
             if (words.length >= 4) {
-               zip = words.pop() || '';
-               state = (words.pop() || '').toUpperCase();
-               city = toTitleCase(words.pop() || '');
-               street = toTitleCase(words.join(' '));
-            } else {
-               street = toTitleCase(text);
-            }
+               zip = words.pop() || ''; state = (words.pop() || '').toUpperCase();
+               city = toTitleCase(words.pop() || ''); street = toTitleCase(words.join(' '));
+            } else { street = toTitleCase(text); }
         }
 
-        if (city || state || zip) {
-            return { street, city, state, zip };
-        }
+        if (city || state || zip) return { street, city, state, zip };
         return { street: toTitleCase(input), city: '', state: '', zip: '' };
-    };
-
-    const [isValidatingApi, setIsValidatingApi] = useState(false);
-
-    const validateWithAPI = async (rawString: string) => {
-        try {
-            setIsValidatingApi(true);
-            const res = await fetch('/api/address/validate', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ addressLines: [rawString] })
-            });
-            let data: any = { success: false };
-            if (res.ok) {
-                try { data = await res.json(); } catch(e) {}
-            }
-            if (data.success && data.validation && data.validation.components) {
-                return {
-                    components: data.validation.components,
-                    standardized: data.validation.standardized
-                };
-            }
-        } catch (e) {
-            console.error('Validation API error', e);
-        } finally {
-            setIsValidatingApi(false);
-        }
-        return null;
     };
 
     const findCustomerAddress = (query: string, type: 'shipping' | 'billing') => {
         const q = query.toLowerCase().trim();
         if (!q || q.length < 5) return null;
-        
-        const phone = formData.phone?.replace(/\D/g, '');
-        if (phone && phone.length >= 10) {
-            const customer = customers.find(c => c.phone?.replace(/\D/g, '') === phone);
-            if (customer) {
-                const addr = type === 'shipping' ? customer.shippingAddress : customer.billingAddress;
-                if (addr && addr.toLowerCase().startsWith(q)) {
-                    return {
-                        street: addr,
-                        city: type === 'shipping' ? customer.shippingCity : customer.billingCity,
-                        state: type === 'shipping' ? customer.shippingState : customer.billingState,
-                        zip: type === 'shipping' ? customer.shippingZip : customer.billingZip,
-                    };
-                }
-            }
-        }
         
         for (const customer of customers) {
             const addr = type === 'shipping' ? customer.shippingAddress : customer.billingAddress;
@@ -224,273 +139,227 @@ export const LogisticsSector: React.FC<Props> = ({ formData, handleIdentityChang
         return null;
     };
 
-    const handleStreetShippingBlur = async (e: React.FocusEvent<HTMLInputElement>) => {
+    const handleStreetBlur = async (e: React.FocusEvent<HTMLInputElement>, type: 'shipping' | 'billing') => {
         const val = e.target.value;
         if (!val || val.length < 5) return;
         
-        // 1. Check local database first
-        const localMatch = findCustomerAddress(val, 'shipping');
+        const localMatch = findCustomerAddress(val, type);
         if (localMatch) {
-            if (localMatch.street) handleIdentityChange({ target: { name: 'shippingAddress', value: localMatch.street } } as any);
-            if (localMatch.city) handleIdentityChange({ target: { name: 'shippingCity', value: localMatch.city } } as any);
-            if (localMatch.state) handleIdentityChange({ target: { name: 'shippingState', value: localMatch.state } } as any);
-            if (localMatch.zip) handleIdentityChange({ target: { name: 'shippingZip', value: localMatch.zip } } as any);
-            setSuggestedShipping(null);
-            return;
-        }
-
-        // 2. Validate with external API
-        const apiResponse = await validateWithAPI(val);
-        
-        if (apiResponse && apiResponse.components && (apiResponse.components.city || apiResponse.components.state || apiResponse.components.zip)) {
-            // API returned structured data
-            if (apiResponse.standardized || apiResponse.components.street) handleIdentityChange({ target: { name: 'shippingAddress', value: apiResponse.standardized || apiResponse.components.street } } as any);
-            if (apiResponse.components.city) handleIdentityChange({ target: { name: 'shippingCity', value: apiResponse.components.city } } as any);
-            if (apiResponse.components.state) handleIdentityChange({ target: { name: 'shippingState', value: apiResponse.components.state } } as any);
-            if (apiResponse.components.zip) handleIdentityChange({ target: { name: 'shippingZip', value: apiResponse.components.zip } } as any);
-            setSuggestedShipping(null);
-        } else {
-            // Fallback to local parsing if API fails
-            const parsed = parseAddress(val);
-            if (parsed) {
-                handleIdentityChange({ target: { name: 'shippingAddress', value: parsed.street } } as any);
-                if (parsed.city) handleIdentityChange({ target: { name: 'shippingCity', value: parsed.city } } as any);
-                if (parsed.state) handleIdentityChange({ target: { name: 'shippingState', value: parsed.state } } as any);
-                if (parsed.zip) handleIdentityChange({ target: { name: 'shippingZip', value: parsed.zip } } as any);
+            if (localMatch.street) handleIdentityChange({ target: { name: `${type}Address`, value: localMatch.street } } as any);
+            if (localMatch.city) handleIdentityChange({ target: { name: `${type}City`, value: localMatch.city } } as any);
+            if (localMatch.state) handleIdentityChange({ target: { name: `${type}State`, value: localMatch.state } } as any);
+            if (localMatch.zip) handleIdentityChange({ target: { name: `${type}Zip`, value: localMatch.zip } } as any);
+            if (type === 'shipping') {
                 setSuggestedShipping(null);
+            } else {
+                setSuggestedBilling(null);
             }
-        }
-    };
-
-    const handleStreetBillingBlur = async (e: React.FocusEvent<HTMLInputElement>) => {
-        const val = e.target.value;
-        if (!val || val.length < 5) return;
-        
-        // 1. Check local database first
-        const localMatch = findCustomerAddress(val, 'billing');
-        if (localMatch) {
-            if (localMatch.street) handleIdentityChange({ target: { name: 'billingAddress', value: localMatch.street } } as any);
-            if (localMatch.city) handleIdentityChange({ target: { name: 'billingCity', value: localMatch.city } } as any);
-            if (localMatch.state) handleIdentityChange({ target: { name: 'billingState', value: localMatch.state } } as any);
-            if (localMatch.zip) handleIdentityChange({ target: { name: 'billingZip', value: localMatch.zip } } as any);
-            setSuggestedBilling(null);
             return;
         }
 
-        // 2. Validate with external API
-        const apiResponse = await validateWithAPI(val);
-        
-        if (apiResponse && apiResponse.components && (apiResponse.components.city || apiResponse.components.state || apiResponse.components.zip)) {
-            if (apiResponse.standardized || apiResponse.components.street) handleIdentityChange({ target: { name: 'billingAddress', value: apiResponse.standardized || apiResponse.components.street } } as any);
-            if (apiResponse.components.city) handleIdentityChange({ target: { name: 'billingCity', value: apiResponse.components.city } } as any);
-            if (apiResponse.components.state) handleIdentityChange({ target: { name: 'billingState', value: apiResponse.components.state } } as any);
-            if (apiResponse.components.zip) handleIdentityChange({ target: { name: 'billingZip', value: apiResponse.components.zip } } as any);
-            setSuggestedBilling(null);
-        } else {
-            const parsed = parseAddress(val);
-            if (parsed) {
-                handleIdentityChange({ target: { name: 'billingAddress', value: parsed.street } } as any);
-                if (parsed.city) handleIdentityChange({ target: { name: 'billingCity', value: parsed.city } } as any);
-                if (parsed.state) handleIdentityChange({ target: { name: 'billingState', value: parsed.state } } as any);
-                if (parsed.zip) handleIdentityChange({ target: { name: 'billingZip', value: parsed.zip } } as any);
+        const parsed = parseAddress(val);
+        if (parsed) {
+            handleIdentityChange({ target: { name: `${type}Address`, value: parsed.street } } as any);
+            if (parsed.city) handleIdentityChange({ target: { name: `${type}City`, value: parsed.city } } as any);
+            if (parsed.state) handleIdentityChange({ target: { name: `${type}State`, value: parsed.state } } as any);
+            if (parsed.zip) handleIdentityChange({ target: { name: `${type}Zip`, value: parsed.zip } } as any);
+            if (type === 'shipping') {
+                setSuggestedShipping(null);
+            } else {
                 setSuggestedBilling(null);
             }
         }
     };
 
-    const handleStreetShippingChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const val = e.target.value;
+    const handleStreetChange = (e: React.ChangeEvent<HTMLInputElement>, type: 'shipping' | 'billing') => {
         handleIdentityChange(e);
-        const parsed = parseAddress(val);
-        if (parsed) {
+        const parsed = parseAddress(e.target.value);
+        if (type === 'shipping') {
             setSuggestedShipping(parsed);
         } else {
-            setSuggestedShipping(null);
-        }
-    };
-
-    const applyShippingSuggestion = () => {
-        if (!suggestedShipping) return;
-        handleIdentityChange({ target: { name: 'shippingAddress', value: suggestedShipping.street } } as any);
-        handleIdentityChange({ target: { name: 'shippingCity', value: suggestedShipping.city } } as any);
-        handleIdentityChange({ target: { name: 'shippingState', value: suggestedShipping.state } } as any);
-        handleIdentityChange({ target: { name: 'shippingZip', value: suggestedShipping.zip } } as any);
-        setSuggestedShipping(null);
-    };
-
-    const handleStreetBillingChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const val = e.target.value;
-        handleIdentityChange(e);
-        const parsed = parseAddress(val);
-        if (parsed) {
             setSuggestedBilling(parsed);
-        } else {
-            setSuggestedBilling(null);
         }
-    };
-
-    const applyBillingSuggestion = () => {
-        if (!suggestedBilling) return;
-        handleIdentityChange({ target: { name: 'billingAddress', value: suggestedBilling.street } } as any);
-        handleIdentityChange({ target: { name: 'billingCity', value: suggestedBilling.city } } as any);
-        handleIdentityChange({ target: { name: 'billingState', value: suggestedBilling.state } } as any);
-        handleIdentityChange({ target: { name: 'billingZip', value: suggestedBilling.zip } } as any);
-        setSuggestedBilling(null);
     };
 
     return (
-        <div className="group/logistics relative p-4 bg-surface-alt/40 rounded-xl border border-border-subtle shadow-inner overflow-hidden">
-            <div className="absolute inset-0 bg-gradient-to-br from-accent-primary/[0.02] to-transparent pointer-events-none"></div>
-            
-            <div className="flex items-center justify-between mb-3 relative z-10">
+        <div className="p-5 bg-surface-alt/40 rounded-xl border border-border-subtle relative overflow-visible shadow-sm">
+            <div className="flex items-center justify-between mb-5 relative z-10">
                 <div className="flex items-center gap-2">
-                    <div className="p-1.5 bg-indigo-500/20 rounded-lg text-accent-secondary border border-indigo-500/30">
+                    <div className="p-1.5 bg-indigo-500/10 rounded-lg text-accent-primary border border-indigo-500/20">
                         <MapPin size={16} strokeWidth={2.5}/>
                     </div>
-                    <div>
-                        <h4 className="text-xs font-[700]  text-indigo-300 tracking-[0.15em] italic leading-none">Logistics</h4>
-                    </div>
+                    <h4 className="text-xs font-[700] text-text-primary tracking-wide uppercase">Shipping & Billing</h4>
                 </div>
                 <button 
                     onClick={() => setUseShippingForBilling(!useShippingForBilling)} 
                     className={`
-                        text-sm font-[700]  px-3 py-1 rounded-lg border transition-all duration-500 flex items-center gap-1.5
+                        text-xs font-bold px-3 py-1.5 rounded-lg border transition-all duration-300 flex items-center gap-1.5
                         ${useShippingForBilling 
-                            ? 'bg-emerald-500/20 text-status-success border-status-success/30 shadow-[0_0_10px_rgba(16,185,129,0.1)]' 
-                            : 'bg-surface-highlight text-text-muted border-border-subtle hover:text-text-primary hover:border-border-strong'}
+                            ? 'bg-status-success/10 text-status-success border-status-success/30 shadow-[0_0_10px_rgba(16,185,129,0.1)]' 
+                            : 'bg-surface-main text-text-muted border-border-subtle hover:text-text-primary'}
                     `}
                 >
-                    {useShippingForBilling ? <ShieldCheck size={16} strokeWidth={3}/> : <Globe size={16}/>}
-                    Unified
+                    {useShippingForBilling ? <ShieldCheck size={14} strokeWidth={2.5}/> : <Globe size={14}/>}
+                    Same as Shipping
                 </button>
             </div>
 
-            <div className="space-y-4 relative z-10">
-                <div className="space-y-2 relative border border-transparent hover:border-border-subtle p-2 -mx-2 rounded-lg transition-colors group/section">
-                    <div className="flex items-center justify-between">
-                        <FormLabel icon={Crosshair} className="mb-0">Shipping Address</FormLabel>
-                        <button 
-                            type="button" 
-                            onClick={() => setShowShippingDetails(!showShippingDetails)}
-                            className="text-[10px] text-text-muted hover:text-accent-primary opacity-0 group-hover/section:opacity-100 transition-opacity"
-                        >
-                            {showShippingDetails ? 'Hide Details' : 'Edit Details'}
-                        </button>
-                    </div>
-                    <div className="grid grid-cols-4 gap-2">
-                         <div className="col-span-3">
-                            <FormInput 
-                                ref={shippingInputRef}
-                                name="shippingAddress" 
-                                value={formData.shippingAddress} 
-                                onChange={handleStreetShippingChange} 
-                                onBlur={handleStreetShippingBlur}
-                                placeholder="Address 1" 
-                                className="h-9 text-xs font-bold bg-surface-alt/40"
-                                status={formData.shippingAddress?.length > 10 ? 'valid' : 'default'}
-                            />
-                         </div>
-                         <div className="col-span-1">
-                             <FormInput name="shippingApt" value={formData.shippingApt || ''} onChange={handleIdentityChange} placeholder="Apt/Unit" className="h-9 text-xs font-bold bg-surface-alt/40" />
-                         </div>
-                    </div>
-                    
-                    {showShippingDetails && (
-                        <div className="grid grid-cols-3 gap-2 animate-in slide-in-from-top-1 fadeIn">
-                            <div className="col-span-1">
-                                <FormInput name="shippingCity" value={formData.shippingCity || ''} onChange={handleIdentityChange} placeholder="City" className="h-9 text-xs font-bold bg-surface-alt/40" />
-                            </div>
-                            <div className="col-span-1">
-                                <FormSelect name="shippingState" value={formData.shippingState || ''} onChange={handleIdentityChange as any} className="h-9 text-xs font-bold bg-surface-alt/40">
-                                    <option value="">State</option>
-                                    {US_STATES.map(st => <option key={st} value={st}>{st}</option>)}
-                                </FormSelect>
-                            </div>
-                            <div className="col-span-1">
-                                <FormInput name="shippingZip" value={formData.shippingZip || ''} onChange={handleIdentityChange} placeholder="Zip Code" className="h-9 text-xs font-bold bg-surface-alt/40" />
-                            </div>
-                        </div>
-                    )}
-                    
-                    {suggestedShipping && (
-                        <div 
-                            onClick={applyShippingSuggestion}
-                            className="absolute top-16 left-0 right-0 z-50 bg-indigo-900/90 backdrop-blur-md border border-indigo-500/50 p-2 inset-x-0 rounded-lg shadow-xl cursor-pointer hover:bg-indigo-800 transition-colors flex items-center justify-between group"
-                        >
-                            <div className="flex flex-col">
-                                <span className="text-[10px] text-indigo-300 font-bold tracking-widest flex items-center gap-1"><Sparkles size={12}/> Auto-Detect Found:</span>
-                                <span className="text-xs text-white font-mono mt-0.5">{suggestedShipping.street}, {suggestedShipping.city}, {suggestedShipping.state} {suggestedShipping.zip}</span>
-                            </div>
-                            <div className="p-1 bg-emerald-500/20 border border-emerald-500 text-emerald-400 rounded group-hover:scale-110 transition-transform">
-                                <Check size={14} />
-                            </div>
-                        </div>
-                    )}
-                </div>
+            <div className="space-y-6 relative z-10">
+                <AddressBlock 
+                    type="shipping" 
+                    title="Delivery Address" 
+                    icon={MapPin} 
+                    inputRef={shippingInputRef}
+                    suggestion={suggestedShipping}
+                    formData={formData}
+                    handleIdentityChange={handleIdentityChange}
+                    handleStreetChange={handleStreetChange}
+                    handleStreetBlur={handleStreetBlur}
+                    onApplySuggestion={(s: any) => {
+                        if (s.street) handleIdentityChange({ target: { name: `shippingAddress`, value: s.street } } as any);
+                        if (s.city) handleIdentityChange({ target: { name: `shippingCity`, value: s.city } } as any);
+                        if (s.state) handleIdentityChange({ target: { name: `shippingState`, value: s.state } } as any);
+                        if (s.zip) handleIdentityChange({ target: { name: `shippingZip`, value: s.zip } } as any);
+                        setSuggestedShipping(null);
+                    }}
+                />
 
                 {!useShippingForBilling && (
-                    <div className="space-y-2 relative animate-in slide-in-from-top-2 duration-300 border border-transparent hover:border-border-subtle p-2 -mx-2 rounded-lg transition-colors group/section">
-                        <div className="flex items-center justify-between">
-                            <FormLabel icon={ShieldCheck} className="mb-0">Billing Address</FormLabel>
-                            <button 
-                                type="button" 
-                                onClick={() => setShowBillingDetails(!showBillingDetails)}
-                                className="text-[10px] text-text-muted hover:text-accent-primary opacity-0 group-hover/section:opacity-100 transition-opacity"
-                            >
-                                {showBillingDetails ? 'Hide Details' : 'Edit Details'}
-                            </button>
-                        </div>
-                        <div className="grid grid-cols-4 gap-2">
-                             <div className="col-span-3">
-                                <FormInput 
-                                    ref={billingInputRef}
-                                    name="billingAddress" 
-                                    value={formData.billingAddress} 
-                                    onChange={handleStreetBillingChange} 
-                                    onBlur={handleStreetBillingBlur}
-                                    placeholder="Address 1" 
-                                    className="h-9 text-xs font-bold bg-surface-alt/40"
-                                />
-                             </div>
-                             <div className="col-span-1">
-                                 <FormInput name="billingApt" value={formData.billingApt || ''} onChange={handleIdentityChange} placeholder="Apt/Unit" className="h-9 text-xs font-bold bg-surface-alt/40" />
-                             </div>
-                        </div>
-                        
-                        {showBillingDetails && (
-                            <div className="grid grid-cols-3 gap-2 animate-in slide-in-from-top-1 fadeIn">
-                                <div className="col-span-1">
-                                    <FormInput name="billingCity" value={formData.billingCity || ''} onChange={handleIdentityChange} placeholder="City" className="h-9 text-xs font-bold bg-surface-alt/40" />
-                                </div>
-                                <div className="col-span-1">
-                                    <FormSelect name="billingState" value={formData.billingState || ''} onChange={handleIdentityChange as any} className="h-9 text-xs font-bold bg-surface-alt/40">
-                                        <option value="">State</option>
-                                        {US_STATES.map(st => <option key={st} value={st}>{st}</option>)}
-                                    </FormSelect>
-                                </div>
-                                <div className="col-span-1">
-                                    <FormInput name="billingZip" value={formData.billingZip || ''} onChange={handleIdentityChange} placeholder="Zip Code" className="h-9 text-xs font-bold bg-surface-alt/40" />
-                                </div>
-                            </div>
-                        )}
-                        
-                        {suggestedBilling && (
-                            <div 
-                                onClick={applyBillingSuggestion}
-                                className="absolute top-16 left-0 right-0 z-50 bg-indigo-900/90 backdrop-blur-md border border-indigo-500/50 p-2 inset-x-0 rounded-lg shadow-xl cursor-pointer hover:bg-indigo-800 transition-colors flex items-center justify-between group"
-                            >
-                                <div className="flex flex-col">
-                                    <span className="text-[10px] text-indigo-300 font-bold tracking-widest flex items-center gap-1"><Sparkles size={12}/> Auto-Detect Found:</span>
-                                    <span className="text-xs text-white font-mono mt-0.5">{suggestedBilling.street}, {suggestedBilling.city}, {suggestedBilling.state} {suggestedBilling.zip}</span>
-                                </div>
-                                <div className="p-1 bg-emerald-500/20 border border-emerald-500 text-emerald-400 rounded group-hover:scale-110 transition-transform">
-                                    <Check size={14} />
-                                </div>
-                            </div>
-                        )}
-                    </div>
+                    <AddressBlock 
+                        type="billing" 
+                        title="Billing Details" 
+                        icon={Globe} 
+                        inputRef={billingInputRef}
+                        suggestion={suggestedBilling}
+                        formData={formData}
+                        handleIdentityChange={handleIdentityChange}
+                        handleStreetChange={handleStreetChange}
+                        handleStreetBlur={handleStreetBlur}
+                        onApplySuggestion={(s: any) => {
+                            if (s.street) handleIdentityChange({ target: { name: `billingAddress`, value: s.street } } as any);
+                            if (s.city) handleIdentityChange({ target: { name: `billingCity`, value: s.city } } as any);
+                            if (s.state) handleIdentityChange({ target: { name: `billingState`, value: s.state } } as any);
+                            if (s.zip) handleIdentityChange({ target: { name: `billingZip`, value: s.zip } } as any);
+                            setSuggestedBilling(null);
+                        }}
+                    />
                 )}
             </div>
+        </div>
+    );
+};
+
+interface AddressBlockProps {
+    type: 'shipping' | 'billing';
+    title: string;
+    icon: React.ComponentType<any>;
+    inputRef: React.RefObject<HTMLInputElement>;
+    suggestion: any;
+    formData: any;
+    handleIdentityChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+    handleStreetChange: (e: React.ChangeEvent<HTMLInputElement>, type: 'shipping' | 'billing') => void;
+    handleStreetBlur: (e: React.FocusEvent<HTMLInputElement>, type: 'shipping' | 'billing') => void;
+    onApplySuggestion: (suggestion: any) => void;
+}
+
+const AddressBlock: React.FC<AddressBlockProps> = ({ 
+    type, title, icon: Icon, inputRef, suggestion, formData, handleIdentityChange, handleStreetChange, handleStreetBlur, onApplySuggestion
+}) => {
+    const pfx = type; // 'shipping' or 'billing'
+    const address = formData[`${pfx}Address`] || '';
+    const apt = formData[`${pfx}Apt`] || '';
+    const city = formData[`${pfx}City`] || '';
+    const state = formData[`${pfx}State`] || '';
+    const zip = formData[`${pfx}Zip`] || '';
+
+    return (
+        <div className="space-y-4 relative group/section animate-in fade-in duration-300">
+            <div className="flex items-center text-xs font-bold uppercase tracking-wider text-text-muted gap-2 pl-1 border-b border-border-subtle pb-2">
+                <Icon size={14} className="text-accent-primary" />
+                {title}
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-12 gap-3">
+                <div className="md:col-span-12 relative">
+                    <div className="absolute top-2 left-3 text-[9px] font-black tracking-widest text-text-muted uppercase z-10 pointer-events-none">Street Address</div>
+                    <input 
+                        ref={inputRef}
+                        name={`${pfx}Address`}
+                        value={address}
+                        onChange={(e) => handleStreetChange(e, type)}
+                        onBlur={(e) => handleStreetBlur(e, type)}
+                        placeholder="123 Main St"
+                        className="w-full bg-surface-alt border border-border-strong rounded-lg px-3 pt-6 pb-2 text-sm text-text-primary outline-none focus:border-accent-primary focus:ring-1 focus:ring-accent-primary/50 transition-all font-medium"
+                        autoComplete="street-address" // Allows browser smart autocomplete or Maps Autocomplete
+                    />
+                </div>
+
+                <div className="md:col-span-4 relative">
+                    <div className="absolute top-2 left-3 text-[9px] font-black tracking-widest text-text-muted uppercase z-10 pointer-events-none">Apt / Unit</div>
+                    <input 
+                        name={`${pfx}Apt`}
+                        value={apt}
+                        onChange={handleIdentityChange}
+                        placeholder="No."
+                        className="w-full bg-surface-alt border border-border-strong rounded-lg px-3 pt-6 pb-2 text-sm text-text-primary outline-none focus:border-accent-primary focus:ring-1 focus:ring-accent-primary/50 transition-all font-medium"
+                        autoComplete="address-line2"
+                    />
+                </div>
+
+                <div className="md:col-span-8 relative">
+                    <div className="absolute top-2 left-3 text-[9px] font-black tracking-widest text-text-muted uppercase z-10 pointer-events-none">City</div>
+                    <input 
+                        name={`${pfx}City`}
+                        value={city}
+                        onChange={handleIdentityChange}
+                        placeholder="City"
+                        className="w-full bg-surface-alt border border-border-strong rounded-lg px-3 pt-6 pb-2 text-sm text-text-primary outline-none focus:border-accent-primary focus:ring-1 focus:ring-accent-primary/50 transition-all font-medium"
+                        autoComplete="address-level2"
+                    />
+                </div>
+
+                <div className="md:col-span-6 relative">
+                    <div className="absolute top-2 left-3 text-[9px] font-black tracking-widest text-text-muted uppercase z-10 pointer-events-none">State</div>
+                    <select 
+                        name={`${pfx}State`}
+                        value={state}
+                        onChange={handleIdentityChange as any}
+                        autoComplete="address-level1"
+                        className={`w-full bg-surface-alt border rounded-lg px-3 pt-6 pb-2 text-sm outline-none transition-all font-bold cursor-pointer appearance-none ${state ? 'border-status-success/50 focus:border-status-success text-status-success' : 'border-border-strong focus:border-accent-primary text-text-primary'} bg-[url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2224%22%20height%3D%2224%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%239CA3AF%22%20stroke-width%3D%222.5%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpolyline%20points%3D%226%209%2012%2015%2018%209%22%3E%3C%2Fpolyline%3E%3C%2Fsvg%3E')] bg-[length:1.2em_1.2em] bg-no-repeat bg-[currentColor]`}
+                        style={{ backgroundPosition: 'right 0.75rem center' }}
+                    >
+                        <option value="" className="text-text-muted/40">Select</option>
+                        {US_STATES.map(st => <option key={st} value={st}>{st}</option>)}
+                    </select>
+                </div>
+
+                <div className="md:col-span-6 relative">
+                    <div className="absolute top-2 left-3 text-[9px] font-black tracking-widest text-text-muted uppercase z-10 pointer-events-none">ZIP Code</div>
+                    <input 
+                        name={`${pfx}Zip`}
+                        value={zip}
+                        onChange={handleIdentityChange}
+                        placeholder="12345"
+                        className="w-full bg-surface-alt border border-border-strong rounded-lg px-3 pt-6 pb-2 text-sm text-text-primary outline-none focus:border-accent-primary focus:ring-1 focus:ring-accent-primary/50 transition-all font-medium"
+                        autoComplete="postal-code"
+                    />
+                </div>
+            </div>
+
+            {suggestion && (
+                <div 
+                    onClick={() => onApplySuggestion(suggestion)}
+                    className="absolute top-[4rem] left-0 right-0 z-50 bg-accent-primary text-white p-4 rounded-xl shadow-2xl cursor-pointer hover:bg-accent-primary/90 transition-transform hover:scale-[1.01] flex items-center justify-between group"
+                >
+                    <div className="flex flex-col">
+                        <span className="text-[10px] font-bold tracking-widest flex items-center gap-1.5 opacity-90"><Sparkles size={14}/> AUTO-DETECT SUGGESTION</span>
+                        <span className="text-sm font-semibold mt-1">{suggestion.street}, {suggestion.city}, {suggestion.state} {suggestion.zip}</span>
+                    </div>
+                    <div className="p-2 bg-white/20 rounded-lg group-hover:bg-white/30 transition-colors">
+                        <Check size={18} />
+                    </div>
+                </div>
+            )}
         </div>
     );
 };

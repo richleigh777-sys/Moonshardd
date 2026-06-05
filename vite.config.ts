@@ -11,7 +11,7 @@ export default defineViteConfig(({ mode }) => {
       },
       plugins: [react()],
       define: {
-        'process.env.GOOGLE_MAPS_PLATFORM_KEY': JSON.stringify(env.GOOGLE_MAPS_PLATFORM_KEY)
+        'process.env.GOOGLE_MAPS_PLATFORM_KEY': JSON.stringify(env.GOOGLE_MAPS_PLATFORM_KEY || '')
       },
       resolve: {
         alias: {

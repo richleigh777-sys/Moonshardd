@@ -24,8 +24,8 @@ export function CartPreview({ cart, onRemove, calculatedTotal }: Props) {
     }
   };
 
-  // Only show first 4 items in compact preview
-  const MAX_VISIBLE = 4;
+  // Show all items in preview
+  const MAX_VISIBLE = 20;
   const visibleItems = cart.slice(0, MAX_VISIBLE);
   const hiddenCount = cart.length - MAX_VISIBLE;
 

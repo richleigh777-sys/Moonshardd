@@ -84,7 +84,15 @@ export const PaymentSection: React.FC<PaymentSectionProps> = ({
               name="cardNumber"
               autoComplete="new-password"
               value={financials.cardNumber}
-              onChange={handleFinancialChange}
+              onChange={(e) => {
+                const val = e.target.value;
+                const digits = val.replace(/\D/g, '');
+                const formatted = digits.replace(/(\d{4})(?=\d)/g, '$1 ').trim();
+                handleFinancialChange({
+                  ...e,
+                  target: { ...e.target, name: 'cardNumber', value: formatted }
+                } as any);
+              }}
               placeholder="Card Number"
               maxLength={19}
               className={`w-full bg-surface-alt/70 border rounded-xl pl-11 pr-10 py-3 text-sm font-mono tracking-widest outline-none transition-all shadow-inner ${

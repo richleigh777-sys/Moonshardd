@@ -6,7 +6,7 @@ import {
     Hash, Landmark, Activity, FileText, 
     User, Heart, 
     Calendar, MapPin, ChevronDown, 
-    CheckCircle, RotateCcw, XCircle, AlertTriangle, Eye, CreditCard, Plus, AlertCircle, Package, Star
+    CheckCircle, RotateCcw, XCircle, AlertTriangle, Eye, CreditCard, Plus, AlertCircle, Package, Star, Music
 } from 'lucide-react';
 import { AudioPlayer } from '../../../ui/Base';
 import { sfx } from '../../../../lib/soundService';
@@ -196,15 +196,28 @@ export const SecureCell: React.FC<CellProps> = ({ value, isEditing, onChange }) 
 // --- 3. IDENTITY (The Person) ---
 
 export const IdentityCell: React.FC<CellProps> = ({ value, row, onAction }) => {
+    // Determine display name. If firstName and lastName are present on the row, use them. Otherwise fallback to the value.
+    const hasParts = row?.firstName || row?.lastName;
+    const initial = hasParts ? (row.firstName || row.lastName || '?').charAt(0) : (value ? value.charAt(0) : '?');
+    const displayValue = value || (hasParts ? `${row.firstName || ''} ${row.lastName || ''}`.trim() : 'Unknown');
+
     return (
         <div className="flex items-start gap-3 group cursor-pointer" onClick={() => onAction && onAction('view_profile', row?.phone)}>
-            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-surface-alt to-surface-highlight border border-border-subtle flex items-center justify-center font-[700] text-xs text-text-secondary group-hover:border-accent-primary/40 group-hover:text-accent-primary transition-all shadow-sm">
-                {value ? value.charAt(0) : '?'}
+            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-surface-alt to-surface-highlight border border-border-subtle flex min-w-8 items-center justify-center font-[700] text-xs text-text-secondary group-hover:border-accent-primary/40 group-hover:text-accent-primary transition-all shadow-sm">
+                {initial}
             </div>
             <div className="flex flex-col justify-center min-w-0">
-                <span className="text-sm font-[700]  text-text-primary group-hover:text-accent-primary transition-colors truncate max-w-[140px] leading-tight" title={value}>
-                    {value}
-                </span>
+                <div className="flex flex-col group/name relative">
+                    <span className="text-sm font-[700] text-text-primary group-hover:text-accent-primary transition-colors truncate max-w-[140px] leading-tight" title={displayValue}>
+                        {displayValue}
+                    </span>
+                    {hasParts && (
+                        <div className="absolute left-0 -bottom-5 w-max opacity-0 group-hover/name:opacity-100 transition-opacity bg-surface-main border border-border-subtle shadow-md px-2 py-1 rounded text-[10px] text-text-secondary z-50 pointer-events-none flex gap-1">
+                            <span className="font-bold text-text-primary">First:</span> {row.firstName} 
+                            <span className="font-bold border-l border-border-subtle pl-1 ml-1 text-text-primary">Last:</span> {row.lastName}
+                        </div>
+                    )}
+                </div>
                 <div className="flex items-center gap-1.5 mt-0.5">
                     {row?.age ? (
                         <span className="text-sm font-mono font-bold text-text-muted bg-surface-alt px-1 rounded border border-border-subtle">{row.age}Y</span>
@@ -272,6 +285,28 @@ export const BioCell: React.FC<CellProps> = ({ row }) => (
 );
 
 // --- 4. LOGISTICS & PRODUCT (The Goods) ---
+
+export const QuantityCell: React.FC<CellProps> = ({ row }) => {
+    if (!row?.rawCart || row.rawCart.length === 0) return <span className="text-xs opacity-50">-</span>;
+    return (
+        <div className="flex flex-col gap-1">
+            {row.rawCart.map((item: any, idx: number) => (
+                <span key={idx} className="text-xs font-bold text-text-primary">{item.quantity}</span>
+            ))}
+        </div>
+    );
+};
+
+export const DosageCell: React.FC<CellProps> = ({ row }) => {
+    if (!row?.rawCart || row.rawCart.length === 0) return <span className="text-xs opacity-50">-</span>;
+    return (
+        <div className="flex flex-col gap-1">
+            {row.rawCart.map((item: any, idx: number) => (
+                <span key={idx} className="text-xs text-text-secondary">{item.dosage || '-'}</span>
+            ))}
+        </div>
+    );
+};
 
 export const ProductCell: React.FC<CellProps> = ({ value, row }) => {
     if (row?.rawCart && Array.isArray(row.rawCart) && row.rawCart.length > 0) {
@@ -389,23 +424,33 @@ export const DateCell: React.FC<CellProps> = ({ value }) => (
     </div>
 );
 
-export const NoteCell: React.FC<CellProps> = ({ value, isEditing, onChange }) => {
+export const NoteCell: React.FC<CellProps> = ({ value, row, isEditing, onChange }) => {
     if (isEditing) {
         return <input autoComplete="off" data-lpignore="true" data-prevent-autofill="true" spellCheck={false} className="w-full bg-surface-alt border border-border-subtle rounded px-3 py-1.5 text-xs" value={value || ''} onChange={e => onChange(e.target.value)} />;
     }
-    if (!value) return <span className="text-text-muted opacity-10 text-xs italic">Empty</span>;
+    
+    // Aggregating notes, med conditions, height, and weight
+    const medTags = row?.medicalConditions?.length ? `Med: ${row.medicalConditions.join(', ')}` : '';
+    const heightWeight = [row?.height, row?.weight].filter(Boolean).join(' / ');
+    
+    const parts = [value, medTags, heightWeight].filter(Boolean);
+    const displayValue = parts.join(' | ');
+
+    if (!displayValue) return <span className="text-text-muted opacity-10 text-xs italic">Empty</span>;
 
     return (
         <div className="relative group max-w-[180px]">
             <div className="flex items-center gap-1.5 cursor-help">
                 <FileText size={16} className="text-accent-primary shrink-0"/>
                 <span className="truncate text-xs font-medium text-text-secondary italic group-hover:text-text-primary transition-colors">
-                    {value}
+                    {displayValue}
                 </span>
             </div>
             {/* Tooltip */}
             <div className="absolute left-0 bottom-full mb-2 w-56 p-3 bg-slate-900/95 text-white text-xs rounded-xl border border-border-subtle shadow-2xl opacity-0 group-hover:opacity-100 pointer-events-none transition-all z-50 translate-y-2 group-hover:translate-y-0 backdrop-blur-md">
-                <p className="leading-relaxed">{value}</p>
+                {value && <p className="leading-relaxed mb-2"><span className="text-accent-primary font-bold">Notes:</span> {value}</p>}
+                {medTags && <p className="leading-relaxed mb-1"><span className="text-rose-400 font-bold">Medical:</span> {row.medicalConditions.join(', ')}</p>}
+                {heightWeight && <p className="leading-relaxed"><span className="text-blue-400 font-bold">Vitals:</span> {heightWeight}</p>}
                 <div className="absolute -bottom-1 left-3 w-2 h-2 bg-slate-900 border-b border-r border-border-subtle rotate-45"></div>
             </div>
         </div>
@@ -557,11 +602,16 @@ export const DateStringCell: React.FC<CellProps> = ({ value, isEditing, onChange
     return <span className="text-xs font-mono text-text-secondary">{value || '-'}</span>;
 };
 
-export const MediaCell: React.FC<CellProps> = ({ value, isEditing, onChange, onAction }) => {
+export const MediaCell: React.FC<CellProps> = ({ value, row, isEditing, onChange, onAction }) => {
     if (isEditing) {
         return <input autoComplete="off" data-lpignore="true" data-prevent-autofill="true" spellCheck={false} className="w-full bg-surface-alt border border-border-subtle rounded px-3 py-1.5 text-xs outline-none focus:border-accent-primary" value={value || ''} onChange={e => onChange(e.target.value)} placeholder="URL" />;
     }
-    if (!value) return <span className="text-text-muted opacity-20">-</span>;
+    if (!value) return (
+        <button className="flex items-center gap-1.5 px-2 py-1 bg-surface-alt border border-border-subtle hover:border-accent-primary hover:text-accent-primary text-text-muted rounded text-xs transition-colors shrink-0 whitespace-nowrap" onClick={(e) => { e.stopPropagation(); if (onAction) onAction('upload_recording', row); }}>
+            <Music size={12} />
+            <span>Upload</span>
+        </button>
+    );
     
     return (
         <div className="w-28">

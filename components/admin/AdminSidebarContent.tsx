@@ -3,7 +3,7 @@ import {
     LayoutDashboard, Database, Contact, Zap, 
     PlusCircle, List, Banknote, RefreshCw, 
     Trophy, BarChart3, MessageSquare, FileText, 
-    Package, Settings, Phone, ShieldCheck
+    Package, Settings, Phone, ShieldCheck, Users
 } from 'lucide-react';
 import { TabTrigger, TabList } from '../ui/Tabs';
 
@@ -30,6 +30,7 @@ export const AdminSidebarContent: React.FC<AdminSidebarContentProps> = ({ isAllo
         {isAllowed('enrollment') && <TabTrigger value="enrollment" icon={<PlusCircle size={16}/>}>Help a Customer (Manual)</TabTrigger>}
         {isAllowed('pipeline') && <TabTrigger value="pipeline" icon={<List size={16}/>}>Everyone's Work</TabTrigger>}
         {isAllowed('ledger') && <TabTrigger value="ledger" icon={<Database size={16}/>}>All Customers</TabTrigger>}
+        {isAllowed('sales_pool') && <TabTrigger value="sales_pool" icon={<Users size={16}/>}>Unique Sales Pool</TabTrigger>}
         {isAllowed('payroll') && <TabTrigger value="payroll" icon={<Banknote size={16}/>}>Team Earnings</TabTrigger>}
         {isAllowed('retention') && <TabTrigger value="retention" icon={<RefreshCw size={16}/>}>Save a Sale & Refunds</TabTrigger>}
         {isAllowed('roster') && <TabTrigger value="roster" icon={<Contact size={16}/>}>Manage Team</TabTrigger>}

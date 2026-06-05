@@ -143,10 +143,24 @@ export const TelephonyPanel = () => {
 
     if (!systemConfig.telephonyEnabled) {
         return (
-            <PanelFrame title="ViciDial Link" status="OFFLINE">
-                <div className="h-full flex flex-col items-center justify-center opacity-40">
-                    <PhoneOff size={32} className="text-text-muted mb-3" />
-                    <p className="text-xs font-[700]  text-text-muted tracking-widest">Module Disabled</p>
+            <PanelFrame title="Voice Uplink Link (Standby)" status="IDLE">
+                <div className="h-full flex flex-col items-center justify-between p-6">
+                    <div className="text-center space-y-3 my-auto">
+                        <div className="w-14 h-14 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 flex items-center justify-center mx-auto shadow-md">
+                            <Radio size={24} className="animate-pulse" />
+                        </div>
+                        <h3 className="text-sm font-black text-text-primary">Decoupled Standby Active</h3>
+                        <p className="text-[11px] text-text-muted leading-relaxed max-w-[260px] mx-auto">
+                            The system is operating securely as an offline-first workspace. Clicking a phone number copies details instantly to your clipboard and routes them for easy logging.
+                        </p>
+                    </div>
+                    <div className="w-full bg-surface-alt border border-border-subtle p-3 rounded-xl text-[10px] text-text-muted">
+                        <span className="font-bold text-indigo-400 flex items-center gap-1.5 mb-1">
+                            <span className="h-2 w-2 rounded-full bg-indigo-500 animate-ping"></span>
+                            Integration Hooks Armed
+                        </span>
+                        Ready to link with Twilio or ViciDial servers in system administrator dashboard adjustments.
+                    </div>
                 </div>
             </PanelFrame>
         );

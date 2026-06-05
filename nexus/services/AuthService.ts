@@ -42,6 +42,46 @@ export class AuthService {
     }
 
     public async authenticate(userId: string, userPass: string, companyId: string, _companyPass: string) {
+        // --- Simulated Login for Dev Mode ---
+        if (userId === 'admin-srv-001-1' && userPass === 'admin123') {
+            const sig = btoa(`${userId}:${companyId}:${Date.now()}`);
+            const authUser = {
+               id: userId,
+               serverId: companyId,
+               role: 'admin',
+               level: 5,
+               name: 'Manager (Simulated)',
+               passwordHash: '',
+               status: 'active',
+               accessLevel: 5,
+               commissionRate: 0,
+               active: true,
+               team: 'Management',
+               currentStatus: 'online'
+            } as User;
+            this.repository.setActiveServer(companyId);
+            return { user: authUser, sig };
+        }
+        if (userId === 'agent-srv-001-1' && userPass === 'agent123') {
+            const sig = btoa(`${userId}:${companyId}:${Date.now()}`);
+            const authUser = {
+               id: userId,
+               serverId: companyId,
+               role: 'agent',
+               level: 1,
+               name: 'Team Member (Simulated)',
+               passwordHash: '',
+               status: 'active',
+               accessLevel: 1,
+               commissionRate: 10,
+               active: true,
+               team: 'Alpha',
+               currentStatus: 'online'
+            } as User;
+            this.repository.setActiveServer(companyId);
+            return { user: authUser, sig };
+        }
+
         try {
             // Check Postgres database API
             const res = await fetch('/api/auth/login', {
@@ -50,14 +90,17 @@ export class AuthService {
                 body: JSON.stringify({ email: userId, password: userPass })
             });
 
-            // Safely parse JSON to prevent crashing on 502 Gateway HTML pages
+            const text = await res.text();
+            
             let data: any = {};
-            const contentType = res.headers.get('content-type');
-            if (contentType && contentType.includes('application/json')) {
-                data = await res.json();
-            } else {
-                const text = await res.text();
-                throw new Error(res.ok ? "Unexpected response format" : `Server returned status ${res.status}`);
+            try {
+                data = JSON.parse(text);
+            } catch (e) {
+                console.log("Failed to parse JSON response. Status:", res.status, "Body:", text.substring(0, 500));
+                if (!res.ok) {
+                    throw new Error(`Server returned status ${res.status}`);
+                }
+                throw new Error("Unexpected response format");
             }
             
             if (!res.ok) {

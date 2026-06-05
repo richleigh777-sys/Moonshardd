@@ -30,8 +30,157 @@ export class BaseRepository {
     protected cache: Record<string, any[]> = {};
     protected fetchers: Record<string, () => void> = {};
 
+    private subscriberCallbacks: Record<string, Set<{ user: any; callback: (data: any) => void }>> = {};
+    private batchQueue: Set<string> = new Set();
+    private debounceTimeout: any = null;
+    private globalIntervalId: any = null;
+    private wsUnsubscribe: (() => void) | null = null;
+
     constructor() {
         console.log("[Nexus] Postgres Generic Document Storage Active");
+        this.startGlobalInterval();
+        this.setupRealtimeSubscription();
+    }
+
+    private setupRealtimeSubscription() {
+        if (typeof window === 'undefined') return;
+        try {
+            import('../../lib/realtimeClient').then(({ realtimeClient }) => {
+                this.wsUnsubscribe = realtimeClient.subscribe((event: any) => {
+                    if (event && event.type === 'COLLECTION_MUTATED') {
+                        const col = event.collectionName;
+                        if (col && this.subscriberCallbacks[col]) {
+                            console.log(`[Realtime Sync] Push notification received for collection: ${col}. Triggering fetch.`);
+                            this.enqueueBatchFetch(col);
+                        }
+                    }
+                });
+            });
+        } catch (err) {
+            console.error('[Realtime Sync] Failed to register websocket subscriber:', err);
+        }
+    }
+
+    private startGlobalInterval() {
+        if (this.globalIntervalId) return;
+        this.globalIntervalId = setInterval(() => {
+            this.enqueueBatchFetch();
+        }, 30000); // Poll all active subscriptions as a single batch every 30 seconds
+    }
+
+    public enqueueBatchFetch(collectionName?: string) {
+        if (collectionName) {
+            this.batchQueue.add(collectionName);
+        } else {
+            Object.keys(this.subscriberCallbacks).forEach(col => this.batchQueue.add(col));
+        }
+
+        if (this.debounceTimeout) {
+            clearTimeout(this.debounceTimeout);
+        }
+
+        this.debounceTimeout = setTimeout(async () => {
+            const collectionsToFetch = Array.from(this.batchQueue);
+            this.batchQueue.clear();
+            if (collectionsToFetch.length === 0) return;
+
+            await this.performBatchFetch(collectionsToFetch);
+        }, 60);
+    }
+
+    private async performBatchFetch(collections: string[]) {
+        try {
+            const namesParam = encodeURIComponent(collections.join(','));
+            const res = await fetch(`/api/collections/batch?names=${namesParam}`);
+            
+            if (!res.ok) {
+                const txt = await res.text();
+                if (res.status === 429) {
+                    throw new Error("RATE_LIMIT_EXCEEDED");
+                }
+                throw new Error(`Failed to fetch batch collections: ${res.status} ${txt}`);
+            }
+
+            const contentType = res.headers.get('content-type');
+            if (!contentType || !contentType.includes('application/json')) {
+                throw new Error(`Expected JSON in batch but received ${contentType || 'no content-type'}`);
+            }
+
+            const batchData = await res.json();
+
+            for (const col of collections) {
+                const rawData = batchData[col] || [];
+                
+                try {
+                    localStorage.setItem(`crm_cache_${col}`, JSON.stringify(rawData));
+                } catch (e) {
+                    console.warn(`Failed to store cache for ${col}`, e);
+                }
+
+                const subs = this.subscriberCallbacks[col];
+                if (subs) {
+                    subs.forEach(({ user, callback }) => {
+                        let filtered = rawData;
+                        if (user && col !== 'servers') {
+                            if (user.level < 5) {
+                                if (col === 'sales') filtered = rawData.filter((d: any) => d.agentId === user.id);
+                                if (col === 'notes') filtered = rawData.filter((d: any) => d.agentId === user.id);
+                                if (col === 'tasks') filtered = rawData.filter((d: any) => d.targetAgentId === user.id);
+                            } else if (user.level >= 5 && user.level < 10) {
+                                const team = user.team || 'Alpha';
+                                if (col === 'users') filtered = rawData.filter((d: any) => d.team === team);
+                                if (col === 'sales') filtered = rawData.filter((d: any) => d.team === team);
+                                if (col === 'customers') filtered = rawData.filter((d: any) => d.team === team);
+                                if (col === 'notes') filtered = rawData.filter((d: any) => d.team === team);
+                                if (col === 'audit') filtered = rawData.filter((d: any) => d.team === team);
+                            }
+                        }
+                        this.cache[col] = filtered;
+                        callback(filtered);
+                    });
+                }
+            }
+        } catch (error: any) {
+            if (error.message === "RATE_LIMIT_EXCEEDED") {
+                // Silently fallback to cache due to API platform rate limits
+            } else if (error.name !== 'TypeError' || !error.message.includes('fetch')) {
+                console.error("[Postgres API] Batch polling error, utilizing local persistence cache:", error);
+            }
+            
+            for (const col of collections) {
+                const localData = localStorage.getItem(`crm_cache_${col}`);
+                if (localData) {
+                    try {
+                        const parsed = JSON.parse(localData);
+                        this.cache[col] = parsed;
+                        
+                        const subs = this.subscriberCallbacks[col];
+                        if (subs) {
+                            subs.forEach(({ user, callback }) => {
+                                let filtered = parsed;
+                                if (user && col !== 'servers') {
+                                    if (user.level < 5) {
+                                        if (col === 'sales') filtered = parsed.filter((d: any) => d.agentId === user.id);
+                                        if (col === 'notes') filtered = parsed.filter((d: any) => d.agentId === user.id);
+                                        if (col === 'tasks') filtered = parsed.filter((d: any) => d.targetAgentId === user.id);
+                                    } else if (user.level >= 5 && user.level < 10) {
+                                        const team = user.team || 'Alpha';
+                                        if (col === 'users') filtered = parsed.filter((d: any) => d.team === team);
+                                        if (col === 'sales') filtered = parsed.filter((d: any) => d.team === team);
+                                        if (col === 'customers') filtered = parsed.filter((d: any) => d.team === team);
+                                        if (col === 'notes') filtered = parsed.filter((d: any) => d.team === team);
+                                        if (col === 'audit') filtered = parsed.filter((d: any) => d.team === team);
+                                    }
+                                }
+                                callback(filtered);
+                            });
+                        }
+                    } catch (e: any) {
+                        console.warn(`Local storage parse error for ${col}`, e);
+                    }
+                }
+            }
+        }
     }
 
     public setActiveServer(id: string) {
@@ -45,69 +194,28 @@ export class BaseRepository {
     }
 
     public subscribe(collectionName: string, _user: any, callback: (data: any) => void) {
-        if (this.listeners[collectionName]) {
-            clearInterval(this.listeners[collectionName]);
+        if (!this.subscriberCallbacks[collectionName]) {
+            this.subscriberCallbacks[collectionName] = new Set();
         }
 
-        const fetchLatest = async () => {
-            try {
-                // Add jitter to avoid batch 429 rate limit
-                await new Promise(r => setTimeout(r, Math.random() * 10000));
-                
-                const res = await fetch(`/api/collections/${collectionName}`);
-                if (!res.ok) {
-                    const txt = await res.text();
-                    throw new Error(`Failed to fetch ${collectionName}: ${res.status} ${txt}`);
-                }
-                const data = await res.json();
-                
-                // Do simple filtering based on user role just as before
-                let filtered = data;
-                if (_user && collectionName !== 'servers') {
-                    if (_user.level < 5) {
-                        if (collectionName === 'sales') filtered = data.filter((d:any) => d.agentId === _user.id);
-                        if (collectionName === 'notes') filtered = data.filter((d:any) => d.agentId === _user.id);
-                        if (collectionName === 'tasks') filtered = data.filter((d:any) => d.targetAgentId === _user.id);
-                    } else if (_user.level >= 5 && _user.level < 10) {
-                        const team = _user.team || 'Alpha';
-                        if (collectionName === 'users') filtered = data.filter((d:any) => d.team === team);
-                        if (collectionName === 'sales') filtered = data.filter((d:any) => d.team === team);
-                        if (collectionName === 'customers') filtered = data.filter((d:any) => d.team === team);
-                        if (collectionName === 'notes') filtered = data.filter((d:any) => d.team === team);
-                        if (collectionName === 'audit') filtered = data.filter((d:any) => d.team === team);
-                    }
-                }
-                
-                this.cache[collectionName] = filtered;
-                callback(filtered);
-            } catch (error: any) {
-                if (error.name !== 'TypeError' || !error.message.includes('fetch')) {
-                    console.error("[Postgres API] Polling error", error);
-                }
-                
-                            // Fallback to local storage if API is disconnected so it doesn't break everything at once
-                const localData = localStorage.getItem(`crm_cache_${collectionName}`);
-                if (localData) {
-                    try {
-                        const parsed = JSON.parse(localData);
-                        this.cache[collectionName] = parsed;
-                        callback(parsed);
-                    } catch (e: any) {
-                        console.warn('Local storage parse error', e);
-                    }
+        const subObj = { user: _user, callback };
+        this.subscriberCallbacks[collectionName].add(subObj);
+
+        this.fetchers[collectionName] = () => {
+            this.enqueueBatchFetch(collectionName);
+        };
+
+        this.enqueueBatchFetch(collectionName);
+
+        return () => {
+            const subs = this.subscriberCallbacks[collectionName];
+            if (subs) {
+                subs.delete(subObj);
+                if (subs.size === 0) {
+                    delete this.subscriberCallbacks[collectionName];
                 }
             }
         };
-
-        this.fetchers[collectionName] = () => {
-            setTimeout(fetchLatest, 200);
-        };
-
-        fetchLatest();
-        const intervalId = setInterval(fetchLatest, 120000); // 120s poll
-        this.listeners[collectionName] = intervalId;
-
-        return () => clearInterval(intervalId);
     }
 
     public getData(collectionName: string) {
@@ -115,12 +223,21 @@ export class BaseRepository {
     }
 
     public async get(collectionName: string): Promise<any[]> {
-        const res = await fetch(`/api/collections/${collectionName}`);
-        if (!res.ok) {
-           console.error("GET error", await res.text());
-           return [];
+        try {
+            const res = await fetch(`/api/collections/${collectionName}`);
+            if (!res.ok) {
+               console.error("GET error", await res.text());
+               return [];
+            }
+            const contentType = res.headers.get('content-type');
+            if (contentType && contentType.includes('application/json')) {
+                return await res.json();
+            }
+            return [];
+        } catch (e) {
+            console.error("BaseRepository get error:", e);
+            return [];
         }
-        return res.json();
     }
 
     public async getPaginated(collectionName: string, _queryConditions: any[] = [], limitCount: number = 50, _lastDoc?: any) {

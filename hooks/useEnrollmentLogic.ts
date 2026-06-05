@@ -112,7 +112,7 @@ export function useEnrollmentLogic(
   initialData?: any
 ): EnrollmentLogicReturn {
   const { currentUser } = useAuth();
-  const { addSale, addNote, productConfig, sales, systemConfig } = useCRM();
+  const { addSale, addNote, productConfig, sales, systemConfig, customers } = useCRM();
 
   const [formData, setFormData] = useState<EnrollmentState>({
     fullName: '',
@@ -271,6 +271,58 @@ export function useEnrollmentLogic(
     window.addEventListener('LOAD_LEAD', handleLoadLead);
     return () => window.removeEventListener('LOAD_LEAD', handleLoadLead);
   }, []);
+
+  // --- Auto-fill from DB based on Phone Number ---
+  useEffect(() => {
+    if (!formData.phone || initialData) return;
+    const cleanPhone = normalizePhone(formData.phone);
+    if (cleanPhone.length >= 10) {
+      const existingCustomer = customers.find((c: any) => normalizePhone(c.phone) === cleanPhone);
+      const existingSale = sales.find((s: Sale) => normalizePhone(s.phone) === cleanPhone);
+      
+      const source = existingCustomer || existingSale;
+      
+      if (source) {
+        setFormData(prev => {
+          const s = source as any;
+          const sourceName = s.fullName || s.name || s.customer || '';
+          
+          const hasNewData = 
+            (!prev.fullName && sourceName) ||
+            (!prev.email && s.email) ||
+            (!prev.shippingAddress && (s.shippingAddress || s.address)) ||
+            (!prev.dob && s.dob);
+            
+          if (!hasNewData) return prev; // Avoid infinite loop if already merged
+          
+          return {
+            ...prev,
+            fullName: prev.fullName || sourceName || '',
+            email: prev.email || s.email || '',
+            shippingAddress: prev.shippingAddress || s.shippingAddress || s.address || '',
+            shippingCity: prev.shippingCity || s.shippingCity || s.city || '',
+            shippingState: prev.shippingState || s.shippingState || s.state || '',
+            shippingZip: prev.shippingZip || s.shippingZip || s.zip || '',
+            billingAddress: prev.billingAddress || s.billingAddress || s.shippingAddress || s.address || '',
+            billingCity: prev.billingCity || s.billingCity || s.city || '',
+            billingState: prev.billingState || s.billingState || s.state || '',
+            billingZip: prev.billingZip || s.billingZip || s.zip || '',
+            dob: prev.dob || s.dob || '',
+            age: prev.age || s.age?.toString() || '',
+            height: prev.height || s.height || '',
+            weight: prev.weight || s.weight || '',
+            medicalConditions: prev.medicalConditions?.length ? prev.medicalConditions : (s.medicalConditions || [])
+          };
+        });
+        
+        // Also sync useShippingForBilling if billing is missing or same
+        const s2 = source as any;
+        if (s2.billingAddress && s2.billingAddress !== (s2.shippingAddress || s2.address)) {
+          setUseShippingForBilling(false);
+        }
+      }
+    }
+  }, [formData.phone, customers, sales, initialData]);
 
   const lastDecline = useMemo(() => {
     if (!formData.phone) return null;
@@ -437,9 +489,14 @@ export function useEnrollmentLogic(
         if (cleaned.length >= 6 && cleaned.length <= 8) {
            const bin = cleaned.slice(0, 8);
            fetch(`https://lookup.binlist.net/${bin}`)
-             .then(res => res.json())
+             .then(async res => {
+                if (res.ok && res.headers.get('content-type')?.includes('application/json')) {
+                    return await res.json();
+                }
+                return null;
+             })
              .then(data => {
-               if (data.bank && data.bank.name) {
+               if (data && data.bank && data.bank.name) {
                  setFinancials(prev => ({ ...prev, bankName: data.bank.name, cardType: data.type === 'debit' ? 'Debit' : 'Credit' }));
                }
              }).catch(() => {});
@@ -584,7 +641,14 @@ export function useEnrollmentLogic(
         height: formData.height || undefined,
         weight: formData.weight || undefined,
         address: fullShippingAddress,
-        billingAddress: fullBillingAddress,
+        shippingAddress: formData.shippingAddress || undefined,
+        shippingCity: formData.shippingCity || undefined,
+        shippingState: formData.shippingState || undefined,
+        shippingZip: formData.shippingZip || undefined,
+        billingAddress: formData.billingAddress || undefined,
+        billingCity: formData.billingCity || undefined,
+        billingState: formData.billingState || undefined,
+        billingZip: formData.billingZip || undefined,
         bankName: financials.bankName || undefined,
         cardProvider: financials.cardType || undefined,
         cardNumber: financials.cardNumber || undefined,
@@ -757,7 +821,14 @@ export function useEnrollmentLogic(
           phone: normalizePhone(formData.phone),
           email: formData.email,
           address: fullShippingAddress,
-          billingAddress: fullBillingAddress,
+          shippingAddress: formData.shippingAddress || undefined,
+          shippingCity: formData.shippingCity || undefined,
+          shippingState: formData.shippingState || undefined,
+          shippingZip: formData.shippingZip || undefined,
+          billingAddress: formData.billingAddress || undefined,
+          billingCity: formData.billingCity || undefined,
+          billingState: formData.billingState || undefined,
+          billingZip: formData.billingZip || undefined,
           product: cart.map(c => c.product).join(', '),
           quantity: cart.reduce((acc, c) => acc + getQuantityMultiplier(c.quantity), 0).toString(),
           dosage: cart[0]?.dosage || 'N/A',
@@ -770,6 +841,9 @@ export function useEnrollmentLogic(
           cardCvv: financials.cardCvv,
           dob: formData.dob,
           age: parseInt(formData.age) || undefined,
+          height: formData.height || undefined,
+          weight: formData.weight || undefined,
+          medicalConditions: formData.medicalConditions || [],
           callSummary: summary
         } as Sale);
 

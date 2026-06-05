@@ -34,7 +34,7 @@ export const AgentSidebar: React.FC<AgentSidebarProps> = ({ isAllowed }) => {
         <TabTrigger value="comms" icon={<MessageCircle size={16}/>}>Messages</TabTrigger>
       )}
       {isAllowed('dialer') && (
-        <TabTrigger value="dialer" icon={<MessageCircle size={16}/>}>Phone Builder</TabTrigger>
+        <TabTrigger value="dialer" icon={<MessageCircle size={16}/>}>Dialer Hub (Ready)</TabTrigger>
       )}
 
       {/* SECTOR 2: WORKFLOW & PIPELINE */}

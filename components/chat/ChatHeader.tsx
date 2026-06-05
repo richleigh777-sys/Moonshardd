@@ -131,7 +131,7 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({
                         <button onClick={toggleSearch} className="flex items-center gap-3 px-4 py-2 hover:bg-surface-highlight text-sm font-medium text-text-primary transition-all text-left">
                             <Search size={16}/> Search
                         </button>
-                        <div className="h-px bg-gray-700 my-1"></div>
+                        <div className="h-px bg-border-subtle my-1"></div>
                         <button onClick={(e) => { e.stopPropagation(); setShowWallpaperPicker(!showWallpaperPicker); }} className="flex items-center justify-between px-4 py-2 hover:bg-surface-highlight text-sm font-medium text-text-primary transition-all text-left w-full">
                             <div className="flex items-center gap-3"><Palette size={16}/> Theme</div>
                             <ChevronDown size={16} className={showWallpaperPicker ? 'rotate-180' : ''}/>
@@ -139,7 +139,7 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({
                         {showWallpaperPicker && (
                             <div className="grid grid-cols-5 gap-2 p-3 bg-surface-main mt-1 mx-2 rounded-md">
                                 {WALLPAPERS.map(wp => (
-                                    <button key={wp.id} onClick={(e) => { e.stopPropagation(); onChangeWallpaper(wp.bg); }} className="w-8 h-8 rounded-full border border-border-subtle relative hover:ring-2 ring-indigo-500 overflow-hidden" style={{ background: wp.bg ? `url(${wp.bg}) center/cover` : '#2b2d31' }}>
+                                    <button key={wp.id} onClick={(e) => { e.stopPropagation(); onChangeWallpaper(wp.bg); }} className="w-8 h-8 rounded-full border border-border-subtle relative hover:ring-2 ring-accent-secondary overflow-hidden" style={{ background: wp.bg ? `url(${wp.bg}) center/cover` : 'var(--color-surface-alt)' }}>
                                         {conversation.wallpaper === wp.bg && <div className="absolute inset-0 flex items-center justify-center bg-surface-alt"><Check size={14} className="text-text-primary"/></div>}
                                     </button>
                                 ))}
@@ -157,7 +157,7 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({
                         value={searchQuery}
                         onChange={(e) => onSearch(e.target.value)}
                         placeholder="Search..."
-                        className="w-full bg-surface-main border-none rounded-md py-1.5 pl-3 pr-8 text-sm text-text-primary outline-none focus:ring-1 focus:ring-indigo-500/50 transition-all"
+                        className="w-full bg-surface-main border border-border-subtle rounded-md py-1.5 pl-3 pr-8 text-sm text-text-primary outline-none focus:ring-2 focus:ring-accent-secondary/50 transition-all"
                         onKeyDown={(e) => e.key === 'Escape' && toggleSearch(e as any)}
                     />
                     <button onClick={toggleSearch} className="absolute right-2 top-1/2 -translate-y-1/2 p-1 text-text-muted hover:text-text-primary transition-colors"><X size={14}/></button>
@@ -177,9 +177,9 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({
                     <Video size={18} />
                 </button>
                 
-                <div className="w-px h-6 bg-gray-700 mx-1"></div>
+                <div className="w-px h-6 bg-border-subtle mx-1"></div>
                 
-                <button onClick={toggleMediaSidebar} className={`p-2 rounded-md transition-all ${showMediaSidebar ? 'bg-indigo-500/20 text-accent-secondary' : 'hover:bg-surface-alt text-text-muted hover:text-text-primary'}`}>
+                <button onClick={toggleMediaSidebar} className={`p-2 rounded-md transition-all ${showMediaSidebar ? 'bg-accent-secondary/15 text-accent-secondary' : 'hover:bg-surface-alt text-text-muted hover:text-text-primary'}`}>
                     <Layout size={18} />
                 </button>
 

@@ -6,6 +6,14 @@ class RealtimeClient {
     private pingInterval: any = null;
 
     connect() {
+        if (
+            typeof window === 'undefined' || 
+            (typeof process !== 'undefined' && process.env.NODE_ENV === 'test') ||
+            (typeof globalThis !== 'undefined' && ('vitest' in globalThis || 'vi' in globalThis))
+        ) {
+            return;
+        }
+
         if (this.ws && (this.ws.readyState === WebSocket.CONNECTING || this.ws.readyState === WebSocket.OPEN)) {
             return;
         }

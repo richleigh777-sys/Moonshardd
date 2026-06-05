@@ -126,7 +126,20 @@ export const CustomerProfileModal: React.FC<CustomerProfileModalProps> = ({
         return rawHistory.sort((a, b) => b.timestamp - a.timestamp);
     }, [allSales, customerProfile, phone, role, currentUser?.id]);
 
-    const displayName = customerProfile ? (customerProfile.name || customerProfile.fullName) : (customerHistory[0]?.customer || 'Unknown Customer');
+    const extractDisplayName = () => {
+        if (customerProfile) {
+            if (customerProfile.firstName || customerProfile.lastName) {
+                return `${customerProfile.firstName || ''} ${customerProfile.lastName || ''}`.trim();
+            }
+            return (customerProfile.name || customerProfile.fullName || 'Unknown Customer');
+        } else if (customerHistory.length > 0) {
+            const h = customerHistory[0];
+            if (h.firstName || h.lastName) return `${h.firstName || ''} ${h.lastName || ''}`.trim();
+            return h.customer || 'Unknown Customer';
+        }
+        return 'Unknown Customer';
+    };
+    const displayName = extractDisplayName();
     const displayEmail = customerProfile ? customerProfile.email : (customerHistory[0]?.email || 'No Email');
     const displayAddress = customerProfile ? customerProfile.address : (customerHistory[0]?.address || 'No Address');
     
@@ -359,6 +372,90 @@ export const CustomerProfileModal: React.FC<CustomerProfileModalProps> = ({
                             ) : (
                                 <span className="text-xs text-text-muted italic flex items-center gap-2 opacity-60">
                                     <AlertTriangle size={16}/> No conditions tagged.
+                                </span>
+                            )}
+                        </div>
+                    </div>
+                </div>
+
+                {/* STITCHED LOCATION HISTORY */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="space-y-3">
+                        <h4 className="text-[10px] uppercase font-[700] text-text-primary flex items-center gap-2 tracking-widest">
+                            <MapPin size={12} className="text-accent-primary"/> Billing & Shipping Profile
+                        </h4>
+                        <div className="p-4 glass-panel rounded-xl space-y-4 shadow-inner text-xs">
+                            <div className="space-y-1">
+                                <span className="text-text-muted font-bold block uppercase tracking-wider text-[9px]">Current Shipping Address</span>
+                                <p className="text-text-primary font-medium">
+                                    {customerProfile ? (
+                                        [
+                                            customerProfile.shippingAddress || customerProfile.address,
+                                            customerProfile.shippingCity,
+                                            customerProfile.shippingState,
+                                            customerProfile.shippingZip
+                                        ].filter(Boolean).join(', ') || 'None listed'
+                                    ) : (
+                                        'No verified profile'
+                                    )}
+                                </p>
+                            </div>
+                            <div className="space-y-1 pt-2 border-t border-border-subtle/50">
+                                <span className="text-text-muted font-bold block uppercase tracking-wider text-[9px]">Current Billing Address</span>
+                                <p className="text-text-primary font-medium">
+                                    {customerProfile ? (
+                                        [
+                                            customerProfile.billingAddress,
+                                            customerProfile.billingCity,
+                                            customerProfile.billingState,
+                                            customerProfile.billingZip
+                                        ].filter(Boolean).join(', ') || 'Same as shipping'
+                                    ) : (
+                                        'No verified profile'
+                                    )}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="space-y-3">
+                        <h4 className="text-[10px] uppercase font-[700] text-status-success flex items-center gap-2 tracking-widest">
+                            <Link size={12} className="text-status-success"/> Auto-Stitched Address Registry
+                        </h4>
+                        <div className="p-4 glass-panel rounded-xl space-y-3 shadow-inner text-xs min-h-[114px] max-h-[170px] overflow-y-auto custom-scrollbar">
+                            {customerProfile && (
+                                ((customerProfile.pastShippingAddresses && customerProfile.pastShippingAddresses.length > 0) ||
+                                (customerProfile.pastBillingAddresses && customerProfile.pastBillingAddresses.length > 0))
+                            ) ? (
+                                <div className="space-y-3">
+                                    {customerProfile.pastShippingAddresses && customerProfile.pastShippingAddresses.length > 0 && (
+                                        <div>
+                                            <span className="text-text-muted font-bold block uppercase tracking-wider text-[9px] mb-1">Stitched Shipping Locations</span>
+                                            <ul className="space-y-1 list-disc pl-4 text-text-secondary">
+                                                {customerProfile.pastShippingAddresses.map((addr: string, i: number) => (
+                                                    <li key={i} className="truncate" title={isRevealed ? addr : maskPII(addr, 'text')}>
+                                                        {isRevealed ? addr : maskPII(addr, 'text')}
+                                                    </li>
+                                                ))}
+                                            </ul>
+                                        </div>
+                                    )}
+                                    {customerProfile.pastBillingAddresses && customerProfile.pastBillingAddresses.length > 0 && (
+                                        <div className="pt-2 border-t border-border-subtle/30">
+                                            <span className="text-text-muted font-bold block uppercase tracking-wider text-[9px] mb-1">Stitched Billing Locations</span>
+                                            <ul className="space-y-1 list-disc pl-4 text-text-secondary">
+                                                {customerProfile.pastBillingAddresses.map((addr: string, i: number) => (
+                                                    <li key={i} className="truncate" title={isRevealed ? addr : maskPII(addr, 'text')}>
+                                                        {isRevealed ? addr : maskPII(addr, 'text')}
+                                                    </li>
+                                                ))}
+                                            </ul>
+                                        </div>
+                                    )}
+                                </div>
+                            ) : (
+                                <span className="text-xs text-text-muted italic flex items-center gap-2 opacity-60 h-full py-2">
+                                    <CheckCircle2 className="text-status-success shrink-0" size={16}/> Address registry clean. No duplicate modifications needed.
                                 </span>
                             )}
                         </div>

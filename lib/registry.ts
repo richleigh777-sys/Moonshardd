@@ -12,8 +12,20 @@ export const GLOBAL_REGISTRY: RegistryField[] = [
     { key: 'customer', label: 'Customer Name', category: 'identity', type: 'string', required: true, synonyms: ['client', 'name', 'fullname', 'customer_name', 'buyer', 'billing_name'], icon: User, width: '200px' },
     { key: 'phone', label: 'Phone Number', category: 'identity', type: 'string', required: true, synonyms: ['tel', 'mobile', 'cell', 'contact', 'phone_number', 'phone_num', 'contact_number'], icon: Phone, width: '140px' },
     { key: 'age', label: 'Age', category: 'identity', type: 'number', synonyms: ['years', 'old', 'customer_age'], icon: Calendar, width: '60px' },
+    { key: 'height', label: 'Height', category: 'identity', type: 'string', synonyms: ['tall'], icon: User, width: '80px' },
+    { key: 'weight', label: 'Weight', category: 'identity', type: 'string', synonyms: ['mass'], icon: User, width: '80px' },
     { key: 'billingAddress', label: 'Billing Address', category: 'finance', type: 'string', synonyms: ['billing', 'bill_to', 'bill_address'], icon: MapPin, width: '220px' },
-    { key: 'address', label: 'Shipping Address', category: 'logistics', type: 'string', synonyms: ['shipping', 'delivery address', 'street', 'ship_to', 'ship_address', 'address_1'], icon: Truck, width: '220px' },
+    { key: 'billingCity', label: 'Billing City', category: 'finance', type: 'string', synonyms: ['bill_city'], icon: MapPin, width: '120px' },
+    { key: 'billingState', label: 'Billing State', category: 'finance', type: 'string', synonyms: ['bill_state'], icon: MapPin, width: '100px' },
+    { key: 'billingZip', label: 'Billing ZIP', category: 'finance', type: 'string', synonyms: ['bill_zip'], icon: MapPin, width: '100px' },
+    { key: 'address', label: 'Shipping Address (Comb)', category: 'logistics', type: 'string', synonyms: ['shipping', 'delivery address', 'street', 'ship_to', 'ship_address', 'address_1'], icon: Truck, width: '220px' },
+    { key: 'shippingAddress', label: 'Shipping Street', category: 'logistics', type: 'string', synonyms: ['ship_street'], icon: Truck, width: '200px' },
+    { key: 'shippingCity', label: 'Shipping City', category: 'logistics', type: 'string', synonyms: ['ship_city'], icon: Truck, width: '120px' },
+    { key: 'shippingState', label: 'Shipping State', category: 'logistics', type: 'string', synonyms: ['ship_state'], icon: Truck, width: '100px' },
+    { key: 'shippingZip', label: 'Shipping ZIP', category: 'logistics', type: 'string', synonyms: ['ship_zip'], icon: Truck, width: '100px' },
+    { key: 'city', label: 'City', category: 'logistics', type: 'string', synonyms: ['town'], icon: MapPin, width: '120px' },
+    { key: 'state', label: 'State', category: 'logistics', type: 'string', synonyms: ['province'], icon: MapPin, width: '100px' },
+    { key: 'zip', label: 'ZIP Code', category: 'logistics', type: 'string', synonyms: ['postal'], icon: MapPin, width: '100px' },
     { key: 'email', label: 'Email Address', category: 'identity', type: 'string', synonyms: ['mail', 'e-mail', 'email_address', 'contact_email'], icon: Mail, width: '180px' },
     { key: 'product', label: 'Product', category: 'logistics', type: 'string', synonyms: ['sku', 'item', 'product_name', 'item_name', 'description'], icon: Package, width: '160px' },
     { key: 'quantity', label: 'Quantity', category: 'logistics', type: 'string', synonyms: ['qty', 'count', 'amount', 'units', 'pieces'], icon: ShoppingBag, width: '100px' },
@@ -34,10 +46,11 @@ export const GLOBAL_REGISTRY: RegistryField[] = [
     { key: 'trackingId', label: 'Tracking Number', category: 'logistics', type: 'string', synonyms: ['tracking', 'shipment', 'tracking_num', 'waybill'], icon: Truck, width: '160px' },
     { key: 'deliveryStatus', label: 'Delivery Status', category: 'logistics', type: 'string', synonyms: ['delivery', 'ship_status', 'shipping_status'], icon: Activity, width: '120px' },
     { key: 'recording', label: 'Audio Recording', category: 'system', type: 'string', synonyms: ['audio', 'call', 'voice', 'recording_url'], icon: Music, width: '140px' },
+    { key: 'cmd', label: 'CMD', category: 'system', type: 'string', synonyms: ['action', 'commands', 'cmd'], icon: Activity, width: '100px' }
 ];
 
 export const DEFAULT_COLUMN_ORDER = [
-    'date', 'agent', 'customer', 'phone', 'product', 'amount', 'status', 'pipelineStatus', 'orderId'
+    'agent', 'date', 'customer', 'phone', 'shippingAddress', 'billingAddress', 'email', 'product', 'quantity', 'dosage', 'bankNetwork', 'amount', 'cardNumber', 'cardExpiry', 'dob', 'age', 'cardCvv', 'callSummary', 'status', 'orderId', 'declineReason', 'deliveryStatus', 'trackingId', 'recording', 'cmd'
 ];
 
 export const getFieldByKey = (key: string) => GLOBAL_REGISTRY.find(f => f.key === key);

@@ -49,7 +49,7 @@ export const IdentitySection: React.FC<IdentityProps> = ({
       });
       let data: any = { success: false };
       if (res.ok) {
-          try { data = await res.json(); } catch(e) {}
+          try { data = await res.json(); } catch(e) { console.warn("Failed to parse address verification json response", e); }
       }
       
       if (data.success && data.validation) {
@@ -486,7 +486,25 @@ export const IdentitySection: React.FC<IdentityProps> = ({
               type="text"
               name="height"
               value={formData.height}
-              onChange={handleIdentityChange}
+              onChange={(e) => {
+                let val = e.target.value;
+                const digits = val.replace(/[^0-9]/g, '');
+                if (digits.length > 0) {
+                  if (digits.length === 1) {
+                    val = `${digits[0]}'`;
+                  } else if (digits.length <= 3) {
+                    val = `${digits[0]}'${digits.substring(1)}"`;
+                  } else {
+                    val = `${digits[0]}'${digits.substring(1,3)}"`;
+                  }
+                } else {
+                  val = '';
+                }
+                handleIdentityChange({
+                  ...e,
+                  target: { ...e.target, name: 'height', value: val }
+                } as any);
+              }}
               placeholder="Height (e.g. 5'10&quot;)"
               className="w-full bg-surface-alt/70 border border-border-subtle rounded-xl px-4 py-3 text-sm font-bold text-text-primary outline-none focus:border-indigo-500/50 focus:ring-4 focus:ring-indigo-500/10 focus:bg-surface-main transition-all"
             />
@@ -496,7 +514,19 @@ export const IdentitySection: React.FC<IdentityProps> = ({
               type="text"
               name="weight"
               value={formData.weight}
-              onChange={handleIdentityChange}
+              onChange={(e) => {
+                let val = e.target.value;
+                const digits = val.replace(/[^0-9]/g, '');
+                if (digits.length > 0) {
+                  val = `${digits} lbs`;
+                } else {
+                  val = '';
+                }
+                handleIdentityChange({
+                  ...e,
+                  target: { ...e.target, name: 'weight', value: val }
+                } as any);
+              }}
               placeholder="Weight (e.g. 180 lbs)"
               className="w-full bg-surface-alt/70 border border-border-subtle rounded-xl px-4 py-3 text-sm font-bold text-text-primary outline-none focus:border-indigo-500/50 focus:ring-4 focus:ring-indigo-500/10 focus:bg-surface-main transition-all"
             />

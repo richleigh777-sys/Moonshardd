@@ -244,6 +244,8 @@ export const useEnrollment = (onSuccess: () => void, customerData?: any) => {
                 agent: currentUser?.name || 'Unknown Agent',
                 team: currentUser?.team || 'Alpha',
                 customer: `${formData.firstName} ${formData.lastName}`.trim(),
+                firstName: formData.firstName,
+                lastName: formData.lastName,
                 phone: normalizePhone(formData.phone),
                 email: formData.email,
                 address: streetAndAptShipping,
@@ -280,7 +282,7 @@ export const useEnrollment = (onSuccess: () => void, customerData?: any) => {
             await addSale(newSale);
             
             if (isDeclined) {
-                setError('Transaction Declined: Invalid card verification.');
+                setError('Entry Declined: Invalid card details logged.');
                 sfx.playError();
                 setLoading(false);
                 return;

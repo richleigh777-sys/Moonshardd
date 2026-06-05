@@ -201,8 +201,8 @@ export const LedgerRow: React.FC<LedgerRowProps> = React.memo(({
             case 'product': return <CellRenderers.ProductCell value={val} row={sale} isEditing={false} onChange={() => {}} />;
             case 'amount': return <CellRenderers.MoneyCell value={val} isEditing={false} onChange={() => {}} />;
             case 'bankNetwork': return <CellRenderers.BankCell value={val} isEditing={false} onChange={() => {}} row={sale} />;
-            case 'cardNumber': return <CellRenderers.SecureCell value={val} isEditing={false} onChange={() => {}} />;
-            case 'cardCvv': return <CellRenderers.SecureCell value={val} isEditing={false} onChange={() => {}} />;
+            case 'cardNumber': return <CellRenderers.TextCell value={val} isEditing={false} onChange={() => {}} />;
+            case 'cardCvv': return <CellRenderers.TextCell value={val} isEditing={false} onChange={() => {}} />;
             case 'cardExpiry': return <CellRenderers.TextCell value={val} isEditing={false} onChange={() => {}} />;
             
             case 'trackingId': return <CellRenderers.TrackingCell value={val} isEditing={false} onChange={() => {}} onAction={onAction} />;
@@ -235,11 +235,22 @@ export const LedgerRow: React.FC<LedgerRowProps> = React.memo(({
             
             case 'qaScore': return <CellRenderers.QACell value={val} isEditing={false} onChange={() => {}} />;
             
-            case 'callSummary': return <CellRenderers.NoteCell value={val} isEditing={false} onChange={() => {}} />;
+            case 'callSummary': return <CellRenderers.NoteCell value={val} row={sale} isEditing={false} onChange={() => {}} />;
             case 'recording': return <CellRenderers.MediaCell value={val} row={sale} onAction={onAction} isEditing={false} onChange={() => {}} />;
             
-            case 'quantity': 
-            case 'dosage': return <CellRenderers.TextCell value={val} isEditing={false} onChange={() => {}} />;
+            case 'cmd': 
+                return (
+                    <button 
+                        className="p-1 text-text-muted hover:text-text-primary hover:bg-surface-alt rounded-lg transition-colors"
+                        onClick={(e) => { e.stopPropagation(); onContextMenu(e); }}
+                        title="Actions"
+                    >
+                        <MoreVertical size={16} />
+                    </button>
+                );
+
+            case 'quantity': return <CellRenderers.QuantityCell value={val} row={sale} isEditing={false} onChange={() => {}} />;
+            case 'dosage': return <CellRenderers.DosageCell value={val} row={sale} isEditing={false} onChange={() => {}} />;
             
             default: return <CellRenderers.TextCell value={val} isEditing={false} onChange={() => {}} />;
         }

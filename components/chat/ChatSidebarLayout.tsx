@@ -41,11 +41,11 @@ export const ChatSidebarLayout: React.FC<ChatSidebarLayoutProps> = ({
                     </h1>
                 )}
                 {isCollapsed ? (
-                    <Button onClick={() => setShowNewGroup(true)} variant="ghost" className="h-10 w-10 p-0 rounded-full bg-accent-secondary/10 text-accent-secondary hover:bg-indigo-500/20 transition-all">
+                    <Button onClick={() => setShowNewGroup(true)} variant="ghost" className="h-10 w-10 p-0 rounded-full bg-accent-secondary/10 text-accent-secondary hover:bg-accent-secondary/20 transition-all">
                         <Plus size={20} />
                     </Button>
                 ) : (
-                    <Button onClick={() => setShowNewGroup(true)} variant="ghost" className="h-8 w-8 p-0 rounded-full bg-accent-secondary/10 text-accent-secondary hover:bg-indigo-500/20 transition-all">
+                    <Button onClick={() => setShowNewGroup(true)} variant="ghost" className="h-8 w-8 p-0 rounded-full bg-accent-secondary/10 text-accent-secondary hover:bg-accent-secondary/20 transition-all">
                         <Plus size={18} />
                     </Button>
                 )}
@@ -126,18 +126,18 @@ export const ChatSidebarLayout: React.FC<ChatSidebarLayoutProps> = ({
                         <div className="space-y-3">
                             <div>
                                 <label className="block text-xs font-medium text-text-muted mb-1">API Key</label>
-                                <input autoComplete="off" data-lpignore="true" data-prevent-autofill="true" spellCheck={false} type="password" placeholder="sk_test_..." className="w-full bg-surface-alt border border-border-subtle rounded-md p-2 text-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none" />
+                                <input autoComplete="off" data-lpignore="true" data-prevent-autofill="true" spellCheck={false} type="password" placeholder="sk_test_..." className="w-full bg-surface-alt border border-border-subtle rounded-md p-2 text-sm focus:border-accent-secondary focus:ring-1 focus:ring-accent-secondary outline-none" />
                             </div>
                             <div>
                                 <label className="block text-xs font-medium text-text-muted mb-1">Webhook Secret</label>
-                                <input autoComplete="off" data-lpignore="true" data-prevent-autofill="true" spellCheck={false} type="password" placeholder="whsec_..." className="w-full bg-surface-alt border border-border-subtle rounded-md p-2 text-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none" />
+                                <input autoComplete="off" data-lpignore="true" data-prevent-autofill="true" spellCheck={false} type="password" placeholder="whsec_..." className="w-full bg-surface-alt border border-border-subtle rounded-md p-2 text-sm focus:border-accent-secondary focus:ring-1 focus:ring-accent-secondary outline-none" />
                             </div>
                         </div>
                     </div>
                     
                     <div className="flex justify-end gap-2 pt-2">
                         <Button onClick={() => setShowSettings(false)} variant="ghost" className="text-text-muted">Cancel</Button>
-                        <Button onClick={() => setShowSettings(false)} variant="primary" className="bg-indigo-500 hover:bg-indigo-600 text-text-primary border-none">Save Settings</Button>
+                        <Button onClick={() => setShowSettings(false)} variant="primary" className="bg-accent-secondary hover:bg-accent-secondary/95 text-surface-main border-none">Save Settings</Button>
                     </div>
                 </div>
             </Modal>

@@ -40,7 +40,7 @@ const App: React.FC = () => {
     return (
         <GlobalErrorBoundary>
             {API_KEY ? (
-                <APIProvider apiKey={API_KEY} version="weekly">
+                <APIProvider apiKey={API_KEY} solutionChannel="GMP_QB_addressselection_v4_cAC" version="weekly">
                     {content}
                 </APIProvider>
             ) : content}

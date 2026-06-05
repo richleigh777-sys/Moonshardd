@@ -33,22 +33,9 @@ export const SalesLedger: React.FC<SalesLedgerProps> = ({ sales = [], onAction, 
         handlePageChange, handleRefresh, handleBulkCommand, handleSaveBulk
     } = useSalesLedgerUI(sales, onImport, onBulkAction);
 
-    const { systemConfig } = useCRM();
+    // const { systemConfig } = useCRM();
 
     const [selectedProfilePhone, setSelectedProfilePhone] = React.useState<string | null>(null);
-
-    const restrictedColumns = React.useMemo(() => {
-        return !allowActions ? (systemConfig?.level10Config?.restrictedAgentColumns || []) : [];
-    }, [allowActions, systemConfig?.level10Config?.restrictedAgentColumns]);
-
-    const safeVisibleColumns = React.useMemo(() => {
-        if (!restrictedColumns.length) return columnPreferences.visible;
-        const visible = { ...columnPreferences.visible };
-        restrictedColumns.forEach(c => {
-            if (visible[c]) visible[c] = false;
-        });
-        return visible;
-    }, [columnPreferences.visible, restrictedColumns]);
 
     const handleSafeAction = (sale: Sale, action: string, payload?: any) => {
         if (action === 'view_profile') {
@@ -63,14 +50,6 @@ export const SalesLedger: React.FC<SalesLedgerProps> = ({ sales = [], onAction, 
     return (
         <div className="flex flex-col h-full gap-4 animate-in fade-in duration-500 relative">
             <input autoComplete="off" data-lpignore="true" data-prevent-autofill="true" spellCheck={false} ref={fileInputRef} type="file" className="hidden" accept=".csv" onChange={handleFileChange} />
-
-            {restrictedColumns.length > 0 && (
-                <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3 flex items-center gap-2 m-2">
-                    <p className="text-sm text-yellow-800">
-                        {restrictedColumns.length} columns are restricted for agent-level access. Contact admin to request visibility.
-                    </p>
-                </div>
-            )}
 
             <LedgerHeader 
                 summary={summary}
@@ -131,7 +110,7 @@ export const SalesLedger: React.FC<SalesLedgerProps> = ({ sales = [], onAction, 
                 <LedgerTable 
                     sales={paginatedSales}
                     columnOrder={columnPreferences.order}
-                    visibleColumns={safeVisibleColumns}
+                    visibleColumns={columnPreferences.visible}
                     sortConfig={sortConfig}
                     handleSort={handleSort}
                     selectedIds={selectedIds}
@@ -179,15 +158,11 @@ export const SalesLedger: React.FC<SalesLedgerProps> = ({ sales = [], onAction, 
             <ColumnConfigModal 
                 isOpen={showColumnConfig}
                 onClose={() => setShowConfig(false)}
-                currentOrder={columnPreferences.order.filter(c => !restrictedColumns.includes(c))}
-                currentVisibility={safeVisibleColumns}
+                currentOrder={columnPreferences.order}
+                currentVisibility={columnPreferences.visible}
                 onSave={(order, visible) => {
                     const newVisible = { ...columnPreferences.visible, ...visible };
-                    const newOrder = [
-                        ...order,
-                        ...columnPreferences.order.filter(c => restrictedColumns.includes(c))
-                    ];
-                    setColumnPreferences({ order: newOrder, visible: newVisible });
+                    setColumnPreferences({ order: order, visible: newVisible });
                 }}
             />
 

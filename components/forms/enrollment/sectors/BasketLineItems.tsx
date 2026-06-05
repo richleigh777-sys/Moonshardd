@@ -27,7 +27,8 @@ export const BasketLineItems: React.FC<Props> = ({ cart, updateLineItem, removeL
                                     <select 
                                         value={item.product}
                                         onChange={(e) => updateLineItem(index, 'product', e.target.value)}
-                                        className="w-full bg-surface-main/60 border border-border-subtle rounded-xl px-4 py-2.5 font-bold text-sm text-text-primary outline-none cursor-pointer focus:ring-1 focus:ring-amber-500/50 transition-all appearance-none tracking-tight shadow-inset"
+                                        className="w-full bg-surface-main/60 border border-border-subtle rounded-xl px-4 py-2.5 font-bold text-sm text-text-primary outline-none cursor-pointer focus:ring-1 focus:ring-amber-500/50 transition-all appearance-none tracking-tight shadow-inset bg-[url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2224%22%20height%3D%2224%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%239CA3AF%22%20stroke-width%3D%222.5%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpolyline%20points%3D%226%209%2012%2015%2018%209%22%3E%3C%2Fpolyline%3E%3C%2Fsvg%3E')] bg-[length:1.2em_1.2em] bg-no-repeat bg-[currentColor]"
+                                        style={{ backgroundPosition: 'right 0.75rem center' }}
                                     >
                                         {(productConfig.products || []).map(p => <option key={p.id} value={p.name} className="bg-[#0c0c0e] text-text-primary">{p.name}</option>)}
                                     </select>
@@ -39,7 +40,8 @@ export const BasketLineItems: React.FC<Props> = ({ cart, updateLineItem, removeL
                                         <select 
                                             value={item.quantity} 
                                             onChange={(e) => updateLineItem(index, 'quantity', e.target.value)}
-                                            className="w-full bg-surface-main/60 border border-border-subtle rounded-xl px-2 py-2.5 text-xs font-bold text-center text-text-primary outline-none cursor-pointer hover:bg-surface-main/80 transition-all appearance-none shadow-inset"
+                                            className="w-full bg-surface-main/60 border border-border-subtle rounded-xl px-2 py-2.5 text-xs font-bold text-center text-text-primary outline-none cursor-pointer hover:bg-surface-main/80 transition-all appearance-none shadow-inset bg-[url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2224%22%20height%3D%2224%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%239CA3AF%22%20stroke-width%3D%222.5%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpolyline%20points%3D%226%209%2012%2015%2018%209%22%3E%3C%2Fpolyline%3E%3C%2Fsvg%3E')] bg-[length:1em_1em] bg-no-repeat bg-[currentColor]"
+                                            style={{ backgroundPosition: 'right 0.25rem center', paddingRight: '1rem' }}
                                         >
                                             {['1','2','3','4','5','10'].map(q => <option key={q} value={q} className="bg-[#0c0c0e] text-text-primary">{q} BTLS</option>)}
                                         </select>
@@ -49,7 +51,8 @@ export const BasketLineItems: React.FC<Props> = ({ cart, updateLineItem, removeL
                                         <select 
                                             value={item.dosage} 
                                             onChange={(e) => updateLineItem(index, 'dosage', e.target.value)}
-                                            className="w-full bg-surface-main/60 border border-border-subtle rounded-xl px-2 py-2.5 text-xs font-bold text-center text-text-primary outline-none cursor-pointer hover:bg-surface-main/80 transition-all appearance-none shadow-inset"
+                                            className="w-full bg-surface-main/60 border border-border-subtle rounded-xl px-2 py-2.5 text-xs font-bold text-center text-text-primary outline-none cursor-pointer hover:bg-surface-main/80 transition-all appearance-none shadow-inset bg-[url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2224%22%20height%3D%2224%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%239CA3AF%22%20stroke-width%3D%222.5%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpolyline%20points%3D%226%209%2012%2015%2018%209%22%3E%3C%2Fpolyline%3E%3C%2Fsvg%3E')] bg-[length:1em_1em] bg-no-repeat bg-[currentColor]"
+                                            style={{ backgroundPosition: 'right 0.25rem center', paddingRight: '1rem' }}
                                         >
                                             {productConfig.products?.find(p => p.name === item.product)?.dosages.map(d => <option key={d} value={d} className="bg-[#0c0c0e] text-text-primary">{d}</option>)}
                                         </select>

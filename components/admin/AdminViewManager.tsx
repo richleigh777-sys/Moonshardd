@@ -16,6 +16,7 @@ import { SystemConfigPanel } from './SystemConfigPanel';
 import { GodModePanel } from '../widgets/GodModePanel';
 import { DialerDataListManager } from './DialerDataListManager';
 import { CRMAuditDashboard } from './CRMAuditDashboard';
+import { UniqueSalesPool } from './UniqueSalesPool';
 import { sfx } from '../../lib/soundService';
 import { User, Sale, Note, SystemConfig, ProductConfig, SystemHealth, ToastMessage } from '../../types';
 
@@ -93,6 +94,11 @@ export const AdminViewManager: React.FC<AdminTerminalManagerProps> = ({
                         }} 
                         allowActions={true} 
                     />
+                </TabContent>
+            )}
+            {isAllowed('sales_pool') && (
+                <TabContent value="sales_pool" className="w-full h-full">
+                    <UniqueSalesPool />
                 </TabContent>
             )}
             {isAllowed('payroll') && <TabContent value="payroll" className="h-full"><PayrollManager /></TabContent>}

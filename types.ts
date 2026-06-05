@@ -102,6 +102,8 @@ export interface Customer {
     height?: string;
     weight?: string;
     medicalConditions?: string[];
+    pastShippingAddresses?: string[];
+    pastBillingAddresses?: string[];
     followUpDate?: number;
     callbackTime?: number;
     updatedAt?: number;
@@ -126,6 +128,8 @@ export interface Sale {
     agent: string;
     team?: string;
     customer: string;
+    firstName?: string;
+    lastName?: string;
     customerId?: string; // Relational Link to Customer Profile
     accountId?: string;  // Relational Link to Account
     phone: string;

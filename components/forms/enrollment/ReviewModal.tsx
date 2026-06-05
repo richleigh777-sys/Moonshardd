@@ -78,7 +78,7 @@ export const ReviewModal: React.FC<ReviewModalProps> = ({
                                 )}
                             </div>
                         </div>
-                        <p className="text-xs font-[700] text-text-muted  tracking-widest mb-1">Total Settlement</p>
+                        <p className="text-xs font-[700] text-text-muted  tracking-widest mb-1">Total Order Value</p>
                         <div className="px-4 py-1 bg-surface-main/50 rounded-xl border border-border-subtle backdrop-blur-sm">
                             <p className="text-3xl font-[700] text-text-primary num-font tracking-tight">${grandTotal.toFixed(2)}</p>
                         </div>
@@ -121,7 +121,7 @@ export const ReviewModal: React.FC<ReviewModalProps> = ({
                         {/* RIGHT COLUMN: PAYMENT & ORDER */}
                         <div className="space-y-8">
                             <div>
-                                <ReviewSectionHeader icon={CreditCard} title="Financial Sector" color="text-status-success" />
+                                <ReviewSectionHeader icon={CreditCard} title="Logged Financial Entry" color="text-status-success" />
                                 <div className="grid grid-cols-2 gap-6 bg-emerald-500/5 p-5 rounded-3xl border border-emerald-500/10 shadow-[inset_0_0_20px_rgba(16,185,129,0.05)]">
                                     <ReviewRow label="Institution" value={financials.bankName} />
                                     <ReviewRow label="Network" value={financials.cardType} />
@@ -170,7 +170,7 @@ export const ReviewModal: React.FC<ReviewModalProps> = ({
                                     )}
 
                                     <div className="mt-4 pt-4 border-t-2 border-border-subtle flex justify-between items-center">
-                                        <span className="text-xs font-[700]  tracking-widest text-text-muted">Total Settlement</span>
+                                        <span className="text-xs font-[700]  tracking-widest text-text-muted">Total Order Value</span>
                                         <span className="text-4xl font-[700] text-text-primary num-font tracking-tighter drop-shadow-sm">
                                             ${grandTotal.toLocaleString(undefined, {minimumFractionDigits: 2})}
                                         </span>
@@ -202,9 +202,9 @@ export const ReviewModal: React.FC<ReviewModalProps> = ({
                     >
                         <div className="absolute inset-0 bg-white/20 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000 ease-in-out pointer-events-none"></div>
                         {loading ? (
-                            <><RefreshCw size={24} className="animate-spin"/> TRANSMITTING PAYLOAD...</>
+                            <><RefreshCw size={24} className="animate-spin"/> LOGGING TO ADMIN DASHBOARD...</>
                         ) : (
-                            <><Fingerprint size={28} strokeWidth={2.5}/> Commit Transaction</>
+                            <><Fingerprint size={28} strokeWidth={2.5}/> Submit Logged Sale to Sales Ledger</>
                         )}
                     </button>
                 </div>

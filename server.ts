@@ -4,9 +4,9 @@ import cors from "cors";
 import bcrypt from "bcrypt";
 import helmet from "helmet";
 import rateLimit from "express-rate-limit";
-import { GoogleGenAI } from "@google/genai";
+import { GoogleGenAI, Type } from "@google/genai";
 import { query } from "./lib/db.ts"; // Secure DB Gateway
-import { initializeRealtime } from "./lib/realtime.ts"; // WebSocket Hub
+import { initializeRealtime, broadcast } from "./lib/realtime.ts"; // WebSocket Hub
 
 // Workflow & Automation Core
 function startAutomatedWorkers() {
@@ -55,7 +55,6 @@ async function startServer() {
   const limiter = rateLimit({
     windowMs: 15 * 60 * 1000,
     max: 10000, // limit each IP to 10000 requests per windowMs
-    // @ts-ignore
     validate: { xForwardedForHeader: false, default: true },
     message: { error: 'Too many requests, please try again later.' }
   });
@@ -190,6 +189,44 @@ async function startServer() {
   });
 
   // --- POSGRES DOCUMENTS EMULATION START ---
+  app.get("/api/collections/batch", async (req, res) => {
+      try {
+          if (!process.env.DATABASE_URL) return res.json({});
+          const namesStr = req.query.names as string;
+          if (!namesStr) return res.json({});
+          const collections = namesStr.split(',').filter(Boolean);
+
+          await query(`CREATE TABLE IF NOT EXISTS crm_documents (
+              id VARCHAR(255),
+              collection_name VARCHAR(100) NOT NULL,
+              data JSONB NOT NULL,
+              created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+              updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+              PRIMARY KEY (collection_name, id)
+          )`);
+
+          const result = await query(
+              "SELECT collection_name, data FROM crm_documents WHERE collection_name = ANY($1)", 
+              [collections]
+          );
+
+          const grouped: Record<string, any[]> = {};
+          for (const col of collections) {
+              grouped[col] = [];
+          }
+          for (const row of result.rows) {
+              if (grouped[row.collection_name]) {
+                  grouped[row.collection_name].push(row.data);
+              }
+          }
+
+          res.json(grouped);
+      } catch (err: any) {
+          console.error("DB Batch Get Error", err);
+          res.status(500).json({ error: err.message });
+      }
+  });
+
   app.get("/api/collections/:collection", async (req, res) => {
       try {
           if (!process.env.DATABASE_URL) return res.json([]);
@@ -227,6 +264,13 @@ async function startServer() {
               ON CONFLICT (collection_name, id) DO UPDATE SET data = EXCLUDED.data, updated_at = NOW()
           `;
           await query(q, [id, req.params.collection, JSON.stringify(req.body)]);
+          
+          try {
+              broadcast({ type: 'COLLECTION_MUTATED', collectionName: req.params.collection, id });
+          } catch (broadcastErr) {
+              console.error("[Realtime Broadcast Error]:", broadcastErr);
+          }
+
           res.json({ success: true, id });
       } catch (err: any) {
           console.error("DB Post Error", err);
@@ -243,6 +287,13 @@ async function startServer() {
               WHERE collection_name = $2 AND id = $3
           `;
           await query(q, [JSON.stringify(req.body), req.params.collection, req.params.id]);
+          
+          try {
+              broadcast({ type: 'COLLECTION_MUTATED', collectionName: req.params.collection, id: req.params.id });
+          } catch (broadcastErr) {
+              console.error("[Realtime Broadcast Error]:", broadcastErr);
+          }
+
           res.json({ success: true });
       } catch (err: any) {
           console.error("DB Put Error", err);
@@ -254,6 +305,13 @@ async function startServer() {
       try {
           if (!process.env.DATABASE_URL) return res.json({ success: true, dummy: true });
           await query("DELETE FROM crm_documents WHERE collection_name = $1 AND id = $2", [req.params.collection, req.params.id]);
+          
+          try {
+              broadcast({ type: 'COLLECTION_MUTATED', collectionName: req.params.collection, id: req.params.id, deleted: true });
+          } catch (broadcastErr) {
+              console.error("[Realtime Broadcast Error]:", broadcastErr);
+          }
+
           res.json({ success: true });
       } catch (err: any) {
           console.error("DB Delete Error", err);
@@ -453,6 +511,58 @@ async function startServer() {
           console.error("Gemini API Error:", err);
           res.status(500).json({ error: err.message });
       }
+  });
+
+  app.post("/api/gemini/strategic-briefing", async (req, res) => {
+      try {
+          const { customerName, history } = req.body;
+          if (!process.env.GEMINI_API_KEY) {
+              return res.status(500).json({ error: "Gemini API key missing on server" });
+          }
+          const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+          const response = await ai.models.generateContent({
+              model: "gemini-2.5-flash",
+              contents: `
+                  Analyze the following customer interaction history for ${customerName} and provide a strategic briefing for a sales agent.
+                  
+                  History:
+                  ${history.join('\n')}
+                  
+                  Focus on:
+                  1. A concise summary of their current situation.
+                  2. Sentiment analysis.
+                  3. A concrete recommendation for the next call.
+                  4. Key recurring themes or objections.
+              `,
+              config: {
+                  responseMimeType: "application/json",
+                  responseSchema: {
+                      type: Type.OBJECT,
+                      properties: {
+                          summary: { type: Type.STRING },
+                          sentiment: { type: Type.STRING, enum: ['Positive', 'Neutral', 'Frustrated'] },
+                          recommendation: { type: Type.STRING },
+                          keyThemes: { type: Type.ARRAY, items: { type: Type.STRING } }
+                      },
+                      required: ['summary', 'sentiment', 'recommendation', 'keyThemes']
+                  }
+              }
+          });
+
+          if (response.text) {
+              res.json(JSON.parse(response.text.trim()));
+          } else {
+              throw new Error("Empty response from AI");
+          }
+      } catch (err: any) {
+          console.error("Gemini API Strategic Briefing Error:", err);
+          res.status(500).json({ error: err.message });
+      }
+  });
+
+  // Catch-all for API routes to prevent them from falling through to the SPA frontend
+  app.all('/api/*all', (req, res) => {
+      res.status(404).json({ error: `API route not found: ${req.method} ${req.path}` });
   });
 
   // Vite middleware for development

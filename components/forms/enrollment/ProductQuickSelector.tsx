@@ -13,21 +13,64 @@ interface Props {
   onQuickAdd: (preset: ProductPreset) => void;
 }
 
+function ProductRow({ p, quantities, onAdd }: { p: Product; quantities: string[]; onAdd: (item: CartItem) => void }) {
+  const [qty, setQty] = useState(quantities[0] || '30 Day Supply');
+  const [dosage, setDosage] = useState(p.dosages?.[0] || '');
+
+  const handleAdd = () => {
+    onAdd({
+      id: crypto.randomUUID(),
+      product: p.name,
+      quantity: qty,
+      dosage: dosage,
+      unitPrice: p.price,
+    });
+    sfx.playSuccess();
+  };
+
+  return (
+    <div className="flex flex-col xl:flex-row xl:items-center justify-between p-3 border border-border-subtle rounded-xl bg-surface-alt hover:border-indigo-500/30 transition-colors gap-2 shadow-sm">
+      <div className="flex-1">
+        <div className="font-bold text-sm text-text-primary">{p.name}</div>
+        <div className="text-xs text-text-muted font-mono mt-0.5">${p.price.toFixed(2)}</div>
+      </div>
+      <div className="flex flex-wrap items-center gap-2">
+        <select 
+          value={qty} 
+          onChange={(e) => setQty(e.target.value)} 
+          className="bg-surface-main border border-border-strong rounded-md px-3 py-1.5 text-xs font-bold text-text-primary outline-none hover:border-indigo-500/30 focus:border-indigo-500/50 appearance-none cursor-pointer bg-[url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2224%22%20height%3D%2224%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%239CA3AF%22%20stroke-width%3D%222.5%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpolyline%20points%3D%226%209%2012%2015%2018%209%22%3E%3C%2Fpolyline%3E%3C%2Fsvg%3E')] bg-[length:1em_1em] bg-no-repeat transition-all"
+          style={{ backgroundPosition: 'right 0.5rem center', paddingRight: '2rem' }}
+        >
+          {quantities.map(q => (
+              <option key={q} value={q}>{q} {getQuantityMultiplier(q) > 1 ? `(${getQuantityMultiplier(q)}x)` : ''}</option>
+          ))}
+        </select>
+        
+        {p.dosages && p.dosages.length > 0 && (
+          <select 
+            value={dosage} 
+            onChange={(e) => setDosage(e.target.value)} 
+            className="bg-surface-main border border-border-strong rounded-md px-3 py-1.5 text-xs font-bold text-text-primary outline-none hover:border-indigo-500/30 focus:border-indigo-500/50 appearance-none cursor-pointer bg-[url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2224%22%20height%3D%2224%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%239CA3AF%22%20stroke-width%3D%222.5%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpolyline%20points%3D%226%209%2012%2015%2018%209%22%3E%3C%2Fpolyline%3E%3C%2Fsvg%3E')] bg-[length:1em_1em] bg-no-repeat transition-all"
+            style={{ backgroundPosition: 'right 0.5rem center', paddingRight: '2rem' }}
+          >
+            {p.dosages.map(d => (
+                <option key={d} value={d}>{d}</option>
+            ))}
+          </select>
+        )}
+        
+        <button 
+          onClick={handleAdd}
+          className="bg-status-success hover:bg-status-success/90 text-white px-3 py-1 rounded-md text-[11px] uppercase tracking-wider font-bold transition-all shadow-sm flex items-center gap-1.5 active:scale-95"
+        >
+          <Plus size={12} strokeWidth={3} /> Add
+        </button>
+      </div>
+    </div>
+  );
+}
+
 export function ProductQuickSelector({ products, presets, quantities, onAdd, onQuickAdd }: Props) {
-  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
-  const [selectedQuantity, setSelectedQuantity] = useState<string>(quantities[0] || '30 Day Supply');
-  const [selectedDosage, setSelectedDosage] = useState<string>('');
-
-  useEffect(() => {
-    if (selectedProduct && selectedProduct.dosages && selectedProduct.dosages.length > 0) {
-      if (!selectedProduct.dosages.includes(selectedDosage)) {
-        setSelectedDosage(selectedProduct.dosages[0]);
-      }
-    } else {
-      setSelectedDosage('');
-    }
-  }, [selectedProduct, selectedDosage]);
-
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.altKey) {
@@ -46,31 +89,11 @@ export function ProductQuickSelector({ products, presets, quantities, onAdd, onQ
           onQuickAdd(presets[2]);
           sfx.playSuccess();
         }
-        if (e.key.toLowerCase() === 'a') {
-          e.preventDefault();
-          document.getElementById('manual-add-product-btn')?.focus();
-        }
       }
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [presets, onQuickAdd]);
-
-  const handleAdd = () => {
-    if (!selectedProduct) return;
-    onAdd({
-      id: crypto.randomUUID(),
-      product: selectedProduct.name,
-      quantity: selectedQuantity,
-      dosage: selectedDosage,
-      unitPrice: selectedProduct.price,
-    });
-    sfx.playSuccess();
-    // Reset selection after adding
-    setSelectedProduct(null);
-  };
-
-  const canAdd = selectedProduct && (!selectedProduct.dosages?.length || selectedDosage);
 
   return (
     <div className="flex flex-col gap-4">
@@ -103,128 +126,15 @@ export function ProductQuickSelector({ products, presets, quantities, onAdd, onQ
       )}
 
       {/* Manual Selection */}
-      <Card variant="refraction" className="p-4 bg-surface-main border-border-subtle shadow-sm flex flex-col gap-5">
-        <h4 className="text-xs font-black text-text-muted uppercase tracking-widest flex items-center gap-2">
-          <Package size={14} className="text-indigo-400" /> Manual Selection
+      <Card variant="refraction" className="p-4 bg-surface-main border-border-subtle shadow-sm flex flex-col gap-3">
+        <h4 className="text-xs font-black text-text-muted uppercase tracking-widest flex items-center gap-2 pb-2">
+          <Package size={14} className="text-indigo-400" /> Full Product Catalog
         </h4>
-
-        {/* Product Selection */}
+        
         <div className="flex flex-col gap-2">
-          <label className="text-[10px] font-bold text-indigo-400 uppercase tracking-widest">1. Select Product</label>
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-            {products.map((p) => {
-              const isSelected = selectedProduct?.id === p.id;
-              return (
-                <button
-                  key={p.id}
-                  onClick={() => {
-                    setSelectedProduct(p);
-                    sfx.playClick();
-                  }}
-                  className={`relative p-3 rounded-xl border text-left transition-all flex flex-col gap-1 ${
-                    isSelected
-                      ? 'border-indigo-500 bg-indigo-500/10 scale-[1.02] shadow-sm'
-                      : 'border-border-subtle bg-surface-alt hover:border-indigo-500/50 hover:bg-surface-alt/80'
-                  }`}
-                  aria-label={`Select product ${p.name}`}
-                >
-                  <span className={`font-bold text-sm ${isSelected ? 'text-indigo-400' : 'text-text-primary'}`}>
-                    {p.name}
-                  </span>
-                  <span className="text-xs text-text-muted font-mono">${p.price.toFixed(2)}</span>
-                  {isSelected && (
-                    <div className="absolute top-2 right-2 text-indigo-500">
-                      <Check size={14} strokeWidth={3} />
-                    </div>
-                  )}
-                </button>
-              );
-            })}
-          </div>
-        </div>
-
-        {/* Supply Selection */}
-        <div className="flex flex-col gap-2">
-          <label className="text-[10px] font-bold text-emerald-400 uppercase tracking-widest flex items-center gap-1.5">
-             <CalendarClock size={12} /> 2. Supply Duration
-          </label>
-          <div className="flex flex-wrap gap-2">
-            {quantities.map((q) => {
-              const isSelected = selectedQuantity === q;
-              const multiplier = getQuantityMultiplier(q);
-              return (
-                <button
-                  key={q}
-                  onClick={() => {
-                    setSelectedQuantity(q);
-                    sfx.playClick();
-                  }}
-                  className={`group relative px-4 py-2 rounded-xl border font-bold text-sm transition-all flex items-center gap-2 ${
-                    isSelected
-                      ? 'border-emerald-500 bg-emerald-500/10 text-emerald-400 shadow-sm scale-[1.02]'
-                      : 'border-border-subtle bg-surface-alt text-text-primary hover:border-emerald-500/50 hover:bg-surface-alt/80'
-                  }`}
-                  title={`${multiplier}x price multiplier`}
-                  aria-label={`Select quantity ${q}`}
-                >
-                  {q}
-                  {multiplier > 1 && (
-                     <span className={`text-[10px] px-1.5 py-0.5 rounded leading-none ${isSelected ? 'bg-emerald-500/20 text-emerald-400' : 'bg-surface-main text-text-muted group-hover:text-emerald-400'}`}>
-                        {multiplier}x
-                     </span>
-                  )}
-                </button>
-              );
-            })}
-          </div>
-        </div>
-
-        {/* Dosage Selection (Conditional) */}
-        {selectedProduct?.dosages && selectedProduct.dosages.length > 0 && (
-          <div className="flex flex-col gap-2 animate-in fade-in slide-in-from-top-2 duration-300">
-            <label className="text-[10px] font-bold text-amber-400 uppercase tracking-widest flex items-center gap-1.5">
-               <Pill size={12} /> 3. Select Dosage
-            </label>
-            <div className="flex flex-wrap gap-2">
-              {selectedProduct.dosages.map((d) => {
-                const isSelected = selectedDosage === d;
-                return (
-                  <button
-                    key={d}
-                    onClick={() => {
-                      setSelectedDosage(d);
-                      sfx.playClick();
-                    }}
-                    className={`px-4 py-2 rounded-xl border font-bold text-sm transition-all ${
-                      isSelected
-                        ? 'border-amber-500 bg-amber-500/10 text-amber-400 shadow-sm scale-[1.02]'
-                        : 'border-border-subtle bg-surface-alt text-text-primary hover:border-amber-500/50 hover:bg-surface-alt/80'
-                    }`}
-                    aria-label={`Select dosage ${d}`}
-                  >
-                    {d}
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-        )}
-
-        {/* Add Button */}
-        <div className="pt-2">
-           <button
-             id="manual-add-product-btn"
-             onClick={handleAdd}
-             disabled={!canAdd}
-             className={`w-full py-3 rounded-xl font-black flex items-center justify-center gap-2 transition-all shadow-md focus:ring-4 focus:outline-none ${
-               canAdd 
-                 ? 'bg-status-success text-white hover:bg-status-success/90 border border-status-success/50 focus:ring-status-success/20 active:scale-[0.98]'
-                 : 'bg-surface-alt text-text-muted border border-border-subtle cursor-not-allowed opacity-50'
-             }`}
-             aria-label="Add product to cart"
-           >
-             <Plus size={18} strokeWidth={3} /> ADD TO ORDER (Alt+A)
-           </button>
+            {products.map(p => (
+                <ProductRow key={p.id} p={p} quantities={quantities} onAdd={onAdd} />
+            ))}
         </div>
       </Card>
     </div>

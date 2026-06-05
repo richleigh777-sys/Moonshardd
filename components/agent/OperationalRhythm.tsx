@@ -11,6 +11,7 @@ import { sfx } from '../../lib/soundService';
 import { useCRM } from '../../hooks/useCRM';
 import { useAgentStats } from './hooks/useAgentStats';
 import { useLeadRouter } from '../../hooks/useLeadRouter';
+import { IntelligentTerminalMap } from './IntelligentTerminalMap';
 
 interface OperationalRhythmProps {
     notes: Note[];
@@ -335,6 +336,14 @@ export const OperationalRhythm: React.FC<OperationalRhythmProps> = ({ notes, sal
                     </div>
                 </Card>
             )}
+
+            {/* Intelligent Terminal Routing & Diagnostic Gateway */}
+            <IntelligentTerminalMap 
+                sales={sales} 
+                notes={notes} 
+                currentUser={currentUser} 
+                onLoadLead={onLoadLead} 
+            />
 
             {/* Rhythm Queue */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">

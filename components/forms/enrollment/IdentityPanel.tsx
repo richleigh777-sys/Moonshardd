@@ -3,6 +3,7 @@ import React from 'react';
 import { Fingerprint } from 'lucide-react';
 import { BiographicalSector } from './sectors/BiographicalSector';
 import { LogisticsSector } from './sectors/LogisticsSector';
+import { MedicalSector } from './sectors/MedicalSector';
 
 import { Card } from '../../ui/Base';
 
@@ -51,6 +52,14 @@ export const IdentityPanel: React.FC<IdentityPanelProps> = ({
                         handleIdentityChange={handleIdentityChange} 
                         useShippingForBilling={useShippingForBilling} 
                         setUseShippingForBilling={setUseShippingForBilling} 
+                    />
+                </div>
+
+                {/* 3. Medical Background */}
+                <div className="relative pl-4 border-l-2 border-rose-500/50">
+                    <MedicalSector 
+                        formData={formData} 
+                        handleIdentityChange={handleIdentityChange} 
                     />
                 </div>
             </div>

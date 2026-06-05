@@ -21,12 +21,32 @@ export const AddressSection: React.FC<AddressSectionProps> = ({ formData, onChan
       </div>
       
       <div className="p-6 space-y-5">
-        <div>
-          <label className="text-sm font-semibold text-slate-300 mb-1.5 flex items-center gap-2">
+        {/* Shipping Address Container */}
+        <div className="space-y-4">
+          <label className="text-sm font-semibold text-slate-300 flex items-center gap-2">
             <MapPin size={14} className="text-slate-500"/> Shipping Address
           </label>
-          <input type="text" name="shippingAddress" value={formData.shippingAddress} onChange={onChange} placeholder="123 Main St, City, State ZIP"
-            className={inputClass} />
+          
+          <div className="flex gap-4">
+            <div className="flex-1">
+              <input type="text" name="shippingAddress" value={formData.shippingAddress || ''} onChange={onChange} placeholder="Street Address" className={inputClass} />
+            </div>
+            <div className="w-1/3">
+              <input type="text" name="shippingApt" value={formData.shippingApt || ''} onChange={onChange} placeholder="Apt / Suite (Optional)" className={inputClass} />
+            </div>
+          </div>
+          
+          <div className="flex gap-4">
+            <div className="flex-1">
+              <input type="text" name="shippingCity" value={formData.shippingCity || ''} onChange={onChange} placeholder="City" className={inputClass} />
+            </div>
+            <div className="w-1/3">
+              <input type="text" name="shippingState" value={formData.shippingState || ''} onChange={onChange} placeholder="State" className={inputClass} />
+            </div>
+            <div className="w-1/3">
+              <input type="text" name="shippingZip" value={formData.shippingZip || ''} onChange={onChange} placeholder="Zip Code" className={inputClass} />
+            </div>
+          </div>
         </div>
         
         <div className="pt-2">
@@ -40,12 +60,31 @@ export const AddressSection: React.FC<AddressSectionProps> = ({ formData, onChan
         </div>
 
         {!useShippingForBilling && (
-          <div className="pt-4 border-t border-slate-700/50 animate-in slide-in-from-top-4 duration-300">
-            <label className="text-sm font-semibold text-slate-300 mb-1.5 flex items-center gap-2">
+          <div className="pt-4 border-t border-slate-700/50 animate-in slide-in-from-top-4 duration-300 space-y-4">
+            <label className="text-sm font-semibold text-slate-300 flex items-center gap-2">
               <MapPin size={14} className="text-slate-500"/> Billing Address
             </label>
-            <input type="text" name="billingAddress" value={formData.billingAddress} onChange={onChange} placeholder="456 Billing Ave, City, State ZIP"
-              className={inputClass} />
+            
+            <div className="flex gap-4">
+              <div className="flex-1">
+                <input type="text" name="billingAddress" value={formData.billingAddress || ''} onChange={onChange} placeholder="Street Address" className={inputClass} />
+              </div>
+              <div className="w-1/3">
+                <input type="text" name="billingApt" value={formData.billingApt || ''} onChange={onChange} placeholder="Apt / Suite (Optional)" className={inputClass} />
+              </div>
+            </div>
+            
+            <div className="flex gap-4">
+              <div className="flex-1">
+                <input type="text" name="billingCity" value={formData.billingCity || ''} onChange={onChange} placeholder="City" className={inputClass} />
+              </div>
+              <div className="w-1/3">
+                <input type="text" name="billingState" value={formData.billingState || ''} onChange={onChange} placeholder="State" className={inputClass} />
+              </div>
+              <div className="w-1/3">
+                <input type="text" name="billingZip" value={formData.billingZip || ''} onChange={onChange} placeholder="Zip Code" className={inputClass} />
+              </div>
+            </div>
           </div>
         )}
       </div>

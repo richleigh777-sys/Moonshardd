@@ -69,15 +69,9 @@ export const LedgerTable: React.FC<LedgerTableProps> = ({
     sales, columnOrder, visibleColumns, sortConfig, handleSort, selectedIds, toggleSelect, toggleSelectAll,
     allowActions, onAction, onColumnReorder, density, isLoading
 }) => {
-    const [isAddressExpanded, setIsAddressExpanded] = useState(false);
-    
     const activeColumns = useMemo(() => {
-        let cols = columnOrder.filter(k => visibleColumns[k]);
-        if (!isAddressExpanded) {
-            cols = cols.filter(k => !['city', 'state', 'zip'].includes(k));
-        }
-        return cols;
-    }, [columnOrder, visibleColumns, isAddressExpanded]);
+        return columnOrder.filter(k => visibleColumns[k]);
+    }, [columnOrder, visibleColumns]);
     const [contextMenu, setContextMenu] = useState<{ x: number, y: number, sale: Sale } | null>(null);
     const [actionModal, setActionModal] = useState<{ action: 'approve' | 'decline' | 'qa', sale: Sale } | null>(null);
     
@@ -175,6 +169,8 @@ export const LedgerTable: React.FC<LedgerTableProps> = ({
         state: 'State',
         zip: 'ZIP Code',
         product: 'Product',
+        quantity: 'Quantity',
+        dosage: 'Dosage',
         amount: 'Amount',
         bankNetwork: 'Bank/Network',
         cardNumber: 'Card Number',
@@ -185,10 +181,14 @@ export const LedgerTable: React.FC<LedgerTableProps> = ({
         orderId: 'Order ID',
         qaScore: 'QA',
         declineReason: 'Decline Reason',
+        deliveryStatus: 'Shipping Status',
+        trackingId: 'Tracking ID',
+        recording: 'Recording',
         followUpDate: 'Follow Up',
         callbackTime: 'Callback Time',
         isReorder: 'Reorder',
-        callSummary: 'Notes'
+        callSummary: 'Notes',
+        cmd: 'CMD'
     };
 
     const COLUMN_WIDTHS: Record<string, string> = {
@@ -215,6 +215,8 @@ export const LedgerTable: React.FC<LedgerTableProps> = ({
         state: 'w-20',
         zip: 'w-24',
         product: 'w-48',
+        quantity: 'w-24',
+        dosage: 'w-32',
         amount: 'w-24',
         bankNetwork: 'w-36',
         cardNumber: 'w-32',
@@ -225,10 +227,14 @@ export const LedgerTable: React.FC<LedgerTableProps> = ({
         orderId: 'w-32',
         qaScore: 'w-20',
         declineReason: 'w-48',
+        deliveryStatus: 'w-32',
+        trackingId: 'w-36',
+        recording: 'w-48',
         followUpDate: 'w-32',
         callbackTime: 'w-32',
         isReorder: 'w-24',
-        callSummary: 'w-64'
+        callSummary: 'w-64',
+        cmd: 'w-24'
     };
 
     return (
@@ -271,15 +277,6 @@ export const LedgerTable: React.FC<LedgerTableProps> = ({
                                 <div className="flex items-center gap-1.5 truncate">
                                     <GripVertical size={14} className="text-text-muted/20 group-hover:text-text-muted transition-colors shrink-0"/>
                                     <span className="truncate">{COLUMN_LABELS[col] || col.replace(/([A-Z])/g, ' $1').trim()}</span>
-                                    {col === 'address' && (
-                                        <button 
-                                            onClick={(e) => { e.stopPropagation(); setIsAddressExpanded(!isAddressExpanded); sfx.playClick(); }} 
-                                            className="ml-1 text-[10px] text-text-muted hover:text-accent-primary shrink-0 transition-colors px-1 rounded bg-surface-main border border-border-subtle hover:border-accent-primary flex items-center"
-                                            title={isAddressExpanded ? "Collapse Address Columns" : "Expand Address Columns"}
-                                        >
-                                            {isAddressExpanded ? 'Collapse' : 'Expand'}
-                                        </button>
-                                    )}
                                     {sortConfig.key === col && (
                                         <span className="text-accent-primary shrink-0">
                                             {sortConfig.direction === 'asc' ? <ChevronUp size={14}/> : <ChevronDown size={14}/>}

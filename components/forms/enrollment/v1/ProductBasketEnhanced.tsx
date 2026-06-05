@@ -80,7 +80,7 @@ export function ProductBasketEnhanced({
       </div>
 
       {/* Content View */}
-      <div className="animate-in slide-in-from-top-4 fade-in duration-300 flex flex-col gap-6">
+      <div className="animate-in slide-in-from-top-4 fade-in duration-300 flex flex-col gap-4">
           <ProductQuickSelector
             products={activeProducts}
             presets={activePresets}
@@ -90,8 +90,8 @@ export function ProductBasketEnhanced({
           />
           
           <div className="flex flex-col gap-2">
-            <h4 className="text-[11px] font-black text-text-muted tracking-widest uppercase flex items-center gap-2">
-              <PackageOpen size={14} /> CURRENT CART
+            <h4 className="text-[10px] font-black text-text-muted tracking-widest uppercase flex items-center gap-2">
+              <PackageOpen size={12} /> CURRENT CART
             </h4>
             <CartPreview
               cart={cart}
@@ -100,10 +100,10 @@ export function ProductBasketEnhanced({
             />
           </div>
 
-          <Card variant="refraction" className="p-4 bg-surface-main border-border-subtle shadow-sm flex flex-col gap-3">
+          <Card variant="refraction" className="p-3 bg-surface-main border-border-subtle shadow-sm flex flex-col gap-2">
              <div className="flex items-center justify-between">
-                <label className="text-[11px] font-bold text-text-muted tracking-widest flex items-center gap-1.5 uppercase">
-                   <Edit3 size={14} className="text-indigo-400" /> ORDER NOTES
+                <label className="text-[10px] font-bold text-text-muted tracking-widest flex items-center gap-1.5 uppercase">
+                   <Edit3 size={12} className="text-indigo-400" /> ORDER NOTES
                 </label>
                 <span className="text-[10px] font-mono text-text-muted/70">
                    {notes.length.toLocaleString()}/2000
@@ -112,8 +112,8 @@ export function ProductBasketEnhanced({
              <textarea
                value={notes}
                onChange={(e) => setNotes(e.target.value.substring(0, 2000))}
-               placeholder="Special instructions, delivery requests, or agent notes to attach to this order..."
-               className="w-full bg-surface-alt/50 border border-border-subtle rounded-xl p-3 text-sm text-text-primary outline-none focus:border-indigo-500/50 resize-y min-h-[80px]"
+               placeholder="Special instructions or delivery requests..."
+               className="w-full bg-surface-alt/50 border border-border-subtle rounded-xl p-2.5 text-sm text-text-primary outline-none focus:border-indigo-500/50 resize-y min-h-[60px]"
              />
           </Card>
       </div>

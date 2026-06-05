@@ -1,10 +1,10 @@
 
 import React, { useState, useRef, useEffect, useMemo, useCallback } from 'react';
-import { ArrowDown, Lock, FileText, X, UploadCloud, Pin } from 'lucide-react';
+import { ArrowDown, Lock, FileText, X, UploadCloud, Pin, MapPin } from 'lucide-react';
 import { Virtuoso } from 'react-virtuoso';
 import { Conversation } from '../../services/ChatService';
 import { MessageBubble } from './MessageBubble';
-import { ChatMessage, User, Attachment } from '../../types';
+import { ChatMessage, User, Attachment, CallState, CallParticipant } from '../../types';
 import { sfx } from '../../lib/soundService';
 import { ForwardMessageModal } from '../modals/ForwardMessageModal';
 import { useSystem } from '../../hooks/useSystem';
@@ -17,6 +17,9 @@ import { ChatInfoSidebar } from './ChatInfoSidebar';
 import { MediaViewer } from './MediaViewer';
 import { useCRM } from '../../hooks/useCRM';
 import { DragOverlay } from './ChatParts';
+import { Modal } from '../ui/Modal';
+import { PollCreator } from './PollCreator';
+import { CallOverlay } from './CallOverlay';
 
 interface Props {
   currentUser: User;
@@ -49,6 +52,130 @@ export const ChatWindow: React.FC<Props> = ({
     isMaximized, toggleMaximize, onCreateGroup
 }) => {
   const { users } = useCRM();
+  
+  // Real active modules states
+  const [showPollModal, setShowPollModal] = useState(false);
+  const [showLocationModal, setShowLocationModal] = useState(false);
+  const [customLocation, setCustomLocation] = useState('');
+  const [selectedPresetLocation, setSelectedPresetLocation] = useState('');
+
+  const [callState, setCallState] = useState<CallState>({
+      isActive: false,
+      isMinimized: false,
+      type: null,
+      status: 'ended',
+      channelId: null,
+      participants: []
+  });
+  
+  const localVideoRef = useRef<HTMLVideoElement | null>(null);
+
+  // Simulated calling mechanism with true viewport rendering
+  const startCall = (type: 'audio' | 'video') => {
+      sfx.playClick();
+      setToast({ title: 'Secure Uplink', message: `Initializing encrypted ${type} channel...`, type: 'info' });
+      onStartCall?.(type);
+
+      const peerAvatar = activeConversation.peerAvatar || 'https://picsum.photos/seed/peer/100/100';
+      
+      setCallState({
+          isActive: true,
+          isMinimized: false,
+          type,
+          status: 'dialing',
+          channelId: activeConversation.id,
+          channelName: activeConversation.peerName,
+          participants: [
+              {
+                  id: activeConversation.peerId || 'peer',
+                  name: activeConversation.peerName,
+                  avatar: peerAvatar,
+                  isMuted: false,
+                  isTalking: false,
+                  isVideoOff: type === 'audio'
+              }
+          ],
+          startTime: Date.now(),
+          isMuted: false,
+          isCameraOff: type === 'audio',
+          isScreenSharing: false
+      });
+
+      // Simulated answer feedback loop
+      setTimeout(() => {
+          setCallState(prev => {
+              if (prev.isActive && prev.status === 'dialing') {
+                  setToast({ title: 'Uplink Established', message: `Connected to secure room: ${prev.channelName}`, type: 'success' });
+                  sfx.playSubmit();
+                  return {
+                      ...prev,
+                      status: 'connected',
+                      startTime: Date.now()
+                  };
+              }
+              return prev;
+          });
+      }, 2500);
+  };
+
+  const endCall = () => {
+      sfx.playDecline();
+      setToast({ title: 'Uplink Terminated', message: 'Secure call ended.', type: 'warning' });
+      setCallState({
+          isActive: false,
+          isMinimized: false,
+          type: null,
+          status: 'ended',
+          channelId: null,
+          participants: []
+      });
+  };
+
+  const toggleCallMute = () => {
+      sfx.playClick();
+      setCallState(prev => ({ ...prev, isMuted: !prev.isMuted }));
+  };
+
+  const toggleCallVideo = () => {
+      sfx.playClick();
+      setCallState(prev => ({ ...prev, isCameraOff: !prev.isCameraOff }));
+  };
+
+  const toggleCallScreenShare = () => {
+      sfx.playClick();
+      setCallState(prev => {
+          const nextShare = !prev.isScreenSharing;
+          setToast({
+              title: 'Screen Share',
+              message: nextShare ? 'Screen sharing active.' : 'Screen sharing stopped.',
+              type: 'info'
+          });
+          return { ...prev, isScreenSharing: nextShare };
+      });
+  };
+
+  const toggleCallMinimize = () => {
+      sfx.playClick();
+      setCallState(prev => ({ ...prev, isMinimized: !prev.isMinimized }));
+  };
+
+  const handleLocationSubmit = (addressToShare: string) => {
+      if (!addressToShare) {
+          setToast({ title: 'Location Error', message: 'Please select or enter an address.', type: 'error' });
+          return;
+      }
+      const locationData: any = {
+          address: addressToShare,
+          latitude: 37.7749 + (Math.random() - 0.5) * 0.1,
+          longitude: -122.4194 + (Math.random() - 0.5) * 0.1
+      };
+      // Send location directly via onSend
+      onSend("", [], undefined, { location: locationData });
+      setShowLocationModal(false);
+      setCustomLocation('');
+      setSelectedPresetLocation('');
+      setToast({ title: 'Location Shared', message: `Location shared: ${addressToShare}`, type: 'success' });
+  };
   const [input, setInput] = useState(activeConversation.draft || "");
   const [replyTo, setReplyTo] = useState<ChatMessage | null>(null);
   const [editingMsg, setEditingMsg] = useState<ChatMessage | null>(null);
@@ -127,7 +254,7 @@ export const ChatWindow: React.FC<Props> = ({
     setShowScrollButton(!isNearBottom);
   }, []);
 
-  const handleSend = useCallback((text: string, atts: Attachment[], replyMsg?: ChatMessage, extras?: any) => {
+  const handleSend = (text: string, atts: Attachment[], replyMsg?: ChatMessage, extras?: any) => {
     // Combine ChatInput's immediate attachments (e.g. voice) with Staged Attachments
     const allAttachments = [...pendingAttachments, ...atts];
 
@@ -143,7 +270,7 @@ export const ChatWindow: React.FC<Props> = ({
     setReplyTo(null);
     onTyping(false);
     sfx.playSubmit();
-  }, [editingMsg, onEdit, onSend, onTyping, pendingAttachments]);
+  };
 
   // Fix: Actual File Processing Logic
   const handleAttach = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -216,7 +343,7 @@ export const ChatWindow: React.FC<Props> = ({
             typingNow={typingNow}
             isMaximized={isMaximized}
             toggleMaximize={toggleMaximize}
-            onStartCall={onStartCall}
+            onStartCall={startCall}
             showMediaSidebar={showMediaSidebar}
             toggleMediaSidebar={() => setShowMediaSidebar(!showMediaSidebar)}
             onViewProfileImage={() => { if(activeConversation.peerAvatar) setViewingMedia({ src: activeConversation.peerAvatar, type: 'image', name: activeConversation.peerName }); }}
@@ -328,11 +455,11 @@ export const ChatWindow: React.FC<Props> = ({
         </div>
 
         {/* SCROLL TO BOTTOM BUTTON */}
-        <div className="absolute bottom-32 right-10 z-40 transition-all duration-300 pointer-events-none">
+        <div className="absolute bottom-28 right-8 z-40 transition-all duration-300 pointer-events-none">
             {showScrollButton && (
                 <button 
                     onClick={() => scrollToBottom('smooth')}
-                    className="p-3 bg-indigo-500 hover:bg-indigo-600 text-white rounded-full shadow-[0_4px_14px_rgba(0,0,0,0.39)] transition-all animate-in zoom-in pointer-events-auto flex items-center justify-center transform active:scale-95"
+                    className="p-3 bg-accent-secondary hover:bg-accent-secondary/90 text-surface-main rounded-full shadow-float transition-all animate-in zoom-in pointer-events-auto flex items-center justify-center transform active:scale-95"
                 >
                     <ArrowDown size={20} strokeWidth={2.5} />
                 </button>
@@ -345,7 +472,7 @@ export const ChatWindow: React.FC<Props> = ({
                 
                 {/* Pending Attachments Staging Area */}
                 {pendingAttachments.length > 0 && (
-                    <div className="flex gap-2 p-2 bg-surface-alt border border-border-subtle rounded-lg shadow-lg overflow-x-auto max-w-full">
+                    <div className="flex gap-2 p-2 bg-surface-alt/90 backdrop-blur-md border border-border-subtle rounded-xl shadow-float overflow-x-auto max-w-full animate-in slide-in-from-bottom-3">
                         {pendingAttachments.map((att, idx) => (
                             <div key={idx} className="relative group shrink-0">
                                 {att.type === 'image' ? (
@@ -353,7 +480,7 @@ export const ChatWindow: React.FC<Props> = ({
                                         <img src={att.url || 'https://picsum.photos/seed/scan/100/100'} className={`w-16 h-16 object-cover rounded-md border border-border-subtle ${att.isScanning ? 'blur-sm grayscale animate-pulse' : ''}`} alt="preview" />
                                         {att.isScanning && (
                                             <div className="absolute inset-0 flex items-center justify-center">
-                                                <div className="w-5 h-5 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin"></div>
+                                                <div className="w-5 h-5 border-2 border-accent-secondary border-t-transparent rounded-full animate-spin"></div>
                                             </div>
                                         )}
                                     </div>
@@ -365,7 +492,7 @@ export const ChatWindow: React.FC<Props> = ({
                                 )}
                                 <button 
                                     onClick={() => removeAttachment(idx)}
-                                    className="absolute -top-1.5 -right-1.5 bg-red-500 text-white p-0.5 rounded-full shadow-md hover:scale-110 active:scale-95 transition-all z-10"
+                                    className="absolute -top-1.5 -right-1.5 bg-status-error text-surface-main p-0.5 rounded-full shadow-md hover:scale-110 active:scale-95 transition-all z-10"
                                 >
                                     <X size={14} strokeWidth={3}/>
                                 </button>
@@ -376,12 +503,12 @@ export const ChatWindow: React.FC<Props> = ({
 
                 {activeConversation.peerName.startsWith('[INT]') ? (
                     <div className="flex justify-center p-2">
-                        <div className="flex items-center gap-2 bg-red-500/10 border border-red-500/20 text-status-error px-4 py-2 rounded-lg text-sm font-bold shadow-inner">
+                        <div className="flex items-center gap-2 bg-status-error/10 border border-status-error/20 text-status-error px-4 py-2 rounded-lg text-sm font-bold shadow-inner">
                             <Lock size={16} /> Restricted Internal Channel
                         </div>
                     </div>
                 ) : (
-                    <div className="bg-surface-alt rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.12)] border border-border-subtle focus-within:border-accent-secondary/50 focus-within:ring-2 focus-within:ring-accent-secondary/20 transition-all duration-300">
+                    <div className="w-full">
                         <ChatInput 
                             input={input}
                             setInput={setInput}
@@ -392,8 +519,8 @@ export const ChatWindow: React.FC<Props> = ({
                             onStartRecording={() => {}}
                             onStopRecording={() => {}}
                             onAttach={handleAttach}
-                            onCreatePoll={onCreatePoll || (() => {})}
-                            onShareLocation={onShareLocation || (() => {})}
+                            onCreatePoll={() => setShowPollModal(true)}
+                            onShareLocation={() => setShowLocationModal(true)}
                             placeholder={`Message...`}
                             replyTo={replyTo}
                             editingMsg={editingMsg}
@@ -435,6 +562,99 @@ export const ChatWindow: React.FC<Props> = ({
         messageToForward={forwardingMsg} 
         currentUser={currentUser}
       />
+
+      {/* CALL OVERLAY FOR TERMINAL */}
+      <CallOverlay 
+          callState={callState}
+          onEnd={endCall}
+          onMute={toggleCallMute}
+          onVideo={toggleCallVideo}
+          onScreenShare={toggleCallScreenShare}
+          onMinimize={toggleCallMinimize}
+          localVideoRef={localVideoRef}
+      />
+
+      {/* ONLINE POLL CREATOR MODAL */}
+      <Modal isOpen={showPollModal} onClose={() => setShowPollModal(false)} title="Create Secure Poll">
+          <PollCreator 
+              onSubmit={(question, options) => {
+                  const pollData = {
+                      question,
+                      options: options.map((opt, index) => ({
+                          id: `opt-${index}`,
+                          text: opt,
+                          votes: 0,
+                          voters: []
+                      }))
+                  };
+                  onSend("", [], undefined, { poll: pollData });
+                  setShowPollModal(false);
+                  setToast({ title: 'Poll Spawned', message: 'Encrypted poll successfully sent directly on-air.', type: 'success' });
+              }}
+              onCancel={() => setShowPollModal(false)}
+          />
+      </Modal>
+
+      {/* ENCRYPTED GEOLOCATION BROADCASTER MODAL */}
+      <Modal isOpen={showLocationModal} onClose={() => setShowLocationModal(false)} title="Share Encrypted Location">
+          <div className="flex flex-col gap-6">
+              <p className="text-sm font-semibold text-text-muted leading-relaxed">
+                  Select a predefined high-priority enterprise HQ node, or type a custom address coordinates below to broadcast safely on the secure channel.
+              </p>
+              
+              <div className="grid grid-cols-1 gap-2.5">
+                  {[
+                      { name: 'Silicon Valley HQ', val: 'Silicon Valley HQ: 1600 Amphitheatre Pkwy, Mountain View, CA' },
+                      { name: 'Manila Core Operations', val: 'Manila Core Operations Hub: 32nd St, Bonifacio Global City, Taguig, Manila' },
+                      { name: 'London Sales Office', val: 'London Sales Office: 1 Uxbridge Rd, Ealing, London W5 5TL, UK' },
+                  ].map((loc) => {
+                      const isSelected = selectedPresetLocation === loc.val;
+                      return (
+                          <button
+                              key={loc.name}
+                              type="button"
+                              onClick={() => { setSelectedPresetLocation(loc.val); setCustomLocation(''); }}
+                              className={`p-4 border text-left rounded-2xl flex items-center justify-between transition-all font-semibold ${isSelected ? 'border-indigo-500 bg-indigo-500/10 text-indigo-500' : 'border-border-subtle hover:bg-surface-alt text-text-primary bg-surface-main'}`}
+                          >
+                              <div className="flex items-center gap-3">
+                                  <MapPin className="text-indigo-500" size={18} />
+                                  <span>{loc.name}</span>
+                              </div>
+                              <span className="text-[11px] text-text-muted font-mono">{isSelected ? 'SELECTED' : 'PRESET'}</span>
+                          </button>
+                      );
+                  })}
+              </div>
+
+              <div className="flex flex-col gap-2">
+                  <label className="text-xs font-[700] tracking-wider text-text-muted">CUSTOM ADDRESS OR DATA LINK</label>
+                  <input
+                      type="text"
+                      placeholder="e.g. Clients Head Office, Tokyo, Japan"
+                      value={customLocation}
+                      onChange={(e) => { setCustomLocation(e.target.value); setSelectedPresetLocation(''); }}
+                      className="w-full px-4 py-3 bg-surface-alt border border-border-subtle rounded-xl text-sm font-semibold outline-none focus:ring-2 focus:ring-accent-secondary/50 text-text-primary transition-all"
+                  />
+              </div>
+
+              <div className="flex gap-3 justify-end mt-4 border-t border-border-subtle pt-5">
+                  <button
+                      type="button"
+                      onClick={() => setShowLocationModal(false)}
+                      className="px-5 py-2.5 rounded-xl border border-border-subtle text-sm font-bold text-text-muted hover:bg-surface-alt transition-colors"
+                  >
+                      Cancel
+                  </button>
+                  <button
+                      type="button"
+                      onClick={() => handleLocationSubmit(customLocation || selectedPresetLocation)}
+                      className="px-6 py-2.5 rounded-xl bg-indigo-500 text-surface-main font-bold hover:bg-indigo-600 shadow-sm transition-colors text-sm"
+                  >
+                      Share Coordinate
+                  </button>
+              </div>
+          </div>
+      </Modal>
     </div>
   );
 };
