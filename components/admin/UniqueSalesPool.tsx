@@ -10,9 +10,11 @@ import {
 import { motion, AnimatePresence } from 'motion/react';
 import { Customer, Sale } from '../../types';
 import { sfx } from '../../lib/soundService';
+import { useSystem } from '../../hooks/useSystem';
 
 export const UniqueSalesPool: React.FC = () => {
     const { customers = [], updateCustomer, deleteCustomer, addCustomer, sales = [] } = useCRM();
+    const { setToast } = useSystem();
 
     // Filtering, Searching & Sorting States
     const [searchQuery, setSearchQuery] = useState('');
@@ -341,9 +343,19 @@ export const UniqueSalesPool: React.FC = () => {
 
             await updateCustomer(editingCustomer.id, updates);
             setEditingCustomer(null);
+            setToast({
+                title: 'Record Updated',
+                message: `Client ${updates.fullName}'s unique profile record of UID ${editingCustomer.id} was saved.`,
+                type: 'success'
+            });
             playSuccess();
         } catch (error) {
             console.error('Failed to update customer:', error);
+            setToast({
+                title: 'Update Failed',
+                message: 'Failed to update customer profile in the central database.',
+                type: 'error'
+            });
             playDecline();
         }
     };
@@ -352,14 +364,22 @@ export const UniqueSalesPool: React.FC = () => {
     const handleAddCustomer = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!newCustForm.firstName || !newCustForm.phone) {
-            alert('First Name and Phone Number are required fields.');
+            setToast({
+                title: 'Required Fields Missing',
+                message: 'First Name and Phone Number are required fields to establish a customer record.',
+                type: 'warning'
+            });
             return;
         }
 
         const phoneClean = newCustForm.phone.replace(/\D/g, '');
         const exists = uniqueCustomers.some(c => (c.phone || '').replace(/\D/g, '') === phoneClean);
         if (exists) {
-            alert('Customer with this Phone Number already exists in the unique pool database.');
+            setToast({
+                title: 'Profile Already Exists',
+                message: `A unique profile with direct phone number ${newCustForm.phone} already exists in the central system.`,
+                type: 'warning'
+            });
             playDecline();
             return;
         }
@@ -420,9 +440,19 @@ export const UniqueSalesPool: React.FC = () => {
                 billingAddress: '', billingApt: '', billingCity: '', billingState: '', billingZip: '',
                 age: '', dob: '', height: '', weight: '', medicalConditions: ''
             });
+            setToast({
+                title: 'Unified Profile Added',
+                message: `Client ${fullName} was successfully provisioned in the unique sales directory.`,
+                type: 'success'
+            });
             playSuccess();
         } catch (error) {
             console.error('Failed to add unique customer:', error);
+            setToast({
+                title: 'Provisioning Failed',
+                message: 'Failed to save new unique customer profile to the system database.',
+                type: 'error'
+            });
             playDecline();
         }
     };
@@ -433,9 +463,19 @@ export const UniqueSalesPool: React.FC = () => {
             playClick();
             try {
                 await deleteCustomer(id);
+                setToast({
+                    title: 'Record Purged',
+                    message: `Client ${name} was permanently removed from the central CRM directory.`,
+                    type: 'error'
+                });
                 playDecline();
             } catch (err) {
                 console.error('Error deleting contact:', err);
+                setToast({
+                    title: 'Purge Failed',
+                    message: `System was unable to delete ${name}'s client record.`,
+                    type: 'error'
+                });
             }
         }
     };
@@ -984,7 +1024,11 @@ export const UniqueSalesPool: React.FC = () => {
                                                                                 onClick={(e) => {
                                                                                     e.stopPropagation();
                                                                                     playConfirm();
-                                                                                    alert('Successfully dispatched task! Agent call pool will prioritize this phone holder in callbacks.');
+                                                                                    setToast({
+                                                                                        title: 'Callback Prioritized',
+                                                                                        message: `Successfully dispatched task! Agent call pool will prioritize calling ${customer.firstName || 'customer'} immediately.`,
+                                                                                        type: 'success'
+                                                                                    });
                                                                                 }}
                                                                                 className="flex-1 py-1.5 px-3 bg-accent-primary text-white text-[10px] font-bold uppercase rounded-lg hover:bg-accent-primary/95 transition-all text-center"
                                                                             >
@@ -994,7 +1038,11 @@ export const UniqueSalesPool: React.FC = () => {
                                                                                 onClick={(e) => {
                                                                                     e.stopPropagation();
                                                                                     playConfirm();
-                                                                                    alert('SMS dispatch initiated. Standard template text payment link sent.');
+                                                                                    setToast({
+                                                                                        title: 'Payment Link Dispatched',
+                                                                                        message: `SMS text message initiated. Standard templated payment link dispatched to ${customer.phone || 'customer'}.`,
+                                                                                        type: 'info'
+                                                                                    });
                                                                                 }}
                                                                                 className="flex-1 py-1.5 px-3 border border-border-strong text-text-secondary text-[10px] font-bold uppercase rounded-lg hover:bg-surface-alt transition-all text-center"
                                                                             >
