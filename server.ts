@@ -41,6 +41,31 @@ async function startServer() {
   const app = express();
   const PORT = 3000;
 
+  // --- Boot-Time Database Optimization & Indexing ---
+  if (process.env.DATABASE_URL) {
+      try {
+          await query(`CREATE TABLE IF NOT EXISTS crm_documents (
+              id VARCHAR(255),
+              collection_name VARCHAR(100) NOT NULL,
+              data JSONB NOT NULL,
+              created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+              updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+              PRIMARY KEY (collection_name, id)
+          )`);
+          
+          // Verify optimized indices exist for high frequency concurrent lookups
+          await query(`CREATE INDEX IF NOT EXISTS idx_crm_documents_normalized_phone 
+                       ON crm_documents ((data->>'normalizedPhone')) 
+                       WHERE collection_name = 'customers'`);
+          await query(`CREATE INDEX IF NOT EXISTS idx_crm_documents_raw_phone 
+                       ON crm_documents ((data->>'phone')) 
+                       WHERE collection_name = 'customers'`);
+          console.log("[DB OPTIMIZATION] Connection pool verified and index tables primed.");
+      } catch (dbErr: any) {
+          console.error("[DB Boot Warning] Index setup deferred:", dbErr.message);
+      }
+  }
+
   app.use(cors({ origin: process.env.CORS_ORIGIN || '*' })); // Restrict CORS
   
   // Security Headers
@@ -556,6 +581,130 @@ async function startServer() {
           }
       } catch (err: any) {
           console.error("Gemini API Strategic Briefing Error:", err);
+          res.status(500).json({ error: err.message });
+      }
+  });
+
+  // --- 4. ViciDial Inbound Web Form Hook ---
+  // When ViciDial delivers an autodialed call to an agent, it triggers this Webhook setting,
+  // which automatically inserts or updates the customer in our CRM and broadcasts
+  // a live WebSocket notification so that the agent interface responds immediately!
+  app.all("/api/telephony/vicidial-push", async (req, res) => {
+      // Enable CORS for external bookmarklet support
+      res.setHeader("Access-Control-Allow-Origin", "*");
+      res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+      res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
+      
+      if (req.method === 'OPTIONS') {
+          return res.status(200).end();
+      }
+
+      try {
+          const { phone, first_name, last_name, address, city, state, zip, email, lead_id, campaign_id, agent_user } = { ...req.query, ...req.body };
+          
+          if (!phone) {
+              return res.status(400).json({ error: "Missing required parameter: phone" });
+          }
+
+          const rawPhone = String(phone);
+          const cleanPhone = rawPhone.replace(/\D/g, '');
+          if (!cleanPhone) {
+              return res.status(400).json({ error: "Invalid phone number digits" });
+          }
+
+          const id = lead_id ? `vici-${lead_id}` : `vici-${cleanPhone}`;
+          const firstNameStr = String(first_name || '').trim();
+          const lastNameStr = String(last_name || '').trim();
+          const fullNameStr = [firstNameStr, lastNameStr].filter(Boolean).join(' ') || 'Automated Live Lead';
+          const emailStr = String(email || '').trim().toLowerCase();
+          const fullAddress = [
+              String(address || '').trim(),
+              String(city || '').trim(),
+              String(state || '').trim(),
+              String(zip || '').trim()
+          ].filter(Boolean).join(', ');
+
+          const payload = {
+              id,
+              name: fullNameStr,
+              firstName: firstNameStr || 'Automated',
+              lastName: lastNameStr || 'Live Lead',
+              fullName: fullNameStr,
+              phone: rawPhone,
+              email: emailStr,
+              address: fullAddress,
+              normalizedPhone: cleanPhone,
+              normalizedEmail: emailStr,
+              addressFingerprint: fullAddress.replace(/\s/g, '').toLowerCase(),
+              tags: ["Live Dialer Inbound", campaign_id ? `Campaign ${campaign_id}` : ''].filter(Boolean),
+              salesHistory: [],
+              phones: [rawPhone],
+              emails: emailStr ? [emailStr] : [],
+              ltv: 0,
+              orderCount: 0,
+              lastOrderDate: 0,
+              firstSource: "ViciDial Push",
+              isBackgroundViciLead: true,
+              assigned_agent_id: agent_user || 'External Autodialer',
+              updatedAt: Date.now()
+          };
+
+          if (process.env.DATABASE_URL) {
+              // Query to check if user already exists
+              const checkRes = await query(
+                  `SELECT id, data FROM crm_documents WHERE collection_name = 'customers' AND (id = $1 OR data->>'normalizedPhone' = $2 OR data->>'phone' = $3)`,
+                  [id, cleanPhone, rawPhone]
+              );
+
+              if (checkRes.rows.length > 0) {
+                  // User requested not to save or modify existing customer phone numbers
+                  return res.json({ 
+                      success: true, 
+                      message: "Customer already exists with this phone number. Skipped saving to prevent duplicates.", 
+                      leadId: checkRes.rows[0].id,
+                      customer: checkRes.rows[0].data,
+                      skipped: true
+                  });
+              }
+
+              const qUpsert = `
+                  INSERT INTO crm_documents (id, collection_name, data, updated_at) 
+                  VALUES ($1, 'customers', $2, NOW()) 
+                  ON CONFLICT (collection_name, id) DO UPDATE SET data = EXCLUDED.data, updated_at = NOW()
+              `;
+              await query(qUpsert, [id, JSON.stringify(payload)]);
+
+              // Broadcast real-time change to all active tabs
+              try {
+                  broadcast({ 
+                      type: 'COLLECTION_MUTATED', 
+                      collectionName: 'customers', 
+                      id: id,
+                      notification: {
+                          title: "Live Lead Delivered",
+                          message: `📞 Call connected with ${fullNameStr} (${rawPhone})`,
+                          type: "info"
+                      }
+                  });
+              } catch (broadcastErr) {
+                  console.error("[Realtime Push Broadcast Error]:", broadcastErr);
+              }
+
+              return res.json({ 
+                  success: true, 
+                  message: "Inbound ViciDial lead synced in real-time", 
+                  leadId: id,
+                  customer: payload 
+              });
+          } else {
+              return res.json({ 
+                  success: true, 
+                  message: "Offline receiver simulated successfully.", 
+                  customer: payload 
+              });
+          }
+      } catch (err: any) {
+          console.error("ViciDial Lead Sync Error:", err);
           res.status(500).json({ error: err.message });
       }
   });

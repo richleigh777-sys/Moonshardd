@@ -2,7 +2,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { 
     ShieldCheck, Heart, AlertTriangle, Clock, Activity, 
-    Calendar, X, Archive, CheckCircle
+    Calendar, X, Archive, CheckCircle, HelpCircle, Network
 } from 'lucide-react';
 import { Sale, ObjectionType } from '../../types';
 import { RESCUE_SCRIPTS as DEFAULT_SCRIPTS, OBJECTION_METADATA } from '../../constants';
@@ -53,6 +53,7 @@ export const RecoveryEngine = ({ sales, onAction }: Props) => {
   
   const [viewMode, setViewMode] = useState<'console' | 'schedule'>('console');
   const [activeObjection, setActiveObjection] = useState<ObjectionType | null>(null);
+  const [showLogicGuide, setShowLogicGuide] = useState(false);
   
   const rescueOps = useRecoveryLogic(sales);
   
@@ -123,6 +124,13 @@ export const RecoveryEngine = ({ sales, onAction }: Props) => {
                         </h3>
                         <p className="text-xs font-bold text-text-muted  tracking-wider mt-0.5">{rescueOps.length} Need Support</p>
                     </div>
+                    <button
+                        onClick={() => { setShowLogicGuide(true); sfx.playClick(); }}
+                        className="p-2 hover:bg-surface-alt rounded-xl text-border-strong hover:text-accent-secondary transition-colors"
+                        title="CRM Routing & Lead Judgment Rules"
+                    >
+                        <HelpCircle size={18} />
+                    </button>
                 </div>
                 <div className="flex-1 overflow-y-auto custom-scrollbar">
                     {rescueOps.map(op => {
@@ -277,6 +285,133 @@ export const RecoveryEngine = ({ sales, onAction }: Props) => {
                 )}
             </div>
         </div>
+
+        {/* Lead Routing Protocol Overlay Modal */}
+        {showLogicGuide && (
+            <div className="absolute inset-0 bg-neutral-950/85 backdrop-blur-md z-50 flex items-center justify-center p-6 animate-in fade-in duration-200">
+                <div className="bg-surface-main border border-border-subtle rounded-3xl p-8 max-w-4xl w-full max-h-[90%] overflow-y-auto shadow-2xl relative flex flex-col">
+                    
+                    {/* Header */}
+                    <div className="flex justify-between items-start mb-6">
+                        <div className="flex items-center gap-3">
+                            <div className="p-2.5 bg-indigo-500/10 text-accent-secondary rounded-2xl border border-indigo-500/15">
+                                <Network size={22} className="animate-pulse text-indigo-400" />
+                            </div>
+                            <div>
+                                <h3 className="text-lg font-extrabold text-white tracking-tight">CRM Lead Judgment & Routing Protocol</h3>
+                                <p className="text-xs text-text-muted mt-0.5">Automated dispositioning engine for inbound calls, background pushes & manual submissions</p>
+                            </div>
+                        </div>
+                        <button 
+                            onClick={() => { setShowLogicGuide(false); sfx.playClick(); }}
+                            className="p-2 hover:bg-surface-alt rounded-full text-text-muted hover:text-text-primary transition-colors cursor-pointer"
+                        >
+                            <X size={20} />
+                        </button>
+                    </div>
+
+                    {/* Diagram Stages */}
+                    <div className="space-y-6">
+                        
+                        {/* Phase 1 */}
+                        <div className="bg-surface-alt/40 border border-border-subtle p-5 rounded-2xl flex flex-col md:flex-row gap-4 items-start text-left">
+                            <div className="w-10 h-10 rounded-xl bg-blue-500/10 border border-blue-500/20 text-blue-400 flex items-center justify-center font-bold text-sm shrink-0">1</div>
+                            <div className="flex-1 space-y-2">
+                                <h4 className="text-sm font-bold text-white flex items-center gap-2">
+                                    Lead Acquisition & Auto-Ingestion
+                                </h4>
+                                <p className="text-xs text-text-muted leading-relaxed">
+                                    When an agent receives or initiates a call inside the integrated dialer, ViciDial triggers a secure web gateway sync.
+                                </p>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 pt-1">
+                                    <div className="bg-surface-main/30 border border-border-subtle p-3 rounded-xl">
+                                        <span className="text-[10px] font-bold text-indigo-400 uppercase tracking-wider block mb-1">ViciDial Push (Autodialer)</span>
+                                        <p className="text-[11px] text-text-muted">
+                                            Logs customer contact automatically in the background. Duplicate checker verifies existing phones to prevent overwriting. Saved strictly to Super Admin <b>Unique Customer Profile</b>.
+                                        </p>
+                                    </div>
+                                    <div className="bg-surface-main/30 border border-border-subtle p-3 rounded-xl">
+                                        <span className="text-[10px] font-bold text-emerald-400 uppercase tracking-wider block mb-1">Manual Agent Form</span>
+                                        <p className="text-[11px] text-text-muted">
+                                            Agent directly inputs data and submits. Saves real-time customer and active transaction records immediately.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Phase 2 */}
+                        <div className="bg-surface-alt/40 border border-border-subtle p-5 rounded-2xl flex flex-col md:flex-row gap-4 items-start text-left">
+                            <div className="w-10 h-10 rounded-xl bg-purple-500/10 border border-purple-500/20 text-purple-400 flex items-center justify-center font-bold text-sm shrink-0">2</div>
+                            <div className="flex-1 space-y-2">
+                                <h4 className="text-sm font-bold text-white flex items-center gap-2">
+                                    Workspace Privacy Isolation Rules (No Overwrite)
+                                </h4>
+                                <p className="text-xs text-text-muted leading-relaxed font-semibold">
+                                    Customers entered silently via the background autodialer are strictly isolated by credential status:
+                                </p>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 pt-1">
+                                    <div className="bg-indigo-950/20 border border-indigo-500/20 p-3 rounded-xl">
+                                        <span className="text-[10px] font-bold text-indigo-400 uppercase tracking-wider block mb-1">Super Admin Panel (Level 10)</span>
+                                        <p className="text-[11px] text-text-muted">
+                                            Full unrestricted visibility into all auto-ingested leads and deduplicated customers in the <b>Unique Sales Pool</b>.
+                                        </p>
+                                    </div>
+                                    <div className="bg-rose-950/20 border border-rose-500/20 p-3 rounded-xl">
+                                        <span className="text-[10px] font-bold text-rose-400 uppercase tracking-wider block mb-1">Agent Portal (Level &lt; 10)</span>
+                                        <p className="text-[11px] text-text-muted">
+                                            Zero background noise. Agents only manage profiles they submit manually via the Order/Callback desk, preventing confusion or premature data modifications.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Phase 3 */}
+                        <div className="bg-surface-alt/40 border border-border-subtle p-5 rounded-2xl flex flex-col md:flex-row gap-4 items-start text-left">
+                            <div className="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 flex items-center justify-center font-bold text-sm shrink-0">3</div>
+                            <div className="flex-1 space-y-2">
+                                <h4 className="text-sm font-bold text-white flex items-center gap-2">
+                                    Transaction-Based Desk Redirection
+                                </h4>
+                                <p className="text-xs text-text-muted leading-relaxed">
+                                    The moment a manual customer order transaction result is received, the CRM automatically categorizes it:
+                                </p>
+                                <div className="grid grid-cols-1 md:grid-cols-3 gap-3 pt-1">
+                                    <div className="bg-emerald-950/20 border border-emerald-500/20 p-3 rounded-xl">
+                                        <span className="text-[10px] font-bold text-emerald-400 uppercase tracking-wider block mb-1">Approved Pay</span>
+                                        <p className="text-[11px] text-text-muted">
+                                            Placed in Approved Ledgers. Leaderboard credit and payouts synced.
+                                        </p>
+                                    </div>
+                                    <div className="bg-rose-950/20 border border-rose-500/20 p-3 rounded-xl">
+                                        <span className="text-[10px] font-bold text-rose-400 uppercase tracking-wider block mb-1">Declined Pay</span>
+                                        <p className="text-[11px] text-text-muted">
+                                            Immediately redirected to the <b>Need Help / Recovery Console</b> allowing the agent to save the client.
+                                        </p>
+                                    </div>
+                                    <div className="bg-amber-950/20 border border-amber-500/20 p-3 rounded-xl">
+                                        <span className="text-[10px] font-bold text-amber-500 uppercase tracking-wider block mb-1">Callback / Save</span>
+                                        <p className="text-[11px] text-text-muted">
+                                            Timed alerts set and placed in <b>To Call Back</b> rhythm schedule.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    {/* Footer confirmation */}
+                    <div className="mt-8 pt-4 border-t border-border-subtle flex justify-end">
+                        <Button variant="primary" onClick={() => { setShowLogicGuide(false); sfx.playConfirm(); }} className="px-6 h-11 text-xs font-bold tracking-widest uppercase">
+                            Understood Protocols
+                        </Button>
+                    </div>
+
+                </div>
+            </div>
+        )}
     </Card>
   );
 };

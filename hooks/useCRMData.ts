@@ -38,7 +38,8 @@ export const useCRMData = (currentUser: User | null) => {
     const [dialerLists, setDialerLists] = useState<any[]>([]);
     const [systemConfig, setSystemConfig] = useState<SystemConfig>({ 
         shiftStart: "08:00", shiftEnd: "17:00", cutoffDay1: 15, cutoffDay2: 0,
-        baseCommission: 15, breakDurationMinutes: 60, ecoMode: false, telephonyEnabled: false
+        baseCommission: 15, breakDurationMinutes: 60, ecoMode: false, telephonyEnabled: false,
+        customDialerEnabled: false, customDialerType: 'CLIPBOARD_ONLY', customDialerUrlTemplate: 'https://dialer.yourcompany.com/?phone={phone_clean}'
     });
     
     const [health, setHealth] = useState<SystemHealth>(() => ({
@@ -108,7 +109,14 @@ export const useCRMData = (currentUser: User | null) => {
 
         const subs = [
             nexusGateway.subscribe('sales', currentUser, (data: Sale[]) => setSales(data)),
-            nexusGateway.subscribe('customers', currentUser, (data: Customer[]) => setCustomers(data)),
+            nexusGateway.subscribe('customers', currentUser, (data: Customer[]) => {
+                const isAgent = currentUser && (currentUser.level || 0) < 10;
+                if (isAgent) {
+                    setCustomers(data.filter((c: any) => !c.isBackgroundViciLead && c.firstSource !== 'ViciDial Push'));
+                } else {
+                    setCustomers(data);
+                }
+            }),
             nexusGateway.subscribe('users', currentUser, (data: User[]) => setUsers(data.length ? data : VALID_USERS)),
             nexusGateway.subscribe('accounts', currentUser, (data: Account[]) => setAccounts(data)),
             nexusGateway.subscribe('notes', currentUser, (data: Note[]) => setNotes(data)),

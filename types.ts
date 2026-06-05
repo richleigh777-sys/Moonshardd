@@ -328,6 +328,10 @@ export interface SystemConfig {
     viciListId?: string;
     viciUserGroup?: string;
     telephonyEnabled?: boolean;
+    // Custom URL-based Dialer
+    customDialerEnabled?: boolean;
+    customDialerType?: 'CLIPBOARD_ONLY' | 'PROTOCOL_URI' | 'NEW_WEB_TAB' | 'IFRAME_DRAWER';
+    customDialerUrlTemplate?: string;
     // Webhooks
     webhookUrl?: string;
     webhookSecret?: string;

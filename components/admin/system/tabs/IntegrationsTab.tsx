@@ -209,6 +209,103 @@ export const IntegrationsTab: React.FC<IntegrationsTabProps> = ({ config, onChan
                     )}
                 </div>
 
+                {/* CUSTOM DIALER WEB MODULE */}
+                <div className="space-y-4">
+                    <ConfigToggle 
+                        label="Custom URL-Based Autonomous Dialer" 
+                        active={config.customDialerEnabled || false} 
+                        onToggle={() => onChange('customDialerEnabled', !config.customDialerEnabled)}
+                        icon={Phone}
+                        description="Integrate custom enterprise dialers, auto-dialers, or standard telephony software via dynamic URL template substitution."
+                    />
+
+                    {config.customDialerEnabled && (
+                        <div className="p-1 rounded-3xl bg-gradient-to-br from-cyan-500/20 to-indigo-500/20">
+                            <div className="bg-[#09090b] text-white rounded-[1.4rem] p-6 space-y-6 font-sans">
+                                <div className="flex items-center justify-between pb-4 border-b border-border-subtle">
+                                    <h5 className="text-xs font-[700] text-cyan-400 tracking-widest flex items-center gap-2">
+                                        <Activity size={16} className="animate-pulse"/> Dialer Bridge Engine Configuration
+                                    </h5>
+                                </div>
+
+                                <div className="space-y-4">
+                                    <label className="text-xs font-bold text-text-primary uppercase tracking-wide block">
+                                        Dial Action Execution Type
+                                    </label>
+                                    <div className="grid grid-cols-1 sm:grid-cols-4 gap-2.5">
+                                        {[
+                                            { id: 'CLIPBOARD_ONLY', name: 'Clipboard Copy Only', desc: 'Auto-copies formatted digits with sound feedback' },
+                                            { id: 'PROTOCOL_URI', name: 'Call Protocol Trigger', desc: 'Triggers local softphone via tel: scheme link' },
+                                            { id: 'NEW_WEB_TAB', name: 'Custom Browser Tab', desc: 'Compiles URL and launches in a separate browser tab' },
+                                            { id: 'IFRAME_DRAWER', name: 'Embedded Iframe Dock', desc: 'Draws interactive web-dialer inside the CRM' }
+                                        ].map(item => (
+                                            <button
+                                                key={item.id}
+                                                type="button"
+                                                onClick={() => { sfx.playClick(); onChange('customDialerType', item.id); }}
+                                                className={`p-3 text-left border rounded-xl transition-all flex flex-col justify-between h-24 ${
+                                                    (config.customDialerType || 'CLIPBOARD_ONLY') === item.id
+                                                        ? 'bg-cyan-500/10 border-cyan-500 text-cyan-400 font-bold'
+                                                        : 'bg-surface-alt/55 border-border-subtle text-text-muted hover:text-text-primary hover:bg-surface-highlight/40'
+                                                }`}
+                                            >
+                                                <span className="text-xs font-black block">{item.name}</span>
+                                                <span className="text-[10px] opacity-70 leading-tight block mt-1">{item.desc}</span>
+                                            </button>
+                                        ))}
+                                    </div>
+                                </div>
+
+                                {((config.customDialerType || 'CLIPBOARD_ONLY') === 'NEW_WEB_TAB' || (config.customDialerType || 'CLIPBOARD_ONLY') === 'IFRAME_DRAWER') && (
+                                    <div className="space-y-4 pt-2">
+                                        <div className="grid grid-cols-1 gap-4">
+                                            <Input 
+                                                icon={Globe}
+                                                label="Dynamic Dialer URL Template" 
+                                                value={config.customDialerUrlTemplate || ''} 
+                                                onChange={e => onChange('customDialerUrlTemplate', e.target.value)} 
+                                                placeholder="https://autodialer.mycompany.com/dial?phone={phone_clean}&agent={agent_username}" 
+                                                className="font-mono text-xs bg-surface-alt border-border-subtle"
+                                            />
+                                        </div>
+
+                                        <div className="p-4 rounded-xl bg-surface-alt/75 border border-border-subtle text-xs space-y-2">
+                                            <p className="font-bold text-text-primary text-[11px] uppercase tracking-wider mb-1">
+                                                Available Replacement Tokens:
+                                            </p>
+                                            <div className="grid grid-cols-2 gap-1.5 font-mono text-[10px] text-text-secondary">
+                                                <div><span className="text-cyan-400 font-bold">{'{phone}'}</span> - raw text phone</div>
+                                                <div><span className="text-cyan-400 font-bold">{'{phone_clean}'}</span> - clean digits only (10/11 chars)</div>
+                                                <div><span className="text-cyan-400 font-bold">{'{firstName}'}</span> - beneficiary first name</div>
+                                                <div><span className="text-cyan-400 font-bold">{'{lastName}'}</span> - beneficiary last name</div>
+                                                <div><span className="text-cyan-400 font-bold">{'{id}'}</span> - client record UUID</div>
+                                            </div>
+
+                                            {/* Live compiler compilation preview */}
+                                            <div className="mt-3 pt-3 border-t border-border-subtle">
+                                                <span className="text-[9px] font-black uppercase text-cyan-400 tracking-wider animate-pulse">
+                                                    Real-time Compilation Preview
+                                                </span>
+                                                <div className="p-2.5 bg-black/40 rounded border border-border-strong font-mono text-[10px] text-emerald-400 select-all overflow-x-auto mt-1 truncate">
+                                                    {(() => {
+                                                        const template = config.customDialerUrlTemplate || 'https://dialer.yourcompany.com/?phone={phone_clean}';
+                                                        return template
+                                                            .replace(/{phone}/g, '555-123-4567')
+                                                            .replace(/{phone_clean}/g, '5551234567')
+                                                            .replace(/{firstName}/g, 'John')
+                                                            .replace(/{lastName}/g, 'Doe')
+                                                            .replace(/{id}/g, 'CUST-00921');
+                                                    })()}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                    )}
+                </div>
+
                 {/* TEAMS WEBHOOK MODULE */}
                 <div className="space-y-4">
                     <ConfigToggle 

@@ -27,13 +27,25 @@ export const AdaptiveView: React.FC = () => {
     const filteredSearchCustomers = useMemo(() => {
         if (!searchTerm.trim()) return [];
         const query = searchTerm.toLowerCase();
-        // Since customers might not have phones populated cleanly, normalize
-        return customers.filter(c => 
-            (c.name || '').toLowerCase().includes(query) ||
-            (c.phone || '').includes(query) ||
-            (c.email || '').toLowerCase().includes(query)
-        ).slice(0, 5);
-    }, [customers, searchTerm]);
+        
+        return customers.filter(c => {
+            const matchesQuery = 
+                (c.name || '').toLowerCase().includes(query) ||
+                (c.phone || '').includes(query) ||
+                (c.email || '').toLowerCase().includes(query);
+
+            if (!matchesQuery) return false;
+
+            // Restrict background ViciDial leads from agent view
+            if (c.isBackgroundViciLead) {
+                const hasSale = sales?.some(s => s.customerPhone === c.phone && s.agentId === currentUser?.id);
+                const hasNote = notes?.some(n => n.customerPhone === c.phone && n.agentId === currentUser?.id);
+                return hasSale || hasNote;
+            }
+
+            return true;
+        }).slice(0, 5);
+    }, [customers, sales, notes, currentUser, searchTerm]);
 
     // Gather Agent Specific Sales
     const mySales = useMemo(() => {
