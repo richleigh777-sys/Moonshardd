@@ -39,8 +39,8 @@ export const LeadList: React.FC<LeadListProps> = ({
                     />
                 </div>
 
-                <div className="flex gap-1 overflow-x-auto scrollbar-hide">
-                    {(['All', 'High', 'Mid'] as const).map(p => (
+                <div className="flex gap-1 overflow-x-auto scrollbar-hide mt-2">
+                    {(['All', 'High', 'Mid', 'Low'] as const).map(p => (
                         <button
                             key={p}
                             onClick={() => setFilterPriority(p)}
@@ -64,7 +64,7 @@ export const LeadList: React.FC<LeadListProps> = ({
                     />
                 ))}
                 {leads.length === 0 && (
-                    <div className="p-8 text-center opacity-40 text-xs font-bold text-text-muted  tracking-widest">No matching leads</div>
+                    <div className="p-5 text-center opacity-40 text-xs font-bold text-text-muted  tracking-widest">No matching leads</div>
                 )}
             </div>
         </div>

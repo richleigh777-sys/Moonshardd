@@ -127,7 +127,7 @@ export function ModernDatePicker({ date, onChange, className = '', calculatedYea
       </button>
 
       {isOpen && (
-        <div className="absolute z-50 mt-2 p-4 bg-surface-main border border-border-subtle rounded-2xl shadow-xl w-72 animate-in fade-in slide-in-from-top-2 duration-200">
+        <div className="absolute z-50 mt-2 p-4 bg-surface-main border border-border-subtle rounded-xl shadow-xl w-72 animate-in fade-in slide-in-from-top-2 duration-200">
           <div className="flex items-center justify-between mb-4">
             <button onClick={prevMonth} type="button" className="p-1 rounded-lg hover:bg-surface-alt text-text-muted hover:text-text-primary transition-colors">
               <ChevronLeft size={20} />

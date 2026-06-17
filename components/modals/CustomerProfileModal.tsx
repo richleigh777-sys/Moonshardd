@@ -1,6 +1,6 @@
 
 import React, { useMemo, useState, useEffect } from 'react';
-import { User, ShoppingBag, Clock, Shield, Mail, Phone, MapPin, TrendingUp, Award, Calendar, Activity, AlertTriangle, ArrowUpRight, Zap, Link, Eye, EyeOff, Hash, UserIcon, FileText, ChevronDown, ChevronRight, CheckCircle2, Ticket, MessageSquare, Send, PhoneOff } from 'lucide-react';
+import { User, ShoppingBag, Clock, Shield, Mail, Phone, MapPin, TrendingUp, Award, Calendar, Activity, AlertTriangle, ArrowUpRight, Zap, Link, Eye, EyeOff, UserIcon, FileText, ChevronDown, ChevronRight, CheckCircle2, Ticket, MessageSquare, PhoneOff } from 'lucide-react';
 import { Modal } from '../ui/Modal';
 import { Sale } from '../../types';
 import { Badge, Button } from '../ui/Base';
@@ -51,7 +51,6 @@ export const CustomerProfileModal: React.FC<CustomerProfileModalProps> = ({
         
         let content = '';
         let reason = '';
-        const subtype = undefined;
         
         if (commsMode === 'note') {
             if (!newNote.trim()) return;
@@ -207,23 +206,23 @@ export const CustomerProfileModal: React.FC<CustomerProfileModalProps> = ({
         <Modal isOpen={isOpen} onClose={onClose} title="Customer Profile" size="xl">
             <div className="space-y-6">
                 {/* HERO SECTION */}
-                <div className="relative overflow-hidden rounded-2xl glass-panel p-6 group">
+                <div className="relative overflow-hidden rounded-xl glass-panel p-4 group">
                     <div className="absolute top-0 right-0 p-12 opacity-5 transform group-hover:scale-110 transition-transform duration-700 pointer-events-none">
                         <User size={180} />
                     </div>
                     
-                    <div className="flex flex-col md:flex-row items-start justify-between gap-6 relative z-10">
-                        <div className="flex items-center gap-6">
-                            <div className="w-20 h-20 rounded-2xl bg-surface-main flex items-center justify-center border border-border-subtle shadow-2xl relative overflow-hidden shrink-0">
+                    <div className="flex flex-col md:flex-row items-start justify-between gap-4 relative z-10">
+                        <div className="flex items-center gap-4">
+                            <div className="w-20 h-20 rounded-xl bg-surface-main flex items-center justify-center border border-border-subtle shadow-2xl relative overflow-hidden shrink-0">
                                 <div className="absolute inset-0 bg-gradient-to-br from-accent-primary/20 to-transparent"></div>
-                                <span className="text-3xl font-[700] text-accent-primary drop-shadow-lg">
+                                <span className="text-xl font-[700] text-accent-primary drop-shadow-lg">
                                     {displayName.charAt(0)}
                                 </span>
                             </div>
                             
                             <div className="min-w-0">
                                 <div className="flex items-center gap-3 mb-1 flex-wrap">
-                                    <h2 className="text-2xl font-[700] text-text-primary tracking-tight truncate">
+                                    <h2 className="text-lg font-[700] text-text-primary tracking-tight truncate">
                                         {isRevealed ? displayName : maskPII(displayName, 'text')}
                                     </h2>
                                     {isSuperAdmin && (
@@ -297,7 +296,7 @@ export const CustomerProfileModal: React.FC<CustomerProfileModalProps> = ({
                         <p className="text-[10px] uppercase font-bold text-text-muted flex items-center gap-2 mb-2 tracking-widest">
                             <Award size={14} /> Liftetime Value
                         </p>
-                        <p className="text-2xl font-[700] text-text-primary num-font group-hover:text-status-success transition-colors">
+                        <p className="text-lg font-[700] text-text-primary num-font group-hover:text-status-success transition-colors">
                             ${metrics.totalSpent.toLocaleString()}
                         </p>
                     </div>
@@ -305,7 +304,7 @@ export const CustomerProfileModal: React.FC<CustomerProfileModalProps> = ({
                         <p className="text-[10px] uppercase font-bold text-text-muted flex items-center gap-2 mb-2 tracking-widest">
                             <TrendingUp size={14} /> Avg Order
                         </p>
-                        <p className="text-2xl font-[700] text-text-primary num-font">
+                        <p className="text-lg font-[700] text-text-primary num-font">
                             ${metrics.avgOrderValue.toFixed(0)}
                         </p>
                     </div>
@@ -313,7 +312,7 @@ export const CustomerProfileModal: React.FC<CustomerProfileModalProps> = ({
                         <p className="text-[10px] uppercase font-bold text-text-muted flex items-center gap-2 mb-2 tracking-widest">
                             <ShoppingBag size={14} /> Approved
                         </p>
-                        <p className="text-2xl font-[700] text-text-primary num-font focus-expand">
+                        <p className="text-lg font-[700] text-text-primary num-font focus-expand">
                             {metrics.orderCount} <span className="text-xs text-text-muted font-bold font-sans tracking-tight">Orders</span>
                         </p>
                     </div>
@@ -321,7 +320,7 @@ export const CustomerProfileModal: React.FC<CustomerProfileModalProps> = ({
                         <p className="text-[10px] uppercase font-bold text-status-error flex items-center gap-2 mb-2 tracking-widest">
                             <AlertTriangle size={14} /> Declined
                         </p>
-                        <p className="text-2xl font-[700] text-status-error num-font focus-expand">
+                        <p className="text-lg font-[700] text-status-error num-font focus-expand">
                             {customerHistory.filter(s => s.status === 'Declined' || s.status === 'Cancelled').length} <span className="text-xs text-text-muted font-bold font-sans tracking-tight">Orders</span>
                         </p>
                     </div>
@@ -329,14 +328,14 @@ export const CustomerProfileModal: React.FC<CustomerProfileModalProps> = ({
                         <p className="text-[10px] uppercase font-bold text-text-muted flex items-center gap-2 mb-2 tracking-widest">
                             <Clock size={14} /> Since Last Order
                         </p>
-                        <p className={`text-2xl font-[700] num-font focus-expand ${metrics.daysSinceLastActive > 60 ? 'text-status-warning' : 'text-text-primary'}`}>
+                        <p className={`text-lg font-[700] num-font focus-expand ${metrics.daysSinceLastActive > 60 ? 'text-status-warning' : 'text-text-primary'}`}>
                             {metrics.daysSinceLastActive} <span className="text-xs text-text-muted font-bold font-sans tracking-tight">Days Ago</span>
                         </p>
                     </div>
                 </div>
 
                 {/* INTELLIGENCE & TAGS */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-3">
                          <h4 className="text-[10px] uppercase font-[700] text-text-primary flex items-center gap-2 tracking-widest">
                             <Activity size={12} className="text-accent-primary"/> Behavioral Signals
@@ -364,22 +363,62 @@ export const CustomerProfileModal: React.FC<CustomerProfileModalProps> = ({
                         <div className="p-4 glass-panel rounded-xl min-h-[88px] flex flex-wrap content-start gap-2 shadow-inner">
                             {customerHistory.length > 0 && customerHistory[0].medicalConditions && customerHistory[0].medicalConditions.length > 0 ? (
                                 customerHistory[0].medicalConditions.map((c, i) => (
-                                    <span key={i} className="px-3 py-1.5 bg-surface-alt rounded border border-border-subtle text-[11px] font-[700] tracking-wide text-text-primary flex items-center gap-1.5 shadow-sm">
-                                        <div className="w-1.5 h-1.5 rounded-full bg-accent-primary"></div>
+                                    <span key={i} className="px-3 py-1 bg-rose-500/10 rounded border border-rose-500/20 text-[11px] font-[700] tracking-wide text-rose-500 flex items-center gap-1.5">
+                                        <div className="w-1 h-1 rounded-full bg-rose-500"></div>
                                         {c}
                                     </span>
                                 ))
                             ) : (
                                 <span className="text-xs text-text-muted italic flex items-center gap-2 opacity-60">
-                                    <AlertTriangle size={16}/> No conditions tagged.
+                                    <HeartPulse size={12}/> No conditions.
                                 </span>
                             )}
+                        </div>
+                    </div>
+                    
+                    <div className="space-y-3 md:col-span-2">
+                        <h4 className="text-[10px] uppercase font-[700] text-text-primary flex items-center gap-2 tracking-widest">
+                            <Tag size={12} className="text-purple-500"/> Global CRM Tags & Pipeline Data
+                        </h4>
+                        <div className="p-4 glass-panel rounded-xl min-h-[88px] flex flex-wrap content-start gap-2 shadow-inner">
+                            {customerHistory.length > 0 && customerHistory[0].crmTags && customerHistory[0].crmTags.length > 0 ? (
+                                customerHistory[0].crmTags.map((c, i) => (
+                                    <span key={i} className="px-3 py-1 bg-purple-500/10 rounded border border-purple-500/20 text-[11px] font-[700] tracking-wide text-purple-400 flex items-center gap-1.5">
+                                        <Tag size={10}/>
+                                        {c}
+                                    </span>
+                                ))
+                            ) : null}
+                            
+                            {customerHistory.length > 0 && customerHistory[0].leadSources && customerHistory[0].leadSources.length > 0 ? (
+                                customerHistory[0].leadSources.map((c, i) => (
+                                    <span key={i} className="px-3 py-1 bg-blue-500/10 rounded border border-blue-500/20 text-[11px] font-[700] tracking-wide text-blue-400 flex items-center gap-1.5">
+                                        <Network size={10}/>
+                                        {c}
+                                    </span>
+                                ))
+                            ) : null}
+                            
+                            {customerHistory.length > 0 && customerHistory[0].pipelineStages && customerHistory[0].pipelineStages.length > 0 ? (
+                                customerHistory[0].pipelineStages.map((c, i) => (
+                                    <span key={i} className="px-3 py-1 bg-amber-500/10 rounded border border-amber-500/20 text-[11px] font-[700] tracking-wide text-amber-400 flex items-center gap-1.5">
+                                        <Layers size={10}/>
+                                        {c}
+                                    </span>
+                                ))
+                            ) : null}
+
+                            {(!customerHistory[0]?.crmTags?.length && !customerHistory[0]?.leadSources?.length && !customerHistory[0]?.pipelineStages?.length) ? (
+                                <span className="text-xs text-text-muted italic flex items-center gap-2 opacity-60">
+                                    <AlertTriangle size={12}/> No CRM tags assigned.
+                                </span>
+                            ) : null}
                         </div>
                     </div>
                 </div>
 
                 {/* STITCHED LOCATION HISTORY */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-3">
                         <h4 className="text-[10px] uppercase font-[700] text-text-primary flex items-center gap-2 tracking-widest">
                             <MapPin size={12} className="text-accent-primary"/> Billing & Shipping Profile
@@ -577,7 +616,7 @@ export const CustomerProfileModal: React.FC<CustomerProfileModalProps> = ({
                                 </thead>
                                 <tbody className="divide-y divide-border-subtle text-xs">
                                     {customerHistory.length === 0 ? (
-                                        <tr><td colSpan={6} className="p-8 text-center text-text-muted italic">No transaction history found for this profile.</td></tr>
+                                        <tr><td colSpan={6} className="p-5 text-center text-text-muted italic">No transaction history found for this profile.</td></tr>
                                     ) : customerHistory.map(sale => {
                                         const matchType = getMatchReason(sale);
                                         const isExpanded = expandedRows.has(sale.id);
@@ -634,7 +673,7 @@ export const CustomerProfileModal: React.FC<CustomerProfileModalProps> = ({
                                                 {isExpanded && (
                                                     <tr className="bg-surface-alt/20">
                                                         <td colSpan={6} className="p-4 pl-12">
-                                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 bg-surface-main p-4 rounded-xl border border-border-subtle shadow-inner">
+                                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 bg-surface-main p-4 rounded-xl border border-border-subtle shadow-inner">
                                                                 <div className="space-y-3">
                                                                     <div className="text-[10px] uppercase font-bold text-text-muted tracking-widest flex items-center gap-1.5">
                                                                         <FileText size={12}/> Order Summary

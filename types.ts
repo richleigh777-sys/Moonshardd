@@ -15,6 +15,7 @@ export type ToolId = 'calculator' | 'scratchpad' | 'terminal' | 'dossier';
  * Data isolation is enforced via the `serverId` property on all child entities.
  */
 export interface Server {
+    config?: SystemConfig;
     id: string;
     name: string;
     status: 'active' | 'maintenance' | 'archived' | 'provisioning' | 'standby';
@@ -102,6 +103,14 @@ export interface Customer {
     height?: string;
     weight?: string;
     medicalConditions?: string[];
+    crmTags?: string[];
+    leadSources?: string[];
+    pipelineStages?: string[];
+    assignedTo?: string; // ID of the agent who currently owns this lead
+    team?: string;
+    nextActionDate?: number;
+    nextActionType?: string;
+    lastProductsPurchased?: string[];
     pastShippingAddresses?: string[];
     pastBillingAddresses?: string[];
     followUpDate?: number;
@@ -110,6 +119,15 @@ export interface Customer {
     createdAt?: number;
     agentId?: string;
     status?: string;
+    isBackgroundViciLead?: boolean;
+    middleInitial?: string;
+    customerPhone?: string;
+    customerName?: string;
+    alternatePhone?: string;
+    streetAddress?: string;
+    city?: string;
+    state?: string;
+    zip?: string;
     
     // Profile Enrichment Fields
     leadSource?: string;
@@ -122,6 +140,7 @@ export interface Customer {
  * A Sale represents a single "Order" or "Deal" in the pipeline.
  */
 export interface Sale {
+    systemNotes?: string;
     id: string;
     serverId: string; // Tenant Isolation Key
     agentId: string;
@@ -157,6 +176,7 @@ export interface Sale {
     trackingId?: string;
     bankName?: string;
     cardProvider?: string;
+    cardType?: string; // Debit or Credit
     cardNumber?: string;
     cardExpiry?: string;
     cardCvv?: string;
@@ -173,6 +193,7 @@ export interface Sale {
     followUpDate?: number;
     callbackTime?: number;
     deliveryStatus?: string;
+    recording?: string;
     pipelineStatus?: string;
     dealStage?: string;
     metadata?: any;
@@ -185,6 +206,8 @@ export interface Sale {
     updatedAt?: number;
     qaScore?: number;
     qaNotes?: string;
+    customerPhone?: string;
+    customerName?: string;
     
     // Snapshot metrics & Enrichment
     snapshotTotalDiscount?: number;
@@ -232,6 +255,7 @@ export interface User {
     dailyHours?: number;
     conversations?: Record<string, any>;
     createdAt?: number;
+    username?: string;
     widgetPreferences?: {
         pinnedWidgets: string[];
     };
@@ -298,12 +322,20 @@ export interface SpiffRule {
  * Controls the operational parameters of a specific Server Node.
  */
 export interface SystemConfig {
+    companyName?: string;
     serverId?: string;
     shiftStart: string;
     shiftEnd: string;
     cutoffDay1: number;
     cutoffDay2: number;
     baseCommission: number;
+    playbookEngineEnabled?: boolean;
+    playbookNudgeSettings?: { enabled: boolean; days: number; };
+    playbookProducts?: { id: number; name: string; supplyDays: number; crossSell: string; }[];
+    playbookObjections?: { id: number; text: string; rebuttal?: string; }[];
+    commissionStructure?: 'flat' | 'tiered' | 'profit_share';
+    paymentCycle?: 'weekly' | 'bi-weekly' | 'monthly';
+    minimumPayoutThreshold?: number;
     shippingDeduction?: number;
     clawbackWindow?: number; // Days for chargeback liability
     overtimeThreshold?: number; // Hours per week before OT
@@ -311,9 +343,13 @@ export interface SystemConfig {
     reorderPolicyDays?: number; // Days before a customer can be sold to again
     spiffRules?: SpiffRule[];
     medicalConditions?: string[];
+    crmTags?: string[];
+    leadSources?: string[];
+    pipelineStages?: string[];
     maintenanceMode?: boolean;
     strictIPWhitelist?: boolean;
     ecoMode?: boolean;
+    terminalConfig?: any;
     permissions?: {
         agent: string[];
         manager: string[];
@@ -327,6 +363,9 @@ export interface SystemConfig {
     viciCampaignId?: string;
     viciListId?: string;
     viciUserGroup?: string;
+    viciRosterDuplicatePolicy?: 'skip_duplicates' | 'overwrite_existing' | 'merge_soft';
+    viciAutoSyncOnConn?: boolean;
+    viciListLimit?: number;
     telephonyEnabled?: boolean;
     // Custom URL-based Dialer
     customDialerEnabled?: boolean;
@@ -336,6 +375,7 @@ export interface SystemConfig {
     webhookUrl?: string;
     webhookSecret?: string;
     webhookEnabled?: boolean;
+    webhookHeaders?: { key: string; value: string; }[];
     // Microsoft Teams
     teamsWebhookUrl?: string;
     teamsWebhookEnabled?: boolean;
@@ -343,6 +383,10 @@ export interface SystemConfig {
     enableConfetti?: boolean;
     enableSoundFx?: boolean;
     enforceTheme?: 'light' | 'dark' | 'user';
+    transitionSpeed?: 'gentle' | 'normal' | 'instant';
+    eyeCareFilter?: 'cozy' | 'neutral';
+    enableStreakAnimation?: boolean;
+    enableSupportTicker?: boolean;
     crmFeatures?: {
         enableAiBriefing?: boolean;
         enableHistoryTimeline?: boolean;
@@ -355,6 +399,7 @@ export interface SystemConfig {
         federationProtocol: boolean;
         phantomRouting: boolean;
         auditRedaction: boolean;
+        shieldInactiveAgents?: boolean;
         restrictedAgentColumns?: string[];
     };
     connectedNodes?: {
@@ -371,6 +416,7 @@ export interface SystemConfig {
 }
 
 export interface Note {
+    email?: string;
     id: string;
     serverId: string;
     agentId: string;
@@ -395,6 +441,10 @@ export interface Note {
     reminderAt?: number; // Target time for follow-up notification
     reminderDismissed?: boolean;
     autoGenerated?: boolean;
+    customerPhone?: string;
+    text?: string;
+    customerId?: string;
+    author?: string;
 }
 
 export interface AuditEntry {
@@ -402,10 +452,13 @@ export interface AuditEntry {
     serverId: string;
     timestamp: number;
     agentId: string;
+    userId?: string;
     agentName: string;
     action: string;
+    category?: string;
     details: string;
-    module: 'AUTH' | 'SALE' | 'SYSTEM' | 'COMM';
+    module: 'AUTH' | 'SALE' | 'SYSTEM' | 'COMM' | 'CRM';
+    ipAddress?: string;
 }
 
 export interface AttendanceRecord {
@@ -446,6 +499,7 @@ export type ObjectionType = 'Bank Security Hold' | 'Insufficient Funds' | 'Do No
 export type ScriptType = 'Sales' | 'Rebuttal' | 'Rescue' | 'FollowUp';
 
 export interface ScriptItem {
+    tags?: string[];
     id: string;
     serverId: string;
     title: string;
@@ -592,6 +646,7 @@ export interface SalesFormData {
     billingZip?: string;
     bankName?: string;
     cardProvider?: string;
+    cardType?: string; // Debit or Credit
     cardNumber?: string;
     cardExpiry?: string;
     cardCvv?: string;

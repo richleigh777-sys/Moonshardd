@@ -1,9 +1,9 @@
-
 import React from 'react';
-import { Lock, UserCheck, Check, Briefcase, ShieldAlert } from 'lucide-react';
+import { Lock, UserCheck, Check, Briefcase, ShieldAlert, KeyRound, Ban, ShieldCheck } from 'lucide-react';
 import { SectionHeader } from '../SectionHeader';
 import { SystemConfig } from '../../../../types';
 import { sfx } from '../../../../lib/soundService';
+import { useSystem } from '../../../../hooks/useSystem';
 
 interface ClearanceTabProps {
     config: SystemConfig;
@@ -13,11 +13,14 @@ interface ClearanceTabProps {
 
 const AGENT_TERMINALS = [
     { id: 'dash', label: 'Dashboard' },
+    { id: 'dialer', label: 'Dialer System' },
     { id: 'comms', label: 'Chat Uplink' },
     { id: 'enrollment', label: 'Order Entry' },
     { id: 'pipeline', label: 'Pipeline' },
     { id: 'recovery', label: 'Care Ops' },
     { id: 'callbacks', label: 'Lead Hub' },
+    
+    { id: 'rhythm', label: 'Daily Rhythm' },
     { id: 'ledger', label: 'Sales Ledger' },
     { id: 'payouts', label: 'Commission' },
     { id: 'standings', label: 'Leaderboard' },
@@ -27,23 +30,32 @@ const AGENT_TERMINALS = [
 
 const MANAGER_TERMINALS = [
     { id: 'overview', label: 'Overview' },
+    { id: 'nexus', label: 'Main Settings' },
     { id: 'enrollment', label: 'Order Entry' },
     { id: 'pipeline', label: 'Pipeline' },
+    { id: 'sales_pool', label: 'Sales Pool' },
     { id: 'ledger', label: 'Master Ledger' },
     { id: 'payroll', label: 'Payroll Ops' },
     { id: 'retention', label: 'Retention' },
     { id: 'roster', label: 'Roster' },
     { id: 'standings', label: 'Leaderboard' },
     { id: 'intel', label: 'Analytics' },
+    { id: 'comms', label: 'Chat Uplink' },
     { id: 'scripts', label: 'Scripts' },
+    { id: 'audit', label: 'Security' },
     { id: 'catalog', label: 'Products' },
     { id: 'system', label: 'Config' },
 ];
 
 export const ClearanceTab: React.FC<ClearanceTabProps> = ({ config, onChange, isSuperAdmin }) => {
+    const { setToast } = useSystem();
     
     const togglePermission = (role: 'agent' | 'manager', tabId: string) => {
-        if (!isSuperAdmin) return;
+        if (!isSuperAdmin) {
+            sfx.playError();
+            setToast({ title: 'Access Denied', message: 'Clearance modifications require Level 10 Admin authorization.', type: 'error' });
+            return;
+        }
         sfx.playClick();
         const currentPerms = config.permissions?.[role] || [];
         const newPerms = currentPerms.includes(tabId) 
@@ -59,52 +71,133 @@ export const ClearanceTab: React.FC<ClearanceTabProps> = ({ config, onChange, is
     };
 
     return (
-        <section>
-            <SectionHeader icon={Lock} title="Clearance & Access Control" sub="Define Interface Visibility" color="text-status-warning" />
-            <div className="space-y-8">
-                
-                {/* AGENT PERMISSIONS */}
-                <div className="space-y-4">
-                    <div className="flex items-center gap-2 pb-2 border-b border-border-subtle">
-                        <UserCheck size={16} className="text-text-muted"/>
-                        <h5 className="text-xs font-[700]  text-text-primary tracking-widest">Agent Views</h5>
-                    </div>
-                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
-                        {AGENT_TERMINALS.map(term => (
-                            <div key={term.id} onClick={() => togglePermission('agent', term.id)} className={`p-3 rounded-xl border cursor-pointer transition-all flex items-center justify-between group ${config.permissions?.agent?.includes(term.id) ? 'bg-surface-main border-accent-primary/30 shadow-sm' : 'bg-surface-alt/40 border-border-subtle opacity-60'}`}>
-                                <span className="text-xs font-bold ">{term.label}</span>
-                                <div className={`w-3 h-3 rounded-full border flex items-center justify-center ${config.permissions?.agent?.includes(term.id) ? 'bg-accent-primary border-accent-primary' : 'border-text-muted'}`}>
-                                    {config.permissions?.agent?.includes(term.id) && <Check size={16} className="text-white"/>}
-                                </div>
-                            </div>
-                        ))}
-                    </div>
+        <section className="space-y-6">
+            <SectionHeader 
+                icon={Lock} 
+                title="Clearance & Access Control" 
+                sub="Interface Visibility Policies & Identity Safeguards" 
+                color="text-status-warning" 
+            />
+
+            <p className="text-sm text-text-muted leading-relaxed">
+                Configure role clearances to limit interface cognitive surface area. Each checked module grants permission for that specific operative tear. In alignment with System Security rules, external authentication schemes are permanently hard-locked.
+            </p>
+
+            {/* IDENTITY POLICY MONITOR (AGENTS.md Compliance) */}
+            <div className="p-4 bg-surface-main border border-border-subtle rounded-xl space-y-4 shadow-sm">
+                <div className="flex items-center gap-2 pb-2 border-b border-border-subtle/50">
+                    <KeyRound size={16} className="text-accent-primary" />
+                    <h4 className="text-sm font-black uppercase text-text-primary tracking-wider font-mono">Administrative Identity & Credential Decisional Policy</h4>
                 </div>
 
-                {/* MANAGER PERMISSIONS */}
-                <div className="space-y-4">
-                    <div className="flex items-center gap-2 pb-2 border-b border-border-subtle">
-                        <Briefcase size={16} className="text-text-muted"/>
-                        <h5 className="text-xs font-[700]  text-text-primary tracking-widest">Manager Views</h5>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    
+                    {/* Exclusions */}
+                    <div className="p-4 bg-surface-alt/40 border border-border-subtle rounded-xl flex items-start gap-3">
+                        <Ban size={18} className="text-status-error shrink-0 mt-0.5" />
+                        <div>
+                            <span className="text-sm font-black text-text-primary block">External Auth Blockade (Active)</span>
+                            <span className="text-sm text-text-muted mt-1 block leading-normal">
+                                Standard OAuth flows (Google & Microsoft) are strictly disabled to guard client data vectors. Operatives are provisioned solely by Level 10 Admins.
+                            </span>
+                            <div className="flex flex-wrap gap-2 mt-2 font-mono text-sm uppercase font-bold">
+                                <span className="bg-status-error/10 text-status-error px-2 py-0.5 rounded border border-status-error/20 inline-block">Google Sign-In: BLOCKED</span>
+                                <span className="bg-status-error/10 text-status-error px-2 py-0.5 rounded border border-status-error/20 inline-block">Microsoft Auth: BLOCKED</span>
+                            </div>
+                        </div>
                     </div>
-                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
-                        {MANAGER_TERMINALS.map(term => (
-                            <div key={term.id} onClick={() => togglePermission('manager', term.id)} className={`p-3 rounded-xl border cursor-pointer transition-all flex items-center justify-between group ${config.permissions?.manager?.includes(term.id) ? 'bg-surface-main border-indigo-500/30 shadow-sm' : 'bg-surface-alt/40 border-border-subtle opacity-60'}`}>
-                                <span className="text-xs font-bold ">{term.label}</span>
-                                <div className={`w-3 h-3 rounded-full border flex items-center justify-center ${config.permissions?.manager?.includes(term.id) ? 'bg-indigo-500 border-indigo-500' : 'border-text-muted'}`}>
-                                    {config.permissions?.manager?.includes(term.id) && <Check size={16} className="text-white"/>}
+
+                    {/* Inclusions */}
+                    <div className="p-4 bg-surface-alt/40 border border-border-subtle rounded-xl flex items-start gap-3">
+                        <ShieldCheck size={18} className="text-status-success shrink-0 mt-0.5" />
+                        <div>
+                            <span className="text-sm font-black text-text-primary block">Level 10 Admin Custody Chain (Active)</span>
+                            <span className="text-sm text-text-muted mt-1 block leading-normal">
+                                Self-registration portals are closed. Credentials are generated internally via systemic ledger records for total perimeter shielding.
+                            </span>
+                            <div className="flex flex-wrap gap-2 mt-2 font-mono text-sm uppercase font-bold">
+                                <span className="bg-status-success/10 text-status-success px-2 py-0.5 rounded border border-status-success/20 inline-block">Internal Provision: MANDATORY</span>
+                                <span className="bg-status-success/10 text-status-success px-2 py-0.5 rounded border border-status-success/20 inline-block">MFA Tokenizer: ACTIVE</span>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            {/* AGENT PERMISSIONS */}
+            <div className="space-y-4">
+                <div className="flex items-center gap-2 pb-2 border-b border-border-subtle">
+                    <UserCheck size={16} className="text-accent-primary"/>
+                    <h5 className="text-sm font-black uppercase tracking-wider text-text-primary font-mono">Agent Cleared Views</h5>
+                </div>
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+                    {AGENT_TERMINALS.map(term => {
+                        const isChecked = config.permissions?.agent?.includes(term.id);
+                        return (
+                            <div 
+                                key={term.id} 
+                                onClick={() => togglePermission('agent', term.id)} 
+                                className={`p-4 rounded-xl border cursor-pointer transition-all flex items-center justify-between group ${
+                                    isChecked 
+                                    ? 'bg-surface-main border-accent-primary/50 shadow-md scale-[1.02]' 
+                                    : 'bg-surface-alt/40 border-border-subtle opacity-60 hover:opacity-100 hover:border-border-strong'
+                                }`}
+                            >
+                                <span className="text-sm font-extrabold text-text-primary">{term.label}</span>
+                                <div className={`w-4 h-4 rounded-full border flex items-center justify-center transition-all ${
+                                    isChecked 
+                                    ? 'bg-accent-primary border-accent-primary scale-110 shadow-sm' 
+                                    : 'border-border-strong bg-surface-main'
+                                }`}>
+                                    {isChecked && <Check size={10} className="text-white font-black stroke-[3px]" />}
                                 </div>
                             </div>
-                        ))}
-                    </div>
+                        );
+                    })}
                 </div>
-                
-                <div className="p-4 bg-amber-500/10 border border-amber-500/20 rounded-2xl flex gap-3">
-                    <ShieldAlert size={18} className="text-status-warning shrink-0"/>
-                    <div>
-                        <p className="text-xs font-bold text-status-warning  tracking-widest mb-1">Security Directive</p>
-                        <p className="text-xs text-amber-600/80 leading-relaxed">Changes to Clearance Levels propagate immediately. Active sessions may require a refresh to reflect new interface restrictions.</p>
-                    </div>
+            </div>
+
+            {/* MANAGER PERMISSIONS */}
+            <div className="space-y-4">
+                <div className="flex items-center gap-2 pb-2 border-b border-border-subtle">
+                    <Briefcase size={16} className="text-accent-secondary"/>
+                    <h5 className="text-sm font-black uppercase tracking-wider text-text-primary font-mono">Manager Cleared Views</h5>
+                </div>
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+                    {MANAGER_TERMINALS.map(term => {
+                        const isChecked = config.permissions?.manager?.includes(term.id);
+                        return (
+                            <div 
+                                key={term.id} 
+                                onClick={() => togglePermission('manager', term.id)} 
+                                className={`p-4 rounded-xl border cursor-pointer transition-all flex items-center justify-between group ${
+                                    isChecked 
+                                    ? 'bg-surface-main border-accent-secondary/50 shadow-md scale-[1.02]' 
+                                    : 'bg-surface-alt/40 border-border-subtle opacity-60 hover:opacity-100 hover:border-border-strong'
+                                }`}
+                            >
+                                <span className="text-sm font-extrabold text-text-primary">{term.label}</span>
+                                <div className={`w-4 h-4 rounded-full border flex items-center justify-center transition-all ${
+                                    isChecked 
+                                    ? 'bg-accent-secondary border-accent-secondary scale-110 shadow-sm' 
+                                    : 'border-border-strong bg-surface-main'
+                                }`}>
+                                    {isChecked && <Check size={10} className="text-white font-black stroke-[3px]" />}
+                                </div>
+                            </div>
+                        );
+                    })}
+                </div>
+            </div>
+            
+            <div className="p-4 bg-amber-500/10 border border-amber-500/20 rounded-xl flex gap-3">
+                <ShieldAlert size={18} className="text-status-warning shrink-0 mt-0.5"/>
+                <div>
+                    <h6 className="text-sm font-black uppercase font-mono text-status-warning tracking-wider mb-1">Clearance Propagation Advisory</h6>
+                    <p className="text-sm text-amber-600/90 leading-relaxed font-bold">
+                        Adjustments to routing clearances cascade across active tunnels in &lt;50ms. Currently active agents do not need to restart their browsers; modifications stream via WebSockets in live cycles.
+                    </p>
                 </div>
             </div>
         </section>

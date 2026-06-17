@@ -67,7 +67,7 @@ export const PayrollManager: React.FC = () => {
             {/* HEADER */}
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
                 <div>
-                    <h1 className="text-2xl font-bold text-text-primary tracking-tight">Financial Operations</h1>
+                    <h1 className="text-lg font-bold text-text-primary tracking-tight">Financial Operations</h1>
                     <p className="text-sm text-text-muted">Manage payouts, adjustments, and compliance.</p>
                 </div>
                 

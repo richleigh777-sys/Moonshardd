@@ -116,17 +116,17 @@ Evaluation Parameters:
 
 
     return (
-        <Card variant="panel" className="p-4 md:p-6 space-y-4 md:space-y-6 bg-surface-main/30 backdrop-blur-3xl shadow-panel relative overflow-hidden group border border-border-strong rounded-2xl md:rounded-3xl hover:border-accent-primary/20 transition-all">
+        <Card variant="panel" className="p-4 md:p-4 space-y-4 md:space-y-6 bg-surface-main/30 backdrop-blur-3xl shadow-panel relative overflow-hidden group border border-border-strong rounded-xl md:rounded-xl hover:border-accent-primary/20 transition-all">
             <div className="absolute inset-0 bg-gradient-to-br from-accent-primary/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity z-0"></div>
             
             <div className="flex items-center justify-between relative z-10">
                 <div className="flex items-center gap-3 md:gap-4">
-                    <div className="p-2 md:p-3 bg-accent-primary/10 rounded-xl md:rounded-2xl text-accent-primary border border-accent-primary/20 shadow-inner group-hover:scale-110 transition-transform">
+                    <div className="p-2 md:p-3 bg-accent-primary/10 rounded-xl md:rounded-xl text-accent-primary border border-accent-primary/20 shadow-inner group-hover:scale-110 transition-transform">
                         <Sparkles size={20} strokeWidth={2.5}/>
                     </div>
                     <div>
                         <h3 className="text-sm font-[700]  tracking-[0.2em] text-text-primary drop-shadow-sm">Strategic Intelligence</h3>
-                        <p className="text-[10px] font-[700] text-text-muted  tracking-widest mt-0.5">Real-time pipeline analysis</p>
+                        <p className="text-sm font-[700] text-text-muted  tracking-widest mt-0.5">Real-time pipeline analysis</p>
                     </div>
                 </div>
                 <div className="flex gap-2">
@@ -140,7 +140,7 @@ Evaluation Parameters:
                     {!insight && !loading && (
                         <button 
                             onClick={generateInsights}
-                            className="px-4 py-2 bg-text-primary text-surface-main rounded-xl text-[10px] font-[700]  tracking-widest hover:brightness-110 shadow-[0_0_15px_rgba(255,255,255,0.1)] transition-all active:scale-95 border border-transparent"
+                            className="px-4 py-2 bg-text-primary text-surface-main rounded-xl text-sm font-[700]  tracking-widest hover:brightness-110 shadow-[0_0_15px_rgba(255,255,255,0.1)] transition-all active:scale-95 border border-transparent"
                         >
                             Generate Report
                         </button>
@@ -153,16 +153,16 @@ Evaluation Parameters:
                     <div className="w-16 h-16 rounded-full bg-accent-primary/10 flex items-center justify-center mx-auto border border-accent-primary/30 shadow-[0_0_30px_rgba(var(--color-accent-primary),0.2)]">
                         <TrendingUp size={32} className="text-accent-primary animate-bounce shadow-accent-primary/50" />
                     </div>
-                    <p className="text-xs font-[700]  tracking-[0.3em] text-text-primary drop-shadow-sm">Scanning Sales Ledger</p>
+                    <p className="text-sm font-[700]  tracking-[0.3em] text-text-primary drop-shadow-sm">Scanning Sales Ledger</p>
                 </div>
             )}
 
             {insight && (
                 <div className="space-y-6 animate-in fade-in zoom-in-95 duration-500 relative z-10">
-                    <div className="flex items-center justify-between bg-surface-main/60 p-4 md:p-5 rounded-2xl border border-border-strong shadow-inner backdrop-blur-md group-hover:border-accent-primary/20 transition-colors">
+                    <div className="flex items-center justify-between bg-surface-main/60 p-4 md:p-4 rounded-xl border border-border-strong shadow-inner backdrop-blur-md group-hover:border-accent-primary/20 transition-colors">
                         <div className="space-y-1">
-                            <p className="text-[10px] font-[700] text-text-muted  tracking-[0.2em]">Health Score</p>
-                            <p className={`text-4xl font-[700] font-display tracking-tight drop-shadow-sm ${insight.healthScore > 70 ? 'text-status-success shadow-emerald-500/20' : 'text-status-warning shadow-amber-500/20'}`}>
+                            <p className="text-sm font-[700] text-text-muted  tracking-[0.2em]">Health Score</p>
+                            <p className={`text-lg font-[700] font-display tracking-tight drop-shadow-sm ${insight.healthScore > 70 ? 'text-status-success shadow-emerald-500/20' : 'text-status-warning shadow-amber-500/20'}`}>
                                 {insight.healthScore}%
                             </p>
                         </div>
@@ -176,42 +176,42 @@ Evaluation Parameters:
                     </div>
 
                     <div className="space-y-3 p-1">
-                        <p className="text-[10px] font-[700] text-text-muted  tracking-[0.2em] flex items-center gap-2">
+                        <p className="text-sm font-[700] text-text-muted  tracking-[0.2em] flex items-center gap-2">
                              Key Performance Indicators
                         </p>
                         <div className="space-y-2">
                             {insight.keyFindings.map((f: string, i: number) => (
                                 <div key={i} className="flex gap-3 p-3 lg:p-4 bg-surface-main/40 border border-border-strong rounded-xl group-hover:border-accent-primary/20 transition-all hover:bg-surface-main/60 shadow-inner">
                                     <div className="w-1.5 h-1.5 bg-accent-primary shadow-[0_0_5px_var(--color-accent-primary)] rounded-full mt-2 shrink-0"></div>
-                                    <p className="text-xs font-[700] text-text-primary leading-relaxed opacity-90">{f}</p>
+                                    <p className="text-sm font-[700] text-text-primary leading-relaxed opacity-90">{f}</p>
                                 </div>
                             ))}
                         </div>
                     </div>
 
-                    <div className="p-4 md:p-5 bg-accent-primary/5 border border-accent-primary/20 rounded-2xl shadow-[0_0_15px_rgba(var(--color-accent-primary),0.05)] backdrop-blur-sm">
+                    <div className="p-4 md:p-4 bg-accent-primary/5 border border-accent-primary/20 rounded-xl shadow-[0_0_15px_rgba(var(--color-accent-primary),0.05)] backdrop-blur-sm">
                         <div className="flex items-center justify-between mb-2">
-                            <p className="text-[10px] font-[700] text-accent-primary shadow-accent-primary/20  tracking-[0.2em]">Strategic Pivot</p>
+                            <p className="text-sm font-[700] text-accent-primary shadow-accent-primary/20  tracking-[0.2em]">Strategic Pivot</p>
                             <button 
                                 onClick={broadcastToWarRoom}
                                 disabled={isBroadcasting}
-                                className="flex items-center gap-1.5 text-[10px] bg-accent-primary/10 px-3 py-1.5 rounded-lg border border-accent-primary/30 font-[700]  text-accent-primary hover:bg-accent-primary hover:text-surface-main transition-colors disabled:opacity-50"
+                                className="flex items-center gap-1.5 text-sm bg-accent-primary/10 px-3 py-1.5 rounded-lg border border-accent-primary/30 font-[700]  text-accent-primary hover:bg-accent-primary hover:text-surface-main transition-colors disabled:opacity-50"
                             >
                                 <Megaphone size={14} />
                                 Broadcast
                             </button>
                         </div>
-                        <p className="text-xs md:text-sm font-[700] text-text-primary italic opacity-90">"{insight.strategicPivot}"</p>
+                        <p className="text-sm md:text-sm font-[700] text-text-primary italic opacity-90">"{insight.strategicPivot}"</p>
                     </div>
 
-                    <div className="flex items-center gap-2 text-[10px] font-[700] text-rose-500/80  px-4 py-3 bg-rose-500/5 border border-rose-500/20 rounded-xl">
+                    <div className="flex items-center gap-2 text-sm font-[700] text-rose-500/80  px-4 py-3 bg-rose-500/5 border border-rose-500/20 rounded-xl">
                         <AlertCircle size={16} />
                         Risk: {insight.riskFactor}
                     </div>
 
                     <button 
                         onClick={() => setInsight(null)}
-                        className="w-full py-3 bg-surface-main/80 backdrop-blur-md border border-border-strong shadow-inner hover:border-text-muted hover:text-text-primary rounded-xl text-[10px] font-[700]  text-text-muted transition-all active:scale-[0.98]"
+                        className="w-full py-3 bg-surface-main/80 backdrop-blur-md border border-border-strong shadow-inner hover:border-text-muted hover:text-text-primary rounded-xl text-sm font-[700]  text-text-muted transition-all active:scale-[0.98]"
                     >
                         Reset Analysis
                     </button>
@@ -221,7 +221,7 @@ Evaluation Parameters:
             {!insight && !loading && sales.length === 0 && (
                 <div className="py-16 text-center opacity-40 relative z-10 flex flex-col items-center">
                     <TrendingUp size={48} className="mb-4 text-text-muted drop-shadow-sm" />
-                    <p className="text-xs font-[700]  tracking-[0.3em] text-text-muted">Awaiting Transaction Data</p>
+                    <p className="text-sm font-[700]  tracking-[0.3em] text-text-muted">Awaiting Transaction Data</p>
                 </div>
             )}
         </Card>

@@ -46,11 +46,11 @@ export const TeamLeaderboard: React.FC<TeamLeaderboardProps> = ({ currentUserNam
     const jumpToToday = () => setViewDate(new Date());
 
     return (
-        <Card variant="panel" className="flex flex-col h-full overflow-hidden p-0 relative border border-border-subtle shadow-panel bg-surface-main/30 backdrop-blur-3xl rounded-2xl md:rounded-3xl hover:border-accent-primary/20 transition-all group">
+        <Card variant="panel" className="flex flex-col h-full overflow-hidden p-0 relative border border-border-subtle shadow-panel bg-surface-widget backdrop-blur-3xl rounded-xl md:rounded-xl hover:border-accent-primary/20 transition-all group">
             {/* Header */}
-            <div className="px-4 py-4 md:py-6 border-b border-border-subtle bg-surface-main/60 flex flex-col xl:flex-row justify-between items-start xl:items-center gap-4 relative z-10 backdrop-blur-sm shrink-0">
+            <div className="px-4 py-4 md:py-4 border-b border-border-subtle bg-surface-main/60 flex flex-col xl:flex-row justify-between items-start xl:items-center gap-4 relative z-10 backdrop-blur-sm shrink-0">
                 <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-status-success shadow-inner group-hover:scale-110 transition-transform">
+                    <div className="w-12 h-12 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-status-success shadow-inner group-hover:scale-110 transition-transform">
                         <BarChart3 size={24} strokeWidth={2.5}/>
                     </div>
                     <div>
@@ -108,7 +108,7 @@ export const TeamLeaderboard: React.FC<TeamLeaderboardProps> = ({ currentUserNam
             </div>
 
             <Tabs defaultValue="total" className="flex-1 flex flex-col min-h-0 relative z-10 w-full overflow-hidden">
-                <div className="px-4 lg:px-6 py-2 border-b border-border-subtle bg-surface-main/40 backdrop-blur-sm flex justify-start shrink-0 overflow-x-auto custom-scrollbar">
+                <div className="px-4 lg:px-4 py-2 border-b border-border-subtle bg-surface-widget backdrop-blur-sm flex justify-start shrink-0 overflow-x-auto custom-scrollbar">
                     <TabList className="flex gap-2 min-w-max">
                         <TabTrigger 
                             value="total" 

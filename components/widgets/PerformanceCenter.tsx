@@ -187,15 +187,15 @@ export const PerformanceCenter: React.FC<PerformanceCenterProps> = ({ sales, cur
     };
 
     return (
-        <div className="flex flex-col gap-6 animate-in fade-in duration-700 w-full overflow-visible pb-12">
+        <div className="flex flex-col gap-4 animate-in fade-in duration-700 w-full overflow-visible pb-12">
             {/* EXECUTIVE TOOLBAR */}
-            <div className="flex flex-col xl:flex-row justify-between items-start xl:items-center gap-6 bg-surface-main p-5 rounded-[2rem] border border-border-subtle shadow-soft relative overflow-hidden">
+            <div className="flex flex-col xl:flex-row justify-between items-start xl:items-center gap-4 bg-surface-main p-5 rounded-[2rem] border border-border-subtle shadow-soft relative overflow-hidden">
                 <div className="absolute top-0 right-0 p-4 opacity-5 pointer-events-none">
                     <Activity size={100} />
                 </div>
 
                 <div className="flex items-center gap-5 relative z-10">
-                    <div className="p-3 bg-surface-alt rounded-2xl text-text-primary border border-border-subtle shadow-sm group hover:scale-105 transition-transform duration-300">
+                    <div className="p-3 bg-surface-alt rounded-xl text-text-primary border border-border-subtle shadow-sm group hover:scale-105 transition-transform duration-300">
                         <Activity size={24} strokeWidth={2} className="text-accent-primary" />
                     </div>
                     <div>
@@ -273,23 +273,23 @@ export const PerformanceCenter: React.FC<PerformanceCenterProps> = ({ sales, cur
             <KPIGrid nexusScore={nexusScore} grade={grade} periodStats={periodStats} />
 
             {/* CHARTS ROW */}
-            <div className="grid grid-cols-1 xl:grid-cols-12 gap-6">
+            <div className="grid grid-cols-1 xl:grid-cols-12 gap-4">
                 
-                <div className="xl:col-span-8 flex flex-col gap-6 min-w-0">
+                <div className="xl:col-span-8 flex flex-col gap-4 min-w-0">
                     <div className="h-[360px]">
                         <SalesHistoryChart sales={periodStats.sales} />
                     </div>
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 h-[340px]">
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 h-[340px]">
                         <OpportunityRadar sales={periodStats.sales} agentId={targetAgentId === 'all' ? undefined : targetAgentId} />
                         <PipelineVelocityChart sales={periodStats.sales} />
                     </div>
                 </div>
 
-                <div className="xl:col-span-4 flex flex-col gap-6 min-w-0">
+                <div className="xl:col-span-4 flex flex-col gap-4 min-w-0">
                     <GeoIntelWidget geoData={geoData} />
                     
                     {/* PRODUCTIVITY MATRIX CARD */}
-                    <Card variant="panel" className="flex-1 p-6 bg-surface-main border-border-subtle shadow-soft flex flex-col justify-center relative overflow-hidden group">
+                    <Card variant="panel" className="flex-1 p-4 bg-surface-main border-border-subtle shadow-soft flex flex-col justify-center relative overflow-hidden group">
                         <div className="absolute inset-0 bg-gradient-to-b from-indigo-500/5 to-transparent pointer-events-none"></div>
                         
                         <div className="flex items-center gap-3 mb-6 border-b border-border-subtle pb-3 relative z-10">
@@ -297,13 +297,13 @@ export const PerformanceCenter: React.FC<PerformanceCenterProps> = ({ sales, cur
                             <h4 className="text-xs font-[700]  text-text-primary tracking-widest">Efficiency Metrics</h4>
                         </div>
                         <div className="space-y-4 relative z-10">
-                            <div className="flex flex-col justify-center items-center bg-surface-alt/40 rounded-2xl p-6 border border-border-subtle hover:border-accent-primary/20 transition-colors">
+                            <div className="flex flex-col justify-center items-center bg-surface-alt/40 rounded-xl p-4 border border-border-subtle hover:border-accent-primary/20 transition-colors">
                                 <p className="text-xs font-bold text-text-muted  tracking-widest mb-1">Average Order Value</p>
-                                <span className="text-4xl font-[700] text-text-primary num-font tracking-tighter">${Math.round(periodStats.avgOrder).toLocaleString()}</span>
+                                <span className="text-lg font-[700] text-text-primary num-font tracking-tighter">${Math.round(periodStats.avgOrder).toLocaleString()}</span>
                             </div>
-                            <div className="flex flex-col justify-center items-center bg-surface-alt/40 rounded-2xl p-6 border border-border-subtle hover:border-accent-secondary/20 transition-colors">
+                            <div className="flex flex-col justify-center items-center bg-surface-alt/40 rounded-xl p-4 border border-border-subtle hover:border-accent-secondary/20 transition-colors">
                                 <p className="text-xs font-bold text-text-muted  tracking-widest mb-1">Volume Processed</p>
-                                <span className="text-4xl font-[700] text-accent-secondary num-font tracking-tighter">{periodStats.sales.length} Deals</span>
+                                <span className="text-lg font-[700] text-accent-secondary num-font tracking-tighter">{periodStats.sales.length} Deals</span>
                             </div>
                         </div>
                     </Card>
@@ -314,7 +314,7 @@ export const PerformanceCenter: React.FC<PerformanceCenterProps> = ({ sales, cur
             <div className="flex justify-center pt-4">
                 <button 
                     onClick={() => { setShowManifest(!showManifest); sfx.playClick(); }}
-                    className={`flex items-center gap-3 px-8 py-3 rounded-2xl text-xs font-bold  tracking-widest transition-all border ${showManifest ? 'bg-surface-main text-accent-primary border-accent-primary/30 shadow-md' : 'bg-surface-alt text-text-muted border-border-subtle hover:text-text-primary hover:bg-surface-main'}`}
+                    className={`flex items-center gap-3 px-8 py-3 rounded-xl text-xs font-bold  tracking-widest transition-all border ${showManifest ? 'bg-surface-main text-accent-primary border-accent-primary/30 shadow-md' : 'bg-surface-alt text-text-muted border-border-subtle hover:text-text-primary hover:bg-surface-main'}`}
                 >
                     {showManifest ? <ChevronDown size={16}/> : <ChevronRight size={16}/>}
                     {showManifest ? 'Hide Ledger' : 'View Financial Ledger'}

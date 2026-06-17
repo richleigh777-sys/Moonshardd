@@ -66,7 +66,7 @@ export const QuickCalculator = ({ onClose }: { onClose?: () => void }) => {
             {/* Display */}
             <div className="p-5 bg-surface-main/60 relative backdrop-blur-sm">
                 <div className="text-xs text-text-muted text-right h-4 mb-1 font-mono tracking-wider">{equation}</div>
-                <div className="text-3xl font-[700] text-text-primary text-right num-font tracking-tight overflow-hidden whitespace-nowrap drop-shadow-sm">
+                <div className="text-xl font-[700] text-text-primary text-right num-font tracking-tight overflow-hidden whitespace-nowrap drop-shadow-sm">
                     {display}
                 </div>
                 
@@ -103,7 +103,7 @@ export const QuickCalculator = ({ onClose }: { onClose?: () => void }) => {
                                 ? 'text-status-error bg-status-error/10 hover:bg-status-error/20' 
                                 : ['+', '-', 'x', '/'].includes(btn)
                                 ? 'bg-surface-alt/50 text-accent-primary border border-border-subtle hover:bg-surface-highlight'
-                                : 'bg-surface-main/40 text-text-primary hover:bg-surface-main/80 border border-transparent'
+                                : 'bg-surface-widget text-text-primary hover:bg-surface-main/80 border border-transparent'
                             }
                         `}
                     >

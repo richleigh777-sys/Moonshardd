@@ -55,7 +55,7 @@ export const ContactManager: React.FC = () => {
     return (
         <Card variant="panel" className="h-full flex flex-col bg-surface-main border-border-subtle shadow-xl overflow-hidden">
             {/* HEADER */}
-            <div className="p-6 border-b border-border-subtle flex justify-between items-center bg-surface-alt/30 backdrop-blur-md">
+            <div className="p-4 border-b border-border-subtle flex justify-between items-center bg-surface-alt/30 backdrop-blur-md">
                 <div className="flex items-center gap-3">
                     <div className="w-10 h-10 rounded-xl bg-accent-primary/10 flex items-center justify-center text-accent-primary border border-accent-primary/20">
                         <UserPlus size={20} />
@@ -116,7 +116,7 @@ export const ContactManager: React.FC = () => {
                                         </div>
                                     </div>
 
-                                    <div className="flex items-center gap-6">
+                                    <div className="flex items-center gap-4">
                                         
                                         <div className="flex items-center gap-2">
                                             {customer.tags?.map(tag => (

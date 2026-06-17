@@ -19,7 +19,7 @@ export const ContextualHelp: React.FC = () => {
           : 'bg-red-900 border-red-700'
       } shadow-lg`}>
         <div className="flex gap-3">
-          <span className="text-3xl flex-shrink-0">{tip.icon}</span>
+          <span className="text-xl flex-shrink-0">{tip.icon}</span>
           <div className="flex-1">
             <h3 className="font-bold text-white">{tip.title}</h3>
             <p className="text-sm text-gray-200 mt-1">{tip.message}</p>

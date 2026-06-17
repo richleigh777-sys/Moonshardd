@@ -15,8 +15,8 @@ export const SectionHeader: React.FC<SectionHeaderProps> = ({ icon: Icon, title,
                 <Icon size={18} strokeWidth={2.5} />
             </div>
             <div>
-                <h4 className="text-xs font-bold text-text-primary  tracking-wide">{title}</h4>
-                {sub && <p className="text-xs font-medium text-text-muted tracking-wide mt-0.5">{sub}</p>}
+                <h4 className="text-sm font-bold text-text-primary  tracking-wide">{title}</h4>
+                {sub && <p className="text-sm font-medium text-text-muted tracking-wide mt-0.5">{sub}</p>}
             </div>
         </div>
     </div>

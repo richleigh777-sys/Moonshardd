@@ -3,40 +3,15 @@ import { ShoppingCart, Edit3, PackageOpen } from 'lucide-react';
 import { CartItem } from '../../../../types';
 import { ProductQuickSelector } from '../ProductQuickSelector';
 import { CartPreview } from '../CartPreview';
-import { Card } from '../../../ui/Base';
-
-interface Props {
-  cart: CartItem[];
-  setCart: React.Dispatch<React.SetStateAction<CartItem[]>>;
-  notes: string;
-  setNotes: React.Dispatch<React.SetStateAction<string>>;
-  activeProducts: any[];
-  activePresets: any[];
-  quantities: string[];
-  calculatedTotal: number;
-}
 
 export function ProductBasketEnhanced({
-  cart,
-  setCart,
-  notes,
-  setNotes,
-  activeProducts,
-  activePresets,
-  quantities,
-  calculatedTotal
-}: Props) {
-  const handleAdd = (item: CartItem) => {
-    setCart((prev) => [...prev, item]);
-  };
-
-  const handleRemove = (id: string) => {
-    setCart((prev) => prev.filter((item) => item.id !== id));
-  };
-
+  cart, setCart, notes, setNotes, activeProducts, activePresets, quantities, calculatedTotal
+}: any) {
+  const handleAdd = (item: CartItem) => setCart((prev) => [...prev, item]);
+  const handleRemove = (id: string) => setCart((prev) => prev.filter((item) => item.id !== id));
   const handleQuickAdd = (preset: any) => {
     const newItems = preset.items.map((presetItem: any) => {
-      const productDef = activeProducts.find(p => p.name === presetItem.product);
+      const productDef = activeProducts.find((p: any) => p.name === presetItem.product);
       return {
         id: crypto.randomUUID(),
         product: presetItem.product,
@@ -45,77 +20,59 @@ export function ProductBasketEnhanced({
         unitPrice: productDef?.price || 0
       };
     });
-    setCart(prev => [...prev, ...newItems]);
+    setCart((prev: any[]) => [...prev, ...newItems]);
   };
 
   return (
-    <div className="flex flex-col gap-4">
-      {/* Header/Toggle Card */}
-      <div 
-        className="mb-4"
-      >
-        <div className="flex items-center justify-between pb-3 border-b border-border-subtle">
-          <div className="flex items-center gap-3">
-             <div className={`p-2.5 rounded-xl ${cart.length > 0 ? 'bg-status-success/10 text-status-success' : 'bg-surface-alt text-text-muted border border-border-subtle'}`}>
-                <ShoppingCart size={20} />
-             </div>
-             <div>
-               <h3 className="font-bold text-lg tracking-tight text-text-primary">
-                 Order Contents
-               </h3>
-               <p className="text-sm text-text-muted mt-0.5">
-                 Select the products and configure dosages
-               </p>
-             </div>
-          </div>
-          <div className="flex items-center gap-4">
-             {cart.length > 0 && (
-               <div className="text-right">
-                 <span className="block text-xs font-medium text-text-muted tracking-wide">Basket Total</span>
-                 <span className="block font-black text-xl tracking-tight text-status-success">${calculatedTotal.toFixed(2)}</span>
-               </div>
-             )}
-          </div>
+    <div className="flex flex-col h-full gap-6">
+      {cart.length > 0 && (
+        <div className="flex justify-between items-center bg-emerald-500/10 border border-emerald-500/20 rounded-2xl px-6 py-4 shrink-0 transition-all shadow-sm">
+            <div className="flex items-center gap-3 text-emerald-500">
+                <div className="p-2 bg-emerald-500/20 rounded-full"><ShoppingCart size={20} /></div>
+                <span className="text-sm font-semibold tracking-wide">Basket Ready</span>
+            </div>
+            <div className="text-right flex items-center gap-4">
+                <span className="text-sm font-semibold text-emerald-500/70 tracking-wide uppercase">Subtotal</span>
+                <span className="font-bold text-2xl text-emerald-500">$${calculatedTotal.toFixed(2)}</span>
+            </div>
         </div>
-      </div>
+      )}
 
-      {/* Content View */}
-      <div className="animate-in slide-in-from-top-4 fade-in duration-300 flex flex-col gap-4">
+      <div className="flex-1 overflow-y-auto custom-scrollbar border border-white/5 rounded-[24px] shadow-sm bg-surface-alt/50">
           <ProductQuickSelector
             products={activeProducts}
             presets={activePresets}
             quantities={quantities}
             onAdd={handleAdd}
             onQuickAdd={handleQuickAdd}
+            cart={cart}
+            onRemove={handleRemove}
           />
-          
-          <div className="flex flex-col gap-2">
-            <h4 className="text-[10px] font-black text-text-muted tracking-widest uppercase flex items-center gap-2">
-              <PackageOpen size={12} /> CURRENT CART
+      </div>
+      
+      <div className="shrink-0 flex flex-col gap-4">
+          <div className="flex flex-col gap-3 border border-white/5 rounded-[24px] p-5 bg-surface-alt/50 shadow-sm">
+            <h4 className="text-sm font-bold text-white tracking-wide uppercase flex items-center gap-2">
+              <PackageOpen size={16} className="text-indigo-400" /> Selected Items
             </h4>
-            <CartPreview
-              cart={cart}
-              onRemove={handleRemove}
-              calculatedTotal={calculatedTotal}
-            />
+            <div className="max-h-56 overflow-y-auto custom-scrollbar">
+               <CartPreview cart={cart} onRemove={handleRemove} calculatedTotal={calculatedTotal} />
+            </div>
           </div>
 
-          <Card variant="refraction" className="p-3 bg-surface-main border-border-subtle shadow-sm flex flex-col gap-2">
+          <div className="p-5 bg-surface-alt/50 border border-white/5 rounded-[24px] shadow-sm flex flex-col gap-3">
              <div className="flex items-center justify-between">
-                <label className="text-[10px] font-bold text-text-muted tracking-widest flex items-center gap-1.5 uppercase">
-                   <Edit3 size={12} className="text-indigo-400" /> ORDER NOTES
+                <label className="text-sm font-bold text-white tracking-wide flex items-center gap-2 uppercase">
+                   <Edit3 size={16} className="text-indigo-400" /> Order Notes
                 </label>
-                <span className="text-[10px] font-mono text-text-muted/70">
-                   {notes.length.toLocaleString()}/2000
-                </span>
              </div>
-             <textarea
+             <input
                value={notes}
-               onChange={(e) => setNotes(e.target.value.substring(0, 2000))}
-               placeholder="Special instructions or delivery requests..."
-               className="w-full bg-surface-alt/50 border border-border-subtle rounded-xl p-2.5 text-sm text-text-primary outline-none focus:border-indigo-500/50 resize-y min-h-[60px]"
+               onChange={(e) => setNotes(e.target.value)}
+               placeholder="Add special instructions or details..."
+               className="w-full bg-surface-main border border-white/5 rounded-xl px-4 py-3 text-sm text-white placeholder-text-muted outline-none transition-all focus:border-white focus:bg-surface-alt focus:ring-1 focus:ring-white shadow-inner"
              />
-          </Card>
+          </div>
       </div>
     </div>
   );

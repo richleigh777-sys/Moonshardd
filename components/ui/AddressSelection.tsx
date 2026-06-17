@@ -1,16 +1,10 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { useMapsLibrary } from '@vis.gl/react-google-maps';
+import React, { useState } from 'react';
 
 interface AddressSelectionProps {
   onConfirm?: (address: any) => void;
 }
 
-const SHORT_NAME_ADDRESS_COMPONENT_TYPES = new Set(['street_number', 'administrative_area_level_1', 'postal_code']);
-
 export const AddressSelection: React.FC<AddressSelectionProps> = ({ onConfirm }) => {
-  const placesLib = useMapsLibrary('places');
-  const locationInputRef = useRef<HTMLInputElement>(null);
-
   const [address, setAddress] = useState({
     location: '',
     apt: '',
@@ -19,53 +13,6 @@ export const AddressSelection: React.FC<AddressSelectionProps> = ({ onConfirm })
     postal_code: '',
     country: ''
   });
-
-  useEffect(() => {
-    if (!placesLib || !locationInputRef.current) return;
-
-    const autocomplete = new placesLib.Autocomplete(locationInputRef.current, {
-      fields: ['address_components', 'geometry', 'name'],
-      types: ['address'],
-    });
-
-    const listener = autocomplete.addListener('place_changed', () => {
-      const place = autocomplete.getPlace();
-      if (!place.geometry) {
-        window.alert(`No details available for input: '${place.name}'`);
-        return;
-      }
-      
-      const getComponentName = (componentType: string) => {
-        for (const component of place.address_components || []) {
-          if (component.types[0] === componentType) {
-            return SHORT_NAME_ADDRESS_COMPONENT_TYPES.has(componentType) ?
-                component.short_name :
-                component.long_name;
-          }
-        }
-        return '';
-      };
-
-      const getComponentText = (componentType: string) => {
-        return (componentType === 'location') ?
-            `${getComponentName('street_number')} ${getComponentName('route')}`.trim() :
-            getComponentName(componentType);
-      };
-
-      setAddress(prev => ({
-        ...prev,
-        location: getComponentText('location'),
-        locality: getComponentText('locality'),
-        administrative_area_level_1: getComponentText('administrative_area_level_1'),
-        postal_code: getComponentText('postal_code'),
-        country: getComponentText('country'),
-      }));
-    });
-
-    return () => {
-      google.maps.event.removeListener(listener);
-    };
-  }, [placesLib]);
 
   return (
     <div className="flex h-[500px] w-[300px]">
@@ -81,7 +28,6 @@ export const AddressSelection: React.FC<AddressSelectionProps> = ({ onConfirm })
         <input 
           type="text" 
           placeholder="Address" 
-          ref={locationInputRef}
           value={address.location}
           onChange={(e) => setAddress({...address, location: e.target.value})}
           className="h-[30px] border-0 border-b border-black text-sm font-sans"

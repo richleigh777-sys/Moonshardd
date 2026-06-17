@@ -25,7 +25,7 @@ export const SyncOverlay: React.FC<{ isSyncing: boolean }> = ({ isSyncing }) => 
         
         {/* Text Interface */}
         <div className="text-center space-y-3 relative z-10">
-            <h3 className="text-2xl font-bold  tracking-widest text-white drop-shadow-lg flex items-center justify-center gap-3">
+            <h3 className="text-lg font-bold  tracking-widest text-white drop-shadow-lg flex items-center justify-center gap-3">
                 <Radio size={20} className="text-accent-primary animate-pulse" />
                 Loading Data
             </h3>

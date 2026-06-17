@@ -129,8 +129,8 @@ export const PipelineBoard: React.FC<PipelineBoardProps> = ({ sales, onStageChan
                                 </div>
 
                                 {/* Table-like List */}
-                                <div className="bg-surface-main/30 backdrop-blur-md border border-border-subtle rounded-2xl overflow-hidden shadow-2xl">
-                                    <div className="grid grid-cols-12 gap-4 border-b border-border-subtle bg-black/20 p-4 text-[10px] font-[700]  tracking-widest text-text-muted hidden md:grid">
+                                <div className="bg-surface-main/30 backdrop-blur-md border border-border-subtle rounded-xl overflow-hidden shadow-2xl">
+                                    <div className="grid grid-cols-12 gap-4 border-b border-border-subtle bg-black/20 p-4 text-xs font-[700]  tracking-widest text-text-muted hidden md:grid">
                                         <div className="col-span-4 lg:col-span-3">Customer</div>
                                         <div className="col-span-3 lg:col-span-2">Value & Product</div>
                                         <div className="col-span-3 lg:col-span-3">Lifecycle Stage</div>
@@ -149,7 +149,7 @@ export const PipelineBoard: React.FC<PipelineBoardProps> = ({ sales, onStageChan
                                                         </span>
                                                         {sale.status === 'Declined' && <Badge status="Critical" className="scale-75 origin-left">Failed</Badge>}
                                                     </div>
-                                                    <div className="flex flex-wrap items-center gap-2 text-[10px] text-text-muted mt-0.5">
+                                                    <div className="flex flex-wrap items-center gap-2 text-xs text-text-muted mt-0.5">
                                                         <span className="truncate">{sale.phone || 'No Phone'}</span>
                                                         &bull;
                                                         <span className=" tracking-wider text-text-muted/70">{sale.agent ? `${sale.agent}` : 'Unassigned'}</span>

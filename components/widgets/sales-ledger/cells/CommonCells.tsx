@@ -6,7 +6,7 @@ import {
     Hash, Landmark, Activity, FileText, 
     User, Heart, 
     Calendar, MapPin, ChevronDown, 
-    CheckCircle, RotateCcw, XCircle, AlertTriangle, Eye, CreditCard, Plus, AlertCircle, Package, Star, Music
+    CheckCircle, RotateCcw, XCircle, AlertTriangle, Eye, CreditCard, Plus, AlertCircle, Package, Star, Music, Play
 } from 'lucide-react';
 import { AudioPlayer } from '../../../ui/Base';
 import { sfx } from '../../../../lib/soundService';
@@ -60,8 +60,8 @@ export const StatusCell: React.FC<CellProps> = ({ value, isEditing, onChange }) 
     }
 
     return (
-        <span className={`px-3 py-1.5 rounded-md text-xs font-[700]  tracking-wider border flex items-center gap-1.5 w-fit ${style}`}>
-            {icon} {value}
+        <span className={`p-1.5 rounded-md text-xs font-[700] tracking-wider border flex items-center justify-center w-fit ${style}`} title={value}>
+            {icon}
         </span>
     );
 };
@@ -107,8 +107,8 @@ export const PipelineCell: React.FC<CellProps> = ({ value, isEditing, onChange }
     }
 
     return (
-        <span className={`px-3 py-1.5 rounded-md text-xs font-[700]  tracking-wider border ${style} truncate max-w-[120px] flex items-center gap-1.5 transition-all hover:bg-opacity-100`}>
-            {icon} {value}
+        <span className={`p-1.5 rounded-md border ${style} flex items-center justify-center transition-all hover:bg-opacity-100 w-fit`} title={value}>
+            {icon}
         </span>
     );
 };
@@ -404,9 +404,16 @@ export const DeliveryStatusCell: React.FC<CellProps> = ({ value }) => {
         return 'text-text-muted bg-surface-alt border-border-subtle';
     };
 
+    const getStatusIcon = (s: string) => {
+        if (s === 'Delivered') return <CheckCircle size={16} />;
+        if (s === 'Shipped' || s === 'In Transit') return <Package size={16} />;
+        if (s === 'Out for Delivery') return <Truck size={16} />;
+        return <Clock size={16} />;
+    };
+
     return (
-        <span className={`px-2.5 py-1 rounded text-sm font-[700]  tracking-widest border ${getStatusStyle(value || '')} truncate max-w-[100px] block text-center`}>
-            {value || 'Processing'}
+        <span className={`p-1.5 rounded-md border flex items-center justify-center w-fit ${getStatusStyle(value || '')}`} title={value || 'Processing'}>
+            {getStatusIcon(value || '')}
         </span>
     );
 };
@@ -614,8 +621,11 @@ export const MediaCell: React.FC<CellProps> = ({ value, row, isEditing, onChange
     );
     
     return (
-        <div className="w-28">
-             <AudioPlayer src={value} onDelete={onAction ? () => onAction('delete_recording') : undefined} />
+        <div className="flex items-center gap-2">
+             <button onClick={(e) => { e.stopPropagation(); if (onAction) onAction('listen_recording', row); }} className="flex items-center gap-1.5 px-2 py-1 bg-accent-primary/10 text-accent-primary border border-accent-primary/20 hover:bg-accent-primary/20 rounded text-xs transition-colors shrink-0 whitespace-nowrap">
+                <Play size={12} />
+                <span>Listen</span>
+             </button>
         </div>
     );
 };

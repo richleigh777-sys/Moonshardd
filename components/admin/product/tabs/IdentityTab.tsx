@@ -12,7 +12,7 @@ interface IdentityTabProps {
 export const IdentityTab: React.FC<IdentityTabProps> = ({ formData, setFormData }) => {
     return (
         <div className="space-y-8 animate-in slide-in-from-right-4 duration-300">
-            <div className="bg-surface-alt/20 p-6 rounded-3xl border border-border-subtle space-y-6">
+            <div className="bg-surface-alt/20 p-4 rounded-xl border border-border-subtle space-y-6">
                 <Input 
                     label="Product Name" 
                     value={formData.name || ''} 
@@ -20,7 +20,7 @@ export const IdentityTab: React.FC<IdentityTabProps> = ({ formData, setFormData 
                     placeholder="e.g. Neuro-Link Alpha"
                     className="text-lg font-bold"
                 />
-                <div className="grid grid-cols-2 gap-6">
+                <div className="grid grid-cols-2 gap-4">
                     <Input 
                         label="SKU Code" 
                         value={formData.sku || ''} 
@@ -38,7 +38,7 @@ export const IdentityTab: React.FC<IdentityTabProps> = ({ formData, setFormData 
             </div>
 
             <div 
-                className="flex items-center gap-4 p-4 bg-surface-alt/30 rounded-2xl border border-border-subtle cursor-pointer hover:border-accent-primary/30 transition-all group" 
+                className="flex items-center gap-4 p-4 bg-surface-alt/30 rounded-xl border border-border-subtle cursor-pointer hover:border-accent-primary/30 transition-all group" 
                 onClick={() => setFormData(prev => ({...prev, active: !prev.active}))}
             >
                 <div className={`p-3 rounded-xl transition-colors ${formData.active ? 'bg-emerald-500/10 text-status-success' : 'bg-surface-alt text-text-muted'}`}>
@@ -46,7 +46,7 @@ export const IdentityTab: React.FC<IdentityTabProps> = ({ formData, setFormData 
                 </div>
                 <div className="flex-1">
                     <h4 className="text-sm font-bold text-text-primary group-hover:text-accent-primary transition-colors">Active Status</h4>
-                    <p className="text-xs text-text-muted  tracking-wider">Visible in Agent Terminal</p>
+                    <p className="text-sm text-text-muted  tracking-wider">Visible in Agent Terminal</p>
                 </div>
                 <div className={`w-12 h-6 rounded-full relative transition-colors ${formData.active ? 'bg-emerald-500' : 'bg-slate-500/30'}`}>
                     <div className={`absolute top-1 w-4 h-4 rounded-full bg-white shadow-sm transition-all ${formData.active ? 'left-7' : 'left-1'}`}></div>

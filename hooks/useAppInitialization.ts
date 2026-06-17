@@ -91,6 +91,13 @@ export const useAppInitialization = () => {
             };
             init();
         }
+
+        // Keep WebSocket registration aligned with the active session
+        if (currentUser) {
+            import('../lib/realtimeClient').then(({ realtimeClient }) => {
+                realtimeClient.send('REGISTER_AGENT', { userId: currentUser.id, role: currentUser.role });
+            });
+        }
     }, [currentUser, view, setView, logAttendance, logAudit]);
 
     const handleExitGhostMode = useCallback(() => {

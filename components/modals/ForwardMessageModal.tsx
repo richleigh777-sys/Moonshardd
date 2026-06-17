@@ -85,7 +85,7 @@ export const ForwardMessageModal: React.FC<ForwardMessageModalProps> = ({ isOpen
             {/* Backdrop click to close */}
             <div className="absolute inset-0" onClick={onClose}></div>
             
-            <div className="bg-surface-main w-full max-w-lg rounded-2xl border border-border-subtle shadow-2xl flex flex-col relative z-10 overflow-hidden animate-in zoom-in-95 duration-200 max-h-[85vh]">
+            <div className="bg-surface-main w-full max-w-lg rounded-xl border border-border-subtle shadow-2xl flex flex-col relative z-10 overflow-hidden animate-in zoom-in-95 duration-200 max-h-[85vh]">
                 
                 {/* Header */}
                 <div className="p-4 border-b border-border-subtle flex justify-between items-center bg-surface-alt/50">

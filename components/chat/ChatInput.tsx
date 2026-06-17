@@ -143,13 +143,13 @@ export const ChatInput: React.FC<ChatInputProps> = ({
             {!propIsRecording && <div className="mb-2 w-full px-4"><SmartChips chips={smartChips} onSelect={(text) => { setInput(text); sfx.playClick(); textareaRef.current?.focus(); }} /></div>}
 
             {/* THE CAPSULE (Highly rounded, modern WhatsApp feel) */}
-            <div className="relative w-full bg-surface-main flex items-end p-2 md:p-3 gap-2 rounded-3xl border border-border-subtle focus-within:border-accent-secondary/60 focus-within:ring-4 focus-within:ring-accent-secondary/15 transition-all duration-300 shadow-float">
+            <div className="relative w-full bg-surface-main flex items-end p-2 md:p-3 gap-2 rounded-xl border border-border-subtle focus-within:border-accent-secondary/60 focus-within:ring-4 focus-within:ring-accent-secondary/15 transition-all duration-300 shadow-float">
                 
                 <NeuralComposer show={showAI} isThinking={isThinking} onAction={() => {}} menuRef={React.createRef()} />
 
                 {/* Slash Commands Dropdown */}
                 {showSlashCommands && (
-                    <div className="absolute bottom-[calc(100%+8px)] left-0 w-full bg-surface-main border border-border-subtle rounded-2xl shadow-xl overflow-hidden z-20">
+                    <div className="absolute bottom-[calc(100%+8px)] left-0 w-full bg-surface-main border border-border-subtle rounded-xl shadow-xl overflow-hidden z-20">
                         {slashCommands.filter(c => c.cmd.toLowerCase().startsWith(input.toLowerCase())).map((cmd, i) => (
                             <button 
                                 key={i} 
@@ -170,7 +170,7 @@ export const ChatInput: React.FC<ChatInputProps> = ({
                 <div className="absolute bottom-[100%] left-0 w-full pointer-events-none z-10 px-1 pb-1">
                     <ContextBanner replyTo={replyTo} editingMsg={editingMsg} onCancel={onCancelContext} />
                     {isInternal && (
-                        <div className="bg-amber-500/15 text-amber-500 border border-amber-500/30 transform translate-y-2 text-xs font-bold px-4 py-1.5 rounded-full w-fit mb-2 shadow-sm pointer-events-auto mx-4 z-20 relative">
+                        <div className="bg-amber-500/15 text-amber-500 border border-amber-500/30 transform translate-y-2 text-sm font-bold px-4 py-1.5 rounded-full w-fit mb-2 shadow-sm pointer-events-auto mx-4 z-20 relative">
                             Internal Mode (Hidden from Customer)
                         </div>
                     )}
@@ -205,7 +205,7 @@ export const ChatInput: React.FC<ChatInputProps> = ({
                     
                     {/* Floating Tools Menu */}
                     {isMenuOpen && (
-                        <div className="absolute bottom-14 left-0 bg-surface-main border border-border-subtle p-2 rounded-2xl shadow-xl flex flex-col gap-1 w-56 animate-in slide-in-from-bottom-2 zoom-in-95 origin-bottom-left z-50">
+                        <div className="absolute bottom-14 left-0 bg-surface-main border border-border-subtle p-2 rounded-xl shadow-xl flex flex-col gap-1 w-56 animate-in slide-in-from-bottom-2 zoom-in-95 origin-bottom-left z-50">
                             <button onClick={() => { fileInputRef.current?.click(); setIsMenuOpen(false); }} className="flex items-center gap-3 px-4 py-3 hover:bg-surface-highlight rounded-xl text-sm font-semibold text-text-primary transition-all text-left">
                                 <div className="p-2 bg-accent-secondary/10 text-accent-secondary rounded-lg"><Paperclip size={18}/></div>
                                 Document or Image
@@ -229,7 +229,7 @@ export const ChatInput: React.FC<ChatInputProps> = ({
                 {/* CENTER: Input Area */}
                 <div className="flex-1 min-w-0 flex items-end">
                     {isRecording ? (
-                        <div className="flex items-center gap-3 px-4 py-2.5 bg-status-error/15 rounded-2xl flex-1 animate-in slide-in-from-right-4 w-full">
+                        <div className="flex items-center gap-3 px-4 py-2.5 bg-status-error/15 rounded-xl flex-1 animate-in slide-in-from-right-4 w-full">
                             <div className="w-3 h-3 bg-status-error rounded-full animate-pulse shadow-sm shadow-status-error/50"></div>
                             <span className="text-[15px] font-semibold text-status-error">Recording audio...</span>
                             <span className="text-[15px] font-mono font-bold text-status-error/80 ml-auto bg-surface-main px-2 py-0.5 rounded-lg shadow-sm">{formatDuration(recordTime)}</span>

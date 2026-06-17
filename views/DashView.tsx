@@ -1,4 +1,21 @@
 import React, { memo } from 'react';
+import { motion } from 'framer-motion';
+import { Flame } from 'lucide-react';
+const StreakFlame = ({ streak }) => {
+    if (streak < 3) return null;
+    return (
+        <motion.div 
+            initial={{ scale: 0.8, opacity: 0 }}
+            animate={{ scale: [1, 1.2, 1], opacity: [0.8, 1, 0.8] }}
+            transition={{ repeat: Infinity, duration: 1.5 }}
+            className="absolute top-3 right-3 text-red-500 flex items-center gap-1 bg-red-500/10 px-2 py-1 rounded-full"
+            title={'Hot streak! ' + streak + ' in a row!'}
+        >
+            <Flame size={14} className="fill-red-500" />
+            <span className="text-xs font-black">{streak}</span>
+        </motion.div>
+    );
+};
 import { Heart, Activity, Target, Wallet, List, TrendingUp, Pin } from 'lucide-react';
 import { Sale } from '../types';
 import { useAuth } from '../hooks/useAuth';
@@ -11,25 +28,38 @@ import { MiniLeaderboard } from '../components/widgets/MiniLeaderboard';
 import { PersonalMetricTerminal } from '../components/widgets/PersonalMetricTerminal';
 import { useAgentStats } from '../components/agent/hooks/useAgentStats';
 
-const StatCard = memo(({ label, value, icon: Icon, trend }: any) => (
-    <Card className="p-5 flex flex-col justify-between group overflow-hidden border border-border-subtle bg-surface-main hover:border-border-strong hover:shadow-sm transition-all duration-200 relative rounded-2xl cursor-pointer">
+const StatCard = memo(({ label, value, icon: Icon, trend, description, streak, showStreak }: any) => (
+    <Card variant="refraction" className="p-4 flex flex-col justify-between group overflow-hidden border border-border-subtle bg-surface-main hover:border-accent-primary/40 hover:shadow-lg transition-all duration-300 relative rounded-xl cursor-pointer hover:-translate-y-0.5">
+        {/* Decorative corner ambient glow */}
+        <div className="absolute -right-6 -top-4 w-16 h-16 bg-accent-primary/[0.04] rounded-full blur-xl group-hover:bg-accent-primary/10 transition-all duration-500"></div>
+        
         <div className="flex justify-between items-start relative z-10">
-            <div className={`p-2.5 rounded-xl bg-surface-alt border border-border-subtle text-text-primary transition-colors duration-200 group-hover:bg-accent-primary/10 group-hover:text-accent-primary group-hover:border-accent-primary/20 shadow-sm`}>
-                <Icon size={18} strokeWidth={2} />
+            <div className={`p-2 rounded-lg bg-surface-alt border border-border-subtle text-text-primary transition-all duration-300 group-hover:bg-accent-primary/10 group-hover:text-accent-primary group-hover:border-accent-primary/20 shadow-sm group-hover:scale-105`}>
+                <Icon size={16} strokeWidth={2.5} />
             </div>
-            {trend && (
-                <div className={`flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-status-success text-xs font-semibold`}>
-                    <TrendingUp size={14} /> {trend}%
+            {trend ? (
+                <div className={`flex items-center gap-1 px-2 py-0.5 rounded-md bg-emerald-500/10 border border-emerald-500/20 text-status-success text-[9px] font-black tracking-tight font-mono shadow-sm`}>
+                    <TrendingUp size={10} /> {trend > 0 ? `+${trend}` : trend}%
                 </div>
+            ) : (
+                <span className="w-1.5 h-1.5 rounded-full bg-border-strong opacity-40 group-hover:bg-accent-primary group-hover:opacity-100 transition-all"></span>
             )}
         </div>
 
-        <div className="mt-5 relative z-10">
-            <p className="text-xs font-semibold text-text-muted mb-1 tracking-wider uppercase opacity-80">{label}</p>
-            <div className="flex items-baseline gap-2">
-                <h3 className="text-2xl font-bold text-text-primary tracking-tight leading-none">{value}</h3>
+        <div className="mt-4 relative z-10">
+            <p className="text-[9px] font-black text-text-muted mb-0.5 tracking-wider uppercase opacity-70 leading-none">{label}</p>
+            <div className="flex items-baseline gap-1">
+                <h3 className="text-xl font-black text-text-primary tracking-tight leading-none font-mono">{value}</h3>
             </div>
+            {description && (
+                <p className="text-[9px] font-bold text-text-muted/65 mt-1 tracking-tight group-hover:text-text-muted transition-colors leading-tight">
+                    {description}
+                </p>
+            )}
         </div>
+        
+        {/* Bottom indicator border line */}
+        <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-accent-primary/20 via-accent-secondary/10 to-transparent group-hover:from-accent-primary/60 transition-all duration-300" />
     </Card>
 ));
 
@@ -52,6 +82,9 @@ export const DashView: React.FC<{ sales: Sale[] }> = ({ sales }) => {
             value={`$${stats.dailyRev.toLocaleString()}`} 
             icon={Heart} 
             trend={12.5} 
+            description="Sum of approved daily deals"
+            showStreak={systemConfig?.enableStreakAnimation}
+            streak={stats.streak}
           />
       ),
       'kpi_winrate': (
@@ -60,6 +93,7 @@ export const DashView: React.FC<{ sales: Sale[] }> = ({ sales }) => {
             value={`${stats.winRate}%`} 
             icon={Activity} 
             trend={4.2} 
+            description="Leads qualified vs closed"
           />
       ),
       'kpi_goal': (
@@ -67,6 +101,7 @@ export const DashView: React.FC<{ sales: Sale[] }> = ({ sales }) => {
             label="Target for Month" 
             value={`$${stats.totalRevenue.toLocaleString()}`} 
             icon={Target} 
+            description="Month-to-date total targets"
           />
       ),
       'kpi_earnings': (
@@ -74,11 +109,12 @@ export const DashView: React.FC<{ sales: Sale[] }> = ({ sales }) => {
             label="My Earnings" 
             value={`$${stats.estCommission.toLocaleString()}`} 
             icon={Wallet} 
+            description="Realized payout cycle accrued"
           />
       ),
       'activity_table': (
-          <Card variant="panel" className="flex-1 min-h-[400px] overflow-hidden flex flex-col p-0 border-border-subtle/80 bg-surface-main shadow-sm w-full rounded-2xl">
-              <div className="px-6 py-4 border-b border-border-subtle flex justify-between items-center bg-surface-main">
+          <Card variant="panel" className="flex-1 min-h-[220px] overflow-hidden flex flex-col p-0 border-border-subtle/80 bg-surface-main shadow-sm w-full rounded-xl">
+              <div className="px-4 py-4 border-b border-border-subtle flex justify-between items-center bg-surface-main">
                   <div className="flex items-center gap-3">
                       <div className="p-2 bg-surface-alt rounded-lg text-text-secondary border border-border-subtle shadow-sm">
                           <List size={18} strokeWidth={2}/>
@@ -160,7 +196,7 @@ export const DashView: React.FC<{ sales: Sale[] }> = ({ sales }) => {
           />
       ),
       'team_leaderboard': (
-           <div className="h-[380px] w-full">
+           <div className="h-[280px] w-full">
                 <MiniLeaderboard />
            </div>
       )
@@ -173,12 +209,12 @@ export const DashView: React.FC<{ sales: Sale[] }> = ({ sales }) => {
   );
 
   return (
-    <div className="flex flex-col gap-6 animate-in fade-in slide-in-from-bottom-4 duration-1000 pb-20">
+    <div className="flex flex-col gap-3 animate-in fade-in slide-in-from-bottom-4 duration-1000 pb-6">
         
         {/* WELCOME HEADER */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 px-1 mb-2">
             <div className="space-y-1">
-                <h1 className="text-2xl font-bold text-text-primary tracking-tight">
+                <h1 className="text-lg font-bold text-text-primary tracking-tight">
                     Welcome back, {currentUser?.name.split(' ')[0]}
                 </h1>
                 <p className="text-sm text-text-muted font-medium">
@@ -225,17 +261,17 @@ export const DashView: React.FC<{ sales: Sale[] }> = ({ sales }) => {
         </div>
 
         {/* MAIN WORKSPACE GRID */}
-        <div className="grid grid-cols-12 gap-6 items-start">
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-3 md:gap-4 items-start">
             
             {/* LEFT COLUMN */}
-            <div className="col-span-12 xl:col-span-8 flex flex-col gap-6">
+            <div className="md:col-span-7 xl:col-span-8 flex flex-col gap-3 md:gap-4">
                 {!pinnedWidgets.includes('revenue_chart') && renderWidget('revenue_chart')}
                 {!pinnedWidgets.includes('action_center') && renderWidget('action_center')}
                 {!pinnedWidgets.includes('activity_table') && renderWidget('activity_table')}
             </div>
 
             {/* RIGHT COLUMN */}
-            <div className="col-span-12 xl:col-span-4 flex flex-col gap-6">
+            <div className="md:col-span-5 xl:col-span-4 flex flex-col gap-3 md:gap-4">
                 {!pinnedWidgets.includes('personal_terminal') && renderWidget('personal_terminal')}
                 {!pinnedWidgets.includes('team_leaderboard') && renderWidget('team_leaderboard')}
             </div>

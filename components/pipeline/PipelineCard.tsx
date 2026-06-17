@@ -39,7 +39,7 @@ export const PipelineCard = React.memo(({ sale, onOpen, onDragStart }: PipelineC
         draggable
         onDragStart={handleDragStart}
         className={`
-            relative p-3.5 rounded-2xl shadow-sm border cursor-grab active:cursor-grabbing transition-all duration-200 group transform-gpu select-none
+            relative p-3.5 rounded-xl shadow-sm border cursor-grab active:cursor-grabbing transition-all duration-200 group transform-gpu select-none
             hover:-translate-y-1 hover:shadow-lg
             ${isHighUrgency ? 'bg-amber-500/5 border-status-warning/30' : 'bg-surface-main border-border-subtle hover:border-accent-primary/40'}
             ${isStagnant && !isHighUrgency ? 'opacity-80' : 'opacity-100'}

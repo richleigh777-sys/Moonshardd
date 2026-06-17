@@ -88,10 +88,33 @@ export class BaseRepository {
         }, 60);
     }
 
+    private getRequestHeaders(): Record<string, string> {
+        let userLevel = '1';
+        let userId = 'unknown';
+        try {
+            const localUserStr = localStorage.getItem('nexus_session_user');
+            if (localUserStr) {
+                const u = JSON.parse(localUserStr);
+                userLevel = String(u.level || '1');
+                userId = String(u.id || 'unknown');
+            }
+        } catch (err: any) {
+            console.warn("[Nexus] Failed to parse request headers:", err.message);
+        }
+
+        return {
+            'X-Tenant-ID': this.activeServerId || 'srv-001',
+            'X-User-Level': userLevel,
+            'X-User-ID': userId,
+        };
+    }
+
     private async performBatchFetch(collections: string[]) {
         try {
             const namesParam = encodeURIComponent(collections.join(','));
-            const res = await fetch(`/api/collections/batch?names=${namesParam}`);
+            const res = await fetch(`/api/collections/batch?names=${namesParam}`, {
+                headers: this.getRequestHeaders()
+            });
             
             if (!res.ok) {
                 const txt = await res.text();
@@ -141,10 +164,10 @@ export class BaseRepository {
                 }
             }
         } catch (error: any) {
-            if (error.message === "RATE_LIMIT_EXCEEDED") {
-                // Silently fallback to cache due to API platform rate limits
+            if (error.message === "RATE_LIMIT_EXCEEDED" || error.message?.includes('Expected JSON')) {
+                // Silently fallback to cache due to API platform rate limits or Vite dev server HTML fallbacks
             } else if (error.name !== 'TypeError' || !error.message.includes('fetch')) {
-                console.error("[Postgres API] Batch polling error, utilizing local persistence cache:", error);
+                console.error("[Postgres API] Batch polling error, utilizing local persistence cache:", error.message);
             }
             
             for (const col of collections) {
@@ -224,7 +247,9 @@ export class BaseRepository {
 
     public async get(collectionName: string): Promise<any[]> {
         try {
-            const res = await fetch(`/api/collections/${collectionName}`);
+            const res = await fetch(`/api/collections/${collectionName}`, {
+                headers: this.getRequestHeaders()
+            });
             if (!res.ok) {
                console.error("GET error", await res.text());
                return [];
@@ -271,8 +296,12 @@ export class BaseRepository {
         
         const saveCollectionConfig = async (collection: string, data: any) => {
             const payload = JSON.parse(JSON.stringify(data));
+            const headers = {
+                ...this.getRequestHeaders(),
+                'Content-Type': 'application/json'
+            };
             await fetch(`/api/collections/${collection}`, {
-                method: 'POST', headers: { 'Content-Type': 'application/json' },
+                method: 'POST', headers,
                 body: JSON.stringify(payload)
             });
         };
@@ -285,8 +314,12 @@ export class BaseRepository {
     }
 
     public async updateServer(serverId: string, data: Partial<Server>) {
+        const headers = {
+            ...this.getRequestHeaders(),
+            'Content-Type': 'application/json'
+        };
         await fetch(`/api/collections/servers/${serverId}`, {
-            method: 'PUT', headers: { 'Content-Type': 'application/json' },
+            method: 'PUT', headers,
             body: JSON.stringify(data)
         });
     }
@@ -294,7 +327,8 @@ export class BaseRepository {
     public async deleteServer(serverId: string) {
         // We will remove it from 'servers' col
         await fetch(`/api/collections/servers/${serverId}`, {
-            method: 'DELETE'
+            method: 'DELETE',
+            headers: this.getRequestHeaders()
         });
         
         // Also fire off deletions of data for this server if we can
@@ -313,10 +347,21 @@ export class BaseRepository {
         });
 
         try {
+            const headers = {
+                ...this.getRequestHeaders(),
+                'Content-Type': 'application/json'
+            };
             await fetch(`/api/collections/${collectionName}`, {
-                method: 'POST', headers: { 'Content-Type': 'application/json' },
+                method: 'POST', headers,
                 body: JSON.stringify(payload)
+            }).catch(e => {
+                if (e.message?.includes('Failed to fetch')) {
+                    console.warn(`[Nexus] Offline Mode: ${collectionName} cached locally.`);
+                } else {
+                    throw e;
+                }
             });
+            
             // Also stash locally for resilience
             const localList = JSON.parse(localStorage.getItem(`crm_cache_${collectionName}`) || '[]');
             localList.push(payload);
@@ -325,21 +370,33 @@ export class BaseRepository {
             if (this.fetchers[collectionName]) this.fetchers[collectionName]();
 
             return payload;
-        } catch (error) {
+        } catch (error: any) {
+            if (error.message?.includes('Failed to fetch')) {
+                console.warn(`[Nexus] Offline Mode: ${collectionName} cached locally.`);
+                return payload;
+            }
             handleFirestoreError(error, OperationType.CREATE, collectionName);
         }
     }
 
     public async update(collectionName: string, id: string, updates: any, expectedUpdatedAt?: number, originalData?: any) {
+        let finalUpdates: any = {};
         try {
-            const finalUpdates = removeUndefinedFields({
+            finalUpdates = removeUndefinedFields({
                 ...(updates as object),
                 updatedAt: Date.now()
             });
             
+            const headers = {
+                ...this.getRequestHeaders(),
+                'Content-Type': 'application/json'
+            };
             await fetch(`/api/collections/${collectionName}/${id}`, {
-                method: 'PUT', headers: { 'Content-Type': 'application/json' },
+                method: 'PUT', headers,
                 body: JSON.stringify(finalUpdates)
+            }).catch(e => {
+                if (e.message?.includes('Failed to fetch')) console.warn(`[Nexus] Offline Update...`);
+                else throw e;
             });
 
             // Make optimistic update to local resilience cache
@@ -354,7 +411,8 @@ export class BaseRepository {
             if (this.fetchers[collectionName]) this.fetchers[collectionName]();
 
             return { id, ...(originalData || {}), ...finalUpdates };
-        } catch (error) {
+        } catch (error: any) {
+            if (error.message?.includes('Failed to fetch')) return { id, ...finalUpdates };
             if (error instanceof ConflictError) throw error;
             handleFirestoreError(error, OperationType.UPDATE, collectionName);
         }
@@ -362,14 +420,21 @@ export class BaseRepository {
 
     public async delete(collectionName: string, id: string) {
         try {
-            await fetch(`/api/collections/${collectionName}/${id}`, { method: 'DELETE' });
+            await fetch(`/api/collections/${collectionName}/${id}`, { 
+                method: 'DELETE',
+                headers: this.getRequestHeaders()
+            }).catch(e => {
+                if (e.message?.includes('Failed to fetch')) console.warn(`[Nexus] Offline Delete...`);
+                else throw e;
+            });
             // Local resilience clear
             const cacheKey = `crm_cache_${collectionName}`;
             const localList = JSON.parse(localStorage.getItem(cacheKey) || '[]');
             localStorage.setItem(cacheKey, JSON.stringify(localList.filter((item:any) => item.id !== id)));
             
             if (this.fetchers[collectionName]) this.fetchers[collectionName]();
-        } catch (error) {
+        } catch (error: any) {
+            if (error.message?.includes('Failed to fetch')) return;
             handleFirestoreError(error, OperationType.DELETE, collectionName);
         }
     }

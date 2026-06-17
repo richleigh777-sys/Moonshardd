@@ -18,14 +18,14 @@ export const AdminAnalytics: React.FC<AdminAnalyticsProps> = ({ sales = [] }) =>
   const { timeRange, setTimeRange, metrics } = useAnalytics(sales);
 
   return (
-    <div className="flex flex-col gap-6 animate-in fade-in duration-700 w-full overflow-visible pb-4">
+    <div className="flex flex-col gap-4 animate-in fade-in duration-700 w-full overflow-visible pb-4">
         
         {/* Header Toolbar */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center bg-surface-main/80 backdrop-blur-xl p-3 pr-4 rounded-[2.5rem] border border-border-subtle shadow-lg gap-4 shrink-0 relative overflow-hidden">
             <div className="absolute inset-0 bg-gradient-to-r from-indigo-500/5 to-transparent pointer-events-none"></div>
             
             <div className="flex items-center gap-4 px-4 py-2 relative z-10">
-                <div className="p-3 bg-accent-secondary/10 rounded-2xl text-accent-secondary border border-accent-secondary/20 shadow-neon">
+                <div className="p-3 bg-accent-secondary/10 rounded-xl text-accent-secondary border border-accent-secondary/20 shadow-neon">
                     <BarChart3 size={24} strokeWidth={2.5} />
                 </div>
                 <div>
@@ -37,12 +37,12 @@ export const AdminAnalytics: React.FC<AdminAnalyticsProps> = ({ sales = [] }) =>
                 </div>
             </div>
 
-            <div className="flex bg-surface-alt p-1.5 rounded-2xl border border-border-subtle relative z-10 shadow-inner">
+            <div className="flex bg-surface-alt p-1.5 rounded-xl border border-border-subtle relative z-10 shadow-inner">
                 {(['Today', 'Week', 'Month', 'All'] as const).map(range => (
                     <button
                         key={range}
                         onClick={() => setTimeRange(range)}
-                        className={`px-6 py-2.5 rounded-xl text-xs font-[700]  tracking-widest transition-all ${
+                        className={`px-4 py-2.5 rounded-xl text-xs font-[700]  tracking-widest transition-all ${
                             timeRange === range 
                             ? 'bg-surface-main text-text-primary shadow-md ring-1 ring-border-subtle' 
                             : 'text-text-muted hover:text-text-secondary hover:bg-surface-main/50'
@@ -90,7 +90,7 @@ export const AdminAnalytics: React.FC<AdminAnalyticsProps> = ({ sales = [] }) =>
         </div>
 
         {/* Chart Layout */}
-        <div className="grid grid-cols-1 xl:grid-cols-3 gap-6 auto-rows-fr">
+        <div className="grid grid-cols-1 xl:grid-cols-3 gap-4 auto-rows-fr">
             <TemporalHeatmap data={metrics.heatMap} />
             <ProductMixChart data={metrics.pieData} />
         </div>

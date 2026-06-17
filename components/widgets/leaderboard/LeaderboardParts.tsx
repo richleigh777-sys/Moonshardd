@@ -11,12 +11,12 @@ export const Podium = React.memo(({ top3 }: { top3: any[] }) => {
     const slots = [top3[1], top3[0], top3[2]]; 
 
     return (
-        <div className="relative w-full flex justify-center items-end h-[280px] lg:h-full pt-8 pb-4 border-b border-border-strong bg-surface-main/30 backdrop-blur-xl rounded-3xl overflow-hidden shadow-panel">
+        <div className="relative w-full flex justify-center items-end h-[280px] lg:h-full pt-8 pb-4 border-b border-border-strong bg-surface-main/30 backdrop-blur-xl rounded-xl overflow-hidden shadow-panel">
             {/* Holographic Floor */}
             <div className="absolute inset-0 bg-gradient-to-t from-emerald-500/10 via-transparent to-transparent pointer-events-none z-0"></div>
             <div className="absolute bottom-0 w-full h-px bg-emerald-500/50 shadow-[0_0_20px_rgba(16,185,129,0.8)] z-10"></div>
             
-            <div className="flex items-end justify-center gap-2 md:gap-6 w-full max-w-3xl relative z-10 px-2">
+            <div className="flex items-end justify-center gap-2 md:gap-4 w-full max-w-3xl relative z-10 px-2">
                 {/* 2nd Place */}
                 <PodiumStep rank={2} agent={slots[0]} color="cyan" delay={100} height="h-24 md:h-28" />
                 {/* 1st Place */}
@@ -30,7 +30,7 @@ export const Podium = React.memo(({ top3 }: { top3: any[] }) => {
 
 const PodiumStep = ({ rank, agent, color, delay, height, isWinner }: any) => {
     if (!agent) {
-        return <div className={`${height} w-1/3 max-w-[200px] bg-surface-highlight border border-border-subtle rounded-t-2xl mt-auto opacity-20 flex items-center justify-center font-mono text-4xl text-text-muted`}>{rank}</div>;
+        return <div className={`${height} w-1/3 max-w-[200px] bg-surface-highlight border border-border-subtle rounded-t-2xl mt-auto opacity-20 flex items-center justify-center font-mono text-lg text-text-muted`}>{rank}</div>;
     }
 
     const textColors: Record<string, string> = { cyan: 'text-cyan-500', emerald: 'text-status-success', amber: 'text-status-warning' };
@@ -43,7 +43,7 @@ const PodiumStep = ({ rank, agent, color, delay, height, isWinner }: any) => {
             {isWinner && <div className="absolute -top-12 text-status-success drop-shadow-[0_0_20px_rgba(16,185,129,1)] animate-bounce"><Crown size={36} fill="currentColor"/></div>}
             
             <div className="relative mb-3 transform scale-90 md:scale-100 transition-transform group-hover:scale-105">
-                <div className={`relative w-12 h-12 md:w-16 md:h-16 rounded-2xl border ${borderColors[color]} ${bgColors[color]} p-1 ${glowColors[color]} backdrop-blur-md`}>
+                <div className={`relative w-12 h-12 md:w-16 md:h-16 rounded-xl border ${borderColors[color]} ${bgColors[color]} p-1 ${glowColors[color]} backdrop-blur-md`}>
                     <img src={agent.avatar} className="w-full h-full rounded-xl object-cover opacity-90 group-hover:opacity-100 transition-opacity" alt="" />
                     {/* Corner Accents */}
                     <div className={`absolute -top-1.5 -left-1.5 w-2 h-2 border-t-2 border-l-2 ${borderColors[color]}`}></div>
@@ -113,7 +113,7 @@ export const RankingsList = React.memo(({ data, currentUserName }: { data: any[]
                                     </div>
                                 </div>
                                 
-                                <div className="flex items-center gap-6 pr-2">
+                                <div className="flex items-center gap-4 pr-2">
                                     <div className="text-right min-w-[100px]">
                                         <p className="text-sm font-bold text-text-muted  tracking-widest mb-0.5 font-mono">YIELD</p>
                                         <p className="text-sm font-bold font-mono text-text-primary group-hover:text-accent-primary transition-colors">${item.totalRevenue.toLocaleString()}</p>

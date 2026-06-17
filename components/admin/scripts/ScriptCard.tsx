@@ -43,7 +43,7 @@ export const ScriptCard = React.memo<ScriptCardProps>(({ script, isActive, onCli
         <button
             onClick={onClick}
             className={`
-                w-full text-left p-4 rounded-2xl border transition-all group relative overflow-hidden flex flex-col gap-3
+                w-full text-left p-4 rounded-xl border transition-all group relative overflow-hidden flex flex-col gap-3
                 ${isActive 
                     ? 'bg-surface-alt border-accent-primary shadow-md' 
                     : 'bg-transparent border-transparent hover:bg-surface-alt/60 hover:border-border-subtle'
@@ -51,7 +51,7 @@ export const ScriptCard = React.memo<ScriptCardProps>(({ script, isActive, onCli
             `}
         >
             <div className="flex justify-between items-start w-full relative z-10">
-                <span className={`text-xs font-[700]  tracking-widest px-2.5 py-1 rounded border ${styles}`}>
+                <span className={`text-sm font-[700]  tracking-widest px-2.5 py-1 rounded border ${styles}`}>
                     {script.type}
                 </span>
                 {isActive && <div className="w-1.5 h-1.5 bg-accent-primary rounded-full animate-pulse shadow-[0_0_8px_var(--color-accent-primary)]"></div>}
@@ -62,7 +62,7 @@ export const ScriptCard = React.memo<ScriptCardProps>(({ script, isActive, onCli
             </h4>
 
             <div className="flex items-center justify-between w-full relative z-10">
-                <span className="text-xs font-mono text-text-muted opacity-60">
+                <span className="text-sm font-mono text-text-muted opacity-60">
                     Last active: {new Date(script.lastUpdated).toLocaleDateString()}
                 </span>
                 

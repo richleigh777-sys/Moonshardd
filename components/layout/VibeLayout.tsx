@@ -142,7 +142,7 @@ export const VibeLayout: React.FC<VibeLayoutProps> = ({ children }) => {
   }, [theme]); // Re-run when theme changes
 
   return (
-    <div className="h-[100dvh] w-full overflow-hidden bg-surface-alt text-text-primary relative transition-colors duration-700">
+    <div className="h-full w-full w-full overflow-hidden bg-surface-alt text-text-primary relative transition-colors duration-700">
       <div className="absolute inset-0 bg-surface-alt z-0 pointer-events-none transition-colors duration-700"></div>
       <canvas 
         ref={canvasRef} 

@@ -60,7 +60,7 @@ export const SecurityLayout: React.FC<SecurityLayoutProps> = ({ children }) => {
   }, []);
 
   return (
-    <div className="relative h-[100dvh] w-full print:hidden cursor-default overflow-hidden flex flex-col bg-[#F5F8FA]">
+    <div className="relative h-full w-full print:hidden cursor-default overflow-hidden flex flex-col bg-[#F5F8FA]">
       {/* Watermark */}
       <div className="security-overlay" />
       

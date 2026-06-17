@@ -24,7 +24,7 @@ export const ValidationSummary: React.FC<Props> = ({ formData, cart }) => {
             <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
                     <div className={`w-3 h-3 rounded-full ${isReady ? 'bg-emerald-400 shadow-[0_0_15px_rgba(52,211,153,0.8)]' : 'bg-amber-400 shadow-[0_0_15px_rgba(251,191,36,0.8)] animate-pulse'}`}></div>
-                    <span className="text-xs font-[700] text-text-primary  tracking-[0.2em] drop-shadow-sm">System Status</span>
+                    <span className="text-sm font-[700] text-text-primary  tracking-[0.2em] drop-shadow-sm">System Status</span>
                 </div>
                 <span className={`text-sm font-mono font-[700] ${isReady ? 'text-status-success drop-shadow-[0_0_8px_rgba(52,211,153,0.5)]' : 'text-status-warning drop-shadow-[0_0_8px_rgba(251,191,36,0.5)]'}`}>
                     {percent}%
@@ -42,7 +42,7 @@ export const ValidationSummary: React.FC<Props> = ({ formData, cart }) => {
                 {checks.map((check, i) => (
                     <div 
                         key={i} 
-                        className={`flex items-center gap-3 text-xs font-[700]  tracking-widest ${
+                        className={`flex items-center gap-3 text-sm font-[700]  tracking-widest ${
                             check.status ? 'text-status-success' : 'text-zinc-600'
                         }`}
                     >

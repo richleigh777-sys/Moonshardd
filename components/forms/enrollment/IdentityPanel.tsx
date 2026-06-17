@@ -22,20 +22,24 @@ export const IdentityPanel: React.FC<IdentityPanelProps> = ({
     useShippingForBilling, setUseShippingForBilling
 }) => {
     return (
-        <Card variant="refraction" className="w-full text-text-primary overflow-hidden">
+        <Card variant="refraction" className="w-full text-text-primary overflow-hidden shadow-sm">
             {/* Header */}
-            <div className="px-4 py-3 border-b border-border-subtle flex items-center justify-between bg-transparent">
+            <div className="px-6 py-4 border-b border-border-subtle flex items-center justify-between bg-surface-alt/30">
                 <div className="flex items-center gap-3">
-                    <div className="p-2 bg-gradient-to-br from-surface-highlight to-surface-main border border-border-subtle shadow-lg rounded-xl text-accent-secondary">
-                        <Fingerprint size={16} className="drop-shadow-[0_0_8px_rgba(129,140,248,0.5)]"/>
+                    <div className="p-2 bg-gradient-to-br from-indigo-500/10 to-indigo-500/5 border border-indigo-500/20 shadow-inner rounded-xl text-indigo-500">
+                        <Fingerprint size={16} />
                     </div>
-                    <h4 className="text-xs font-[700]  text-text-primary tracking-[0.2em]">Identity Matrix</h4>
+                    <h4 className="text-sm font-[800] text-text-primary tracking-widest uppercase">Customer Information</h4>
                 </div>
             </div>
 
-            <div className="p-4 space-y-6">
+            <div className="p-6 md:p-8 space-y-8 bg-surface-main/40">
                 {/* 1. Bio & Contact */}
-                <div className="relative pl-4 border-l-2 border-indigo-500/50">
+                <div>
+                    <h5 className="text-sm font-bold text-text-muted uppercase tracking-widest mb-4 flex items-center gap-2">
+                        <span className="w-1.5 h-1.5 rounded-full bg-indigo-500"></span>
+                        Personal Details
+                    </h5>
                     <BiographicalSector 
                         formData={formData} 
                         handleIdentityChange={handleIdentityChange} 
@@ -45,21 +49,25 @@ export const IdentityPanel: React.FC<IdentityPanelProps> = ({
                     />
                 </div>
 
-                {/* 2. Logistics */}
-                <div className="relative pl-4 border-l-2 border-status-success/50">
+                <hr className="border-border-subtle" />
+
+                {/* 2. Medical Background */}
+                <div>
+                    <MedicalSector 
+                        formData={formData} 
+                        handleIdentityChange={handleIdentityChange} 
+                    />
+                </div>
+
+                <hr className="border-border-subtle" />
+
+                {/* 3. Logistics */}
+                <div>
                     <LogisticsSector 
                         formData={formData} 
                         handleIdentityChange={handleIdentityChange} 
                         useShippingForBilling={useShippingForBilling} 
                         setUseShippingForBilling={setUseShippingForBilling} 
-                    />
-                </div>
-
-                {/* 3. Medical Background */}
-                <div className="relative pl-4 border-l-2 border-rose-500/50">
-                    <MedicalSector 
-                        formData={formData} 
-                        handleIdentityChange={handleIdentityChange} 
                     />
                 </div>
             </div>

@@ -27,7 +27,7 @@ export const RosterHeader: React.FC<RosterHeaderProps> = ({
     sortMode, setSortMode, viewMode, setViewMode, onAddUser
 }) => {
     return (
-        <div className="flex flex-col xl:flex-row justify-between items-start xl:items-center gap-4 bg-surface-main/40 backdrop-blur-xl p-3.5 rounded-2xl border border-border-subtle shadow-xl shrink-0">
+        <div className="flex flex-col xl:flex-row justify-between items-start xl:items-center gap-4 bg-surface-main/40 backdrop-blur-xl p-3.5 rounded-xl border border-border-subtle shadow-xl shrink-0">
             <div className="flex items-center gap-3.5">
                 <div className="p-2 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-full text-white shadow-lg shadow-indigo-500/20">
                     <Heart size={16} fill="currentColor" />
@@ -35,11 +35,11 @@ export const RosterHeader: React.FC<RosterHeaderProps> = ({
                 <div>
                     <h3 className="text-lg font-bold text-text-primary tracking-tight leading-none">Partners</h3>
                     <div className="flex items-center gap-2 mt-1">
-                        <span className="text-xs font-medium text-text-secondary">{totalUsers} Total</span>
+                        <span className="text-sm font-medium text-text-secondary">{totalUsers} Total</span>
                         <div className="h-1 w-1 rounded-full bg-text-muted/30"></div>
                         <div className="flex items-center gap-1.5 px-3 py-1.5 bg-emerald-500/10 rounded-full border border-emerald-500/20">
                             <div className="w-1 h-1 rounded-full bg-emerald-500 animate-pulse"></div>
-                            <span className="text-xs font-bold text-emerald-600">{onlineCount} Online</span>
+                            <span className="text-sm font-bold text-emerald-600">{onlineCount} Online</span>
                         </div>
                     </div>
                 </div>
@@ -52,7 +52,7 @@ export const RosterHeader: React.FC<RosterHeaderProps> = ({
                         value={searchTerm}
                         onChange={e => setSearchTerm(e.target.value)}
                         placeholder="Search..." 
-                        className="w-full bg-surface-alt/50 border border-border-subtle rounded-full py-1.5 pl-9 pr-4 text-xs font-medium outline-none focus:border-accent-primary focus:bg-surface-main transition-all shadow-inner"
+                        className="w-full bg-surface-alt/50 border border-border-subtle rounded-full py-1.5 pl-9 pr-4 text-sm font-medium outline-none focus:border-accent-primary focus:bg-surface-main transition-all shadow-inner"
                     />
                 </div>
                 
@@ -77,7 +77,7 @@ export const RosterHeader: React.FC<RosterHeaderProps> = ({
                         <select 
                             value={filterTeam} 
                             onChange={(e) => setFilterTeam(e.target.value)}
-                            className="bg-transparent text-xs font-bold text-text-secondary outline-none cursor-pointer hover:text-text-primary transition-all pl-2 pr-6 py-1.5 appearance-none"
+                            className="bg-transparent text-sm font-bold text-text-secondary outline-none cursor-pointer hover:text-text-primary transition-all pl-2 pr-6 py-1.5 appearance-none"
                         >
                             <option value="All">All Teams</option>
                             {uniqueTeams.map(t => <option key={t} value={t}>{t}</option>)}
@@ -91,7 +91,7 @@ export const RosterHeader: React.FC<RosterHeaderProps> = ({
                         <select 
                             value={sortMode}
                             onChange={(e) => setSortMode(e.target.value as SortMode)}
-                            className="bg-transparent text-xs font-bold text-text-secondary outline-none cursor-pointer hover:text-text-primary transition-all pl-2 pr-6 py-1.5 appearance-none"
+                            className="bg-transparent text-sm font-bold text-text-secondary outline-none cursor-pointer hover:text-text-primary transition-all pl-2 pr-6 py-1.5 appearance-none"
                         >
                             <option value="revenue">Contribution</option>
                             <option value="winRate">Rank</option>
@@ -102,7 +102,7 @@ export const RosterHeader: React.FC<RosterHeaderProps> = ({
                     </div>
                 </div>
 
-                <Button onClick={onAddUser} variant="primary" className="h-8 px-4 rounded-full text-xs font-bold shadow-lg shadow-accent-primary/20 bg-accent-primary hover:brightness-110">
+                <Button onClick={onAddUser} variant="primary" className="h-8 px-4 rounded-full text-sm font-bold shadow-lg shadow-accent-primary/20 bg-accent-primary hover:brightness-110">
                     <UserPlus size={16} className="mr-1.5"/> Invite
                 </Button>
             </div>

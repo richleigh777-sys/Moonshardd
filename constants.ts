@@ -61,7 +61,18 @@ export const RECOVERY_SCRIPTS = RESCUE_SCRIPTS;
 // Users are now generated dynamically in cloudService.ts if the database is empty.
 export const VALID_USERS: User[] = [];
 
-export const MEDICAL_CONDITIONS = ["Arthritis", "Sleep Quality", "General Wellness", "Digestive Care"];
+export const MEDICAL_CONDITIONS = [
+  "Diabetes",
+  "High Blood Pressure",
+  "Heart Disease",
+  "High Cholesterol",
+  "Obesity",
+  "Low Testosterone",
+  "Enlarged Prostate (BPH)",
+  "Depression / Anxiety",
+  "Sleep Apnea",
+  "Smoking / Tobacco Use"
+];
 
 export const INITIAL_PRODUCT_CONFIG: ProductConfig = {
   products: [

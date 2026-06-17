@@ -37,7 +37,7 @@ export const TemporalHeatmap: React.FC<TemporalHeatmapProps> = ({ data }) => {
                 )}
             </div>
             
-            <div className="flex-1 p-6 flex flex-col justify-center relative">
+            <div className="flex-1 p-4 flex flex-col justify-center relative">
                 {/* Grid Container */}
                 <div className="grid grid-cols-[auto_repeat(7,1fr)] gap-2 h-full w-full">
                     

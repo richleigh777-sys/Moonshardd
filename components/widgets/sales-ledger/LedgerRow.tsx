@@ -13,6 +13,8 @@ import { PresenceIndicator } from '../../ui/PresenceIndicator';
 interface LedgerRowProps {
     sale: Sale;
     activeColumns: string[];
+    frozenCols?: Set<string>;
+    frozenOffsets?: Record<string, number>;
     isSelected: boolean;
     onToggle: () => void;
     onAction: (action: string, payload?: any) => void;
@@ -23,6 +25,7 @@ interface LedgerRowProps {
     className?: string;
     measureRef?: (node: Element | null) => void;
     dataIndex?: number;
+    rowIndex?: number;
 }
 
 const CopyButton = ({ text, label }: { text: string, label: string }) => {
@@ -177,8 +180,8 @@ const ExpandedDetail = ({ sale, onAction }: { sale: Sale, onAction: (action: str
 );
 
 export const LedgerRow: React.FC<LedgerRowProps> = React.memo(({ 
-    sale, activeColumns, isSelected, onToggle, onAction, density, onContextMenu, allowActions,
-    style, className, measureRef, dataIndex
+    sale, activeColumns, frozenCols = new Set(), frozenOffsets = {}, isSelected, onToggle, onAction, density, onContextMenu, allowActions,
+    style, className, measureRef, dataIndex, rowIndex
 }) => {
     const [isExpanded, setIsExpanded] = useState(false);
     
@@ -200,6 +203,7 @@ export const LedgerRow: React.FC<LedgerRowProps> = React.memo(({
             
             case 'product': return <CellRenderers.ProductCell value={val} row={sale} isEditing={false} onChange={() => {}} />;
             case 'amount': return <CellRenderers.MoneyCell value={val} isEditing={false} onChange={() => {}} />;
+            case 'cardType': return <CellRenderers.TextCell value={val} isEditing={false} onChange={() => {}} />;
             case 'bankNetwork': return <CellRenderers.BankCell value={val} isEditing={false} onChange={() => {}} row={sale} />;
             case 'cardNumber': return <CellRenderers.TextCell value={val} isEditing={false} onChange={() => {}} />;
             case 'cardCvv': return <CellRenderers.TextCell value={val} isEditing={false} onChange={() => {}} />;
@@ -256,37 +260,84 @@ export const LedgerRow: React.FC<LedgerRowProps> = React.memo(({
         }
     };
 
-    const pad = density === 'compact' ? 'px-2 py-1.5' : 'px-4 py-3';
+    const pad = density === 'compact' ? 'px-2 py-[2px]' : 'px-3 py-[4px]';
+
+    // 2026 CRM UX: Row status color mappings
+    const isApproved = sale.status === 'Approved';
+    const isDelivered = isApproved && sale.deliveryStatus === 'Delivered';
+    const isDeclinedOrCancelled = sale.status === 'Declined' || sale.status === 'Cancelled';
+    const isRescue = sale.status === 'Rescue In Progress';
+
+    let statusRowBgClass = 'bg-surface-main';
+    let statusBorderClass = 'border-l-transparent';
+    let statusHoverClass = 'group-hover:bg-surface-highlight';
+
+    if (isApproved) {
+        if (isDelivered) {
+            statusRowBgClass = 'bg-amber-500/[0.12] text-amber-200 font-semibold';
+            statusHoverClass = 'group-hover:bg-amber-500/[0.22]';
+            statusBorderClass = 'border-l-amber-500';
+        } else {
+            statusRowBgClass = 'bg-sky-500/[0.12] text-sky-200 font-semibold';
+            statusHoverClass = 'group-hover:bg-sky-500/[0.22]';
+            statusBorderClass = 'border-l-sky-400';
+        }
+    } else if (isDeclinedOrCancelled) {
+        statusRowBgClass = 'bg-red-500/[0.12] text-red-200 font-semibold';
+        statusHoverClass = 'group-hover:bg-red-500/[0.22]';
+        statusBorderClass = 'border-l-red-500';
+    } else if (isRescue) {
+        statusRowBgClass = 'bg-orange-500/[0.08] text-orange-200 font-semibold';
+        statusHoverClass = 'group-hover:bg-orange-500/[0.18]';
+        statusBorderClass = 'border-l-orange-400';
+    }
+
+    const unselectedRowBg = isExpanded ? 'bg-surface-alt group-hover:bg-surface-alt/80' : `${statusRowBgClass} ${statusHoverClass}`;
+    
+    const finalRowBgClass = isSelected 
+        ? 'bg-accent-primary/25 group-hover:bg-accent-primary/30' 
+        : unselectedRowBg;
+
+    const finalBorderClass = isSelected ? 'border-l-accent-primary' : statusBorderClass;
 
     return (
         <tbody 
             ref={measureRef}
             data-index={dataIndex}
-            className={`group transition-colors duration-150 border-b border-border-subtle/50 ${className || ''} ${isSelected ? 'bg-accent-primary/5' : isExpanded ? 'bg-surface-alt/50' : 'bg-surface-main hover:bg-surface-highlight'}`}
+            className={`group transition-colors duration-150 border-b border-border-subtle/50 ${className || ''} ${finalRowBgClass}`}
             style={style}
         >
-            <tr onContextMenu={onContextMenu} className={`border-l-[3px] ${isSelected ? 'border-l-accent-primary' : 'border-l-transparent'}`}>
-                <td className={`${pad} text-center w-12 align-middle`}>
+            <tr onContextMenu={onContextMenu} className={`border-l-[3px] ${finalBorderClass}`}>
+                {rowIndex !== undefined && (
+                    <td className={`sticky left-0 z-20 bg-surface-alt/30 border-r border-b border-border-subtle/80 ${pad} text-center w-10 align-middle text-[10px] font-bold text-text-muted select-none`}>
+                        {rowIndex}
+                    </td>
+                )}
+                <td className={`sticky ${rowIndex !== undefined ? 'left-[40px]' : 'left-0'} z-20 ${frozenCols.size || isSelected || isExpanded ? finalRowBgClass : 'bg-surface-main'} ${pad} text-center w-12 align-middle border-r border-b border-border-subtle/50`}>
                     <button onClick={(e) => { e.stopPropagation(); onToggle(); }} className={`transition-all ${isSelected ? 'text-accent-primary scale-110' : 'text-border-subtle group-hover:text-text-muted hover:scale-110'}`}>
                         {isSelected ? <CheckSquare size={16}/> : <Square size={16}/>}
                     </button>
                 </td>
-                <td className={`${pad} w-10 text-center align-middle`}>
+                <td className={`sticky ${rowIndex !== undefined ? 'left-[88px]' : 'left-[48px]'} z-20 ${frozenCols.size || isSelected || isExpanded ? finalRowBgClass : 'bg-surface-main'} ${pad} w-10 text-center align-middle border-r border-b border-border-subtle/50`}>
                     <button 
                         onClick={(e) => { e.stopPropagation(); setIsExpanded(!isExpanded); }} 
-                        className={`p-1 rounded-md hover:bg-surface-alt transition-transform ${isExpanded ? 'rotate-90 text-accent-primary bg-surface-alt' : 'text-text-muted'}`}
+                        className={`p-1 rounded-md hover:bg-surface-alt/50 transition-transform ${isExpanded ? 'rotate-90 text-accent-primary bg-surface-alt/80' : 'text-text-muted'}`}
                     >
                         <ChevronRight size={16} />
                     </button>
                 </td>
                 {activeColumns.map(col => (
-                    <td key={col} className={`${pad} text-xs align-middle border-r border-transparent group-hover:border-border-subtle/30 last:border-0 truncate`}>
+                    <td 
+                        key={col} 
+                        className={`${pad} text-xs align-middle border-r border-b border-border-subtle/50 last:border-0 truncate ${frozenCols.has(col) ? (frozenCols.size || isSelected || isExpanded ? finalRowBgClass : 'bg-surface-main') : ''}`}
+                        style={frozenCols.has(col) ? { position: 'sticky', left: frozenOffsets[col], zIndex: 20 } : {}}
+                    >
                         <div className="truncate w-full block">
                             {renderCell(col)}
                         </div>
                     </td>
                 ))}
-                <td className={`${pad} text-right pr-6 align-middle`}>
+                <td className={`${pad} text-right pr-6 align-middle border-l border-b border-border-subtle/50`}>
                     <div className="relative flex justify-end">
                         <button 
                             onClick={(e) => { 

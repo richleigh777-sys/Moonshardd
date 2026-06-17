@@ -27,7 +27,7 @@ export const IntegrationConsole: React.FC<IntegrationConsoleProps> = ({ logs }) 
     };
 
     return (
-        <div className="bg-surface-main text-text-primary rounded-2xl border border-border-subtle overflow-hidden shadow-sm relative flex flex-col">
+        <div className="bg-surface-main text-text-primary rounded-xl border border-border-subtle overflow-hidden shadow-sm relative flex flex-col">
             {/* Header */}
             <div className="px-4 py-3 bg-surface-alt border-b border-border-subtle flex justify-between items-center shrink-0">
                 <div className="flex items-center gap-2">
@@ -37,7 +37,7 @@ export const IntegrationConsole: React.FC<IntegrationConsoleProps> = ({ logs }) 
             </div>
 
             {/* Event List */}
-            <div className="p-4 text-xs h-56 overflow-y-auto custom-scrollbar">
+            <div className="p-4 text-sm h-56 overflow-y-auto custom-scrollbar">
                 {logs.length === 0 && (
                     <div className="h-full flex flex-col items-center justify-center text-text-muted text-sm space-y-2">
                         <Activity size={24} className="opacity-50" />

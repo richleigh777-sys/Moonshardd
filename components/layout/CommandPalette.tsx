@@ -180,14 +180,14 @@ export const CommandPalette: React.FC = () => {
                         autoComplete="off"
                     />
                     <div className="flex items-center gap-1.5">
-                        <span className="text-xs font-medium text-text-muted bg-surface-alt px-3 py-1.5 rounded border border-border-subtle">ESC</span>
+                        <span className="text-sm font-medium text-text-muted bg-surface-alt px-3 py-1.5 rounded border border-border-subtle">ESC</span>
                     </div>
                 </div>
 
                 {/* Results List */}
-                <div className="max-h-[400px] overflow-y-auto custom-scrollbar p-2" ref={listRef}>
+                <div className="max-h-[300px] overflow-y-auto custom-scrollbar p-2" ref={listRef}>
                     {commands.length === 0 ? (
-                        <div className="p-8 text-center text-text-muted text-sm">
+                        <div className="p-5 text-center text-text-muted text-sm">
                             No results found
                         </div>
                     ) : (
@@ -221,7 +221,7 @@ export const CommandPalette: React.FC = () => {
                                                 </div>
                                                 <div className="flex items-center gap-2">
                                                     {(item as any).hotkey && !query && (
-                                                        <span className={`text-xs font-mono font-medium w-5 h-5 flex items-center justify-center rounded border ${isActive ? 'bg-surface-main border-border-subtle text-text-primary' : 'bg-surface-alt border-border-subtle text-text-muted'}`}>
+                                                        <span className={`text-sm font-mono font-medium w-5 h-5 flex items-center justify-center rounded border ${isActive ? 'bg-surface-main border-border-subtle text-text-primary' : 'bg-surface-alt border-border-subtle text-text-muted'}`}>
                                                             {(item as any).hotkey}
                                                         </span>
                                                     )}
@@ -237,7 +237,7 @@ export const CommandPalette: React.FC = () => {
                 </div>
 
                 {/* Footer */}
-                <div className="h-9 bg-surface-alt/50 border-t border-border-subtle flex items-center justify-between px-4 text-xs font-medium text-text-muted tracking-tight">
+                <div className="h-9 bg-surface-alt/50 border-t border-border-subtle flex items-center justify-between px-4 text-sm font-medium text-text-muted tracking-tight">
                     <div className="flex items-center gap-2">
                         <span>Command Palette</span>
                     </div>

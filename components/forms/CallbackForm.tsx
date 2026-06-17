@@ -1,6 +1,6 @@
  
 import React, { useState, useEffect, useRef } from 'react';
-import { Clock, Bell, Check, Plus, Timer, Calendar, RefreshCw, StickyNote } from 'lucide-react';
+import { Clock, Bell, Check, Plus, Timer, Calendar, RefreshCw, StickyNote, ChevronDown } from 'lucide-react';
 import { Card, Input, Button } from '../../components/ui/Base';
 import { formatUSAPhone } from '../../views/utils/crmLogic'; 
 import { User, Note } from '../../types';
@@ -31,13 +31,20 @@ export const CallbackForm: React.FC<CallbackFormProps> = ({ onAddNote, currentUs
     // Sync from EnrollmentForm (Auto-write feature)
     useEffect(() => {
         if (initialData) {
-            setFormData(prev => ({
-                ...prev,
-                name: initialData.name || prev.name,
-                phone: initialData.phone || prev.phone,
-            }));
+            setFormData(prev => {
+                const newName = initialData.name || prev.name;
+                const newPhone = initialData.phone || prev.phone;
+                if (prev.name === newName && prev.phone === newPhone) {
+                    return prev;
+                }
+                return {
+                    ...prev,
+                    name: newName,
+                    phone: newPhone,
+                };
+            });
         }
-    }, [initialData]);
+    }, [initialData?.name, initialData?.phone]);
 
     const [hClicks, setHClicks] = useState(0);
     const [dClicks, setDClicks] = useState(0);
@@ -166,9 +173,18 @@ export const CallbackForm: React.FC<CallbackFormProps> = ({ onAddNote, currentUs
         const targetDate = new Date(targetTimestamp);
 
         try {
+            let callbackPriority = 'Mid';
+            if (['Package Update', 'Wants to Think', 'Spouse Approval'].includes(formData.reason)) {
+                callbackPriority = 'High';
+            } else if (['Declined Recovery', 'No Funds Available'].includes(formData.reason)) {
+                callbackPriority = 'Low';
+            } else if (['Disconnected / No Answer', 'Left Voicemail', 'Driving / Busy'].includes(formData.reason)) {
+                callbackPriority = 'Mid';
+            }
+
             await onAddNote({
-                agentId: currentUser.id,
-                agentName: currentUser.name,
+                agentId: currentUser?.id,
+                agentName: currentUser?.name || 'Unknown',
                 type: 'callback',
                 content: `${formData.reason} | ${formData.agentNotes}`,
                 reason: formData.reason,
@@ -178,7 +194,7 @@ export const CallbackForm: React.FC<CallbackFormProps> = ({ onAddNote, currentUs
                 time: targetDate.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}),
                 timestamp: targetTimestamp,
                 createdAt: Date.now(),
-                priority: 'High'
+                priority: callbackPriority as any
             });
             
             sfx.playSuccess();
@@ -210,11 +226,11 @@ export const CallbackForm: React.FC<CallbackFormProps> = ({ onAddNote, currentUs
                     </div>
                     <div>
                         <h3 className="text-base font-[700] text-text-primary  tracking-tight italic">Recovery Link</h3>
-                        <p className="text-xs text-text-muted font-[700]  tracking-[0.25em]">Lead Scheduler v5.0</p>
+                        <p className="text-sm text-text-muted font-[700]  tracking-[0.25em]">Lead Scheduler v5.0</p>
                     </div>
                 </div>
                 {countdownText && (
-                    <div className="px-3 py-1.5 bg-amber-500 text-black rounded-lg font-[700] text-xs  tracking-widest shadow-lg animate-in zoom-in">
+                    <div className="px-3 py-1.5 bg-amber-500 text-black rounded-lg font-[700] text-sm  tracking-widest shadow-lg animate-in zoom-in">
                         {countdownText}
                     </div>
                 )}
@@ -223,7 +239,7 @@ export const CallbackForm: React.FC<CallbackFormProps> = ({ onAddNote, currentUs
             <div className="flex-1 overflow-y-auto custom-scrollbar p-5 space-y-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-1.5">
-                        <label className="text-xs font-[700]  text-text-muted tracking-widest ml-1">Client Identity</label>
+                        <label className="text-sm font-[700]  text-text-muted tracking-widest ml-1">Client Identity</label>
                         <Input 
                             value={formData.name} 
                             onChange={e => setFormData({...formData, name: e.target.value})} 
@@ -232,7 +248,7 @@ export const CallbackForm: React.FC<CallbackFormProps> = ({ onAddNote, currentUs
                         />
                     </div>
                     <div className="space-y-1.5">
-                        <label className="text-xs font-[700]  text-text-muted tracking-widest ml-1">Phone Line</label>
+                        <label className="text-sm font-[700]  text-text-muted tracking-widest ml-1">Phone Line</label>
                         <Input 
                             value={formData.phone} 
                             onChange={e => setFormData({...formData, phone: formatUSAPhone(e.target.value)})} 
@@ -245,9 +261,14 @@ export const CallbackForm: React.FC<CallbackFormProps> = ({ onAddNote, currentUs
 
                 {/* QUICK OUTCOMES / WHAT HAPPENED SECTION */}
                 <div className="space-y-3">
-                    <label className="text-xs font-[700]  text-text-muted tracking-widest ml-1 flex items-center gap-1.5">
-                        <Check size={16} className="text-emerald-500" /> Quick Outcome Logs (Auto-Fills Notes)
-                    </label>
+                    <div className="flex flex-col gap-0.5">
+                        <label className="text-sm font-[700] text-amber-500 tracking-widest ml-1 flex items-center gap-1.5 uppercase">
+                            <Check size={16} className="text-emerald-500" /> 1. Auto-Log Current Attempt
+                        </label>
+                        <p className="text-sm sm:text-sm text-text-muted px-1 leading-snug">
+                            Did they answer? Click an outcome below to instantly log what happened. It will auto-fill your agent notes and adjust the Callback Protocol category automatically.
+                        </p>
+                    </div>
                     <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
                         {outcomes.map(item => (
                             <button
@@ -256,7 +277,7 @@ export const CallbackForm: React.FC<CallbackFormProps> = ({ onAddNote, currentUs
                                 onClick={() => handleOutcomeClick(item.outcome)}
                                 className={`
                                     py-2 px-3 bg-surface-alt border border-border-subtle rounded-xl 
-                                    text-[10px] font-[700] tracking-wider text-text-secondary transition-all 
+                                    text-sm font-[700] tracking-wider text-text-secondary transition-all 
                                     active:scale-95 shadow-sm text-center truncate ${item.color}
                                 `}
                             >
@@ -267,39 +288,44 @@ export const CallbackForm: React.FC<CallbackFormProps> = ({ onAddNote, currentUs
                 </div>
 
                 {/* TEMPORAL OFFSET */}
-                <div className="space-y-3">
-                    <label className="text-xs font-[700]  text-text-muted tracking-widest ml-1 flex items-center gap-2">
-                        <Clock size={16} className="text-status-warning" /> Offset Timer (Compounding additive clicks)
-                    </label>
+                <div className="space-y-3 mt-2">
+                    <div className="flex flex-col gap-0.5">
+                        <label className="text-sm font-[700] text-amber-500 tracking-widest ml-1 flex items-center gap-2 uppercase">
+                            <Clock size={16} className="text-status-warning" /> 2. Set Timer
+                        </label>
+                        <p className="text-sm sm:text-sm text-text-muted px-1 leading-snug">
+                            When should the system remind you to call them back? Click the buttons to add time.
+                        </p>
+                    </div>
                     <div className="grid grid-cols-3 gap-2">
                         <button 
                             type="button" 
                             onClick={() => addHours(1)} 
-                            className="relative h-12 bg-surface-alt hover:bg-amber-500 hover:text-black border border-border-subtle rounded-xl text-xs font-[700] tracking-widest transition-all active:scale-95 shadow-sm overflow-hidden"
+                            className="relative h-12 bg-surface-alt hover:bg-amber-500 hover:text-black border border-border-subtle rounded-xl text-sm font-[700] tracking-widest transition-all active:scale-95 shadow-sm overflow-hidden"
                         >
                             <span className="relative z-10 flex flex-col items-center justify-center">
                                 <span>+1 HOUR</span>
-                                {hClicks > 0 && <span className="text-[10px] text-amber-900 font-bold opacity-85">({hClicks} added)</span>}
+                                {hClicks > 0 && <span className="text-sm text-amber-900 font-bold opacity-85">({hClicks} added)</span>}
                             </span>
                         </button>
                         <button 
                             type="button" 
                             onClick={() => addDays(1)} 
-                            className="relative h-12 bg-surface-alt hover:bg-amber-500 hover:text-black border border-border-subtle rounded-xl text-xs font-[700] tracking-widest transition-all active:scale-95 shadow-sm overflow-hidden"
+                            className="relative h-12 bg-surface-alt hover:bg-amber-500 hover:text-black border border-border-subtle rounded-xl text-sm font-[700] tracking-widest transition-all active:scale-95 shadow-sm overflow-hidden"
                         >
                             <span className="relative z-10 flex flex-col items-center justify-center">
                                 <span>+1 DAY</span>
-                                {dClicks > 0 && <span className="text-[10px] text-amber-900 font-bold opacity-85">({dClicks} added)</span>}
+                                {dClicks > 0 && <span className="text-sm text-amber-900 font-bold opacity-85">({dClicks} added)</span>}
                             </span>
                         </button>
                         <button 
                             type="button" 
                             onClick={() => addWeeks(1)} 
-                            className="relative h-12 bg-surface-alt hover:bg-amber-500 hover:text-black border border-border-subtle rounded-xl text-xs font-[700] tracking-widest transition-all active:scale-95 shadow-sm overflow-hidden"
+                            className="relative h-12 bg-surface-alt hover:bg-amber-500 hover:text-black border border-border-subtle rounded-xl text-sm font-[700] tracking-widest transition-all active:scale-95 shadow-sm overflow-hidden"
                         >
                             <span className="relative z-10 flex flex-col items-center justify-center">
                                 <span>+1 WEEK</span>
-                                {wClicks > 0 && <span className="text-[10px] text-amber-900 font-bold opacity-85">({wClicks} added)</span>}
+                                {wClicks > 0 && <span className="text-sm text-amber-900 font-bold opacity-85">({wClicks} added)</span>}
                             </span>
                         </button>
                     </div>
@@ -309,8 +335,8 @@ export const CallbackForm: React.FC<CallbackFormProps> = ({ onAddNote, currentUs
                             <div className="flex items-center gap-3">
                                 <Calendar size={16} className="text-status-warning" />
                                 <div>
-                                    <p className="text-xs font-[700] text-text-muted  tracking-widest">Scheduled Window (Offset-based)</p>
-                                    <p className="text-xs font-bold text-text-primary num-font">
+                                    <p className="text-sm font-[700] text-text-muted  tracking-widest">Scheduled Window (Offset-based)</p>
+                                    <p className="text-sm font-bold text-text-primary num-font">
                                         {new Date(targetTimestamp).toLocaleDateString()} @ {new Date(targetTimestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                                     </p>
                                 </div>
@@ -327,26 +353,43 @@ export const CallbackForm: React.FC<CallbackFormProps> = ({ onAddNote, currentUs
                     )}
                 </div>
 
-                <div className="space-y-4">
-                    <div className="space-y-1.5">
-                        <label className="text-xs font-[700]  text-text-muted tracking-widest ml-1">Callback Protocol</label>
-                        <select 
-                            className="bg-surface-alt border border-border-subtle text-text-primary p-3 h-11 text-xs font-bold w-full outline-none rounded-xl focus:border-amber-500 transition-all cursor-pointer shadow-inner"
-                            value={formData.reason}
-                            onChange={e => setFormData({...formData, reason: e.target.value})}
-                        >
-                            {reasons.map(r => <option key={r} value={r} className="bg-surface-main">{r}</option>)}
-                        </select>
+                <div className="space-y-5 pt-2 border-t border-border-subtle mt-4">
+                    <div className="space-y-2">
+                        <div className="flex flex-col gap-0.5">
+                            <label className="text-sm font-[700] text-amber-500 tracking-widest ml-1 uppercase">
+                                3. Callback Protocol Category
+                            </label>
+                            <p className="text-sm sm:text-sm text-text-muted px-1 leading-snug">
+                                This categorizes the reason for the <strong>future callback</strong> in the Recovery Pool. It dictates workflow priority (e.g. Package Update = High Priority). The outcome buttons above may have already selected the right category for you.
+                            </p>
+                        </div>
+                        <div className="relative">
+                            <select 
+                                className="bg-surface-alt border border-border-subtle text-text-primary px-4 py-3 h-14 text-sm sm:text-base font-bold w-full outline-none rounded-xl focus:border-amber-500 transition-all cursor-pointer shadow-inner appearance-none"
+                                value={formData.reason}
+                                onChange={e => setFormData({...formData, reason: e.target.value})}
+                            >
+                                {reasons.map(r => <option key={r} value={r} className="bg-surface-main py-2">{r}</option>)}
+                            </select>
+                            <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none">
+                                <ChevronDown size={20} className="text-text-muted" />
+                            </div>
+                        </div>
                     </div>
-                    <div className="space-y-1.5">
-                        <label className="text-xs font-[700]  text-text-muted tracking-widest ml-1 flex items-center gap-1.5">
-                            <StickyNote size={16} /> Agent Notes
-                        </label>
+                    <div className="space-y-2">
+                        <div className="flex flex-col gap-0.5">
+                            <label className="text-sm font-[700] text-amber-500 tracking-widest ml-1 flex items-center gap-1.5 uppercase">
+                                <StickyNote size={16} /> 4. Additional Intelligence
+                            </label>
+                            <p className="text-sm sm:text-sm text-text-muted px-1 leading-snug">
+                                Add any extra notes, buying signals, or specific details the agent needs to know for the next call.
+                            </p>
+                        </div>
                         <textarea 
-                            className="bg-surface-alt border border-border-subtle text-text-primary p-3 text-sm font-medium w-full outline-none rounded-xl focus:border-amber-500 transition-all resize-none h-24 shadow-inner"
+                            className="bg-surface-alt border border-border-subtle text-text-primary p-4 text-sm font-medium w-full outline-none rounded-xl focus:border-amber-500 transition-all resize-none h-28 shadow-inner"
                             value={formData.agentNotes}
                             onChange={e => setFormData({...formData, agentNotes: e.target.value})}
-                            placeholder="Tactical intelligence for the callback. Outcome indicators can append logs above..."
+                            placeholder="Tactical intelligence for the callback..."
                         />
                     </div>
                 </div>
@@ -357,7 +400,7 @@ export const CallbackForm: React.FC<CallbackFormProps> = ({ onAddNote, currentUs
                     variant="primary" 
                     onClick={handleSubmit}
                     disabled={isSubmitting || !formData.name || !formData.phone || !targetTimestamp || isSuccess} 
-                    className={`w-full h-14 text-xs font-[700]  tracking-[0.25em] shadow-lg transition-all duration-300 relative overflow-hidden group/btn ${
+                    className={`w-full h-14 text-sm font-[700]  tracking-[0.25em] shadow-lg transition-all duration-300 relative overflow-hidden group/btn ${
                         isSuccess ? 'bg-status-success' : 'bg-amber-600 hover:bg-amber-500 shadow-amber-500/20'
                     }`}
                 >

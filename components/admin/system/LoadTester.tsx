@@ -123,24 +123,24 @@ export const LoadTester: React.FC = () => {
     };
 
     return (
-        <div className="bg-zinc-900/50 border border-zinc-800 rounded-xl p-6 relative overflow-hidden">
+        <div className="bg-surface-main/50 border border-border-subtle rounded-xl p-4 relative overflow-hidden">
             <div className="flex justify-between items-start mb-6">
                 <div className="flex items-center gap-3">
-                    <div className="p-2 bg-purple-500/10 rounded-lg">
-                        <Activity className="text-purple-500" size={20} />
+                    <div className="p-2 bg-accent-secondary/10 rounded-lg">
+                        <Activity className="text-accent-secondary" size={20} />
                     </div>
                     <div>
-                        <h3 className="text-lg font-bold text-zinc-100">System Load Tester</h3>
-                        <p className="text-xs text-zinc-500">Stress test infrastructure and UI performance</p>
+                        <h3 className="text-lg font-bold text-text-primary">System Load Tester</h3>
+                        <p className="text-sm text-text-muted">Stress test infrastructure and UI performance</p>
                     </div>
                 </div>
                 
                 <div className="flex items-center gap-2">
-                    <div className={`px-3 py-1.5 rounded text-xs font-mono ${stats.fps < 30 ? 'bg-red-500/20 text-status-error' : 'bg-green-500/20 text-green-400'}`}>
+                    <div className={`px-3 py-1.5 rounded text-sm font-mono ${stats.fps < 30 ? 'bg-status-error/20 text-status-error' : 'bg-status-success/20 text-status-success'}`}>
                         {stats.fps} FPS
                     </div>
                     {stats.memory > 0 && (
-                        <div className="px-3 py-1.5 rounded text-xs font-mono bg-zinc-800 text-zinc-400">
+                        <div className="px-3 py-1.5 rounded text-sm font-mono bg-surface-alt text-text-muted">
                             {stats.memory} MB
                         </div>
                     )}
@@ -148,23 +148,23 @@ export const LoadTester: React.FC = () => {
             </div>
 
             <div className="grid grid-cols-2 gap-4 mb-6">
-                <div className="bg-surface-alt rounded-lg p-4 border border-zinc-800/50">
-                    <div className="text-zinc-500 text-xs  tracking-wider mb-1">Sales Generated</div>
-                    <div className="text-2xl font-mono text-purple-400">{stats.salesGenerated}</div>
+                <div className="bg-surface-alt rounded-lg p-4 border border-border-subtle">
+                    <div className="text-text-muted text-sm  tracking-wider mb-1">Sales Generated</div>
+                    <div className="text-lg font-mono text-accent-secondary">{stats.salesGenerated}</div>
                 </div>
-                <div className="bg-surface-alt rounded-lg p-4 border border-zinc-800/50">
-                    <div className="text-zinc-500 text-xs  tracking-wider mb-1">Logs Generated</div>
-                    <div className="text-2xl font-mono text-blue-400">{stats.logsGenerated}</div>
+                <div className="bg-surface-alt rounded-lg p-4 border border-border-subtle">
+                    <div className="text-text-muted text-sm  tracking-wider mb-1">Logs Generated</div>
+                    <div className="text-lg font-mono text-accent-primary">{stats.logsGenerated}</div>
                 </div>
             </div>
 
             <div className="flex gap-3">
                 <button
                     onClick={runStressTest}
-                    className={`flex-1 py-3 rounded-lg font-bold text-xs  tracking-wider flex items-center justify-center gap-2 transition-all ${
+                    className={`flex-1 py-3 rounded-lg font-bold text-sm  tracking-wider flex items-center justify-center gap-2 transition-all ${
                         mode === 'stress' 
-                            ? 'bg-red-500/20 text-status-error border border-red-500/50 animate-pulse' 
-                            : 'bg-zinc-800 hover:bg-zinc-700 text-zinc-300'
+                            ? 'bg-status-error/20 text-status-error border border-status-error/50 animate-pulse' 
+                            : 'bg-surface-alt hover:bg-surface-highlight text-text-primary'
                     }`}
                 >
                     {mode === 'stress' ? <StopCircle size={16} /> : <PlayCircle size={16} />}
@@ -174,7 +174,7 @@ export const LoadTester: React.FC = () => {
                 <button
                     onClick={runSpikeTest}
                     disabled={isRunning}
-                    className="flex-1 py-3 rounded-lg font-bold text-xs  tracking-wider flex items-center justify-center gap-2 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 disabled:opacity-50"
+                    className="flex-1 py-3 rounded-lg font-bold text-sm  tracking-wider flex items-center justify-center gap-2 bg-surface-alt hover:bg-surface-highlight text-text-primary disabled:opacity-50"
                 >
                     <Zap size={16} />
                     Inject 1k Spike
@@ -182,7 +182,7 @@ export const LoadTester: React.FC = () => {
             </div>
 
             {isRunning && (
-                <div className="mt-4 flex items-center gap-2 text-xs text-yellow-500/80 bg-yellow-500/10 p-2 rounded border border-yellow-500/20">
+                <div className="mt-4 flex items-center gap-2 text-sm text-status-warning/80 bg-status-warning/10 p-2 rounded border border-status-warning/20">
                     <AlertTriangle size={16} />
                     <span>System performance may degrade during active testing.</span>
                 </div>

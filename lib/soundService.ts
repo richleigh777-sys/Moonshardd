@@ -3,15 +3,15 @@ class SoundService {
     private _ctx: AudioContext | null = null;
     private masterGain: GainNode | null = null;
     private _initPromise: Promise<void> | null = null;
-    private _isTabLeader: boolean = true; // Default to true until told otherwise
+    private _isTabLeader: boolean = true;
+    private _enabled: boolean = true;
+    public setEnabled(flag: boolean) { this._enabled = flag; } // Default to true until told otherwise
 
     constructor() {
         // Browser Autoplay Policy: Unlock audio on first interaction
         if (typeof window !== 'undefined') {
             const unlock = () => {
-                if (this._ctx && this._ctx.state === 'suspended') {
-                    this._ctx.resume().catch(() => {});
-                }
+                this.unlockAudio().catch(() => {});
                 window.removeEventListener('click', unlock);
                 window.removeEventListener('keydown', unlock);
                 window.removeEventListener('touchstart', unlock);
@@ -20,6 +20,19 @@ class SoundService {
             window.addEventListener('keydown', unlock);
             window.addEventListener('touchstart', unlock);
         }
+    }
+
+    public async unlockAudio(): Promise<boolean> {
+        try {
+            const context = await this.getSafeContext();
+            if (context && context.state === 'suspended') {
+                await context.resume();
+                return true;
+            }
+        } catch {
+            // fail silently
+        }
+        return false;
     }
 
     public setLeaderStatus(isLeader: boolean) {

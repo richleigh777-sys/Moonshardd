@@ -32,6 +32,10 @@ export interface SystemContextType {
     serverList: Server[];
     switchServer: (serverId: string) => void;
     createNewServer: (name: string, region: string) => Promise<void>;
+    
+    // UI Scaling
+    uiZoom: number;
+    setUiZoom: (zoom: number) => void;
 }
 
 export const SystemContext = createContext<SystemContextType | undefined>(undefined);

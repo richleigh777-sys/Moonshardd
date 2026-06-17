@@ -112,9 +112,9 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({
                     </h3>
                     <div className="flex items-center gap-2">
                          {typingNow.length > 0 ? (
-                             <span className="text-xs font-semibold text-accent-secondary">Typing...</span>
+                             <span className="text-sm font-semibold text-accent-secondary">Typing...</span>
                          ) : (
-                             <span className={`text-xs font-medium ${statusMeta.color} flex items-center gap-1.5 opacity-80`}>
+                             <span className={`text-sm font-medium ${statusMeta.color} flex items-center gap-1.5 opacity-80`}>
                                  {statusMeta.text}
                              </span>
                          )}

@@ -50,7 +50,16 @@ export const useAgentStats = (sales: Sale[], user: User | null, config: SystemCo
             return acc + (amt * rate * (winRate / 100));
         }, 0);
 
+        
+        // Calculate Streak: Consecutive approved sales sorted by time, stopping at the first non-approved active action (skip pending/rescue)
+        let streak = 0;
+        for (let s of mySales) {
+            if (s.status === 'Approved') streak++;
+            else if (s.status === 'Declined') break;
+        }
+
         return {
+            streak,
             mySales,
             totalRevenue,
             dailyRev,

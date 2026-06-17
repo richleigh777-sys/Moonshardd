@@ -64,17 +64,17 @@ export const NotificationPanel: React.FC<NotificationPanelProps> = ({
     return (
         <div 
             ref={panelRef}
-            className="absolute top-20 right-6 w-[420px] max-h-[85vh] flex flex-col bg-slate-950/95 backdrop-blur-3xl border border-border-subtle shadow-[0_50px_100px_-20px_rgba(0,0,0,0.5)] rounded-[2rem] z-[500] animate-in fade-in slide-in-from-top-6 duration-500 origin-top-right ring-1 ring-white/5 overflow-hidden"
+            className="absolute top-20 right-6 w-[420px] max-h-[85vh] flex flex-col bg-slate-950/95 backdrop-blur-3xl border border-border-subtle shadow-[0_50px_100px_-20px_rgba(0,0,0,0.5)] rounded-[2rem] z-[500] animate-in fade-in slide-in-from-top-4 duration-500 origin-top-right ring-1 ring-white/5 overflow-hidden"
         >
             {/* Holographic Header Decor */}
             <div className="absolute top-0 left-0 right-0 h-32 bg-gradient-to-b from-indigo-500/10 to-transparent pointer-events-none opacity-50"></div>
             <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-white/20 to-transparent animate-[shimmer_3s_infinite]"></div>
 
             {/* Header */}
-            <div className="p-6 border-b border-border-subtle relative z-10 flex items-center justify-between bg-white/[0.02]">
+            <div className="p-4 border-b border-border-subtle relative z-10 flex items-center justify-between bg-white/[0.02]">
                 <div className="flex items-center gap-4">
                     <div className="relative">
-                        <div className={`p-3 rounded-2xl bg-surface-main border border-border-subtle shadow-lg ${notifications.length > 0 ? 'text-accent-primary' : 'text-text-muted'}`}>
+                        <div className={`p-3 rounded-xl bg-surface-main border border-border-subtle shadow-lg ${notifications.length > 0 ? 'text-accent-primary' : 'text-text-muted'}`}>
                             <Bell size={22} strokeWidth={2.5} className={notifications.length > 0 ? 'animate-swing' : ''} />
                         </div>
                         {notifications.length > 0 && (
@@ -104,8 +104,8 @@ export const NotificationPanel: React.FC<NotificationPanelProps> = ({
             </div>
 
             {/* Briefing Module */}
-            <div className="p-6 pb-2 shrink-0 relative z-10">
-                <div className="p-4 rounded-2xl bg-surface-alt/40 border border-border-subtle shadow-inner flex items-center justify-between group overflow-hidden">
+            <div className="p-4 pb-2 shrink-0 relative z-10">
+                <div className="p-4 rounded-xl bg-surface-alt/40 border border-border-subtle shadow-inner flex items-center justify-between group overflow-hidden">
                     <div className="absolute inset-0 bg-gradient-to-r from-indigo-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
                     <div className="flex items-center gap-3 relative z-10">
                         <div className="p-2 bg-accent-secondary/10 rounded-lg"><Sparkles size={16} className="text-accent-secondary" /></div>
@@ -130,7 +130,7 @@ export const NotificationPanel: React.FC<NotificationPanelProps> = ({
             </div>
 
             {/* Main Scroll Stream */}
-            <div className="flex-1 overflow-y-auto custom-scrollbar p-6 pt-2 space-y-6">
+            <div className="flex-1 overflow-y-auto custom-scrollbar p-4 pt-2 space-y-6">
                 {notifications.length === 0 ? (
                     <div className="flex flex-col items-center justify-center py-20 opacity-40">
                         <div className="w-20 h-20 bg-surface-alt/50 rounded-[2.5rem] flex items-center justify-center mb-6 border border-border-subtle animate-pulse">
@@ -151,7 +151,7 @@ export const NotificationPanel: React.FC<NotificationPanelProps> = ({
                                 {criticals.map((notif) => (
                                     <div 
                                         key={notif.id}
-                                        className="relative group p-4 rounded-2xl border border-red-500/20 bg-red-500/[0.03] hover:bg-red-500/[0.06] transition-all duration-300"
+                                        className="relative group p-4 rounded-xl border border-red-500/20 bg-red-500/[0.03] hover:bg-red-500/[0.06] transition-all duration-300"
                                     >
                                         <div className="flex justify-between items-start gap-4">
                                             <div className="shrink-0">{getIcon(notif.type)}</div>
@@ -189,7 +189,7 @@ export const NotificationPanel: React.FC<NotificationPanelProps> = ({
                                 {streams.map((notif) => (
                                     <div 
                                         key={notif.id}
-                                        className="relative group p-4 rounded-2xl border border-border-subtle bg-surface-alt/30 hover:bg-surface-alt/60 hover:border-accent-primary/20 transition-all duration-300"
+                                        className="relative group p-4 rounded-xl border border-border-subtle bg-surface-alt/30 hover:bg-surface-alt/60 hover:border-accent-primary/20 transition-all duration-300"
                                     >
                                         <div className="flex justify-between items-start gap-4">
                                             <div className="shrink-0">{getIcon(notif.type)}</div>

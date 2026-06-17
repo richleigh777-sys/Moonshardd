@@ -41,7 +41,7 @@ export const VariantsTab: React.FC<VariantsTabProps> = ({ formData, setFormData 
     return (
         <div className="space-y-8 animate-in slide-in-from-right-4 duration-300">
             <div className="space-y-3">
-                <label className="text-xs font-[700]  text-text-muted tracking-widest ml-1 flex items-center gap-2">
+                <label className="text-sm font-[700]  text-text-muted tracking-widest ml-1 flex items-center gap-2">
                     <Layers size={16}/> Dosage Configurations
                 </label>
                 <div className="flex gap-2">
@@ -54,20 +54,20 @@ export const VariantsTab: React.FC<VariantsTabProps> = ({ formData, setFormData 
                     />
                     <Button onClick={addDosage} variant="secondary" className="px-4"><Plus size={18}/></Button>
                 </div>
-                <div className="flex flex-wrap gap-2 p-4 bg-surface-alt/20 rounded-2xl border border-border-subtle min-h-[80px] content-start">
+                <div className="flex flex-wrap gap-2 p-4 bg-surface-alt/20 rounded-xl border border-border-subtle min-h-[80px] content-start">
                     {formData.dosages?.map((d, i) => (
-                        <span key={i} className="px-3 py-1.5 bg-surface-main border border-border-subtle rounded-lg text-xs font-bold text-text-secondary flex items-center gap-2 shadow-sm group hover:border-accent-primary/30 transition-all cursor-default">
+                        <span key={i} className="px-3 py-1.5 bg-surface-main border border-border-subtle rounded-lg text-sm font-bold text-text-secondary flex items-center gap-2 shadow-sm group hover:border-accent-primary/30 transition-all cursor-default">
                             <GripHorizontal size={16} className="text-text-muted"/>
                             {d}
                             <button onClick={() => removeDosage(i)} className="text-text-muted hover:text-status-error transition-colors ml-1"><X size={16}/></button>
                         </span>
                     ))}
-                    {(!formData.dosages || formData.dosages.length === 0) && <span className="text-xs text-text-muted italic opacity-50 w-full text-center py-2">No dosages defined.</span>}
+                    {(!formData.dosages || formData.dosages.length === 0) && <span className="text-sm text-text-muted italic opacity-50 w-full text-center py-2">No dosages defined.</span>}
                 </div>
             </div>
 
             <div className="space-y-3">
-                <label className="text-xs font-[700]  text-text-muted tracking-widest ml-1 flex items-center gap-2">
+                <label className="text-sm font-[700]  text-text-muted tracking-widest ml-1 flex items-center gap-2">
                     <Package size={16}/> Quantity Bundles
                 </label>
                 <div className="flex gap-2">
@@ -80,15 +80,15 @@ export const VariantsTab: React.FC<VariantsTabProps> = ({ formData, setFormData 
                     />
                     <Button onClick={addQuantity} variant="secondary" className="px-4"><Plus size={18}/></Button>
                 </div>
-                <div className="flex flex-wrap gap-2 p-4 bg-surface-alt/20 rounded-2xl border border-border-subtle min-h-[80px] content-start">
+                <div className="flex flex-wrap gap-2 p-4 bg-surface-alt/20 rounded-xl border border-border-subtle min-h-[80px] content-start">
                     {formData.quantities?.map((q, i) => (
-                        <span key={i} className="px-3 py-1.5 bg-surface-main border border-border-subtle rounded-lg text-xs font-bold text-text-secondary flex items-center gap-2 shadow-sm group hover:border-accent-primary/30 transition-all cursor-default">
+                        <span key={i} className="px-3 py-1.5 bg-surface-main border border-border-subtle rounded-lg text-sm font-bold text-text-secondary flex items-center gap-2 shadow-sm group hover:border-accent-primary/30 transition-all cursor-default">
                             <GripHorizontal size={16} className="text-text-muted"/>
                             {q}
                             <button onClick={() => removeQuantity(i)} className="text-text-muted hover:text-status-error transition-colors ml-1"><X size={16}/></button>
                         </span>
                     ))}
-                    {(!formData.quantities || formData.quantities.length === 0) && <span className="text-xs text-text-muted italic opacity-50 w-full text-center py-2">No bundles defined.</span>}
+                    {(!formData.quantities || formData.quantities.length === 0) && <span className="text-sm text-text-muted italic opacity-50 w-full text-center py-2">No bundles defined.</span>}
                 </div>
             </div>
         </div>

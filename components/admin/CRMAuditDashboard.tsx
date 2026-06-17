@@ -74,10 +74,10 @@ export const CRMAuditDashboard: React.FC<CRMAuditDashboardProps> = ({ users, sal
     const unassignedNotes = notes.filter(n => !n.linkedSaleId && !n.customerName).length;
 
     return (
-        <div className="p-6 h-full overflow-y-auto w-full gap-6 flex flex-col">
-            <div className="flex justify-between items-center bg-surface-base p-6 border-b border-border-subtle rounded-xl shadow-sm">
+        <div className="p-4 h-full overflow-y-auto w-full gap-4 flex flex-col">
+            <div className="flex justify-between items-center bg-surface-base p-4 border-b border-border-subtle rounded-xl shadow-sm">
                 <div>
-                    <h1 className="text-2xl font-bold tracking-tight text-text-primary">CRM Audit & Health Fixes</h1>
+                    <h1 className="text-lg font-bold tracking-tight text-text-primary">CRM Audit & Health Fixes</h1>
                     <p className="text-text-secondary mt-1">Diagnose structural issues, clean data, and optimize processes.</p>
                 </div>
             </div>
@@ -137,7 +137,7 @@ export const CRMAuditDashboard: React.FC<CRMAuditDashboardProps> = ({ users, sal
                 )}
             </div>
 
-            <div className="flex-1 bg-surface-base border border-border-subtle rounded-xl p-6">
+            <div className="flex-1 bg-surface-base border border-border-subtle rounded-xl p-4">
                 {activeTab === 'reports' && (
                     <div className="space-y-6 animate-in fade-in slide-in-from-bottom-2">
                          <div className="flex items-center gap-3 border-b border-border-subtle pb-4">
@@ -150,7 +150,7 @@ export const CRMAuditDashboard: React.FC<CRMAuditDashboardProps> = ({ users, sal
 
                         <div className="space-y-4 max-h-[500px] overflow-y-auto">
                             {dataHealthReports?.length === 0 ? (
-                                <div className="p-8 text-center border border-dashed border-border-subtle rounded-xl text-text-secondary">
+                                <div className="p-5 text-center border border-dashed border-border-subtle rounded-xl text-text-secondary">
                                     No reports generated this week. Background worker runs asynchronously.
                                 </div>
                             ) : (
@@ -160,9 +160,9 @@ export const CRMAuditDashboard: React.FC<CRMAuditDashboardProps> = ({ users, sal
                                             <div>
                                                 <h3 className="font-semibold text-lg flex items-center gap-2">
                                                     Health Report {new Date(report.timestamp).toLocaleDateString()}
-                                                    {report.status === 'pending' && <span className="text-xs bg-status-warning/20 text-status-warning px-2 py-0.5 rounded-full uppercase tracking-wider font-bold">Pending Approval</span>}
-                                                    {report.status === 'approved' && <span className="text-xs bg-status-success/20 text-status-success px-2 py-0.5 rounded-full uppercase tracking-wider font-bold">Executed</span>}
-                                                    {report.status === 'undone' && <span className="text-xs bg-status-error/20 text-status-error px-2 py-0.5 rounded-full uppercase tracking-wider font-bold">Reverted</span>}
+                                                    {report.status === 'pending' && <span className="text-sm bg-status-warning/20 text-status-warning px-2 py-0.5 rounded-full uppercase tracking-wider font-bold">Pending Approval</span>}
+                                                    {report.status === 'approved' && <span className="text-sm bg-status-success/20 text-status-success px-2 py-0.5 rounded-full uppercase tracking-wider font-bold">Executed</span>}
+                                                    {report.status === 'undone' && <span className="text-sm bg-status-error/20 text-status-error px-2 py-0.5 rounded-full uppercase tracking-wider font-bold">Reverted</span>}
                                                 </h3>
                                                 <p className="text-sm text-text-secondary mt-1">Identified {report.actions.length} potential optimizations.</p>
                                             </div>
@@ -186,17 +186,17 @@ export const CRMAuditDashboard: React.FC<CRMAuditDashboardProps> = ({ users, sal
                                                                     {action.type === 'flag_user' && `Flag inactive user: ${action.targetName}`}
                                                                     {action.type === 'merge_contact' && `Merge exact duplicate: ${action.targetName}`}
                                                                 </p>
-                                                                {action.type === 'flag_user' && <p className="text-xs text-text-muted mt-0.5">Inactive since {new Date(action.metadata?.lastActive || Date.now()).toLocaleDateString()}</p>}
+                                                                {action.type === 'flag_user' && <p className="text-sm text-text-muted mt-0.5">Inactive since {new Date(action.metadata?.lastActive || Date.now()).toLocaleDateString()}</p>}
                                                             </div>
                                                         </div>
                                                         <div className="flex gap-2">
                                                             {report.status === 'pending' && !isExecuted && (
-                                                                <button onClick={() => executeDataHealthAction(report.id, action.id)} className="px-3 py-1.5 text-xs font-semibold border border-status-success/30 bg-status-success/10 text-status-success hover:bg-status-success text-white rounded transition-colors">
+                                                                <button onClick={() => executeDataHealthAction(report.id, action.id)} className="px-3 py-1.5 text-sm font-semibold border border-status-success/30 bg-status-success/10 text-status-success hover:bg-status-success text-white rounded transition-colors">
                                                                     Approve
                                                                 </button>
                                                             )}
                                                             {isExecuted && report.status !== 'undone' && (
-                                                                <button onClick={() => undoDataHealthAction(report.id, action.id)} className="px-3 py-1.5 text-xs font-semibold border border-status-error/30 bg-status-error/10 text-status-error hover:bg-status-error hover:text-white rounded transition-colors">
+                                                                <button onClick={() => undoDataHealthAction(report.id, action.id)} className="px-3 py-1.5 text-sm font-semibold border border-status-error/30 bg-status-error/10 text-status-error hover:bg-status-error hover:text-white rounded transition-colors">
                                                                     Undo Change
                                                                 </button>
                                                             )}
@@ -212,7 +212,7 @@ export const CRMAuditDashboard: React.FC<CRMAuditDashboardProps> = ({ users, sal
                     </div>
                 )}
                 {activeTab === 'data' && (
-                    <div className="space-y-6 animate-in fade-in slide-in-from-bottom-2 bg-[#090707] p-6 rounded-xl border border-border-subtle">
+                    <div className="space-y-6 animate-in fade-in slide-in-from-bottom-2 bg-[#090707] p-4 rounded-xl border border-border-subtle">
                          <div className="flex items-center gap-3 border-b border-border-subtle pb-4">
                             <Database className="text-accent-primary" size={20} />
                             <h2 className="text-xl font-bold">Data Quality & Health Toolkit</h2>
@@ -226,7 +226,7 @@ export const CRMAuditDashboard: React.FC<CRMAuditDashboardProps> = ({ users, sal
                                     <div className="h-10 w-10 rounded-lg bg-surface-highlight flex items-center justify-center">
                                          <Trash2 className="text-text-secondary" size={20} />
                                     </div>
-                                    {staleRecords > 0 && <span className="px-2 py-0.5 text-xs font-semibold bg-status-error/10 text-status-error border border-status-error/20 rounded-full">{staleRecords} stale</span>}
+                                    {staleRecords > 0 && <span className="px-2 py-0.5 text-sm font-semibold bg-status-error/10 text-status-error border border-status-error/20 rounded-full">{staleRecords} stale</span>}
                                 </div>
                                 <div className="mt-4">
                                      <h3 className="font-semibold">Remove Unused Data</h3>
@@ -240,7 +240,7 @@ export const CRMAuditDashboard: React.FC<CRMAuditDashboardProps> = ({ users, sal
                                     <div className="h-10 w-10 rounded-lg bg-surface-highlight flex items-center justify-center">
                                          <Layers className="text-text-secondary" size={20} />
                                     </div>
-                                    {duplicatedCustomers > 0 && <span className="px-2 py-0.5 text-xs font-semibold bg-status-warning/10 text-status-warning border border-status-warning/20 rounded-full">{duplicatedCustomers} dupes</span>}
+                                    {duplicatedCustomers > 0 && <span className="px-2 py-0.5 text-sm font-semibold bg-status-warning/10 text-status-warning border border-status-warning/20 rounded-full">{duplicatedCustomers} dupes</span>}
                                 </div>
                                 <div className="mt-4">
                                      <h3 className="font-semibold">Clear Redundant Data</h3>
@@ -254,7 +254,7 @@ export const CRMAuditDashboard: React.FC<CRMAuditDashboardProps> = ({ users, sal
                                     <div className="h-10 w-10 rounded-lg bg-surface-highlight flex items-center justify-center">
                                          <FileSearch className="text-text-secondary" size={20} />
                                     </div>
-                                    {missingEmails > 0 && <span className="px-2 py-0.5 text-xs font-semibold bg-status-error/10 text-status-error border border-status-error/20 rounded-full">{missingEmails} missing</span>}
+                                    {missingEmails > 0 && <span className="px-2 py-0.5 text-sm font-semibold bg-status-error/10 text-status-error border border-status-error/20 rounded-full">{missingEmails} missing</span>}
                                 </div>
                                 <div className="mt-4">
                                      <h3 className="font-semibold">Check Missing Data</h3>
@@ -367,19 +367,19 @@ export const CRMAuditDashboard: React.FC<CRMAuditDashboardProps> = ({ users, sal
                             <Card>
                                 <div className="p-4">
                                      <p className="text-text-secondary text-sm font-medium">Total Registered</p>
-                                     <h4 className="text-3xl font-bold mt-1 text-text-primary">{users.length}</h4>
+                                     <h4 className="text-xl font-bold mt-1 text-text-primary">{users.length}</h4>
                                 </div>
                             </Card>
                             <Card>
                                 <div className="p-4">
                                      <p className="text-text-secondary text-sm font-medium">Active Users</p>
-                                     <h4 className="text-3xl font-bold mt-1 text-status-success">{activeUsers}</h4>
+                                     <h4 className="text-xl font-bold mt-1 text-status-success">{activeUsers}</h4>
                                 </div>
                             </Card>
                             <Card>
                                 <div className="p-4">
                                      <p className="text-text-secondary text-sm font-medium">Dormant Accounts</p>
-                                     <h4 className="text-3xl font-bold mt-1 text-status-error">{inactiveUsers}</h4>
+                                     <h4 className="text-xl font-bold mt-1 text-status-error">{inactiveUsers}</h4>
                                 </div>
                             </Card>
                         </div>
@@ -404,33 +404,33 @@ export const CRMAuditDashboard: React.FC<CRMAuditDashboardProps> = ({ users, sal
                         </div>
                         <p className="text-text-secondary max-w-3xl">Examines whether the CRM system aligns with current business goals and workflows, and evaluates if automations and integrations are serving their intended purpose.</p>
                         
-                        <div className="grid grid-cols-2 gap-6 mt-6">
+                        <div className="grid grid-cols-2 gap-4 mt-6">
                             <div className="space-y-4">
                                 <h3 className="font-medium text-lg border-b border-border-subtle pb-2">Sales Process Status</h3>
                                 <div className="flex items-start gap-3 p-3 bg-surface-highlight rounded">
                                     <div className="mt-1"><Check className="text-status-success" size={16}/></div>
                                     <div>
                                         <p className="font-medium text-sm">Lead Prioritization</p>
-                                        <p className="text-xs text-text-muted">Clear steps assigned to qualified leads</p>
+                                        <p className="text-sm text-text-muted">Clear steps assigned to qualified leads</p>
                                     </div>
                                 </div>
                                 <div className="flex items-start gap-3 p-3 bg-status-warning/10 border border-status-warning/20 rounded">
                                     <div className="mt-1"><AlertTriangle className="text-status-warning" size={16}/></div>
                                     <div>
                                         <p className="font-medium text-sm text-status-warning">Marketing Tool Sync Warning</p>
-                                        <p className="text-xs text-text-muted mt-1">CRM isn't properly syncing with email marketing tool. Follow-ups delayed.</p>
+                                        <p className="text-sm text-text-muted mt-1">CRM isn't properly syncing with email marketing tool. Follow-ups delayed.</p>
                                     </div>
                                 </div>
                                 <div className="flex items-start gap-3 p-3 bg-surface-highlight rounded">
                                     <div className="mt-1"><Check className="text-status-success" size={16}/></div>
                                     <div>
                                         <p className="font-medium text-sm">Performance Tracking</p>
-                                        <p className="text-xs text-text-muted">Sales metrics are guiding strategy accurately</p>
+                                        <p className="text-sm text-text-muted">Sales metrics are guiding strategy accurately</p>
                                     </div>
                                 </div>
                             </div>
                             
-                            <div className="p-6 bg-surface-highlight rounded-lg flex flex-col items-center justify-center text-center">
+                            <div className="p-4 bg-surface-highlight rounded-lg flex flex-col items-center justify-center text-center">
                                 <RefreshCw className="text-text-secondary opacity-50 mb-4" size={40} />
                                 <h4 className="font-semibold text-lg">Automate Your Process</h4>
                                 <p className="text-text-muted text-sm mt-2 max-w-xs">A structured and automated sales process creates consistency, improves conversions, and reduces friction throughout the buying journey.</p>
@@ -454,7 +454,7 @@ export const CRMAuditDashboard: React.FC<CRMAuditDashboardProps> = ({ users, sal
                                     </p>
                                 </div>
                             </div>
-                            <span className="text-[10px] uppercase font-bold bg-[#4f46e5]/20 text-[#818cf8] border border-border-subtle rounded-full px-2.5 py-1">
+                            <span className="text-sm uppercase font-bold bg-[#4f46e5]/20 text-[#818cf8] border border-border-subtle rounded-full px-2.5 py-1">
                                 Admin Level {currentUser?.level} View
                             </span>
                         </div>
@@ -468,7 +468,7 @@ export const CRMAuditDashboard: React.FC<CRMAuditDashboardProps> = ({ users, sal
                                     placeholder="Search by customer name or phone..."
                                     value={searchQuery}
                                     onChange={e => setSearchQuery(e.target.value)}
-                                    className="w-full bg-surface-alt border border-border-subtle rounded-xl pl-9 pr-4 py-2 text-xs text-text-primary focus:border-indigo-500 outline-none"
+                                    className="w-full bg-surface-alt border border-border-subtle rounded-xl pl-9 pr-4 py-2 text-sm text-text-primary focus:border-indigo-500 outline-none"
                                 />
                             </div>
                             <div className="relative w-full sm:w-64">
@@ -478,7 +478,7 @@ export const CRMAuditDashboard: React.FC<CRMAuditDashboardProps> = ({ users, sal
                                     placeholder="Filter by agent..."
                                     value={filterAgent}
                                     onChange={e => setFilterAgent(e.target.value)}
-                                    className="w-full bg-surface-alt border border-border-subtle rounded-xl pl-9 pr-4 py-2 text-xs text-text-primary focus:border-indigo-500 outline-none"
+                                    className="w-full bg-surface-alt border border-border-subtle rounded-xl pl-9 pr-4 py-2 text-sm text-text-primary focus:border-indigo-500 outline-none"
                                 />
                             </div>
                         </div>
@@ -486,14 +486,14 @@ export const CRMAuditDashboard: React.FC<CRMAuditDashboardProps> = ({ users, sal
                         {/* Timeline list */}
                         <div className="space-y-3 max-h-[550px] overflow-y-auto pr-1">
                             {filteredGrouped.length === 0 ? (
-                                <div className="p-12 text-center border border-dashed border-border-subtle rounded-2xl text-text-muted text-xs">
+                                <div className="p-12 text-center border border-dashed border-border-subtle rounded-xl text-text-muted text-sm">
                                     No records found matching filters.
                                 </div>
                             ) : (
                                 filteredGrouped.map((item, idx) => {
                                     const isExpanded = expandedId === idx;
                                     return (
-                                        <div key={idx} className="bg-surface-alt/25 border border-border-subtle rounded-2xl overflow-hidden transition-all duration-150">
+                                        <div key={idx} className="bg-surface-alt/25 border border-border-subtle rounded-xl overflow-hidden transition-all duration-150">
                                             {/* Accordion header */}
                                             <div 
                                                 onClick={() => setExpandedId(isExpanded ? null : idx)}
@@ -502,18 +502,18 @@ export const CRMAuditDashboard: React.FC<CRMAuditDashboardProps> = ({ users, sal
                                                 <div className="flex-1 min-w-0">
                                                     <div className="flex items-center gap-2 flex-wrap">
                                                         <h4 className="font-bold text-sm text-text-primary">{item.customerName}</h4>
-                                                        {item.phone && <span className="text-[10px] font-mono text-text-muted bg-surface-main px-1.5 py-0.5 rounded border border-border-subtle/50">{item.phone}</span>}
+                                                        {item.phone && <span className="text-sm font-mono text-text-muted bg-surface-main px-1.5 py-0.5 rounded border border-border-subtle/50">{item.phone}</span>}
                                                         {item.activeCallback && (
-                                                            <span className="text-[10px] font-bold bg-[#4f46e5]/10 text-[#818cf8] border border-[#4f46e5]/20 px-2.5 py-0.5 rounded-full flex items-center gap-1">
+                                                            <span className="text-sm font-bold bg-[#4f46e5]/10 text-[#818cf8] border border-[#4f46e5]/20 px-2.5 py-0.5 rounded-full flex items-center gap-1">
                                                                 <Clock size={10} /> Callback Set: {new Date(item.activeCallback.reminderAt!).toLocaleString()}
                                                             </span>
                                                         )}
                                                     </div>
-                                                    <p className="text-xs text-text-secondary mt-1 truncate">
+                                                    <p className="text-sm text-text-secondary mt-1 truncate">
                                                         Last interaction: <span className="text-text-primary font-semibold">{item.lastContent}</span>
                                                     </p>
                                                 </div>
-                                                <div className="flex items-center gap-4 self-end sm:self-auto uppercase tracking-wider shrink-0 text-[10px] font-bold text-text-muted">
+                                                <div className="flex items-center gap-4 self-end sm:self-auto uppercase tracking-wider shrink-0 text-sm font-bold text-text-muted">
                                                     <div>
                                                         Touched <span className="text-[#818cf8]">{item.timeline.length} time(s)</span> (Last touch: {item.lastAgent})
                                                     </div>
@@ -532,21 +532,21 @@ export const CRMAuditDashboard: React.FC<CRMAuditDashboardProps> = ({ users, sal
                                                                     note.type === 'callback' ? 'bg-[#818cf8] border-[#4f46e5] shadow shadow-[#818cf8]/50' : 'bg-text-muted border-border-strong'
                                                                 }`} />
                                                                 
-                                                                <div className="bg-surface-alt/70 border border-border-subtle/40 rounded-xl p-3 max-w-2xl text-xs">
+                                                                <div className="bg-surface-alt/70 border border-border-subtle/40 rounded-xl p-3 max-w-2xl text-sm">
                                                                     <div className="flex items-center justify-between flex-wrap gap-2 mb-1.5">
                                                                         <div className="flex items-center gap-2">
                                                                             <span className="font-extrabold text-[#818cf8]">{note.agentName}</span>
-                                                                            <span className="text-[9px] uppercase tracking-widest font-bold px-1.5 py-0.5 bg-surface-main text-text-muted rounded border border-border-subtle/30">
+                                                                            <span className="text-sm uppercase tracking-widest font-bold px-1.5 py-0.5 bg-surface-main text-text-muted rounded border border-border-subtle/30">
                                                                                 {note.type.toUpperCase()}
                                                                             </span>
                                                                         </div>
-                                                                        <span className="text-[10px] font-mono text-text-muted">
+                                                                        <span className="text-sm font-mono text-text-muted">
                                                                             {new Date(note.timestamp).toLocaleString()}
                                                                         </span>
                                                                     </div>
                                                                     <p className="text-text-primary font-medium leading-relaxed">{note.content}</p>
                                                                     {note.reminderAt && (
-                                                                        <p className="text-[10px] font-bold text-[#818cf8] mt-2 flex items-center gap-1.5">
+                                                                        <p className="text-sm font-bold text-[#818cf8] mt-2 flex items-center gap-1.5">
                                                                             <Calendar size={11} /> Scheduled for: {new Date(note.reminderAt).toLocaleString()} {note.reminderDismissed && <span className="opacity-50 font-normal">(dismissed)</span>}
                                                                         </p>
                                                                     )}

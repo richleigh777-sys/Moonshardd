@@ -27,8 +27,8 @@ export const BottomNav: React.FC = () => {
               : 'text-slate-400 hover:text-white'
           }`}
         >
-          <div className="text-2xl mb-1">{tab.icon}</div>
-          <div className="text-xs font-semibold">{tab.label}</div>
+          <div className="text-lg mb-1">{tab.icon}</div>
+          <div className="text-sm font-semibold">{tab.label}</div>
         </button>
       ))}
     </div>

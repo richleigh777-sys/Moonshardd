@@ -84,7 +84,7 @@ export const ReviewModal: React.FC<ReviewModalProps> = ({
         <div className="bg-surface-alt rounded-lg p-4 border border-accent-primary">
           <div className="flex justify-between items-center">
             <span className="text-sm font-bold text-text-muted">TOTAL:</span>
-            <span className="text-2xl font-black text-status-success num-font">
+            <span className="text-lg font-black text-status-success num-font">
               ${parseFloat(manualAmount || '0').toLocaleString(undefined, { minimumFractionDigits: 2 })}
             </span>
           </div>
@@ -95,7 +95,7 @@ export const ReviewModal: React.FC<ReviewModalProps> = ({
           <AlertTriangle className="text-yellow-500 flex-shrink-0 mt-0.5" size={18} />
           <div>
             <p className="text-sm font-bold text-yellow-300">Note</p>
-            <p className="text-xs text-yellow-200 mt-1">
+            <p className="text-sm text-yellow-200 mt-1">
               Admin will process payment through external systems and label the transaction result.
             </p>
           </div>

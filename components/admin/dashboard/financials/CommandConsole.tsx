@@ -88,7 +88,7 @@ export const CommandConsole: React.FC<CommandConsoleProps> = ({ onBroadcast }) =
                                     key={u} 
                                     onClick={() => { setUrgency(u); sfx.playClick(); }} 
                                     className={`
-                                        px-3 py-1.5 rounded-md text-xs font-semibold transition-colors flex items-center justify-center gap-1.5
+                                        px-3 py-1.5 rounded-md text-sm font-semibold transition-colors flex items-center justify-center gap-1.5
                                         ${urgency === u 
                                         ? (u === 'Flash' ? 'bg-rose-500 text-white' : 
                                            u === 'Immediate' ? 'bg-amber-500 text-white' : 

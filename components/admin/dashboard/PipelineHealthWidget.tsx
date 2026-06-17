@@ -36,17 +36,17 @@ export const PipelineHealthWidget: React.FC<PipelineHealthWidgetProps> = ({ sale
     }, [sales, hasSales]);
 
     return (
-        <Card variant="panel" className="p-0 flex flex-col relative overflow-hidden h-full rounded-3xl group border border-border-subtle hover:border-border-subtle transition-all shadow-panel bg-surface-main/30 backdrop-blur-3xl">
+        <Card variant="panel" className="p-0 flex flex-col relative overflow-hidden h-full rounded-xl group border border-border-subtle hover:border-border-subtle transition-all shadow-panel bg-surface-main/30 backdrop-blur-3xl">
             <div className="absolute top-0 right-0 bottom-0 w-[2px] bg-gradient-to-b from-accent-primary/50 via-accent-secondary/50 to-transparent opacity-30 z-0"></div>
-            <div className="flex items-center justify-between p-6 border-b border-border-subtle bg-transparent relative z-10">
-                <h3 className="text-xs font-[700] text-text-primary  tracking-[0.2em] flex items-center gap-4">
+            <div className="flex items-center justify-between p-4 border-b border-border-subtle bg-transparent relative z-10">
+                <h3 className="text-sm font-[700] text-text-primary  tracking-[0.2em] flex items-center gap-4">
                     <div className="p-2 bg-gradient-to-br from-surface-highlight to-surface-main border border-border-subtle rounded-xl group-hover:scale-110 transition-transform shadow-lg">
                         <Layers size={16} className="text-accent-secondary drop-shadow-[0_0_8px_rgba(157,78,221,0.5)]"/>
                     </div>
                     Pipeline Health
                 </h3>
             </div>
-            <div className="flex-1 w-full min-h-[220px] relative z-10 p-6 pt-8">
+            <div className="flex-1 w-full min-h-[160px] relative z-10 p-4 pt-8">
                 <ChartFrame minHeight={200} children={() => (
                     hasSales ? (
                         <ResponsiveContainer width="100%" height="100%">
@@ -88,7 +88,7 @@ export const PipelineHealthWidget: React.FC<PipelineHealthWidgetProps> = ({ sale
                     ) : (
                         <div className="flex flex-col items-center justify-center h-full text-text-muted opacity-30">
                             <Layers size={32} className="mb-2" />
-                            <p className="text-[10px] font-[700]  tracking-[0.2em]">Pipeline Empty</p>
+                            <p className="text-sm font-[700]  tracking-[0.2em]">Pipeline Empty</p>
                         </div>
                     )
                 )} />

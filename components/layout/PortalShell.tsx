@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { 
-  Sun, Moon, LogOut, Bell, Coffee, Play, Server, ChevronDown, Menu, X as CloseIcon, LayoutGrid, Terminal
+  Sun, Moon, LogOut, Bell, Coffee, Play, Server, ChevronDown, Menu, X as CloseIcon, LayoutGrid, Terminal, Palette, Check
 } from 'lucide-react';
 import { User, AppNotification } from '../../types';
 import { useAuth, useTimer } from '../../hooks/useAuth';
@@ -33,7 +33,7 @@ export const PortalShell: React.FC<PortalShellProps> = ({
     const { currentUser: user, logout } = useAuth();
     const { isOnBreak, onToggleBreak, workTimeSeconds } = useTimer();
     const { isClockedIn, clockIn, clockOut } = usePerformance();
-    const { theme, toggleTheme, activeServer, serverList, switchServer, setToast } = useSystem();
+    const { theme, toggleTheme, activeServer, serverList, switchServer, setToast, uiZoom, setUiZoom } = useSystem();
     const { attendance, sales } = useCRM();
 
     const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(true);
@@ -42,6 +42,53 @@ export const PortalShell: React.FC<PortalShellProps> = ({
     const [isBreakModalOpen, setIsBreakModalOpen] = useState(false);
     const [isServerSwitcherOpen, setIsServerSwitcherOpen] = useState(false);
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+    
+    // Zoom-like Theme Selector
+    const [appThemePalette, setAppThemePalette] = useState(() => localStorage.getItem('appThemePalette') || 'Classic');
+    const [isThemeSelectorOpen, setIsThemeSelectorOpen] = useState(false);
+
+    useEffect(() => {
+        localStorage.setItem('appThemePalette', appThemePalette);
+    }, [appThemePalette]);
+
+    const themeVars: Record<string, React.CSSProperties> = {
+        Classic: {},
+        Bloom: {
+            '--color-surface-main': '220 70% 30%',
+            '--color-surface-widget': '220 70% 25%',
+            '--color-surface-alt': '220 70% 20%',
+            '--color-surface-highlight': '220 70% 40%',
+            '--color-text-primary': '0 0% 100%',
+            '--color-text-secondary': '220 10% 90%',
+            '--color-text-muted': '220 20% 70%',
+            '--color-border-subtle': '220 30% 35%',
+            '--color-border-strong': '220 30% 45%',
+        } as React.CSSProperties,
+        Agave: {
+            '--color-surface-main': '170 60% 26%',
+            '--color-surface-widget': '170 60% 22%',
+            '--color-surface-alt': '170 60% 18%',
+            '--color-surface-highlight': '170 60% 36%',
+            '--color-text-primary': '0 0% 100%',
+            '--color-text-secondary': '170 10% 90%',
+            '--color-text-muted': '170 20% 70%',
+            '--color-border-subtle': '170 30% 32%',
+            '--color-border-strong': '170 30% 42%',
+        } as React.CSSProperties,
+        Rose: {
+            '--color-surface-main': '345 60% 35%',
+            '--color-surface-widget': '345 60% 30%',
+            '--color-surface-alt': '345 60% 25%',
+            '--color-surface-highlight': '345 60% 45%',
+            '--color-text-primary': '0 0% 100%',
+            '--color-text-secondary': '345 10% 90%',
+            '--color-text-muted': '345 20% 75%',
+            '--color-border-subtle': '345 30% 40%',
+            '--color-border-strong': '345 30% 50%',
+        } as React.CSSProperties
+    };
+
+    const currentThemeStyle = themeVars[appThemePalette] || themeVars.Classic;
 
     useEffect(() => {
         const handleDlpAlert = (e: any) => {
@@ -79,7 +126,7 @@ export const PortalShell: React.FC<PortalShellProps> = ({
     if (!user) return null;
 
     return (
-        <div className="h-full w-full flex bg-surface-alt text-text-primary transition-all duration-500 relative font-sans overflow-hidden p-0 lg:p-2 gap-2">
+        <div className="h-full w-full flex bg-surface-canvas text-text-primary transition-all duration-500 relative font-sans overflow-hidden p-0 gap-0">
             
             {/* OVERLAYS */}
             {!isClockedIn && user.role === 'agent' && <ShiftOverlay />}
@@ -114,9 +161,10 @@ export const PortalShell: React.FC<PortalShellProps> = ({
                             animate={{ x: 0 }}
                             exit={{ x: '-100%' }}
                             transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-                            className="fixed inset-y-0 left-0 z-[160] w-72 bg-surface-main border-r border-border-subtle flex flex-col lg:hidden"
+                            className={`fixed inset-y-0 left-0 z-[160] w-72 bg-surface-widget border-r border-border-subtle flex flex-col lg:hidden`}
+                            style={currentThemeStyle}
                         >
-                            <div className="h-20 flex items-center justify-between px-6 border-b border-border-subtle">
+                            <div className="h-[60px] flex items-center justify-between px-4 border-b border-border-subtle bg-surface-main">
                                 <div className="flex items-center gap-3">
                                     <div className="w-8 h-8 rounded-lg bg-accent-primary flex items-center justify-center text-surface-alt">
                                         <LayoutGrid size={16} fill="currentColor" />
@@ -127,7 +175,7 @@ export const PortalShell: React.FC<PortalShellProps> = ({
                                     <CloseIcon size={20} />
                                 </button>
                             </div>
-                            <nav className="flex-1 px-4 py-6 space-y-1 overflow-y-auto custom-scrollbar">
+                            <nav className="flex-1 px-4 py-4 space-y-1 overflow-y-auto custom-scrollbar">
                                 {sidebarContent}
                             </nav>
                             <div className="p-4 border-t border-border-subtle">
@@ -142,38 +190,51 @@ export const PortalShell: React.FC<PortalShellProps> = ({
             </AnimatePresence>
 
             {/* DESKTOP SIDEBAR - FLOATING PANEL DESIGN */}
+            {/* Spacer to hold the space for the sidebar */}
+            <div className="hidden lg:block shrink-0 lg:my-2 lg:ml-2 relative w-[72px]" />
+            
+            {/* Actual sidebar, absolutely positioned so it overflows the content on hover */}
             <aside 
                 onMouseEnter={() => setIsSidebarCollapsed(false)}
                 onMouseLeave={() => setIsSidebarCollapsed(true)}
                 className={`
-                    hidden lg:flex z-[100] transition-all duration-300 ease-out flex-col shrink-0
-                    bg-surface-main border border-border-subtle rounded-xl shadow-sm relative
-                    ${isSidebarCollapsed ? 'w-[72px]' : 'w-[260px]'}
+                    hidden lg:flex z-50 transition-all duration-300 ease-out flex-col
+                    bg-surface-widget border border-border-subtle rounded-xl shadow-[10px_0_30px_-15px_rgba(0,0,0,0.5)] absolute top-2 bottom-2 left-2
+                    ${isSidebarCollapsed ? 'w-[72px]' : 'w-[200px]'}
                 `}
+                style={currentThemeStyle}
             >
-                <div className="h-20 flex items-center justify-center shrink-0 border-b border-border-subtle relative">
+                <div className="h-[60px] flex items-center justify-center shrink-0 border-b border-border-subtle relative bg-surface-main rounded-t-xl overflow-hidden">
                     <div className="w-10 h-10 flex items-center justify-center rounded-lg bg-accent-primary text-white cursor-pointer hover:scale-[1.05] transition-transform shadow-sm relative z-10" onClick={() => setIsTimeSheetOpen(true)}>
                         <LayoutGrid size={20} strokeWidth={2} />
                     </div>
+                    {!isSidebarCollapsed && (
+                        <div className="absolute inset-0 flex items-center justify-end pr-4 pointer-events-none fade-in">
+                            <span className="font-bold text-sm tracking-widest text-text-muted">MENU</span>
+                        </div>
+                    )}
                 </div>
 
-                <nav className="flex-1 px-4 py-6 space-y-1 overflow-y-auto custom-scrollbar relative z-10">
+                <nav className="flex-1 px-4 py-4 space-y-1 overflow-y-auto custom-scrollbar relative z-10 bg-surface-widget">
                     {sidebarContent}
                 </nav>
 
-                <div className="p-3 border-t border-border-subtle bg-surface-alt/40 rounded-b-xl">
+                <div className="p-3 border-t border-border-subtle bg-surface-main rounded-b-xl">
                     <button onClick={handleLogout} className="w-full p-3 flex items-center justify-center gap-3 text-text-muted hover:text-text-primary transition-all rounded-lg hover:bg-surface-highlight border border-transparent hover:border-border-strong group">
-                        <LogOut size={18} className="group-hover:text-status-error transition-colors" />
-                        {!isSidebarCollapsed && <span className="text-sm font-semibold">Log Out</span>}
+                        <LogOut size={18} className="group-hover:text-status-error transition-colors shrink-0" />
+                        {!isSidebarCollapsed && <span className="text-sm font-semibold truncate">Log Out</span>}
                     </button>
                 </div>
             </aside>
 
             {/* MAIN CONTENT WORKSPACE */}
-            <main className={`flex-1 flex flex-col min-w-0 transition-all duration-300 overflow-hidden bg-surface-main lg:rounded-xl lg:border lg:border-border-subtle shadow-sm relative`}>
+            <main className={`flex-1 flex flex-col min-w-0 transition-all duration-300 overflow-hidden bg-surface-main relative`}>
                 
                 {/* HEADER */}
-                <header className="h-20 px-8 flex items-center justify-between bg-transparent border-b border-border-subtle shrink-0 z-[50]">
+                <header 
+                    className="h-[60px] px-8 flex items-center justify-between bg-surface-main border-b border-border-subtle shrink-0 z-[50] transition-colors duration-500"
+                    style={currentThemeStyle}
+                >
                     <div className="flex items-center gap-4">
                         <button 
                             onClick={() => setIsMobileMenuOpen(true)}
@@ -194,7 +255,7 @@ export const PortalShell: React.FC<PortalShellProps> = ({
                                     className={`flex items-center gap-2.5 px-3 py-1.5 bg-surface-alt hover:bg-surface-highlight border border-border-strong rounded-lg transition-all ${user.accessLevel >= 10 ? 'cursor-pointer' : 'cursor-default'}`}
                                 >
                                     <Server size={14} className="text-accent-primary" />
-                                    <span className="text-xs font-bold text-text-primary font-mono tracking-wider hidden sm:inline">{activeServer.name}</span>
+                                    <span className="text-sm font-bold text-text-primary font-mono tracking-wider hidden sm:inline">{activeServer.name}</span>
                                     {user.accessLevel >= 10 && <ChevronDown size={14} className={`text-text-muted transition-transform duration-200 ${isServerSwitcherOpen ? 'rotate-180' : ''}`} />}
                                     <div className="w-1.5 h-1.5 rounded-full bg-status-success shadow-[0_0_8px_var(--color-status-success)] animate-pulse"></div>
                                 </button>
@@ -210,7 +271,7 @@ export const PortalShell: React.FC<PortalShellProps> = ({
                                                 className="absolute top-full left-0 mt-3 w-64 bg-surface-main border border-border-strong shadow-float rounded-xl z-50 overflow-hidden"
                                             >
                                                 <div className="p-3 border-b border-border-subtle bg-surface-alt/50">
-                                                    <p className="text-xs font-semibold text-text-muted">Available Servers</p>
+                                                    <p className="text-sm font-semibold text-text-muted">Available Servers</p>
                                                 </div>
                                                 <div className="max-h-64 overflow-y-auto custom-scrollbar p-1.5 space-y-1">
                                                     {serverList.map(server => (
@@ -235,7 +296,7 @@ export const PortalShell: React.FC<PortalShellProps> = ({
                         )}
                     </div>
 
-                    <div className="flex items-center gap-4 md:gap-6">
+                    <div className="flex items-center gap-4 md:gap-4">
                         {headerContent}
 
                         <div className="flex items-center gap-3">
@@ -253,7 +314,7 @@ export const PortalShell: React.FC<PortalShellProps> = ({
                                         className="px-3 py-1 bg-surface-alt border border-border-subtle rounded-lg cursor-pointer hover:bg-surface-highlight transition-colors flex flex-col justify-center"
                                         onClick={() => setIsTimeSheetOpen(true)}
                                     >
-                                        <span className={`text-[10px] font-semibold mb-0.5 opacity-60 ${isOnBreak ? 'text-status-warning' : 'text-text-primary'}`}>Duration</span>
+                                        <span className={`text-sm font-semibold mb-0.5 opacity-60 ${isOnBreak ? 'text-status-warning' : 'text-text-primary'}`}>Duration</span>
                                         <span className={`text-sm md:text-base font-mono font-bold tracking-tight leading-none ${isOnBreak ? 'text-status-warning' : 'text-text-primary'}`}>
                                             {formatTimer(workTimeSeconds)}
                                         </span>
@@ -280,7 +341,77 @@ export const PortalShell: React.FC<PortalShellProps> = ({
                         
                         <div className="hidden md:block w-px h-8 bg-border-strong mx-2"></div>
 
-                        <div className="flex items-center gap-1">
+                        <div className="flex items-center gap-1 relative">
+                            {/* Color Theme Selector */}
+                            <div className="relative">
+                                <button 
+                                    onClick={() => setIsThemeSelectorOpen(!isThemeSelectorOpen)} 
+                                    className={`hidden md:flex p-2.5 items-center justify-center text-text-muted hover:text-text-primary hover:bg-surface-highlight transition-all rounded-lg border border-transparent hover:border-border-subtle ${isThemeSelectorOpen ? 'bg-surface-highlight border-border-subtle text-text-primary' : ''}`}
+                                >
+                                    <Palette size={18} />
+                                </button>
+                                
+                                {isThemeSelectorOpen && (
+                                    <>
+                                        <div className="fixed inset-0 z-40" onClick={() => setIsThemeSelectorOpen(false)} />
+                                        <div className="absolute top-full right-0 mt-3 w-56 bg-surface-main border border-border-strong shadow-float rounded-xl z-50 overflow-hidden isolate">
+                                            <div className="p-3 border-b border-border-subtle bg-surface-alt flex flex-col gap-1">
+                                                <span className="text-sm font-bold text-text-primary uppercase tracking-widest">Workspace Properties</span>
+                                                <span className="text-sm text-text-muted">Personalize your panel layout</span>
+                                            </div>
+                                            <div className="p-3 border-b border-border-subtle bg-surface-main">
+                                                <div className="flex items-center justify-between mb-2">
+                                                    <span className="text-sm font-semibold text-text-secondary">UI Scale</span>
+                                                    <span className="text-sm font-bold text-accent-primary font-mono">{Math.round((uiZoom || 1) * 100)}%</span>
+                                                </div>
+                                                <div className="flex items-center gap-2">
+                                                    <button 
+                                                        onClick={() => setUiZoom(Math.max(0.6, (uiZoom || 1) - 0.1))}
+                                                        className="w-8 h-8 rounded bg-surface-alt hover:bg-surface-highlight border border-border-strong text-text-primary flex items-center justify-center font-bold"
+                                                    >-</button>
+                                                    <input 
+                                                        type="range" 
+                                                        min="0.6" max="2.0" step="0.1" 
+                                                        value={uiZoom || 1}
+                                                        onChange={e => setUiZoom(parseFloat(e.target.value))}
+                                                        className="flex-1 cursor-pointer accent-accent-primary"
+                                                    />
+                                                    <button 
+                                                        onClick={() => setUiZoom(Math.min(2.0, (uiZoom || 1) + 0.1))}
+                                                        className="w-8 h-8 rounded bg-surface-alt hover:bg-surface-highlight border border-border-strong text-text-primary flex items-center justify-center font-bold"
+                                                    >+</button>
+                                                </div>
+                                            </div>
+                                            <div className="p-2 flex flex-col gap-1 bg-surface-main">
+                                                {Object.keys(themeVars).map(t => {
+                                                    const previewColors: Record<string, string> = {
+                                                        Classic: 'bg-white border-border-strong dark:bg-black',
+                                                        Bloom: 'bg-[#173b82] border-[#173b82]',
+                                                        Agave: 'bg-[#1a634e] border-[#1a634e]',
+                                                        Rose: 'bg-[#8f233a] border-[#8f233a]'
+                                                    };
+                                                    return (
+                                                    <button
+                                                        key={t}
+                                                        onClick={() => {
+                                                            setAppThemePalette(t);
+                                                            setIsThemeSelectorOpen(false);
+                                                        }}
+                                                        className={`w-full flex items-center justify-between p-2.5 rounded-lg text-sm font-semibold transition-all hover:bg-surface-highlight group ${appThemePalette === t ? 'bg-surface-highlight text-accent-primary ring-1 ring-accent-primary/20 shadow-sm' : 'text-text-secondary'}`}
+                                                    >
+                                                        <div className="flex items-center gap-2">
+                                                            <div className={`w-3.5 h-3.5 rounded-full border ${previewColors[t]}`}></div>
+                                                            <span>{t}</span>
+                                                        </div>
+                                                        {appThemePalette === t && <Check size={16} className="text-accent-primary" />}
+                                                    </button>
+                                                )})}
+                                            </div>
+                                        </div>
+                                    </>
+                                )}
+                            </div>
+
                             <button onClick={toggleTheme} className="hidden md:flex p-2.5 items-center justify-center text-text-muted hover:text-text-primary hover:bg-surface-highlight transition-all rounded-lg border border-transparent hover:border-border-subtle">
                                 {theme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
                             </button>
@@ -296,9 +427,9 @@ export const PortalShell: React.FC<PortalShellProps> = ({
                 </header>
 
                 {/* WORKSPACE (Dataroom) */}
-                <div className="flex-1 overflow-hidden relative bg-surface-alt/20">
-                    <div className="absolute inset-0 overflow-y-auto overflow-x-hidden custom-scrollbar">
-                        <div className="w-full min-h-full flex flex-col p-3 md:p-4 lg:p-6">
+                <div className="flex-1 overflow-hidden relative bg-surface-canvas">
+                    <div className="absolute inset-0 overflow-y-auto custom-scrollbar bg-surface-main">
+                        <div className="w-full min-h-full flex flex-col p-0">
                             {children}
                         </div>
                     </div>

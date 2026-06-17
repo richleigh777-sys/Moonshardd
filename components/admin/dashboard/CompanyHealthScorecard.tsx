@@ -119,25 +119,25 @@ export const CompanyHealthScorecard: React.FC<CompanyHealthScorecardProps> = ({
   return (
     <div className="space-y-4">
       {/* Main Health Card */}
-      <div className={`${status.color} border border-opacity-50 rounded-xl p-6 shadow-lg`}>
+      <div className={`${status.color} border border-opacity-50 rounded-xl p-4 shadow-lg`}>
         <div className="flex items-start justify-between mb-4">
           <div>
             <p className="text-sm font-semibold text-slate-300 uppercase tracking-wider">Business Health</p>
             <div className="flex items-center gap-3 mt-2">
-              <span className="text-5xl font-black text-white">{Math.round(metrics.healthScore)}</span>
+              <span className="text-xl font-black text-white">{Math.round(metrics.healthScore)}</span>
               <div className="flex flex-col">
-                <span className={`text-2xl font-bold ${status.textColor}`}>{status.label}</span>
-                <p className="text-xs text-slate-400">Overall Status</p>
+                <span className={`text-xl font-bold ${status.textColor}`}>{status.label}</span>
+                <p className="text-sm text-slate-400">Overall Status</p>
               </div>
             </div>
           </div>
-          <div className="text-5xl">{status.icon}</div>
+          <div className="text-xl">{status.icon}</div>
         </div>
 
         {/* Health Bar */}
-        <div className="w-full bg-black bg-opacity-30 rounded-full h-3 mb-4">
+        <div className="w-full bg-black bg-opacity-30 rounded-full h-2 mb-3">
           <div
-            className={`h-3 rounded-full transition-all duration-500 ${
+            className={`h-2 rounded-full transition-all duration-500 ${
               metrics.healthScore >= 80
                 ? 'bg-green-500'
                 : metrics.healthScore >= 60
@@ -153,9 +153,9 @@ export const CompanyHealthScorecard: React.FC<CompanyHealthScorecardProps> = ({
         {/* Trend */}
         <div className="flex items-center gap-2">
           {metrics.revenueTrend >= 0 ? (
-            <TrendingUp className="text-green-400" size={18} />
+            <TrendingUp className="text-green-400" size={16} />
           ) : (
-            <TrendingDown className="text-red-400" size={18} />
+            <TrendingDown className="text-red-400" size={16} />
           )}
           <span className={`font-semibold ${metrics.revenueTrend >= 0 ? 'text-green-400' : 'text-red-400'}`}>
             {metrics.revenueTrend >= 0 ? '+' : ''}{metrics.revenueTrend.toFixed(1)}%
@@ -167,33 +167,33 @@ export const CompanyHealthScorecard: React.FC<CompanyHealthScorecardProps> = ({
       {/* Metrics Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
         {/* Revenue */}
-        <div className="bg-emerald-900 bg-opacity-40 border border-emerald-700 rounded-lg p-4">
-          <p className="text-xs font-semibold text-emerald-300 uppercase tracking-wider mb-2">Revenue Today</p>
-          <p className="text-3xl font-black text-white">${(metrics.todayRevenue / 1000).toFixed(1)}k</p>
-          <p className="text-xs text-slate-400 mt-1">Yesterday: ${(metrics.yesterdayRevenue / 1000).toFixed(1)}k</p>
+        <div className="bg-emerald-900 bg-opacity-40 border border-emerald-700 rounded-lg p-3">
+          <p className="text-sm font-semibold text-emerald-300 uppercase tracking-wider mb-1">Revenue Today</p>
+          <p className="text-xl font-black text-white">${(metrics.todayRevenue / 1000).toFixed(1)}k</p>
+          <p className="text-sm text-slate-400 mt-1">Yesterday: ${(metrics.yesterdayRevenue / 1000).toFixed(1)}k</p>
         </div>
 
         {/* Agent Efficiency */}
-        <div className="bg-indigo-900 bg-opacity-40 border border-indigo-700 rounded-lg p-4">
-          <p className="text-xs font-semibold text-indigo-300 uppercase tracking-wider mb-2">Agent Efficiency</p>
-          <p className="text-3xl font-black text-white">{Math.round(metrics.agentEfficiency)}%</p>
-          <p className="text-xs text-slate-400 mt-1">
+        <div className="bg-indigo-900 bg-opacity-40 border border-indigo-700 rounded-lg p-3">
+          <p className="text-sm font-semibold text-indigo-300 uppercase tracking-wider mb-1">Agent Efficiency</p>
+          <p className="text-xl font-black text-white">{Math.round(metrics.agentEfficiency)}%</p>
+          <p className="text-sm text-slate-400 mt-1">
             {metrics.onlineAgents}/{metrics.totalAgents} online
           </p>
         </div>
 
         {/* Win Rate */}
-        <div className="bg-amber-900 bg-opacity-40 border border-amber-700 rounded-lg p-4">
-          <p className="text-xs font-semibold text-amber-300 uppercase tracking-wider mb-2">Win Rate (7d)</p>
-          <p className="text-3xl font-black text-white">{Math.round(metrics.winRate)}%</p>
-          <p className="text-xs text-slate-400 mt-1">Approval efficiency</p>
+        <div className="bg-amber-900 bg-opacity-40 border border-amber-700 rounded-lg p-3">
+          <p className="text-sm font-semibold text-amber-300 uppercase tracking-wider mb-1">Win Rate (7d)</p>
+          <p className="text-xl font-black text-white">{Math.round(metrics.winRate)}%</p>
+          <p className="text-sm text-slate-400 mt-1">Approval efficiency</p>
         </div>
 
         {/* Satisfaction */}
-        <div className="bg-purple-900 bg-opacity-40 border border-purple-700 rounded-lg p-4">
-          <p className="text-xs font-semibold text-purple-300 uppercase tracking-wider mb-2">Satisfaction</p>
-          <p className="text-3xl font-black text-white">{Math.round(metrics.satisfactionScore)}%</p>
-          <p className="text-xs text-slate-400 mt-1">Reorder rate</p>
+        <div className="bg-purple-900 bg-opacity-40 border border-purple-700 rounded-lg p-3">
+          <p className="text-sm font-semibold text-purple-300 uppercase tracking-wider mb-1">Satisfaction</p>
+          <p className="text-xl font-black text-white">{Math.round(metrics.satisfactionScore)}%</p>
+          <p className="text-sm text-slate-400 mt-1">Reorder rate</p>
         </div>
       </div>
 

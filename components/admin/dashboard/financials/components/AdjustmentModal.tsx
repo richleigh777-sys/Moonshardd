@@ -34,7 +34,7 @@ export const AdjustmentModal: React.FC<AdjustmentModalProps> = ({ isOpen, onClos
                     <Input 
                         value={amount} 
                         onChange={e => setAmount(e.target.value)} 
-                        className="text-center font-bold text-2xl h-14 bg-surface-main border-border-subtle text-text-primary" 
+                        className="text-center font-bold text-lg h-14 bg-surface-main border-border-subtle text-text-primary" 
                         autoFocus
                     />
                     <button onClick={() => adjust(50)} className="p-3 bg-surface-alt hover:bg-emerald-500/10 hover:text-status-success rounded-xl transition-colors border border-border-subtle"><Plus size={20}/></button>

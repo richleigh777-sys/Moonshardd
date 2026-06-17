@@ -132,7 +132,7 @@ export const AgentScriptHub: React.FC = () => {
                         ))}
 
                         {filtered.length === 0 && (
-                            <div className="flex flex-col items-center justify-center p-8 text-text-muted dark:text-gray-600 text-center">
+                            <div className="flex flex-col items-center justify-center p-5 text-text-muted dark:text-gray-600 text-center">
                                 <Search size={24} className="mb-2 opacity-50 drop-shadow-sm" />
                                 <p className="text-[10px]  tracking-widest drop-shadow-sm">No matching records found in databanks.</p>
                             </div>
@@ -144,13 +144,13 @@ export const AgentScriptHub: React.FC = () => {
                 <div className="flex-1 flex flex-col bg-transparent min-w-0 relative">
                     {activeScript ? (
                         <>
-                            <div className="p-4 md:p-6 border-b border-border-subtle flex justify-between items-start bg-surface-highlight/30 dark:bg-black/20 shadow-inner">
+                            <div className="p-4 md:p-4 border-b border-border-subtle flex justify-between items-start bg-surface-highlight/30 dark:bg-black/20 shadow-inner">
                                 <div>
                                     <div className="flex items-center gap-2 mb-2">
                                         <Crosshair size={14} className="text-status-success drop-shadow-[0_0_5px_rgba(16,185,129,0.5)]" />
                                         <span className="text-[10px] font-[700] text-text-muted  tracking-widest drop-shadow-sm font-mono">Target Payload: {activeScript.id.substring(0,8)}</span>
                                     </div>
-                                    <h2 className="text-xl md:text-2xl font-[700] text-text-primary  tracking-tight drop-shadow-md">
+                                    <h2 className="text-xl md:text-lg font-[700] text-text-primary  tracking-tight drop-shadow-md">
                                         {activeScript.title}
                                     </h2>
                                 </div>
@@ -166,8 +166,8 @@ export const AgentScriptHub: React.FC = () => {
                                 </button>
                             </div>
                             
-                            <div className="flex-1 overflow-y-auto p-4 md:p-8 custom-scrollbar">
-                                <div className="bg-surface-alt border border-border-subtle rounded-2xl p-6 relative group overflow-hidden shadow-inner">
+                            <div className="flex-1 overflow-y-auto p-4 md:p-5 custom-scrollbar">
+                                <div className="bg-surface-alt border border-border-subtle rounded-xl p-4 relative group overflow-hidden shadow-inner">
                                     <div className="absolute top-0 left-0 w-1 h-full bg-emerald-500/30 group-hover:bg-emerald-500/50 transition-colors"></div>
                                     <div className="whitespace-pre-wrap text-text-secondary text-sm md:text-base leading-relaxed font-sans drop-shadow-sm">
                                         {activeScript.content}
@@ -176,7 +176,7 @@ export const AgentScriptHub: React.FC = () => {
                             </div>
                         </>
                     ) : (
-                         <div className="flex-1 flex flex-col items-center justify-center text-text-muted dark:text-gray-600 p-8 text-center drop-shadow-sm">
+                         <div className="flex-1 flex flex-col items-center justify-center text-text-muted dark:text-gray-600 p-5 text-center drop-shadow-sm">
                             <Terminal size={48} strokeWidth={1} className="mb-4" />
                             <p className="text-sm font-[700]  tracking-[0.2em]">Awaiting Selection</p>
                             <p className="text-xs mt-2 opacity-60">Select a payload from the directory to decypher.</p>

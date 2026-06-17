@@ -28,7 +28,7 @@ export const PackageConfiguration: React.FC<PackageConfigurationProps> = ({
     }, 0);
 
     return (
-        <div className="space-y-4">
+        <div className="h-full flex flex-col">
             <ProductBasketEnhanced
                 cart={cart}
                 setCart={setCart}

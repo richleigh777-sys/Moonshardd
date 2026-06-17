@@ -104,3 +104,80 @@ export const generateTransactionFingerprint = (sale: Partial<Sale>): string => {
     const product = (sale.product || '').toLowerCase().replace(/[^a-z0-9]/g, '');
     return `${phone}|${date}|${amount}|${product}`;
 };
+
+/**
+ * Parses a messy single-string address into distinct components: Street (incl. PO Box/Apt), City, State, Zip.
+ * Robust against PO Box variants, two-word cities, states, and zips.
+ */
+export const parseFullAddressString = (fullAddress: string) => {
+    let street = '';
+    let city = '';
+    let state = '';
+    let zip = '';
+    
+    if (!fullAddress) return { street, city, state, zip };
+
+    let parsingStr = fullAddress.trim();
+
+    // 1. Extract ZIP Code from the end (5 digits optionally followed by -4 digits)
+    const zipRegex = /\b(\d{5}(?:-\d{4})?)\b\s*$/;
+    const zipMatch = parsingStr.match(zipRegex);
+    if (zipMatch) {
+        zip = zipMatch[1];
+        parsingStr = parsingStr.replace(zipRegex, '').trim();
+    }
+
+    // Clean up trailing commas/spaces
+    parsingStr = parsingStr.replace(/,+$/, '').trim();
+
+    // 2. Extract State from the end
+    // Look for standard 2-letter state abbreviations OR full words (e.g. "New York")
+    const stateRegex = /\b([A-Z]{2}|[A-Z][a-z]+(?:\s[A-Z][a-z]+)?)\b\s*$/;
+    const stateMatch = parsingStr.match(stateRegex);
+    if (stateMatch) {
+        state = stateMatch[1];
+        parsingStr = parsingStr.replace(stateRegex, '').trim();
+    }
+
+    parsingStr = parsingStr.replace(/,+$/, '').trim();
+
+    // 3. Extract PO Box early so it doesn't get confused as a city/street
+    // We look for variants like "P.O Box", "Post Office Box", "PO BOX 123" anywhere in the string
+    const poBoxRegex = /\b(P\.?\s*O\.?\s*Box|Post\s*Office\s*Box)\s*\d+\b/i;
+    let extractedPoBox = "";
+    const poMatch = parsingStr.match(poBoxRegex);
+    
+    if (poMatch) {
+       extractedPoBox = poMatch[0];
+       parsingStr = parsingStr.replace(poBoxRegex, '').trim();
+    }
+
+    // Clean comma out if it's left scattered
+    parsingStr = parsingStr.replace(/,+$/, '').trim();
+
+    // 4. Extract City
+    // Usually, what's left at the end is the city, separated by the last comma.
+    // If no comma, we assume the last 1 or 2 parts of the string might be the city
+    const lastCommaIdx = parsingStr.lastIndexOf(',');
+    if (lastCommaIdx !== -1) {
+        city = parsingStr.substring(lastCommaIdx + 1).trim();
+        street = parsingStr.substring(0, lastCommaIdx).trim();
+    } else {
+        // Fallback heuristic: If no comma, try splitting by space, take the last 1-2 words as city if the street has enough components.
+        // If it's short, just keep it all as street.
+        const parts = parsingStr.split(' ');
+        if (parts.length > 3) {
+            city = parts.slice(-1).join(' '); // Rough guess for 1-word city
+            street = parts.slice(0, -1).join(' ');
+        } else {
+            street = parsingStr;
+        }
+    }
+
+    // append PO Box to street if it was found
+    if (extractedPoBox) {
+        street = street ? `${street}, ${extractedPoBox}` : extractedPoBox;
+    }
+
+    return { street, city, state, zip };
+};

@@ -55,7 +55,7 @@ export const ChatSidebarLayout: React.FC<ChatSidebarLayoutProps> = ({
             {!isMobile && (
                 <button 
                     onClick={() => setIsCollapsed(!isCollapsed)}
-                    className="absolute -right-3 top-6 bg-surface-main border border-border-subtle rounded-full p-1 text-text-muted hover:text-text-primary hover:bg-surface-alt shadow-sm z-50 transition-transform"
+                    className="absolute -right-3 top-4 bg-surface-main border border-border-subtle rounded-full p-1 text-text-muted hover:text-text-primary hover:bg-surface-alt shadow-sm z-50 transition-transform"
                 >
                     {isCollapsed ? <ChevronRight size={14} /> : <ChevronLeft size={14} />}
                 </button>
@@ -67,19 +67,19 @@ export const ChatSidebarLayout: React.FC<ChatSidebarLayoutProps> = ({
                     <div className="flex bg-surface-alt rounded-lg p-1 gap-1">
                         <button 
                             onClick={() => setActiveChannel('internal')}
-                            className={`flex justify-center items-center py-1.5 px-2 rounded-md flex-1 text-xs font-semibold transition-all ${activeChannel === 'internal' ? 'bg-surface-main text-text-primary shadow-sm' : 'text-text-muted hover:text-text-primary'}`}
+                            className={`flex justify-center items-center py-1.5 px-2 rounded-md flex-1 text-sm font-semibold transition-all ${activeChannel === 'internal' ? 'bg-surface-main text-text-primary shadow-sm' : 'text-text-muted hover:text-text-primary'}`}
                         >
                             <Hash size={14} className="mr-1 opacity-70" /> Team
                         </button>
                         <button 
                             onClick={() => setActiveChannel('sms')}
-                            className={`flex justify-center items-center py-1.5 px-2 rounded-md flex-1 text-xs font-semibold transition-all ${activeChannel === 'sms' ? 'bg-surface-main text-text-primary shadow-sm' : 'text-text-muted hover:text-text-primary'}`}
+                            className={`flex justify-center items-center py-1.5 px-2 rounded-md flex-1 text-sm font-semibold transition-all ${activeChannel === 'sms' ? 'bg-surface-main text-text-primary shadow-sm' : 'text-text-muted hover:text-text-primary'}`}
                         >
                             <Smartphone size={14} className="mr-1 opacity-70" /> SMS
                         </button>
                         <button 
                             onClick={() => setActiveChannel('email')}
-                            className={`flex justify-center items-center py-1.5 px-2 rounded-md flex-1 text-xs font-semibold transition-all ${activeChannel === 'email' ? 'bg-surface-main text-text-primary shadow-sm' : 'text-text-muted hover:text-text-primary'}`}
+                            className={`flex justify-center items-center py-1.5 px-2 rounded-md flex-1 text-sm font-semibold transition-all ${activeChannel === 'email' ? 'bg-surface-main text-text-primary shadow-sm' : 'text-text-muted hover:text-text-primary'}`}
                         >
                             <Mail size={14} className="mr-1 opacity-70" /> Email
                         </button>
@@ -95,7 +95,7 @@ export const ChatSidebarLayout: React.FC<ChatSidebarLayoutProps> = ({
                     isCollapsed={isCollapsed}
                 />
             ) : (
-                <div className="flex-1 flex flex-col items-center justify-center p-6 text-center text-text-muted">
+                <div className="flex-1 flex flex-col items-center justify-center p-4 text-center text-text-muted">
                     {activeChannel === 'sms' && <Smartphone size={32} className="mb-3 text-status-success/50" />}
                     {activeChannel === 'email' && <Mail size={32} className="mb-3 text-status-warning/50" />}
                     {activeChannel === 'social' && <Globe size={32} className="mb-3 text-blue-500/50" />}
@@ -103,10 +103,10 @@ export const ChatSidebarLayout: React.FC<ChatSidebarLayoutProps> = ({
                     {!isCollapsed && (
                         <>
                             <h3 className="text-sm font-bold text-text-primary mb-1">{activeChannel.toUpperCase()} Routing Offline</h3>
-                            <p className="text-xs leading-relaxed max-w-[200px] mb-4">
+                            <p className="text-sm leading-relaxed max-w-[200px] mb-4">
                                 Connect external channels to enable {activeChannel} routing.
                             </p>
-                            <Button onClick={() => setShowSettings(true)} variant="secondary" className="h-8 px-4 text-xs font-semibold border-border-subtle text-text-primary hover:bg-surface-alt">
+                            <Button onClick={() => setShowSettings(true)} variant="secondary" className="h-8 px-4 text-sm font-semibold border-border-subtle text-text-primary hover:bg-surface-alt">
                                 Configure Settings
                             </Button>
                         </>
@@ -121,15 +121,15 @@ export const ChatSidebarLayout: React.FC<ChatSidebarLayoutProps> = ({
                             <Settings2 className="text-accent-secondary" size={20} />
                             <h4 className="font-semibold text-sm">Provider API Configuration</h4>
                         </div>
-                        <p className="text-xs text-text-muted mb-4">Enter your API keys to enable outbound routing for this channel.</p>
+                        <p className="text-sm text-text-muted mb-4">Enter your API keys to enable outbound routing for this channel.</p>
                         
                         <div className="space-y-3">
                             <div>
-                                <label className="block text-xs font-medium text-text-muted mb-1">API Key</label>
+                                <label className="block text-sm font-medium text-text-muted mb-1">API Key</label>
                                 <input autoComplete="off" data-lpignore="true" data-prevent-autofill="true" spellCheck={false} type="password" placeholder="sk_test_..." className="w-full bg-surface-alt border border-border-subtle rounded-md p-2 text-sm focus:border-accent-secondary focus:ring-1 focus:ring-accent-secondary outline-none" />
                             </div>
                             <div>
-                                <label className="block text-xs font-medium text-text-muted mb-1">Webhook Secret</label>
+                                <label className="block text-sm font-medium text-text-muted mb-1">Webhook Secret</label>
                                 <input autoComplete="off" data-lpignore="true" data-prevent-autofill="true" spellCheck={false} type="password" placeholder="whsec_..." className="w-full bg-surface-alt border border-border-subtle rounded-md p-2 text-sm focus:border-accent-secondary focus:ring-1 focus:ring-accent-secondary outline-none" />
                             </div>
                         </div>

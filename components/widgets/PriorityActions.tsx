@@ -49,7 +49,7 @@ export const PriorityActions: React.FC<PriorityActionsProps> = ({ callbacks, tog
     };
 
     return (
-        <Card className="h-full flex flex-col p-6 bg-surface-main border border-border-subtle shadow-lg">
+        <Card className="h-full flex flex-col p-4 bg-surface-main border border-border-subtle shadow-lg">
             <div className="flex justify-between items-center mb-6">
                 <div className="flex items-center gap-3">
                     <div className="p-2 bg-accent-primary/10 rounded-lg text-accent-primary">

@@ -76,7 +76,7 @@ export const DashboardAgentSupportPanel: React.FC<DashboardAgentSupportPanelProp
 
   if (agentsNeedingSupport.length === 0) {
     return (
-      <div className="bg-slate-800 rounded-lg p-6 border border-slate-700 text-center">
+      <div className="bg-slate-800 rounded-lg p-4 border border-slate-700 text-center">
         <Zap className="mx-auto text-green-400 mb-3" size={32} />
         <p className="font-semibold text-white mb-1">All Agents on Track!</p>
         <p className="text-sm text-slate-400">Everyone is meeting or exceeding their goals</p>
@@ -88,7 +88,7 @@ export const DashboardAgentSupportPanel: React.FC<DashboardAgentSupportPanelProp
     <div className="bg-slate-800 rounded-lg border border-slate-700 overflow-hidden relative">
       {/* Internal Toast Overlay */}
       {toastMessage && (
-        <div className="absolute top-4 left-1/2 -translate-x-1/2 z-50 bg-green-500/90 text-white text-xs font-bold px-4 py-2 rounded-full shadow-lg flex items-center gap-2 animate-in slide-in-from-top-2">
+        <div className="absolute top-4 left-1/2 -translate-x-1/2 z-50 bg-green-500/90 text-white text-sm font-bold px-4 py-2 rounded-full shadow-lg flex items-center gap-2 animate-in slide-in-from-top-2">
           <Send size={14} />
           {toastMessage}
         </div>
@@ -100,13 +100,13 @@ export const DashboardAgentSupportPanel: React.FC<DashboardAgentSupportPanelProp
           <AlertTriangle className="text-orange-300" size={20} />
           <div>
             <h3 className="font-bold text-white">Agent Support Needed</h3>
-            <p className="text-xs text-orange-200">{agentsNeedingSupport.length} agents below daily target</p>
+            <p className="text-sm text-orange-200">{agentsNeedingSupport.length} agents below daily target</p>
           </div>
         </div>
       </div>
 
       {/* Agents List */}
-      <div className="divide-y divide-slate-700 max-h-[400px] overflow-y-auto">
+      <div className="divide-y divide-slate-700 max-h-[300px] overflow-y-auto">
         {agentsNeedingSupport.map(({ agent, todaysSales, totalCount, pendingCount, declinedCount, deficit, revenue, performance }) => (
           <div key={agent.id} className="p-4 flex flex-col gap-3 transition-colors hover:bg-slate-700/30">
             {/* Header Row */}
@@ -116,15 +116,15 @@ export const DashboardAgentSupportPanel: React.FC<DashboardAgentSupportPanelProp
                   <p className="font-semibold text-white">{agent.name}</p>
                   <span className={`w-2 h-2 rounded-full ${agent.currentStatus === 'online' ? 'bg-green-500' : 'bg-slate-500'}`}></span>
                 </div>
-                <p className="text-xs text-slate-400 mt-1 flex items-center gap-2">
+                <p className="text-sm text-slate-400 mt-1 flex items-center gap-2">
                   <span>{todaysSales}/5 sales</span>
                   <span className="opacity-50">•</span>
                   <span className="text-emerald-400">${revenue.toLocaleString()} rev</span>
                 </p>
               </div>
               <div className="text-right">
-                <div className="text-2xl font-black text-orange-400 leading-none">{deficit}</div>
-                <p className="text-[10px] text-slate-400 uppercase tracking-widest mt-1">gap</p>
+                <div className="text-lg font-black text-orange-400 leading-none">{deficit}</div>
+                <p className="text-sm text-slate-400 uppercase tracking-widest mt-1">gap</p>
               </div>
             </div>
 
@@ -138,7 +138,7 @@ export const DashboardAgentSupportPanel: React.FC<DashboardAgentSupportPanelProp
 
             {/* Suggestion */}
             <div className="bg-slate-750 border border-slate-700/50 rounded p-2.5">
-              <p className="text-xs text-slate-300 flex items-start gap-2">
+              <p className="text-sm text-slate-300 flex items-start gap-2">
                 <Activity size={14} className="text-blue-400 shrink-0 mt-0.5" />
                 {getSuggestion(agent, deficit, revenue)}
               </p>
@@ -148,21 +148,21 @@ export const DashboardAgentSupportPanel: React.FC<DashboardAgentSupportPanelProp
             {expandedAgentId === agent.id && (
               <div className="animate-in slide-in-from-top-2 fade-in duration-200">
                 <div className="grid grid-cols-3 gap-2 mb-3">
-                  <div className="bg-slate-900/50 rounded p-2 text-center border border-slate-700 text-xs">
+                  <div className="bg-slate-900/50 rounded p-2 text-center border border-slate-700 text-sm">
                     <p className="text-slate-400 mb-1">Total</p>
                     <p className="text-white font-mono font-bold">{totalCount}</p>
                   </div>
-                  <div className="bg-slate-900/50 rounded p-2 text-center border border-slate-700 text-xs">
+                  <div className="bg-slate-900/50 rounded p-2 text-center border border-slate-700 text-sm">
                      <p className="text-slate-400 mb-1">Pending</p>
                      <p className="text-yellow-400 font-mono font-bold">{pendingCount}</p>
                   </div>
-                  <div className="bg-slate-900/50 rounded p-2 text-center border border-slate-700 text-xs">
+                  <div className="bg-slate-900/50 rounded p-2 text-center border border-slate-700 text-sm">
                      <p className="text-slate-400 mb-1">Dropped</p>
                      <p className="text-red-400 font-mono font-bold">{declinedCount}</p>
                   </div>
                 </div>
                 {declinedCount > pendingCount && (
-                  <p className="text-[10px] text-red-300 bg-red-900/20 p-2 rounded mb-3 border border-red-900/50">
+                  <p className="text-sm text-red-300 bg-red-900/20 p-2 rounded mb-3 border border-red-900/50">
                      <AlertTriangle size={12} className="inline mr-1 relative -top-[1px]"/>
                      High drop rate detected today. Check recent script compliance.
                   </p>
@@ -179,14 +179,14 @@ export const DashboardAgentSupportPanel: React.FC<DashboardAgentSupportPanelProp
                     `Hey ${agent.name}! You're ${deficit} sales away from quota. Let's push hard! 💪`
                   )
                 }
-                className="flex-1 flex items-center justify-center gap-2 bg-blue-600/90 hover:bg-blue-600 text-white text-xs py-2 px-3 rounded-md transition-colors border border-blue-500/50"
+                className="flex-1 flex items-center justify-center gap-2 bg-blue-600/90 hover:bg-blue-600 text-white text-sm py-2 px-3 rounded-md transition-colors border border-blue-500/50"
               >
                 <Send size={14} />
                 Encourage
               </button>
               <button 
                 onClick={() => setExpandedAgentId(expandedAgentId === agent.id ? null : agent.id)}
-                className={`flex-1 flex items-center justify-center gap-2 text-xs py-2 px-3 rounded-md transition-colors border ${
+                className={`flex-1 flex items-center justify-center gap-2 text-sm py-2 px-3 rounded-md transition-colors border ${
                   expandedAgentId === agent.id 
                     ? 'bg-slate-700 text-white border-slate-600' 
                     : 'bg-slate-800 text-slate-300 border-slate-700 hover:bg-slate-700 hover:text-white'

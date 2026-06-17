@@ -12,46 +12,63 @@ import { CartItem, Sale } from '../../../../types';
 import { formatUSAPhone } from '../../../../views/utils/formatters';
 
 export const useEnrollment = (onSuccess: () => void, customerData?: any) => {
-    const { addSale, sales, notes: allNotes, productConfig, systemConfig, drafts, updateDraft, clearDraft, customers, updateCustomer, addCustomer } = useCRM();
+    const { addSale, sales, notes: allNotes, productConfig, systemConfig, drafts, updateDraft, clearDraft, customers, updateCustomer, addCustomer, updateSaleStatus } = useCRM();
     const { currentUser } = useAuth();
     
     const [loading, setLoading] = useState(false);
-    const [mode, setMode] = useState<'order' | 'callback'>('order');
+    const [mode, setMode] = useState<'order' | 'callback' | 'approved'>('order');
+    const [lastOrder, setLastOrder] = useState<any>(null);
     const [error, setError] = useState('');
     const [collision, setCollision] = useState<{ type: 'sale' | 'lead' | 'mine', agent: string, date: number } | null>(null);
 
     // Initialize state from drafts if available, otherwise defaults
     const savedDraft = drafts['enrollment'] || {};
 
-    const [formData, setFormData] = useState({
-        firstName: savedDraft.formData?.firstName || '', 
-        lastName: savedDraft.formData?.lastName || '', 
-        phone: savedDraft.formData?.phone || '', 
-        email: savedDraft.formData?.email || '', 
-        dob: savedDraft.formData?.dob || '', 
-        age: savedDraft.formData?.age || '',
-        shippingAddress: savedDraft.formData?.shippingAddress || '', 
-        shippingApt: savedDraft.formData?.shippingApt || '',
-        shippingCity: savedDraft.formData?.shippingCity || '',
-        shippingState: savedDraft.formData?.shippingState || '',
-        shippingZip: savedDraft.formData?.shippingZip || '',
-        billingAddress: savedDraft.formData?.billingAddress || '', 
-        billingApt: savedDraft.formData?.billingApt || '',
-        billingCity: savedDraft.formData?.billingCity || '',
-        billingState: savedDraft.formData?.billingState || '',
-        billingZip: savedDraft.formData?.billingZip || '',
-        height: savedDraft.formData?.height || '',
-        weight: savedDraft.formData?.weight || '',
-        medicalConditions: savedDraft.formData?.medicalConditions || []
+    const [formData, setFormData] = useState(() => {
+        const local = sessionStorage.getItem('enrollment_formData');
+        const parsed = local ? JSON.parse(local) : null;
+        return parsed || {
+            firstName: savedDraft.formData?.firstName || '', 
+            lastName: savedDraft.formData?.lastName || '', 
+            phone: savedDraft.formData?.phone || '', 
+            email: savedDraft.formData?.email || '', 
+            dob: savedDraft.formData?.dob || '', 
+            age: savedDraft.formData?.age || '',
+            shippingAddress: savedDraft.formData?.shippingAddress || '', 
+            shippingApt: savedDraft.formData?.shippingApt || '',
+            shippingCity: savedDraft.formData?.shippingCity || '',
+            shippingState: savedDraft.formData?.shippingState || '',
+            shippingZip: savedDraft.formData?.shippingZip || '',
+            billingAddress: savedDraft.formData?.billingAddress || '', 
+            billingApt: savedDraft.formData?.billingApt || '',
+            billingCity: savedDraft.formData?.billingCity || '',
+            billingState: savedDraft.formData?.billingState || '',
+            billingZip: savedDraft.formData?.billingZip || '',
+            height: savedDraft.formData?.height || '',
+            weight: savedDraft.formData?.weight || '',
+            medicalConditions: savedDraft.formData?.medicalConditions || []
+        };
     });
     
-    const [cart, setCart] = useState<CartItem[]>(savedDraft.cart || []);
-    const [notes, setNotes] = useState(savedDraft.notes || '');
-    const [useShippingForBilling, setUseShippingForBilling] = useState(savedDraft.useShippingForBilling ?? true);
+    const [cart, setCart] = useState<CartItem[]>(() => {
+        const local = sessionStorage.getItem('enrollment_cart');
+        return local ? JSON.parse(local) : (savedDraft.cart || []);
+    });
+    const [notes, setNotes] = useState(() => {
+        const local = sessionStorage.getItem('enrollment_notes');
+        return local || savedDraft.notes || '';
+    });
+    const [useShippingForBilling, setUseShippingForBilling] = useState(() => {
+        const local = sessionStorage.getItem('enrollment_useShipping');
+        return local ? JSON.parse(local) : (savedDraft.useShippingForBilling ?? true);
+    });
     const [customerTime, setCustomerTime] = useState<string | null>(null);
 
-    const [financials, setFinancials] = useState(savedDraft.financials || {
-        cardNumber: '', cardExpiry: '', cardCvv: '', bankName: '', cardType: ''
+    const [financials, setFinancials] = useState(() => {
+        const local = sessionStorage.getItem('enrollment_financials');
+        return local ? JSON.parse(local) : (savedDraft.financials || {
+            cardNumber: '', cardExpiry: '', cardCvv: '', bankName: '', cardProvider: '', cardType: ''
+        });
     });
 
     const handleCardInput = useCallback((val: string) => {
@@ -112,6 +129,11 @@ export const useEnrollment = (onSuccess: () => void, customerData?: any) => {
             updateDraft('enrollment', {
                 formData, cart, notes, useShippingForBilling, financials
             });
+            sessionStorage.setItem('enrollment_formData', JSON.stringify(formData));
+            sessionStorage.setItem('enrollment_cart', JSON.stringify(cart));
+            sessionStorage.setItem('enrollment_notes', notes);
+            sessionStorage.setItem('enrollment_useShipping', JSON.stringify(useShippingForBilling));
+            sessionStorage.setItem('enrollment_financials', JSON.stringify(financials));
         }, 500); // Debounce
         return () => clearTimeout(timeout);
     }, [formData, cart, notes, useShippingForBilling, financials, updateDraft]);
@@ -119,25 +141,44 @@ export const useEnrollment = (onSuccess: () => void, customerData?: any) => {
     // Initial load sync from props (overrides draft if provided)
     useEffect(() => {
         if (customerData) {
-            setFormData(prev => ({
-                ...prev,
-                firstName: customerData.firstName || (customerData.fullName ? customerData.fullName.split(' ')[0] : prev.firstName),
-                lastName: customerData.lastName || (customerData.fullName ? customerData.fullName.substring(customerData.fullName.indexOf(' ') + 1) : prev.lastName),
-                phone: formatUSAPhone(customerData.phone || prev.phone),
-                email: customerData.email || prev.email,
-                shippingAddress: customerData.shippingAddress || prev.shippingAddress,
-                billingAddress: customerData.billingAddress || prev.billingAddress,
-                dob: customerData.dob || prev.dob,
-                age: customerData.age?.toString() || prev.age,
-                height: customerData.height || prev.height,
-                weight: customerData.weight || prev.weight,
-                medicalConditions: customerData.medicalConditions || prev.medicalConditions || []
-            }));
+            setFormData(prev => {
+                const newFirstName = customerData.firstName || (customerData.fullName ? customerData.fullName.split(' ')[0] : prev.firstName);
+                const newLastName = customerData.lastName || (customerData.fullName ? customerData.fullName.substring(customerData.fullName.indexOf(' ') + 1) : prev.lastName);
+                const newPhone = customerData.phone ? formatUSAPhone(customerData.phone) : prev.phone;
+                
+                if (prev.firstName === newFirstName && prev.lastName === newLastName && prev.phone === newPhone) {
+                    return prev;
+                }
+
+                return {
+                    ...prev,
+                    firstName: newFirstName,
+                    lastName: newLastName,
+                    phone: newPhone,
+                    email: customerData.email || prev.email,
+                    shippingAddress: customerData.shippingAddress || customerData.streetAddress || prev.shippingAddress,
+                    shippingCity: customerData.shippingCity || customerData.city || prev.shippingCity,
+                    shippingState: customerData.shippingState || customerData.state || prev.shippingState,
+                    shippingZip: customerData.shippingZip || customerData.zip || prev.shippingZip,
+                    billingAddress: customerData.billingAddress || customerData.streetAddress || prev.billingAddress,
+                    billingCity: customerData.billingCity || customerData.city || prev.billingCity,
+                    billingState: customerData.billingState || customerData.state || prev.billingState,
+                    billingZip: customerData.billingZip || customerData.zip || prev.billingZip,
+                    dob: customerData.dob || prev.dob,
+                    age: customerData.age?.toString() || prev.age,
+                    height: customerData.height || prev.height,
+                    weight: customerData.weight || prev.weight,
+                    medicalConditions: customerData.medicalConditions || prev.medicalConditions || []
+                };
+            });
         }
-    }, [customerData]);
+    }, [customerData?.firstName, customerData?.lastName, customerData?.fullName, customerData?.phone, customerData?.email, customerData?.shippingAddress, customerData?.shippingCity, customerData?.shippingState, customerData?.shippingZip, customerData?.streetAddress, customerData?.city, customerData?.state, customerData?.zip, customerData?.billingAddress, customerData?.dob, customerData?.age, customerData?.height, customerData?.weight]);
 
     // Helper to extract unit multiplier from quantity strings like "30 Day Supply", "3 Bottles", etc.
-    const getQuantityMultiplier = useCallback((quantity: string): number => {
+    const getQuantityMultiplier = useCallback((quantity: any): number => {
+        if (typeof quantity === 'number') return quantity;
+        if (!quantity || typeof quantity !== 'string') return 1;
+        
         const q = quantity.toLowerCase();
         if (q.includes('90')) return 3;
         if (q.includes('180')) return 6;
@@ -154,6 +195,40 @@ export const useEnrollment = (onSuccess: () => void, customerData?: any) => {
         return cart.reduce((acc, item) => acc + (getQuantityMultiplier(item.quantity) * item.unitPrice), 0);
     }, [cart, getQuantityMultiplier]);
 
+    const [wasAutoFilled, setWasAutoFilled] = useState(false);
+
+    const autoFillFromCustomer = useCallback((customer: any) => {
+        const parsedFirstName = customer.firstName || (customer.name ? customer.name.split(' ')[0] : '');
+        const parsedLastName = customer.lastName || (customer.name ? customer.name.substring(customer.name.indexOf(' ') + 1) : '');
+        
+        setFormData(prev => ({
+            ...prev,
+            firstName: parsedFirstName || prev.firstName,
+            lastName: parsedLastName || prev.lastName,
+            phone: customer.phone || prev.phone,
+            email: customer.email || prev.email,
+            dob: customer.dob || prev.dob,
+            age: customer.age?.toString() || prev.age,
+            height: customer.height || prev.height,
+            weight: customer.weight || prev.weight,
+            medicalConditions: customer.medicalConditions || prev.medicalConditions,
+            shippingAddress: customer.shippingAddress || customer.streetAddress || prev.shippingAddress,
+            shippingApt: customer.shippingApt || prev.shippingApt,
+            shippingCity: customer.shippingCity || customer.city || prev.shippingCity,
+            shippingState: customer.shippingState || customer.state || prev.shippingState,
+            shippingZip: customer.shippingZip || customer.zip || prev.shippingZip,
+            billingAddress: customer.billingAddress || customer.streetAddress || prev.billingAddress,
+            billingApt: customer.billingApt || prev.billingApt,
+            billingCity: customer.billingCity || customer.city || prev.billingCity,
+            billingState: customer.billingState || customer.state || prev.billingState,
+            billingZip: customer.billingZip || customer.zip || prev.billingZip,
+        }));
+        setUseShippingForBilling(customer.useShippingForBilling ?? true);
+        sfx.playSuccess();
+        setWasAutoFilled(true);
+        setTimeout(() => setWasAutoFilled(false), 4000);
+    }, [setFormData, setUseShippingForBilling]);
+
     const handleIdentityChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
         let finalValue = value;
@@ -161,8 +236,41 @@ export const useEnrollment = (onSuccess: () => void, customerData?: any) => {
             finalValue = formatUSAPhone(value);
             setCustomerTime(getPhoneTime(finalValue));
         }
+        
         setFormData(prev => ({ ...prev, [name]: finalValue }));
     }, []);
+
+    // Auto-fill trigger for existing customers (debounced via dependencies)
+    useEffect(() => {
+        const cleanPhone = normalizePhone(formData.phone || '');
+        const cleanEmail = (formData.email || '').toLowerCase().trim();
+        
+        if (cleanPhone.length >= 10 || cleanEmail.length > 4) {
+            let foundCustomer = null;
+            if (cleanPhone.length >= 10) {
+                foundCustomer = customers.find(c => c.phone?.replace(/\D/g, '') === cleanPhone);
+            }
+            if (!foundCustomer && cleanEmail.length > 4) {
+                foundCustomer = customers.find(c => c.email?.toLowerCase().trim() === cleanEmail);
+            }
+            
+            // Auto-fill if we found a match. To prevent infinite loops we ensure the form doesn't already match the found customer.
+            if (foundCustomer) {
+                const formPhoneRaw = formData.phone?.replace(/\D/g, '') || '';
+                const custPhoneRaw = foundCustomer.phone?.replace(/\D/g, '') || '';
+                const formEmailRaw = (formData.email || '').toLowerCase().trim();
+                const custEmailRaw = (foundCustomer.email || '').toLowerCase().trim();
+                
+                // If the form doesn't yet have the customer's name, or if we just matched, fire it.
+                // An easy check is if formData.firstName is blank, OR if it doesn't match the customer.
+                const custFirstName = foundCustomer.firstName || (foundCustomer.name ? foundCustomer.name.split(' ')[0] : '');
+                
+                if (custFirstName && formData.firstName !== custFirstName) {
+                     autoFillFromCustomer(foundCustomer);
+                }
+            } 
+        }
+    }, [formData.phone, formData.email, customers, autoFillFromCustomer]);
 
     const handleDobChange = useCallback((val: string) => {
         setFormData(prev => {
@@ -236,8 +344,29 @@ export const useEnrollment = (onSuccess: () => void, customerData?: any) => {
             const streetAndAptShipping = formData.shippingApt ? `${parsedShippingStreet} ${formData.shippingApt}` : parsedShippingStreet;
             const streetAndAptBilling = formData.billingApt ? `${parsedBillingStreet} ${formData.billingApt}` : parsedBillingStreet;
 
+            const fullShippingAddress = formatAddress(parsedShippingStreet, formData.shippingApt, formData.shippingCity, formData.shippingState, formData.shippingZip);
+            const fullBillingAddress = useShippingForBilling 
+                ? fullShippingAddress 
+                : formatAddress(parsedBillingStreet, formData.billingApt, formData.billingCity, formData.billingState, formData.billingZip);
+
+            const cartSummary = cart.reduce((acc, item) => {
+                const key = `${item.product}-${item.dosage || ''}`;
+                if (!acc[key]) {
+                    acc[key] = { product: item.product, dosage: item.dosage, count: 0 };
+                }
+                acc[key].count += 1;
+                return acc;
+            }, {} as Record<string, { product: string, dosage?: string, count: number }>);
+
+            const products = Object.values(cartSummary);
+            const productNames = products.map(item => item.product).join(' + ');
+            const totalQuantities = products.map(item => `${item.count * 30}`).join(' + ');
+            const dosages = products.map(item => item.dosage || '').filter(d => d).join(' + ');
+            
+            const combinedProductString = `${productNames} / ${totalQuantities} ${dosages ? `/ ${dosages}` : ''}`;
+            const combinedQuantityString = products.map(item => `${item.count * 30}`).join(', ');
+
             const isDeclined = financials.cardNumber && cardStatus === 'invalid';
-            const firstCartItem = cart.length > 0 ? cart[0] : { product: 'Unknown Product', quantity: '1', dosage: '' };
             
             const newSale: Partial<Sale> & any = {
                 agentId: currentUser?.id,
@@ -248,7 +377,7 @@ export const useEnrollment = (onSuccess: () => void, customerData?: any) => {
                 lastName: formData.lastName,
                 phone: normalizePhone(formData.phone),
                 email: formData.email,
-                address: streetAndAptShipping,
+                address: fullShippingAddress,
                 city: formData.shippingCity,
                 state: formData.shippingState,
                 zip: formData.shippingZip,
@@ -260,26 +389,110 @@ export const useEnrollment = (onSuccess: () => void, customerData?: any) => {
                 billingCity: useShippingForBilling ? formData.shippingCity : formData.billingCity,
                 billingState: useShippingForBilling ? formData.shippingState : formData.billingState,
                 billingZip: useShippingForBilling ? formData.shippingZip : formData.billingZip,
+                fullBillingAddress: fullBillingAddress,
                 dob: formData.dob,
                 age: parseInt(formData.age) || undefined,
                 height: formData.height,
                 weight: formData.weight,
                 medicalConditions: formData.medicalConditions,
                 amount: grandTotal,
-                product: firstCartItem.product,
-                quantity: firstCartItem.quantity,
-                dosage: firstCartItem.dosage || '',
+                product: combinedProductString || 'Unknown Product',
+                quantity: combinedQuantityString || '0',
+                dosage: cart.length > 0 ? cart[0].dosage || '' : '',
                 rawCart: cart,
                 callSummary: notes,
                 status: isDeclined ? 'Declined' : 'Pending',
                 pipelineStatus: isDeclined ? 'Declined' : 'Closed Won',
                 bankName: financials.bankName,
-                cardProvider: financials.cardType,
+                cardProvider: financials.cardProvider,
+                cardType: financials.cardType,
                 cardNumber: financials.cardNumber,
                 cardExpiry: financials.cardExpiry,
                 cardCvv: financials.cardCvv
             };
             await addSale(newSale);
+            
+            // Sync to Global Customer Pool
+            const cleanPhoneSale = normalizePhone(formData.phone);
+            
+            // Core Logic: if this new sale is approved (Pending means success here, wait, `isDeclined` controls it),
+            // remove any old 'Declined' or 'Rescue In Progress' sales for this customer so they vanish from Recovery boards globally,
+            // acting as if this agent saved the sale.
+            if (!isDeclined) {
+                const previousDeclinedSales = sales.filter(s => normalizePhone(s.phone) === cleanPhoneSale && (s.status === 'Declined' || s.status === 'Rescue In Progress'));
+                for (const oldSale of previousDeclinedSales) {
+                     await updateSaleStatus(oldSale.id, 'Cancelled', { systemNotes: (oldSale.systemNotes || '') + '\\n[System]: Superceded by new approved transaction from agent ' + currentUser?.name });
+                }
+            }
+            const cleanEmailSale = formData.email ? formData.email.trim().toLowerCase() : '';
+            let existingCustomer = null;
+            
+            if (cleanPhoneSale.length >= 10) {
+                existingCustomer = customers.find(c => normalizePhone(c.phone) === cleanPhoneSale);
+            }
+            if (!existingCustomer && cleanEmailSale.length > 4) {
+                existingCustomer = customers.find(c => c.email?.trim().toLowerCase() === cleanEmailSale);
+            }
+            
+            const ONE_DAY = 24 * 60 * 60 * 1000;
+            const THIRTY_DAYS = 30 * ONE_DAY;
+
+            let mergedFirstName = (formData.firstName || '').trim();
+            let mergedLastName = (formData.lastName || '').trim();
+            
+            if (existingCustomer) {
+                const exFirst = (existingCustomer.firstName || '').trim();
+                const exLast = (existingCustomer.lastName || '').trim();
+                
+                // Preserve richer first name (handles case where middle name or initial was historically provided in first name)
+                if (exFirst.length > mergedFirstName.length && exFirst.toLowerCase().includes(mergedFirstName.toLowerCase())) {
+                    mergedFirstName = exFirst;
+                }
+                // Preserve richer last name (handles Sr, Jr, or multi-part last names / middle names historically provided in last name)
+                if (exLast.length > mergedLastName.length && exLast.toLowerCase().includes(mergedLastName.toLowerCase())) {
+                    mergedLastName = exLast;
+                }
+            }
+
+            const profileData = {
+                firstName: mergedFirstName,
+                lastName: mergedLastName,
+                name: `${mergedFirstName} ${mergedLastName}`.trim(),
+                phone: formData.phone,
+                email: formData.email,
+                address: fullShippingAddress,
+                shippingAddress: streetAndAptShipping,
+                shippingApt: formData.shippingApt,
+                shippingCity: formData.shippingCity,
+                shippingState: formData.shippingState,
+                shippingZip: formData.shippingZip,
+                billingAddress: useShippingForBilling ? streetAndAptShipping : streetAndAptBilling,
+                billingApt: useShippingForBilling ? formData.shippingApt : formData.billingApt,
+                billingCity: useShippingForBilling ? formData.shippingCity : formData.billingCity,
+                billingState: useShippingForBilling ? formData.shippingState : formData.billingState,
+                billingZip: useShippingForBilling ? formData.shippingZip : formData.billingZip,
+                fullBillingAddress: fullBillingAddress,
+                dob: formData.dob,
+                age: parseInt(formData.age) || undefined,
+                height: formData.height,
+                weight: formData.weight,
+                medicalConditions: formData.medicalConditions,
+                useShippingForBilling,
+                agentId: currentUser?.id,
+                agentName: currentUser?.name,
+                assignedTo: currentUser?.id,
+                team: currentUser?.team || 'Alpha',
+                lastOrderDate: Date.now(),
+                lastProductsPurchased: !isDeclined ? cart.map((c: any) => c.productName || c.product || combinedProductString) : undefined,
+                nextActionDate: !isDeclined ? Date.now() + ONE_DAY : Date.now() + ONE_DAY, // Action next day (Upsell for Approved, Recover for Declined)
+                nextActionType: !isDeclined ? 'Upsell' : 'Initial'
+            };
+
+            if (existingCustomer) {
+                await updateCustomer(existingCustomer.id, profileData);
+            } else {
+                await addCustomer(profileData as any);
+            }
             
             if (isDeclined) {
                 setError('Entry Declined: Invalid card details logged.');
@@ -318,7 +531,13 @@ export const useEnrollment = (onSuccess: () => void, customerData?: any) => {
 
             sfx.playSuccess();
             clearDraft('enrollment');
-            onSuccess();
+            sessionStorage.removeItem('enrollment_formData');
+            sessionStorage.removeItem('enrollment_cart');
+            sessionStorage.removeItem('enrollment_notes');
+            sessionStorage.removeItem('enrollment_useShipping');
+            sessionStorage.removeItem('enrollment_financials');
+            setLastOrder(newSale);
+            setMode('approved');
         } catch {
             setError('Uplink Interrupted: Critical database error.');
             sfx.playError();
@@ -327,39 +546,45 @@ export const useEnrollment = (onSuccess: () => void, customerData?: any) => {
         }
     };
 
-    const autoFillFromCustomer = useCallback((customer: any) => {
-        setFormData(prev => ({
-            ...prev,
-            firstName: customer.firstName || prev.firstName,
-            lastName: customer.lastName || prev.lastName,
-            phone: customer.phone || prev.phone,
-            email: customer.email || prev.email,
-            dob: customer.dob || prev.dob,
-            age: customer.age?.toString() || prev.age,
-            height: customer.height || prev.height,
-            weight: customer.weight || prev.weight,
-            medicalConditions: customer.medicalConditions || prev.medicalConditions,
-            shippingAddress: customer.shippingAddress || prev.shippingAddress,
-            shippingApt: customer.shippingApt || prev.shippingApt,
-            shippingCity: customer.shippingCity || prev.shippingCity,
-            shippingState: customer.shippingState || prev.shippingState,
-            shippingZip: customer.shippingZip || prev.shippingZip,
-            billingAddress: customer.billingAddress || prev.billingAddress,
-            billingApt: customer.billingApt || prev.billingApt,
-            billingCity: customer.billingCity || prev.billingCity,
-            billingState: customer.billingState || prev.billingState,
-            billingZip: customer.billingZip || prev.billingZip,
-        }));
-        setUseShippingForBilling(customer.useShippingForBilling ?? true);
-        sfx.playSuccess();
-    }, [setFormData, setUseShippingForBilling]);
+    const handleClear = useCallback(() => {
+        setFormData({
+            firstName: '', lastName: '', phone: '', email: '', dob: '', age: '',
+            shippingAddress: '', shippingApt: '', shippingCity: '', shippingState: '', shippingZip: '',
+            billingAddress: '', billingApt: '', billingCity: '', billingState: '', billingZip: '',
+            height: '', weight: '', medicalConditions: []
+        });
+        setCart([]);
+        setNotes('');
+        setFinancials({ cardNumber: '', cardExpiry: '', cardCvv: '', bankName: '', cardProvider: '', cardType: '' });
+        setUseShippingForBilling(true);
+        setError('');
+        clearDraft('enrollment');
+        sessionStorage.removeItem('enrollment_formData');
+        sessionStorage.removeItem('enrollment_cart');
+        sessionStorage.removeItem('enrollment_notes');
+        sessionStorage.removeItem('enrollment_useShipping');
+        sessionStorage.removeItem('enrollment_financials');
+        sfx.playTrash();
+    }, [clearDraft]);
+
+    const customerNotes = useMemo(() => {
+        const cleanPhone = normalizePhone(formData.phone || '');
+        const cleanEmail = (formData.email || '').toLowerCase().trim();
+        if (cleanPhone.length >= 10) {
+            return allNotes.filter(n => normalizePhone(n.phone || '') === cleanPhone).sort((a,b) => b.timestamp - a.timestamp);
+        }
+        if (cleanEmail.length > 4) {
+            return allNotes.filter(n => (n.email || '').toLowerCase().trim() === cleanEmail).sort((a,b) => b.timestamp - a.timestamp);
+        }
+        return [];
+    }, [formData.phone, formData.email, allNotes]);
 
     return {
         mode, setMode, loading, error, collision,
-        formData, setFormData, handleIdentityChange, handleDobChange, handleAgeChange, autoFillFromCustomer,
-        cart, setCart, notes, setNotes,
+        formData, setFormData, handleIdentityChange, handleDobChange, handleAgeChange, autoFillFromCustomer, wasAutoFilled,
+        cart, setCart, notes, setNotes, customerNotes,
         useShippingForBilling, setUseShippingForBilling,
-        customerTime, grandTotal, productConfig, handleSubmit,
-        financials, setFinancials, handleCardInput, cardStatus
+        customerTime, grandTotal, productConfig, handleSubmit, handleClear,
+        financials, setFinancials, handleCardInput, cardStatus, lastOrder
     };
 };

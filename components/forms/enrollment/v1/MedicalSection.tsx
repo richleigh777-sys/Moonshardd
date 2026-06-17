@@ -23,7 +23,7 @@ export const MedicalSection: React.FC<MedicalSectionProps> = ({
         </div>
         <div>
           <h3 className="text-sm font-black text-text-primary tracking-wide">MEDICAL CONDITIONS</h3>
-          <p className="text-[10px] text-text-muted uppercase tracking-wider font-semibold">Select relevant conditions</p>
+          <p className="text-sm text-text-muted uppercase tracking-wider font-semibold">Select relevant conditions</p>
         </div>
       </div>
 
@@ -35,7 +35,7 @@ export const MedicalSection: React.FC<MedicalSectionProps> = ({
               key={condition}
               type="button"
               onClick={() => toggleCondition(condition)}
-              className={`px-3 py-2 text-xs font-bold rounded-lg border transition-all duration-200 ${
+              className={`px-3 py-2 text-sm font-bold rounded-lg border transition-all duration-200 ${
                 isSelected
                   ? 'bg-rose-500/10 border-rose-500/50 text-rose-500 shadow-[0_0_10px_rgba(244,63,94,0.15)] ring-1 ring-rose-500/20'
                   : 'bg-surface-alt border-border-subtle text-text-muted hover:border-text-muted hover:bg-surface-alt/80 uppercase'

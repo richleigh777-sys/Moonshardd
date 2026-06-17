@@ -40,7 +40,7 @@ export const ProgressTracker: React.FC = () => {
       <div className={`bg-gradient-to-r ${getStatusColor()} rounded-lg p-4 text-white`}>
         <div className="flex justify-between items-center mb-2">
           <p className="font-semibold">Sales Progress</p>
-          <span className="text-2xl font-bold">
+          <span className="text-lg font-bold">
             {stats.salesCount}/{stats.dailyGoal}
           </span>
         </div>
@@ -61,7 +61,7 @@ export const ProgressTracker: React.FC = () => {
       <div className="bg-slate-700 rounded-lg p-4 border border-slate-600">
         <div className="flex justify-between items-center mb-2">
           <p className="font-semibold text-white">Revenue Today</p>
-          <span className="text-2xl font-bold text-green-400">
+          <span className="text-lg font-bold text-green-400">
             ${stats.totalRevenue.toLocaleString()}
           </span>
         </div>
@@ -74,7 +74,7 @@ export const ProgressTracker: React.FC = () => {
       <div className="bg-slate-700 rounded-lg p-4 border border-slate-600">
         <div className="flex justify-between items-center mb-2">
           <p className="font-semibold text-white">Commission Earned</p>
-          <span className="text-2xl font-bold text-blue-400">
+          <span className="text-lg font-bold text-blue-400">
             ${stats.commission.toLocaleString()}
           </span>
         </div>

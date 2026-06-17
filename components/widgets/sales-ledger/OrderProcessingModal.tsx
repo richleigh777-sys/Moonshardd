@@ -17,7 +17,6 @@ const DECLINE_REASONS = [
     'Customer Cancelled / Cold Feet',
     'Duplicate Order',
     'Missing / Invalid Information',
-    'Out of Stock / Unable to Fulfill',
     'Other Administrative Decline'
 ];
 

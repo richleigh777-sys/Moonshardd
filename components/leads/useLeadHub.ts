@@ -10,7 +10,7 @@ export const useLeadHub = (notes: Note[] = []) => {
     const [filterPriority, setFilterPriority] = useState<'All' | 'High' | 'Mid' | 'Low'>('All');
 
     const leads = useMemo(() => {
-        let filtered = notes.filter(n => n.type === 'callback' && n.priority !== 'Low');
+        let filtered = notes.filter(n => n.type === 'callback');
         
         if (searchQuery) {
             const q = searchQuery.toLowerCase();
@@ -33,12 +33,29 @@ export const useLeadHub = (notes: Note[] = []) => {
         }
 
         return filtered.sort((a, b) => {
-            // Priority 1: Overdue or active reminders
-            const aReminder = a.reminderAt && !a.reminderDismissed ? a.reminderAt : Infinity;
-            const bReminder = b.reminderAt && !b.reminderDismissed ? b.reminderAt : Infinity;
-            if (aReminder !== bReminder) return aReminder - bReminder;
+            // Sort logic: 
+            // 1. Overdue or due within 15 mins comes first
+            // 2. High priority over mid/low
+            // 3. Timestamp closest comes first
             
-            // Priority 2: Standard timestamp
+            const now = Date.now();
+            const aDiff = a.timestamp - now;
+            const bDiff = b.timestamp - now;
+            
+            const aDueOrOverdue = aDiff <= 900000; // 15 mins window
+            const bDueOrOverdue = bDiff <= 900000;
+            
+            if (aDueOrOverdue && !bDueOrOverdue) return -1;
+            if (!aDueOrOverdue && bDueOrOverdue) return 1;
+
+            // Priority mapping
+            const pMap: Record<string, number> = { 'High': 1, 'Mid': 2, 'Low': 3 };
+            const aPri = pMap[a.priority as string] || 2;
+            const bPri = pMap[b.priority as string] || 2;
+
+            if (aPri !== bPri) return aPri - bPri;
+            
+            // Priority 3: Standard timestamp
             return a.timestamp - b.timestamp;
         });
     }, [notes, searchQuery, filterPriority]);

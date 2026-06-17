@@ -29,9 +29,9 @@ export const PanelFrame: React.FC<TerminalWindowProps> = ({
     };
 
     return (
-        <div className={`flex flex-col h-full bg-surface-main border border-border-subtle rounded-2xl overflow-hidden shadow-sm relative ${className}`}>
+        <div className={`flex flex-col h-full bg-surface-widget border border-border-subtle rounded-xl overflow-hidden shadow-panel relative ${className}`}>
             {/* Header */}
-            <div className="flex justify-between items-center px-4 py-3 border-b border-border-subtle bg-surface-alt relative z-10 shrink-0">
+            <div className="flex justify-between items-center px-4 py-3 border-b border-border-subtle bg-surface-main relative z-10 shrink-0">
                 <div className="flex items-center gap-3">
                     <div className="flex flex-col">
                         <div className="flex items-center gap-2">

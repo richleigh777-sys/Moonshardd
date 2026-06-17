@@ -29,23 +29,23 @@ export const TeleprompterOverlay: React.FC<TeleprompterOverlayProps> = ({ conten
             <div className="h-20 border-b border-border-subtle flex justify-between items-center px-8 shrink-0 bg-[#09090b] text-white">
                 <div className="flex flex-col">
                     <h2 className="text-xl font-[700] text-white  tracking-tight flex items-center gap-2">
-                        {title} <span className="text-xs bg-red-500 text-white px-2.5 py-1 rounded-full animate-pulse">LIVE</span>
+                        {title} <span className="text-sm bg-red-500 text-white px-2.5 py-1 rounded-full animate-pulse">LIVE</span>
                     </h2>
-                    <p className="text-xs font-bold text-text-muted  tracking-[0.2em]">Teleprompter Mode</p>
+                    <p className="text-sm font-bold text-text-muted  tracking-[0.2em]">Teleprompter Mode</p>
                 </div>
                 
                 <div className="flex items-center gap-4">
                     {/* Font Size */}
                     <div className="flex items-center gap-1 bg-surface-highlight p-1 rounded-xl border border-border-subtle">
                         <button onClick={() => setFontSize(s => Math.max(16, s - 4))} className="p-2 hover:bg-surface-highlight rounded-lg text-text-muted hover:text-white transition-colors"><Type size={16} className="scale-75"/></button>
-                        <span className="text-xs font-mono font-bold w-8 text-center text-white">{fontSize}</span>
+                        <span className="text-sm font-mono font-bold w-8 text-center text-white">{fontSize}</span>
                         <button onClick={() => setFontSize(s => Math.min(96, s + 4))} className="p-2 hover:bg-surface-highlight rounded-lg text-text-muted hover:text-white transition-colors"><Type size={18}/></button>
                     </div>
 
                     {/* Speed Control */}
                     <div className="flex items-center gap-1 bg-surface-highlight p-1 rounded-xl border border-border-subtle">
                         <button onClick={() => adjustSpeed(-1)} className="p-2 hover:bg-surface-highlight rounded-lg text-text-muted hover:text-white transition-colors"><Rewind size={16}/></button>
-                        <span className="text-xs font-mono font-bold w-12 text-center text-white">SPD {scrollSpeed}</span>
+                        <span className="text-sm font-mono font-bold w-12 text-center text-white">SPD {scrollSpeed}</span>
                         <button onClick={() => adjustSpeed(1)} className="p-2 hover:bg-surface-highlight rounded-lg text-text-muted hover:text-white transition-colors"><FastForward size={16}/></button>
                     </div>
 

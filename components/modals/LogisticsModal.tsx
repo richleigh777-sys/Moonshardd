@@ -62,15 +62,15 @@ export const LogisticsModal: React.FC<LogisticsModalProps> = ({ isOpen, onClose,
         <Modal isOpen={isOpen} onClose={onClose} title="Logistics Command Center" size="lg">
             <div className="space-y-6">
                 {/* Header Card */}
-                <div className="bg-surface-alt/40 border border-border-subtle p-6 rounded-3xl flex flex-col md:flex-row justify-between items-center gap-6 relative overflow-hidden">
+                <div className="bg-surface-alt/40 border border-border-subtle p-4 rounded-xl flex flex-col md:flex-row justify-between items-center gap-4 relative overflow-hidden">
                     <div className={`absolute left-0 top-0 w-2 h-full ${carrierInfo.bg}`}></div>
                     
                     <div className="flex items-center gap-4 relative z-10">
-                        <div className="w-16 h-16 rounded-2xl bg-surface-main border border-border-subtle flex items-center justify-center shadow-lg">
+                        <div className="w-16 h-16 rounded-xl bg-surface-main border border-border-subtle flex items-center justify-center shadow-lg">
                             <carrierInfo.icon size={32} className={carrierInfo.color} />
                         </div>
                         <div>
-                            <h3 className="text-2xl font-[700] text-text-primary tracking-tight">{carrierInfo.name}</h3>
+                            <h3 className="text-lg font-[700] text-text-primary tracking-tight">{carrierInfo.name}</h3>
                             <p className="text-sm font-mono font-bold text-text-muted mt-1 tracking-wider">{sale.trackingId || 'NO_ID_ASSIGNED'}</p>
                         </div>
                     </div>
@@ -96,7 +96,7 @@ export const LogisticsModal: React.FC<LogisticsModalProps> = ({ isOpen, onClose,
                     </div>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {/* Status Controls */}
                     <Card className="p-5 border-border-subtle bg-surface-main h-full">
                         <div className="flex items-center gap-2 mb-4 pb-2 border-b border-border-subtle">

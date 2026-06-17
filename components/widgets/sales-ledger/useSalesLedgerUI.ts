@@ -20,9 +20,11 @@ export const useSalesLedgerUI = (sales: Sale[], onImport?: (data: any) => Promis
     const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
     const [isBulkEdit, setIsBulkEdit] = useState(false);
     const [isSaving, setIsSaving] = useState(false);
+    const [activePreset, setActivePreset] = useState<string | null>(null);
 
     const { 
         processedSales, summary, searchTerm, setSearchTerm, 
+
         filters, setFilters, sortConfig, handleSort,
         uniqueAgents, uniqueProducts, resetFilters 
     } = useLedgerData(sales);
@@ -58,6 +60,24 @@ export const useSalesLedgerUI = (sales: Sale[], onImport?: (data: any) => Promis
 
     const handleBulkCommand = async (command: string) => {
         if (!selectedIds.size) return;
+
+        if (command === 'copy-sheets') {
+            const selectedSales = processedSales.filter(s => selectedIds.has(s.id));
+            const { generateSheetTsv } = await import('./sheetExport');
+            const tsv = generateSheetTsv(selectedSales);
+            
+            try {
+                await navigator.clipboard.writeText(tsv);
+                setToast({ title: 'System', message: `${selectedSales.length} rows copied for Google Sheets!`, type: "success" });
+                sfx.playConfirm();
+            } catch (e) {
+                console.error(e);
+                setToast({ title: 'Clipboard Error', message: "Failed to copy.", type: "error" });
+            }
+            
+            setSelectedIds(new Set());
+            return;
+        }
 
         if (command === 'edit') {
             setIsBulkEdit(true);
@@ -100,6 +120,7 @@ export const useSalesLedgerUI = (sales: Sale[], onImport?: (data: any) => Promis
         showAdvancedFilters, setShowAdvancedFilters, showColumnConfig, setShowConfig,
         currentPage, setCurrentPage, density, setDensity, isRefreshing, setIsRefreshing,
         selectedIds, setSelectedIds, isBulkEdit, setIsBulkEdit, isSaving, setIsSaving,
+        activePreset, setActivePreset,
         processedSales, summary, searchTerm, setSearchTerm, filters, setFilters,
         sortConfig, handleSort, uniqueAgents, uniqueProducts, resetFilters,
         columnPreferences, setColumnPreferences, fileInputRef, importConfig, setImportConfig,

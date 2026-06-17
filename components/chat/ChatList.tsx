@@ -59,7 +59,7 @@ const ChatListItem = React.memo(({ chat, isActive, isCollapsed, onClick, onActio
                 <div className={`absolute bottom-0 ${isCollapsed ? 'right-2' : 'right-0'} h-3.5 w-3.5 rounded-full border-2 border-surface-main ${getStatusColor(chat.peerStatus)} transition-colors`}></div>
                 
                 {isCollapsed && chat.unreadCount > 0 && (
-                    <div className="absolute -top-1 -right-1 min-w-[20px] h-[20px] px-1 text-[10px] font-bold flex items-center justify-center rounded-full bg-indigo-500 text-white shadow-sm border border-surface-main animate-pulse">
+                    <div className="absolute -top-1 -right-1 min-w-[20px] h-[20px] px-1 text-sm font-bold flex items-center justify-center rounded-full bg-indigo-500 text-white shadow-sm border border-surface-main animate-pulse">
                         {chat.unreadCount > 99 ? '99+' : chat.unreadCount}
                     </div>
                 )}
@@ -73,7 +73,7 @@ const ChatListItem = React.memo(({ chat, isActive, isCollapsed, onClick, onActio
                             {chat.isPinned && <Pin size={12} className="text-accent-secondary" strokeWidth={3} />}
                         </h3>
                         {chat.lastMessageTime > 0 && (
-                            <span className="text-[10px] md:text-xs font-semibold text-text-muted opacity-80">
+                            <span className="text-sm md:text-sm font-semibold text-text-muted opacity-80">
                                 {getRelativeTime(chat.lastMessageTime)}
                             </span>
                         )}
@@ -82,16 +82,16 @@ const ChatListItem = React.memo(({ chat, isActive, isCollapsed, onClick, onActio
                     <div className="flex justify-between items-center">
                         <div className="flex items-center gap-1 overflow-hidden">
                             {chat.draft ? (
-                                <span className="text-xs font-medium text-status-error italic">Draft: <span className="text-text-muted not-italic">{chat.draft}</span></span>
+                                <span className="text-sm font-medium text-status-error italic">Draft: <span className="text-text-muted not-italic">{chat.draft}</span></span>
                             ) : (
-                                <p className="text-[11px] md:text-xs truncate max-w-[160px] lg:max-w-[180px] text-text-muted" style={{ fontFamily: EMOJI_FONT }}>
+                                <p className="text-sm md:text-sm truncate max-w-[160px] lg:max-w-[180px] text-text-muted" style={{ fontFamily: EMOJI_FONT }}>
                                     {chat.peerId === 'me' ? <span className="opacity-70 font-semibold text-accent-secondary">You: </span> : ''}{chat.lastMessage}
                                 </p>
                             )}
                         </div>
                         
                         {chat.unreadCount > 0 && (
-                            <span className="min-w-[18px] h-[18px] px-1 text-[10px] font-bold flex items-center justify-center rounded-full bg-indigo-500 text-white shadow-sm">
+                            <span className="min-w-[18px] h-[18px] px-1 text-sm font-bold flex items-center justify-center rounded-full bg-indigo-500 text-white shadow-sm">
                                 {chat.unreadCount}
                             </span>
                         )}
@@ -198,7 +198,7 @@ export const ChatList: React.FC<{ conversations: Conversation[], onSelectChat: (
             <div className="flex flex-col items-center justify-center h-40 text-text-muted opacity-80 px-4 text-center">
                 <MessageCircle size={32} className="mb-3 opacity-50 text-indigo-400" />
                 <p className="text-sm font-semibold text-text-primary mb-1">No active conversations</p>
-                <p className="text-xs">Select + to start a new chat with a teammate.</p>
+                <p className="text-sm">Select + to start a new chat with a teammate.</p>
             </div>
         )}
       </div>

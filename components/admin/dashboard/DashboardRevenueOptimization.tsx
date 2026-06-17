@@ -48,23 +48,58 @@ export const DashboardRevenueOptimization: React.FC<DashboardRevenueOptimization
       });
     }
 
-    // 2. Reorder Potential
+    // 2. Early Upsell Campaigns (1-7 days ago)
     const approvedSales = sales.filter((s) => s.status === 'Approved');
-    const reorderCandidates = approvedSales.filter((s) => {
-      const thirtyDaysAgo = Date.now() - 30 * 24 * 60 * 60 * 1000;
-      return s.timestamp < thirtyDaysAgo && !s.isReorder;
+    const upsellCandidates = approvedSales.filter((s) => {
+      const daysSince = (Date.now() - s.timestamp) / (24 * 60 * 60 * 1000);
+      return daysSince >= 1 && daysSince <= 7 && !s.isReorder;
     });
-    const reorderPotential = reorderCandidates.length * 500; // Average value
+    
+    if (upsellCandidates.length > 0) {
+      allOpportunities.push({
+        type: 'upsell',
+        title: '24h Early Upsell Campaign',
+        description: `${upsellCandidates.length} recent customers (check delivery & upsell packages)`,
+        potential: upsellCandidates.length * 300,
+        action: 'Distribute Upsell Leads',
+        color: 'bg-amber-900',
+        priority: 2,
+      });
+    }
+
+    // 3. Reorder Potential (30-60 days)
+    const reorderCandidates = approvedSales.filter((s) => {
+      const daysSince = (Date.now() - s.timestamp) / (24 * 60 * 60 * 1000);
+      return daysSince >= 25 && daysSince <= 60 && !s.isReorder;
+    });
 
     if (reorderCandidates.length > 0) {
       allOpportunities.push({
         type: 'reorder',
-        title: 'Reorder Campaign',
-        description: `${reorderCandidates.length} customers haven't ordered in 30+ days (retention focused)`,
-        potential: reorderPotential,
+        title: '30-Day Reorder Push',
+        description: `${reorderCandidates.length} customers ready for product restock`,
+        potential: reorderCandidates.length * 500, // Average value
         action: 'Launch Reorder Push',
-        color: 'bg-blue-900',
-        priority: 2,
+        color: 'bg-emerald-900',
+        priority: 1,
+      });
+    }
+
+    // 3.5 Winback Campaigns (90+ Days)
+    const winbackCandidates = approvedSales.filter((s) => {
+      const daysSince = (Date.now() - s.timestamp) / (24 * 60 * 60 * 1000);
+      return daysSince >= 90;
+    });
+    
+    if (winbackCandidates.length > 0) {
+      allOpportunities.push({
+        type: 'winback',
+        title: '90-Day Winback Campaign',
+        description: `${winbackCandidates.length} cold customers. Time for a high-discount winback offer!`,
+        potential: winbackCandidates.length * 200,
+        action: 'Assign to Closers',
+        color: 'bg-rose-900', // Rose color for urgency
+        priority: 3,
       });
     }
 
@@ -132,7 +167,7 @@ export const DashboardRevenueOptimization: React.FC<DashboardRevenueOptimization
           <TrendingUp className="text-green-300" size={20} />
           <div>
             <h3 className="font-bold text-white">Revenue Opportunities</h3>
-            <p className="text-xs text-green-200">
+            <p className="text-sm text-green-200">
               Potential: ${Math.round(totalPotential / 1000)}k this week
             </p>
           </div>
@@ -150,10 +185,10 @@ export const DashboardRevenueOptimization: React.FC<DashboardRevenueOptimization
                   <p className="text-sm text-slate-300 mt-1">{opp.description}</p>
                 </div>
                 <div className="text-right ml-4">
-                  <div className="text-2xl font-black text-emerald-400">
+                  <div className="text-lg font-black text-emerald-400">
                     ${Math.round(opp.potential / 1000)}k
                   </div>
-                  <p className="text-xs text-slate-400">potential</p>
+                  <p className="text-sm text-slate-400">potential</p>
                 </div>
               </div>
 
@@ -165,7 +200,7 @@ export const DashboardRevenueOptimization: React.FC<DashboardRevenueOptimization
           ))}
         </div>
       ) : (
-        <div className="p-8 text-center">
+        <div className="p-4 text-center">
           <Target className="mx-auto text-slate-600 mb-3" size={32} />
           <p className="text-slate-400">No immediate opportunities identified</p>
         </div>

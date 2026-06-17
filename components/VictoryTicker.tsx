@@ -16,7 +16,7 @@ export const VictoryTicker = () => {
         {recentSales.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-12 text-slate-500 text-sm gap-3 border-2 border-dashed border-slate-800 rounded-xl">
             <Shield size={24} className="opacity-20" />
-            <p className="font-bold  tracking-widest text-xs">Establishing live handshake...</p>
+            <p className="font-bold  tracking-widest text-sm">Establishing live handshake...</p>
           </div>
         ) : (
           recentSales.map((sale) => (
@@ -34,7 +34,7 @@ export const VictoryTicker = () => {
                   <p className="text-sm font-[700] text-slate-100 group-hover:text-white transition-colors tracking-tight ">
                     {sale.customer}
                   </p>
-                  <p className="text-xs text-slate-500  tracking-[0.15em] mt-0.5 flex items-center gap-1.5">
+                  <p className="text-sm text-slate-500  tracking-[0.15em] mt-0.5 flex items-center gap-1.5">
                     <span className="text-accent-secondary font-bold">{sale.agent}</span>
                     <span className="opacity-30">•</span>
                     <span>{sale.product}</span>
@@ -47,7 +47,7 @@ export const VictoryTicker = () => {
                     <p className="font-mono font-[700] text-white text-base leading-none">
                     ${Number(sale.amount).toLocaleString()}
                     </p>
-                    <p className="text-xs text-slate-500 font-bold mt-1">
+                    <p className="text-sm text-slate-500 font-bold mt-1">
                     {new Date(sale.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                     </p>
                 </div>

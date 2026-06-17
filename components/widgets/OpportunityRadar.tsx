@@ -49,7 +49,7 @@ export const OpportunityRadar: React.FC<OpportunityRadarProps> = ({ sales, agent
 
     if (data.length === 0) {
         return (
-            <Card variant="panel" className="h-full flex flex-col items-center justify-center p-6 text-text-muted opacity-60 border-dashed border-border-subtle bg-surface-alt/10">
+            <Card variant="panel" className="h-full flex flex-col items-center justify-center p-4 text-text-muted opacity-60 border-dashed border-border-subtle bg-surface-alt/10">
                 <AlertTriangle size={32} className="mb-2" />
                 <p className="text-xs font-bold  tracking-widest">Insufficient Data</p>
             </Card>
@@ -57,11 +57,11 @@ export const OpportunityRadar: React.FC<OpportunityRadarProps> = ({ sales, agent
     }
 
     return (
-        <Card variant="panel" className="h-full p-4 lg:p-6 flex flex-col border border-border-subtle hover:border-accent-primary/20 transition-all bg-surface-main/30 backdrop-blur-3xl shadow-panel rounded-2xl md:rounded-3xl relative overflow-hidden group">
+        <Card variant="panel" className="h-full p-4 lg:p-4 flex flex-col border border-border-subtle hover:border-accent-primary/20 transition-all bg-surface-widget backdrop-blur-3xl shadow-panel rounded-xl md:rounded-xl relative overflow-hidden group">
             <div className="absolute inset-0 bg-gradient-to-br from-accent-primary/5 via-transparent to-transparent opacity-50 z-0"></div>
             <div className="flex items-center justify-between mb-4 relative z-10 border-b border-border-subtle pb-4">
                 <div className="flex items-center gap-4">
-                    <div className="p-3 bg-accent-primary/10 rounded-2xl text-accent-primary border border-accent-primary/20 shadow-inner group-hover:scale-110 transition-transform">
+                    <div className="p-3 bg-accent-primary/10 rounded-xl text-accent-primary border border-accent-primary/20 shadow-inner group-hover:scale-110 transition-transform">
                         <Target size={24} strokeWidth={2.5}/>
                     </div>
                     <div>

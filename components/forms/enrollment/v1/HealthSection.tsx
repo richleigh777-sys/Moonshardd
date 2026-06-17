@@ -10,16 +10,16 @@ interface HealthSectionProps {
 export const HealthSection: React.FC<HealthSectionProps> = ({ conditions, availableConditions, onToggle }) => {
   return (
     <div className="bg-slate-800 rounded-xl border border-slate-700 shadow-sm overflow-hidden">
-      <div className="border-b border-slate-700/50 bg-slate-800/80 px-6 py-4 flex items-center gap-3">
+      <div className="border-b border-slate-700/50 bg-slate-800/80 px-4 py-4 flex items-center gap-3">
         <div className="p-2 bg-red-500/10 rounded-md">
           <HeartPulse size={18} className="text-red-400" />
         </div>
         <div className="flex-1">
           <h3 className="font-bold text-white text-lg tracking-tight">Medical History</h3>
-          <p className="text-xs text-slate-400 mt-0.5">Select any that apply to the customer.</p>
+          <p className="text-sm text-slate-400 mt-0.5">Select any that apply to the customer.</p>
         </div>
       </div>
-      <div className="p-6">
+      <div className="p-4">
         <div className="grid grid-cols-2 lg:grid-cols-3 gap-3">
           {availableConditions.map(cond => {
             const isSelected = conditions.includes(cond);

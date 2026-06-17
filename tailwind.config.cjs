@@ -19,6 +19,8 @@ module.exports = {
         'surface-main': 'hsl(var(--color-surface-main) / <alpha-value>)',
         'surface-alt': 'hsl(var(--color-surface-alt) / <alpha-value>)',
         'surface-highlight': 'hsl(var(--color-surface-highlight) / <alpha-value>)',
+        'surface-widget': 'hsl(var(--color-surface-widget) / <alpha-value>)',
+        'surface-canvas': 'hsl(var(--color-surface-canvas) / <alpha-value>)',
         
         'accent-primary': 'hsl(var(--color-accent-primary) / <alpha-value>)',
         'accent-secondary': 'hsl(var(--color-accent-secondary) / <alpha-value>)',

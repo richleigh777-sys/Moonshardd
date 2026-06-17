@@ -69,13 +69,13 @@ export const SalesHistoryChart: React.FC<{ sales: Sale[] }> = ({ sales }) => {
     const averageDaily = data.length > 0 ? data.reduce((a, b) => a + b.revenue, 0) / data.length : 0;
 
     return (
-        <Card variant="panel" className="h-full p-0 flex flex-col relative overflow-hidden group border border-border-subtle hover:border-accent-primary/20 transition-all bg-surface-main/30 backdrop-blur-3xl shadow-panel rounded-2xl md:rounded-3xl">
+        <Card variant="panel" className="h-full p-0 flex flex-col relative overflow-hidden group border border-border-subtle hover:border-accent-primary/20 transition-all bg-surface-widget backdrop-blur-3xl shadow-panel rounded-xl md:rounded-xl">
             <div className={`absolute top-0 left-0 right-0 h-1 bg-gradient-to-r opacity-30 z-0 transition-colors duration-500 ${viewMode === 'daily' ? 'from-status-success to-transparent' : 'from-accent-secondary to-transparent'}`}></div>
             
             {/* Header */}
-            <div className="p-4 lg:p-6 border-b border-border-subtle flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-surface-main/60 backdrop-blur-sm relative z-10">
+            <div className="p-4 lg:p-4 border-b border-border-subtle flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-surface-main/60 backdrop-blur-sm relative z-10">
                 <div className="flex items-center gap-4">
-                    <div className={`p-3 rounded-2xl border transition-colors duration-500 shadow-inner group-hover:scale-110 ${viewMode === 'daily' ? 'bg-status-success/10 text-status-success border-status-success/20' : 'bg-accent-secondary/10 text-accent-secondary border-accent-secondary/20'}`}>
+                    <div className={`p-3 rounded-xl border transition-colors duration-500 shadow-inner group-hover:scale-110 ${viewMode === 'daily' ? 'bg-status-success/10 text-status-success border-status-success/20' : 'bg-accent-secondary/10 text-accent-secondary border-accent-secondary/20'}`}>
                         {viewMode === 'daily' ? <BarChart2 size={24} /> : <TrendingUp size={24} />}
                     </div>
                     <div>

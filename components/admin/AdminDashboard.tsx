@@ -57,7 +57,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
   const handleSendMessage = onSendMessage || ((id: string, msg: string) => console.log('Mail to', id, msg));
 
   return (
-    <div className="space-y-4 animate-in fade-in duration-700 h-full flex flex-col overflow-y-auto pr-2 pb-2">
+    <div className="space-y-4 animate-in fade-in duration-700 h-full flex flex-col overflow-y-auto p-4">
       <DashboardHeader
         health={health}
         onToggleTerminals={onToggleTerminals}
@@ -101,7 +101,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
           <CompanyHealthScorecard sales={sales} users={users} notes={notes} />
 
           {/* Quick Panels Grid */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {/* Approvals */}
             <DashboardApprovalPanel
               sales={sales}
@@ -143,7 +143,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
         <div className="space-y-4">
           
           {/* System Configuration */}
-          <div className="mb-6 h-[700px] border border-border-strong rounded-2xl overflow-hidden shadow-sm">
+          <div className="mb-6 h-[700px] border border-border-strong rounded-xl overflow-hidden shadow-sm">
             <SystemConfigPanel 
               config={systemConfig} 
               onUpdate={async (newConfig) => {

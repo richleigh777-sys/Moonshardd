@@ -1,5 +1,5 @@
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Clock, User, StickyNote, ArrowUpRight, Sparkles, History, Info, Phone, Mail, ShoppingBag, TrendingUp, AlertTriangle, Plus, X, Tag, Target, CheckSquare } from 'lucide-react';
 import { Note } from '../../types';
 import { Button } from '../ui/Base';
@@ -21,6 +21,78 @@ type Tab = 'Briefing' | 'History' | 'Details';
 export const LeadDetail: React.FC<LeadDetailProps> = ({ activeLead, onMarkDone, onEngage }) => {
     const { currentUser } = useAuth();
     const { callLogs, notes: rawNotes, customers, updateNote, sales } = useCRM();
+
+    const [activeLocks, setActiveLocks] = useState<Record<string, { agentId: string; agentName: string; expiresAt: number }>>({});
+
+    // Lock lease mechanism (Collision Prevention - Flaw #4)
+    useEffect(() => {
+        if (!activeLead || !currentUser) return;
+
+        const leadId = activeLead.id;
+        const agentId = currentUser.id;
+        const agentName = currentUser.name || 'Agent';
+
+        // Acquire lock lease on entry
+        import('../../lib/realtimeClient').then(({ realtimeClient }) => {
+            realtimeClient.send('LEAD_LOCK_ENGAGE', {
+                leadId,
+                agentId,
+                agentName
+            });
+        });
+
+        // Setup lease renewal heartbeat tick
+        const renewalInterval = setInterval(() => {
+            import('../../lib/realtimeClient').then(({ realtimeClient }) => {
+                realtimeClient.send('LEAD_LOCK_ENGAGE', {
+                    leadId,
+                    agentId,
+                    agentName
+                });
+            });
+        }, 15000); // Renew every 15 seconds
+
+        return () => {
+            clearInterval(renewalInterval);
+            import('../../lib/realtimeClient').then(({ realtimeClient }) => {
+                realtimeClient.send('LEAD_LOCK_RELEASE', {
+                    leadId,
+                    agentId
+                });
+            });
+        };
+    }, [activeLead, currentUser]);
+
+    // Listen to lock broadcasts from peers via the realtime socket
+    useEffect(() => {
+        let unsub = () => {};
+        import('../../lib/realtimeClient').then(({ realtimeClient }) => {
+            const handleSocketEvent = (event: any) => {
+                if (event.type === 'LEAD_LOCK_UPDATE') {
+                    setActiveLocks(prev => ({
+                        ...prev,
+                        [event.payload.leadId]: {
+                            agentId: event.payload.agentId,
+                            agentName: event.payload.agentName,
+                            expiresAt: event.payload.expiresAt
+                        }
+                    }));
+                } else if (event.type === 'LEAD_LOCK_RELEASEED') {
+                    setActiveLocks(prev => {
+                        const copy = { ...prev };
+                        delete copy[event.payload.leadId];
+                        return copy;
+                    });
+                }
+            };
+            unsub = realtimeClient.subscribe(handleSocketEvent);
+        });
+        return () => unsub();
+    }, []);
+
+    // Check if the lead is currently locked by another agent/session
+    const currentLock = activeLead ? activeLocks[activeLead.id] : null;
+    const isLockedByPeer = currentLock && currentLock.agentId !== currentUser?.id && currentLock.expiresAt > Date.now();
 
     const allNotes = useMemo(() => {
         if (currentUser?.role === 'agent') {
@@ -115,18 +187,18 @@ export const LeadDetail: React.FC<LeadDetailProps> = ({ activeLead, onMarkDone, 
 
     return (
         <div className="flex-1 flex flex-col bg-surface-main relative">
-            <div className="flex-1 overflow-y-auto custom-scrollbar p-8">
+            <div className="flex-1 overflow-y-auto custom-scrollbar p-5">
                 <div className="max-w-3xl mx-auto space-y-8">
                     
                     {/* Header */}
                     <div className="flex items-start justify-between">
                         <div className="space-y-1">
                             <div className="flex items-center gap-4">
-                                <div className="w-16 h-16 rounded-3xl bg-gradient-to-br from-indigo-500 via-purple-600 to-blue-600 flex items-center justify-center text-white font-[700] text-2xl shadow-xl ring-4 ring-indigo-500/10">
+                                <div className="w-16 h-16 rounded-xl bg-gradient-to-br from-indigo-500 via-purple-600 to-blue-600 flex items-center justify-center text-white font-[700] text-lg shadow-xl ring-4 ring-indigo-500/10">
                                     {activeLead.customerName?.charAt(0) || '?'}
                                 </div>
                                 <div>
-                                    <h2 className="text-3xl font-[700] text-text-primary  tracking-tight leading-none">{activeLead.customerName}</h2>
+                                    <h2 className="text-xl font-[700] text-text-primary  tracking-tight leading-none">{activeLead.customerName}</h2>
                                     <div className="flex items-center gap-2 mt-2">
                                         <span className="text-xs font-bold text-text-muted  bg-surface-alt px-2.5 py-1 rounded-full border border-border-subtle flex items-center gap-1.5">
                                             <Clock size={16} className="text-accent-primary"/> Due: {activeLead.date} @ {activeLead.time}
@@ -148,22 +220,37 @@ export const LeadDetail: React.FC<LeadDetailProps> = ({ activeLead, onMarkDone, 
                             </div>
                         </div>
                         <div className="text-right">
-                            <div className="text-2xl font-mono font-[700] text-text-primary tracking-wider">{activeLead.phone}</div>
+                            <div className="text-lg font-mono font-[700] text-text-primary tracking-wider">{activeLead.phone}</div>
                         </div>
                     </div>
 
+                    {/* Real-time Collision Lock Banner */}
+                    {isLockedByPeer && (
+                        <div className="bg-status-warning/15 border border-status-warning/30 rounded-xl p-5 flex items-start gap-4 animate-pulse">
+                            <div className="w-10 h-10 rounded-full bg-status-warning/20 flex items-center justify-center text-status-warning shrink-0 mt-0.5">
+                                <AlertTriangle size={20} />
+                            </div>
+                            <div>
+                                <h4 className="text-sm font-bold text-status-warning">CONCURRENT ENGAGEMENT WARNING</h4>
+                                <p className="text-xs text-text-muted mt-1 leading-relaxed">
+                                    Agent <strong className="text-text-primary">{currentLock?.agentName}</strong> is actively reviewing this lead. Connection actions are locked down to prevent collision.
+                                </p>
+                            </div>
+                        </div>
+                    )}
+
                     {/* Recent Transactions Contextual Banner */}
                     {recentTransactions.length > 0 && (
-                        <div className="bg-surface-alt/40 border border-border-subtle rounded-3xl p-5 mb-8">
+                        <div className="bg-surface-alt/40 border border-border-subtle rounded-xl p-5 mb-8">
                             <p className="text-xs font-[700] text-text-muted tracking-widest mb-4 flex items-center gap-2">
                                 <ShoppingBag size={16}/> LAST 3 TRANSACTIONS
                             </p>
                             <div className="grid gap-3">
                                 {recentTransactions.map((tx, idx) => (
-                                    <div key={idx} className="bg-surface-main border border-border-subtle rounded-2xl p-4 flex items-center justify-between gap-4 transition-colors hover:border-text-muted/30">
+                                    <div key={idx} className="bg-surface-main border border-border-subtle rounded-xl p-4 flex items-center justify-between gap-4 transition-colors hover:border-text-muted/30">
                                         <div>
                                             <div className="flex items-center gap-2.5 mb-1.5">
-                                                <span className={`px-2 py-0.5 rounded text-[10px] uppercase tracking-widest font-bold ${
+                                                <span className={`px-2 py-0.5 rounded text-xs uppercase tracking-widest font-bold ${
                                                     tx.status === 'Approved' ? 'bg-status-success/15 text-status-success border border-status-success/30' :
                                                     tx.status === 'Declined' ? 'bg-status-error/15 text-status-error border border-status-error/30' :
                                                     'bg-status-warning/15 text-status-warning border border-status-warning/30'
@@ -171,7 +258,7 @@ export const LeadDetail: React.FC<LeadDetailProps> = ({ activeLead, onMarkDone, 
                                                     {tx.status}
                                                 </span>
                                                 <span className="text-xs font-bold text-text-primary">{new Date(tx.timestamp).toLocaleDateString()}</span>
-                                                <span className="text-[10px] text-text-muted font-bold tracking-widest uppercase break-all">Agent #{tx.agentId} • {tx.product}</span>
+                                                <span className="text-xs text-text-muted font-bold tracking-widest uppercase break-all">Agent #{tx.agentId} • {tx.product}</span>
                                             </div>
                                             {(tx.status === 'Approved' && tx.deliveryStatus) && (
                                                 <p className="text-xs text-text-secondary mt-1 font-medium flex items-center gap-1.5">
@@ -194,12 +281,12 @@ export const LeadDetail: React.FC<LeadDetailProps> = ({ activeLead, onMarkDone, 
                     )}
 
                     {/* Navigation Tabs */}
-                    <div className="flex gap-1 p-1 bg-surface-alt rounded-2xl border border-border-subtle max-w-fit">
+                    <div className="flex gap-1 p-1 bg-surface-alt rounded-xl border border-border-subtle max-w-fit">
                         {(['Briefing', 'History', 'Details'] as Tab[]).map(tab => (
                             <button
                                 key={tab}
                                 onClick={() => { setActiveTab(tab); sfx.playClick(); }}
-                                className={`px-6 py-2 rounded-xl text-xs font-[700]  tracking-widest transition-all ${
+                                className={`px-4 py-2 rounded-xl text-xs font-[700]  tracking-widest transition-all ${
                                     activeTab === tab ? 'bg-surface-main text-text-primary shadow-sm border border-border-subtle' : 'text-text-muted hover:text-text-primary'
                                 }`}
                             >
@@ -212,12 +299,12 @@ export const LeadDetail: React.FC<LeadDetailProps> = ({ activeLead, onMarkDone, 
                     </div>
 
                     {/* Content Area */}
-                    <div className="min-h-[400px]">
+                    <div className="min-h-[300px]">
                         {activeTab === 'Briefing' && (
                             <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
                                 {!briefing && !isGenerating && (
                                     <div className="p-12 border-2 border-dashed border-border-subtle rounded-[32px] text-center space-y-4">
-                                        <div className="w-16 h-16 bg-accent-primary/10 rounded-3xl flex items-center justify-center mx-auto text-accent-primary">
+                                        <div className="w-16 h-16 bg-accent-primary/10 rounded-xl flex items-center justify-center mx-auto text-accent-primary">
                                             <Sparkles size={32} />
                                         </div>
                                         <div>
@@ -250,7 +337,7 @@ export const LeadDetail: React.FC<LeadDetailProps> = ({ activeLead, onMarkDone, 
                                 {briefing && (
                                     <div className="space-y-6">
                                         <div className="grid grid-cols-3 gap-4">
-                                            <div className="p-5 bg-surface-alt/40 border border-border-subtle rounded-3xl relative overflow-hidden group">
+                                            <div className="p-5 bg-surface-alt/40 border border-border-subtle rounded-xl relative overflow-hidden group">
                                                 <TrendingUp size={48} className="absolute -right-4 -bottom-4 text-text-primary/5 group-hover:scale-110 transition-transform" />
                                                 <p className="text-xs font-[700] text-text-muted  tracking-widest mb-2">Sentiment</p>
                                                 <p className={`text-xl font-[700]  ${
@@ -260,7 +347,7 @@ export const LeadDetail: React.FC<LeadDetailProps> = ({ activeLead, onMarkDone, 
                                                     {briefing.sentiment}
                                                 </p>
                                             </div>
-                                            <div className="p-5 bg-surface-alt/40 border border-border-subtle rounded-3xl col-span-2">
+                                            <div className="p-5 bg-surface-alt/40 border border-border-subtle rounded-xl col-span-2">
                                                 <p className="text-xs font-[700] text-text-muted  tracking-widest mb-2">Primary Themes</p>
                                                 <div className="flex flex-wrap gap-2">
                                                     {briefing.keyThemes.map((t, i) => (
@@ -272,7 +359,7 @@ export const LeadDetail: React.FC<LeadDetailProps> = ({ activeLead, onMarkDone, 
                                             </div>
                                         </div>
 
-                                        <div className="p-6 bg-gradient-to-br from-surface-alt to-surface-main border border-border-subtle rounded-[32px] shadow-sm">
+                                        <div className="p-4 bg-gradient-to-br from-surface-alt to-surface-main border border-border-subtle rounded-[32px] shadow-sm">
                                             <p className="text-xs font-[700] text-accent-primary  tracking-widest mb-3 flex items-center gap-2">
                                                 <Sparkles size={16}/> Executive Summary
                                             </p>
@@ -281,7 +368,7 @@ export const LeadDetail: React.FC<LeadDetailProps> = ({ activeLead, onMarkDone, 
                                             </p>
                                         </div>
 
-                                        <div className="p-6 bg-indigo-500/5 border border-accent-secondary/20 rounded-[32px] ring-1 ring-indigo-500/10">
+                                        <div className="p-4 bg-indigo-500/5 border border-accent-secondary/20 rounded-[32px] ring-1 ring-indigo-500/10">
                                             <p className="text-xs font-[700] text-accent-secondary  tracking-widest mb-3 flex items-center gap-2">
                                                 <AlertTriangle size={16}/> Strategic Recommendation
                                             </p>
@@ -315,7 +402,7 @@ export const LeadDetail: React.FC<LeadDetailProps> = ({ activeLead, onMarkDone, 
                             <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
                                 {/* Core Data */}
                                 <div className="grid grid-cols-2 gap-4">
-                                    <div className="p-5 bg-surface-alt/40 border border-border-subtle rounded-3xl">
+                                    <div className="p-5 bg-surface-alt/40 border border-border-subtle rounded-xl">
                                         <p className="text-xs font-[700] text-text-muted  tracking-widest mb-4">Identity Details</p>
                                         <div className="space-y-4">
                                             <div className="flex items-center gap-3">
@@ -335,7 +422,7 @@ export const LeadDetail: React.FC<LeadDetailProps> = ({ activeLead, onMarkDone, 
                                         </div>
                                     </div>
 
-                                    <div className="p-5 bg-surface-alt/40 border border-border-subtle rounded-3xl">
+                                    <div className="p-5 bg-surface-alt/40 border border-border-subtle rounded-xl">
                                         <p className="text-xs font-[700] text-text-muted  tracking-widest mb-4">Commercial Profile</p>
                                         <div className="space-y-4">
                                             <div className="flex items-center justify-between">
@@ -362,17 +449,17 @@ export const LeadDetail: React.FC<LeadDetailProps> = ({ activeLead, onMarkDone, 
                                 </div>
 
                                 {/* Registry Analysis */}
-                                <div className="p-6 bg-surface-alt/40 border border-border-subtle rounded-3xl space-y-4 shadow-sm">
+                                <div className="p-4 bg-surface-alt/40 border border-border-subtle rounded-xl space-y-4 shadow-sm">
                                     <div className="flex items-center gap-2 pb-2 border-b border-border-subtle/50">
                                         <StickyNote size={16} className="text-accent-primary"/>
                                         <span className="text-xs font-[700]  text-text-muted tracking-widest">Lead Intelligence</span>
                                     </div>
                                     <div className="space-y-4">
-                                        <div className="bg-surface-main p-4 rounded-2xl border border-border-subtle">
+                                        <div className="bg-surface-main p-4 rounded-xl border border-border-subtle">
                                             <p className="text-xs font-bold text-text-muted  mb-1">Callback Reason</p>
                                             <p className="text-sm font-bold text-text-primary">{activeLead.reason}</p>
                                         </div>
-                                        <div className="bg-surface-main p-4 rounded-2xl border border-border-subtle">
+                                        <div className="bg-surface-main p-4 rounded-xl border border-border-subtle">
                                             <p className="text-xs font-bold text-text-muted  mb-1">Raw Context Log</p>
                                             <p className="text-sm font-medium text-text-secondary leading-relaxed italic">"{activeLead.content.split('|')[1]?.trim() || activeLead.content}"</p>
                                         </div>
@@ -389,7 +476,7 @@ export const LeadDetail: React.FC<LeadDetailProps> = ({ activeLead, onMarkDone, 
                                     )}
                                     {/* Tagging System */}
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                        <div className="p-6 bg-surface-alt/40 border border-border-subtle rounded-3xl space-y-4 shadow-sm">
+                                        <div className="p-4 bg-surface-alt/40 border border-border-subtle rounded-xl space-y-4 shadow-sm">
                                             <div className="flex items-center justify-between pb-2 border-b border-border-subtle/50">
                                                 <div className="flex items-center gap-2">
                                                     <Tag size={16} className="text-accent-primary"/>
@@ -425,7 +512,7 @@ export const LeadDetail: React.FC<LeadDetailProps> = ({ activeLead, onMarkDone, 
                                             </form>
                                         </div>
 
-                                        <div className="p-6 bg-surface-alt/40 border border-border-subtle rounded-3xl space-y-4 shadow-sm">
+                                        <div className="p-4 bg-surface-alt/40 border border-border-subtle rounded-xl space-y-4 shadow-sm">
                                             <div className="flex items-center justify-between pb-2 border-b border-border-subtle/50">
                                                 <div className="flex items-center gap-2">
                                                     <Clock size={16} className="text-status-warning"/>
@@ -435,7 +522,7 @@ export const LeadDetail: React.FC<LeadDetailProps> = ({ activeLead, onMarkDone, 
 
                                             <div className="space-y-3">
                                                 {activeLead.reminderAt ? (
-                                                    <div className="p-3 bg-amber-500/10 border border-amber-500/20 rounded-2xl flex items-center justify-between">
+                                                    <div className="p-3 bg-amber-500/10 border border-amber-500/20 rounded-xl flex items-center justify-between">
                                                         <div className="flex items-center gap-3">
                                                             <div className="p-2 bg-amber-500/20 rounded-lg text-status-warning"><Clock size={16}/></div>
                                                             <div>
@@ -497,12 +584,12 @@ export const LeadDetail: React.FC<LeadDetailProps> = ({ activeLead, onMarkDone, 
             </div>
 
             {/* Action Bar */}
-            <div className="p-6 border-t border-border-subtle bg-surface-alt/20 backdrop-blur-md flex justify-between items-center">
+            <div className="p-4 border-t border-border-subtle bg-surface-alt/20 backdrop-blur-md flex justify-between items-center">
                 <div className="flex items-center gap-3">
                     <Button 
                         variant="secondary" 
                         onClick={() => onMarkDone && onMarkDone(activeLead.id)} 
-                        className="h-14 px-6 text-text-muted hover:text-status-error transition-all"
+                        className="h-14 px-4 text-text-muted hover:text-status-error transition-all"
                     >
                         Archive
                     </Button>
@@ -510,7 +597,7 @@ export const LeadDetail: React.FC<LeadDetailProps> = ({ activeLead, onMarkDone, 
                         variant="secondary" 
                         onClick={handleResolve} 
                         disabled={activeLead.status === 'Resolved'}
-                        className={`h-14 px-6 transition-all gap-2 ${
+                        className={`h-14 px-4 transition-all gap-2 ${
                             activeLead.status === 'Resolved' ? 'text-status-success bg-emerald-500/5' : 'text-status-success hover:bg-emerald-500/10'
                         }`}
                     >
@@ -521,9 +608,18 @@ export const LeadDetail: React.FC<LeadDetailProps> = ({ activeLead, onMarkDone, 
                 <Button 
                     variant="primary" 
                     onClick={handleEngage} 
-                    className="h-14 px-10 text-xs font-[700]  tracking-[0.2em] shadow-xl shadow-accent-primary/20 bg-accent-primary hover:brightness-110 rounded-2xl flex items-center gap-3 group transition-all"
+                    disabled={isLockedByPeer}
+                    className={`h-14 px-10 text-xs font-[700] tracking-[0.2em] rounded-xl flex items-center gap-3 transition-all ${
+                        isLockedByPeer 
+                            ? 'bg-neutral-800 text-neutral-400 border border-neutral-700 cursor-not-allowed opacity-50 shadow-none' 
+                            : 'shadow-xl shadow-accent-primary/20 bg-accent-primary hover:brightness-110 text-white group'
+                    }`}
                 >
-                    Initialize Connection <ArrowUpRight size={16} className="group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
+                    {isLockedByPeer ? (
+                        <>Locked by {currentLock?.agentName}</>
+                    ) : (
+                        <>Initialize Connection <ArrowUpRight size={16} className="group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" /></>
+                    )}
                 </Button>
             </div>
         </div>

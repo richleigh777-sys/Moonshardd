@@ -70,7 +70,7 @@ export const AuditExplorer: React.FC<AuditExplorerProps> = ({ auditLogs }) => {
         <div className="grid grid-cols-2 gap-3">
           {/* Module Filter */}
           <div>
-            <label className="text-xs font-bold text-text-secondary mb-2 block uppercase">Ecosystem Module</label>
+            <label className="text-sm font-bold text-text-secondary mb-2 block uppercase">Ecosystem Module</label>
             <select
               value={selectedModule}
               onChange={(e) => setSelectedModule(e.target.value as any)}
@@ -86,7 +86,7 @@ export const AuditExplorer: React.FC<AuditExplorerProps> = ({ auditLogs }) => {
 
           {/* Time Filter */}
           <div>
-            <label className="text-xs font-bold text-text-secondary mb-2 block uppercase">Time Range</label>
+            <label className="text-sm font-bold text-text-secondary mb-2 block uppercase">Time Range</label>
             <select
               value={timeFilter}
               onChange={(e) => setTimeFilter(parseInt(e.target.value))}
@@ -111,13 +111,13 @@ export const AuditExplorer: React.FC<AuditExplorerProps> = ({ auditLogs }) => {
                   <Shield className="text-text-muted flex-shrink-0 mt-1" size={18} />
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 mb-1">
-                      <span className={`text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wider ${getModuleStyle((log as any).module || 'SYSTEM')}`}>
+                      <span className={`text-sm font-bold px-2 py-0.5 rounded uppercase tracking-wider ${getModuleStyle((log as any).module || 'SYSTEM')}`}>
                         {(log as any).module || 'SYSTEM'}
                       </span>
                       <span className="font-bold text-sm text-text-primary truncate">{log.action}</span>
                     </div>
                     <p className="text-sm text-text-secondary mb-2 whitespace-pre-wrap">{log.details}</p>
-                    <div className="flex items-center gap-2 text-[10px] font-mono text-text-muted bg-surface-alt px-2 py-1 rounded inline-flex">
+                    <div className="flex items-center gap-2 text-sm font-mono text-text-muted bg-surface-alt px-2 py-1 rounded inline-flex">
                       <Clock size={12} />
                       <span>{new Date(log.timestamp).toLocaleString()}</span>
                       <span>•</span>
@@ -132,7 +132,7 @@ export const AuditExplorer: React.FC<AuditExplorerProps> = ({ auditLogs }) => {
           <div className="p-12 text-center border-t border-border-subtle">
             <Search className="mx-auto text-text-muted mb-4 opacity-50" size={32} />
             <p className="text-text-secondary font-medium">No system events logged matching current criteria</p>
-            <p className="text-xs text-text-muted mt-1">Adjust filters or search string to widen matrix</p>
+            <p className="text-sm text-text-muted mt-1">Adjust filters or search string to widen matrix</p>
           </div>
         )}
       </Card>

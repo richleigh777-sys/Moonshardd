@@ -1,97 +1,131 @@
-import React, { useState } from 'react';
-import { Activity, Plus, X } from 'lucide-react';
+import React, { useMemo } from 'react';
+import { X, Heart, Activity } from 'lucide-react';
 
-const COMMON_CONDITIONS = [
-    'Hypertension', 'Type 2 Diabetes', 'High Cholesterol', 
-    'Asthma', 'Heart Disease', 'Arthritis', 'None'
-];
+export function MedicalSector({ formData, handleIdentityChange }: any) {
+  const commonConditions = [
+      'Hypertension', 'Type 2 Diabetes', 'Asthma', 
+      'High Cholesterol', 'Thyroid Disorder', 'Migraines'
+  ];
 
-interface Props {
-    formData: any;
-    handleIdentityChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-}
+  const toggleCondition = (condition: string) => {
+      const current = formData.medicalConditions || [];
+      const isSelected = current.includes(condition);
+      let next;
+      if (isSelected) {
+          next = current.filter((c: string) => c !== condition);
+      } else {
+          next = [...current, condition];
+      }
+      handleIdentityChange({ target: { name: 'medicalConditions', value: next } });
+  };
 
-export const MedicalSector: React.FC<Props> = ({ formData, handleIdentityChange }) => {
-    const currentConditions = Array.isArray(formData.medicalBackground) ? formData.medicalBackground : [];
-    const [customCondition, setCustomCondition] = useState('');
+  const currentConditions = Array.isArray(formData.medicalConditions) ? formData.medicalConditions : [];
+  const [customCondition, setCustomCondition] = React.useState('');
 
-    const toggleCondition = (condition: string) => {
-        let newConditions = [...currentConditions];
-        if (condition === 'None') {
-            newConditions = ['None'];
-        } else {
-            if (newConditions.includes('None')) {
-                newConditions = newConditions.filter(c => c !== 'None');
-            }
-            if (newConditions.includes(condition)) {
-                newConditions = newConditions.filter(c => c !== condition);
-            } else {
-                newConditions.push(condition);
-            }
-        }
-        handleIdentityChange({ target: { name: 'medicalBackground', value: newConditions } } as any);
-    };
+  const addCustom = (e: React.FormEvent) => {
+      e.preventDefault();
+      if (!customCondition.trim()) return;
+      if (currentConditions.includes(customCondition.trim())) return;
+      handleIdentityChange({ target: { name: 'medicalConditions', value: [...currentConditions, customCondition.trim()] } });
+      setCustomCondition('');
+  };
 
-    const addCustomCondition = () => {
-        if (!customCondition.trim()) return;
-        let newConditions = [...currentConditions];
-        if (newConditions.includes('None')) {
-            newConditions = newConditions.filter(c => c !== 'None');
-        }
-        if (!newConditions.includes(customCondition.trim())) {
-            newConditions.push(customCondition.trim());
-        }
-        handleIdentityChange({ target: { name: 'medicalBackground', value: newConditions } } as any);
-        setCustomCondition('');
-    };
+  const currentHeightInches = parseInt(formData.height) || 0;
+  const feet = currentHeightInches ? Math.floor(currentHeightInches / 12) : 0;
+  const inches = currentHeightInches ? currentHeightInches % 12 : 0;
 
-    return (
-        <div className="p-5 bg-surface-alt/40 rounded-xl border border-border-subtle shadow-sm animate-in fade-in slide-in-from-top-4">
-            <div className="flex items-center gap-2 mb-4">
-                <div className="p-1.5 bg-rose-500/10 rounded-lg text-rose-500 border border-rose-500/20">
-                    <Activity size={16} strokeWidth={2.5}/>
+  const handleHeightChange = (e: React.ChangeEvent<HTMLSelectElement>, type: 'feet' | 'inches') => {
+      const val = parseInt(e.target.value) || 0;
+      let newTotal = 0;
+      if (type === 'feet') {
+          newTotal = (val * 12) + inches;
+      } else {
+          newTotal = (feet * 12) + val;
+      }
+      handleIdentityChange({ target: { name: 'height', value: newTotal.toString() } });
+  };
+
+  return (
+    <div className="space-y-8">
+        <div className="grid grid-cols-2 gap-6">
+            <div className="space-y-2">
+                <label className="text-sm font-medium text-text-secondary ml-1">Height</label>
+                <div className="flex gap-2">
+                    <select
+                        value={feet}
+                        onChange={(e) => handleHeightChange(e, 'feet')}
+                        className="w-full bg-surface-alt/50 border border-white/5 rounded-2xl px-5 py-4 text-lg font-medium text-white outline-none transition-all focus:border-white focus:bg-surface-alt focus:ring-1 focus:ring-white shadow-sm appearance-none"
+                    >
+                        <option value={0} disabled>Feet</option>
+                        {[3, 4, 5, 6, 7, 8].map(f => (
+                            <option key={f} value={f}>{f} ft</option>
+                        ))}
+                    </select>
+                    <select
+                        value={inches}
+                        onChange={(e) => handleHeightChange(e, 'inches')}
+                        className="w-full bg-surface-alt/50 border border-white/5 rounded-2xl px-5 py-4 text-lg font-medium text-white outline-none transition-all focus:border-white focus:bg-surface-alt focus:ring-1 focus:ring-white shadow-sm appearance-none"
+                    >
+                        <option value={0} disabled>Inches</option>
+                        {Array.from({ length: 12 }, (_, i) => (
+                            <option key={i} value={i}>{i} in</option>
+                        ))}
+                    </select>
                 </div>
-                <h4 className="text-xs font-[700] text-text-primary tracking-wide uppercase">Medical Background</h4>
             </div>
+            <div className="space-y-2">
+                <label className="text-sm font-medium text-text-secondary ml-1">Weight (lbs)</label>
+                <input 
+                    name="weight"
+                    type="number"
+                    value={formData.weight}
+                    onChange={handleIdentityChange}
+                    placeholder="e.g. 180"
+                    className="w-full bg-surface-alt/50 border border-white/5 rounded-2xl px-5 py-4 text-lg font-medium text-white placeholder-text-muted outline-none transition-all focus:border-white focus:bg-surface-alt focus:ring-1 focus:ring-white shadow-sm"
+                />
+            </div>
+        </div>
 
-            <div className="space-y-4">
-                <div className="flex flex-wrap gap-2">
-                    {COMMON_CONDITIONS.map(condition => {
-                        const isSelected = currentConditions.includes(condition);
-                        return (
-                            <button
-                                key={condition}
-                                onClick={(e) => { e.preventDefault(); toggleCondition(condition); }}
-                                className={`px-3 py-1.5 rounded-full text-xs font-bold border transition-all ${isSelected ? 'bg-rose-500 text-white border-rose-600 shadow-md transform scale-105' : 'bg-surface-main text-text-muted border-border-strong hover:border-text-primary/30'}`}
-                            >
-                                {condition}
-                            </button>
-                        );
-                    })}
-                    {currentConditions.filter(c => !COMMON_CONDITIONS.includes(c)).map(condition => (
-                        <div key={condition} className="px-3 py-1.5 rounded-full text-xs font-bold border bg-rose-500/20 text-rose-400 border-rose-500/30 flex items-center gap-1.5">
+        <div className="space-y-4">
+            <label className="text-sm font-medium text-text-secondary ml-1">Pre-existing Conditions</label>
+            <div className="flex w-full overflow-x-auto custom-scrollbar pb-3 pt-1 gap-3">
+                {commonConditions.map(condition => {
+                    const isSelected = currentConditions.includes(condition);
+                    return (
+                        <button 
+                            key={condition} 
+                            onClick={(e) => { e.preventDefault(); toggleCondition(condition); }}
+                            className={`whitespace-nowrap px-6 py-3 rounded-2xl text-base font-medium border transition-all ${isSelected ? 'bg-rose-500 text-white border-rose-400 shadow-lg shadow-rose-500/20' : 'bg-surface-alt/50 text-text-secondary border-white/5 hover:border-white/20 hover:text-white'}`}
+                        >
                             {condition}
-                            <button onClick={(e) => { e.preventDefault(); toggleCondition(condition); }} className="hover:text-rose-200"><X size={12}/></button>
+                        </button>
+                    )
+                })}
+            </div>
+            
+            <form onSubmit={addCustom} className="relative mt-2">
+                <input 
+                    value={customCondition}
+                    onChange={e => setCustomCondition(e.target.value)}
+                    placeholder="Add unlisted condition..."
+                    className="w-full bg-surface-alt/50 border border-white/5 rounded-2xl pl-5 pr-14 py-4 text-lg font-medium text-white placeholder-text-muted outline-none transition-all focus:border-white focus:bg-surface-alt focus:ring-1 focus:ring-white shadow-sm"
+                />
+                <button type="submit" disabled={!customCondition.trim()} className="absolute right-2 top-1/2 -translate-y-1/2 p-2.5 bg-white text-black hover:bg-gray-100 rounded-xl transition-all disabled:opacity-50">
+                    Add
+                </button>
+            </form>
+            
+            {currentConditions.length > 0 && (
+                <div className="pt-4 flex flex-wrap gap-3">
+                    {currentConditions.map((condition: string) => (
+                        <div key={condition} className="px-5 py-2.5 rounded-xl text-sm font-semibold border bg-rose-500/10 border-rose-500/30 text-rose-400 flex items-center gap-2">
+                            {condition}
+                            <button onClick={(e) => { e.preventDefault(); toggleCondition(condition); }} className="hover:text-white hover:bg-rose-500/40 transition-colors rounded-full p-1"><X size={14} strokeWidth={3}/></button>
                         </div>
                     ))}
                 </div>
-
-                <div className="relative flex items-center">
-                    <div className="absolute left-3 text-[9px] font-black tracking-widest text-text-muted uppercase pointer-events-none">Other Condition</div>
-                    <input 
-                        value={customCondition}
-                        onChange={(e) => setCustomCondition(e.target.value)}
-                        onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), addCustomCondition())}
-                        className="w-full bg-surface-main border border-border-strong rounded-lg px-3 pt-6 pb-2 text-sm text-text-primary outline-none focus:border-rose-500/50 focus:ring-1 focus:ring-rose-500/50 transition-all font-medium"
-                    />
-                    <button 
-                        onClick={(e) => { e.preventDefault(); addCustomCondition(); }}
-                        className="absolute right-2 p-1.5 bg-surface-alt hover:bg-rose-500/20 hover:text-rose-400 rounded-md transition-colors text-text-muted"
-                    >
-                        <Plus size={16} />
-                    </button>
-                </div>
-            </div>
+            )}
         </div>
-    );
-};
+    </div>
+  );
+}

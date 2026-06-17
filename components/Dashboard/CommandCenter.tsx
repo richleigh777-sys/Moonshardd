@@ -53,14 +53,14 @@ export const CommandCenter: React.FC = () => {
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 p-4 pb-24 md:pb-8">
       {/* HEADER */}
       <div className="mb-6">
-        <h1 className="text-2xl font-bold text-white">Sales Command Center</h1>
+        <h1 className="text-lg font-bold text-white">Sales Command Center</h1>
         <p className="text-slate-400 text-sm">Stay focused. Make the calls. Close the deals.</p>
       </div>
 
       {/* HELP TIP */}
       {help && (
         <div className="mb-6 bg-blue-900 border border-blue-500 rounded-lg p-4 flex items-start gap-3">
-          <span className="text-2xl">{help.icon}</span>
+          <span className="text-lg">{help.icon}</span>
           <div className="flex-1">
             <h3 className="font-semibold text-white">{help.title}</h3>
             <p className="text-slate-200 text-sm mt-1">{help.message}</p>
@@ -78,13 +78,13 @@ export const CommandCenter: React.FC = () => {
 
       {/* PRIMARY: NEXT ACTION */}
       {nextAction ? (
-        <div className="mb-6 bg-gradient-to-r from-red-900 to-red-800 rounded-lg p-6 border border-red-700 shadow-lg">
+        <div className="mb-6 bg-gradient-to-r from-red-900 to-red-800 rounded-lg p-4 border border-red-700 shadow-lg">
           <div className="flex items-start justify-between mb-4">
             <div>
               <h2 className="text-sm font-semibold text-red-200 uppercase tracking-wider">Next Action Required</h2>
-              <p className="text-3xl font-bold text-white mt-2">{nextAction.customer}</p>
+              <p className="text-xl font-bold text-white mt-2">{nextAction.customer}</p>
             </div>
-            <span className="inline-block bg-red-600 text-white px-3 py-1 rounded-full text-xs font-bold">
+            <span className="inline-block bg-red-600 text-white px-3 py-1 rounded-full text-sm font-bold">
               {nextAction.priority.toUpperCase()}
             </span>
           </div>
@@ -111,7 +111,7 @@ export const CommandCenter: React.FC = () => {
             )}
             {nextAction.suggestedScript && (
               <div className="mt-3 bg-red-900 bg-opacity-50 rounded p-3 border border-red-600">
-                <p className="text-xs font-semibold text-red-200 uppercase mb-1">💬 Suggested Script</p>
+                <p className="text-sm font-semibold text-red-200 uppercase mb-1">💬 Suggested Script</p>
                 <p className="text-red-100 text-sm italic">"{nextAction.suggestedScript}"</p>
               </div>
             )}
@@ -139,7 +139,7 @@ export const CommandCenter: React.FC = () => {
           </div>
         </div>
       ) : (
-        <div className="mb-6 bg-slate-700 rounded-lg p-6 border border-slate-600 text-center">
+        <div className="mb-6 bg-slate-700 rounded-lg p-4 border border-slate-600 text-center">
           <p className="text-slate-300 text-lg font-semibold">No pending callbacks</p>
           <p className="text-slate-400 text-sm mt-2">Great! Check the lead queue for new opportunities.</p>
         </div>
@@ -152,7 +152,7 @@ export const CommandCenter: React.FC = () => {
           {/* Sales Count */}
           <div className="bg-slate-700 rounded-lg p-4 border border-slate-600">
             <p className="text-slate-400 text-sm font-semibold uppercase mb-2">Sales Today</p>
-            <p className="text-3xl font-bold text-white">
+            <p className="text-xl font-bold text-white">
               {stats.salesCount}
               <span className="text-lg text-slate-400"> / {stats.dailyGoal}</span>
             </p>
@@ -170,7 +170,7 @@ export const CommandCenter: React.FC = () => {
                 style={{ width: `${stats.progressPercentage}%` }}
               />
             </div>
-            <p className="text-xs text-slate-400 mt-2">
+            <p className="text-sm text-slate-400 mt-2">
               {stats.dailyGoal - stats.salesCount} to go!
             </p>
           </div>
@@ -178,8 +178,8 @@ export const CommandCenter: React.FC = () => {
           {/* Revenue */}
           <div className="bg-slate-700 rounded-lg p-4 border border-slate-600">
             <p className="text-slate-400 text-sm font-semibold uppercase mb-2">Revenue</p>
-            <p className="text-3xl font-bold text-green-400">${stats.totalRevenue.toLocaleString()}</p>
-            <p className="text-xs text-slate-400 mt-2 font-semibold">
+            <p className="text-xl font-bold text-green-400">${stats.totalRevenue.toLocaleString()}</p>
+            <p className="text-sm text-slate-400 mt-2 font-semibold">
               Average: ${stats.totalRevenue / Math.max(1, stats.salesCount)}
             </p>
           </div>
@@ -187,8 +187,8 @@ export const CommandCenter: React.FC = () => {
           {/* Commission */}
           <div className="bg-slate-700 rounded-lg p-4 border border-slate-600">
             <p className="text-slate-400 text-sm font-semibold uppercase mb-2">Commission Earned</p>
-            <p className="text-3xl font-bold text-blue-400">${stats.commission.toLocaleString()}</p>
-            <p className={`text-xs mt-2 font-semibold ${
+            <p className="text-xl font-bold text-blue-400">${stats.commission.toLocaleString()}</p>
+            <p className={`text-sm mt-2 font-semibold ${
               stats.commission >= stats.commissionTarget ? 'text-green-400' : 'text-yellow-400'
             }`}>
               {stats.commission >= stats.commissionTarget

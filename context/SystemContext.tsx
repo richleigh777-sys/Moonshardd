@@ -17,6 +17,19 @@ export const SystemProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     const [targetChannelId, setTargetChannelId] = useState<string | null>(null);
     const [callTarget, setCallTarget] = useState<string | null>(null);
     
+    // Zoom control with persistence
+    const [uiZoom, setUiZoom] = useState<number>(() => {
+        const stored = localStorage.getItem('bh_ui_zoom');
+        return stored ? parseFloat(stored) : 1.0;
+    });
+
+    useEffect(() => {
+        localStorage.setItem('bh_ui_zoom', String(uiZoom));
+        // Apply scaling globally if browser doesn't natively perform well
+        // Actually, CSS zoom handles this gracefully or we can use font-size scaling.
+        document.documentElement.style.fontSize = `${uiZoom * 100}%`;
+    }, [uiZoom]);
+    
     const [theme, setTheme] = useState<Theme>(() => (localStorage.getItem('bh_theme') as Theme) || 'light');
     const [isChromatic, setIsChromatic] = useState(false);
     const [notificationsEnabled, setNotificationsEnabled] = useState<boolean>(() => {
@@ -38,9 +51,21 @@ export const SystemProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     }, [isTabLeader]);
 
     useEffect(() => {
-        document.documentElement.className = theme;
+        const enforced = activeServer?.config?.enforceTheme;
+        const appliedTheme = (enforced === 'light' || enforced === 'dark') ? enforced : theme;
+        document.documentElement.className = appliedTheme;
+        
+        // Apply other UX Vibe settings globally via data attributes
+        document.documentElement.setAttribute('data-transition-speed', activeServer?.config?.transitionSpeed || 'gentle');
+        document.documentElement.setAttribute('data-eye-care-filter', activeServer?.config?.eyeCareFilter || 'neutral');
+        
+        // Push SFX enablement down safely
+        if (activeServer?.config?.enableSoundFx !== undefined) {
+            sfx.setEnabled(activeServer.config.enableSoundFx);
+        }
+
         localStorage.setItem('bh_theme', theme);
-    }, [theme]);
+    }, [theme, activeServer?.config?.enforceTheme, activeServer?.config?.transitionSpeed, activeServer?.config?.eyeCareFilter]);
 
     useEffect(() => {
         localStorage.setItem('bh_notifs_enabled', String(notificationsEnabled));
@@ -102,11 +127,13 @@ export const SystemProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         activeServer,
         serverList,
         switchServer,
-        createNewServer
+        createNewServer,
+        uiZoom,
+        setUiZoom
     }), [
         view, toast, notificationsEnabled, isSyncing, showMoneyRain, systemLoad, 
         theme, isChromatic, isChatOpen, isTabLeader, targetChannelId, callTarget,
-        activeServer, serverList, switchServer, createNewServer
+        activeServer, serverList, switchServer, createNewServer, uiZoom
     ]);
 
     return (

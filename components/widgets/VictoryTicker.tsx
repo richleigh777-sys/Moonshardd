@@ -20,7 +20,7 @@ export const VictoryTicker = () => {
   }, [recentWins]);
 
   return (
-    <div className="w-full h-full flex flex-col overflow-hidden bg-surface-main border border-border-subtle rounded-2xl shadow-sm relative group">
+    <div className="w-full h-full flex flex-col overflow-hidden bg-surface-main border border-border-subtle rounded-xl shadow-sm relative group">
       
       {/* Header */}
       <div className="flex items-center justify-between px-3 py-2 border-b border-border-subtle bg-surface-alt/30 backdrop-blur-sm z-10">

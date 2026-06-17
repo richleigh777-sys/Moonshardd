@@ -152,17 +152,17 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ onLogin }) => {
         <div className="absolute top-[-10%] right-[-10%] w-[600px] h-[600px] bg-accent-primary/5 rounded-full blur-[100px]"></div>
         <div className="absolute bottom-[-10%] left-[-10%] w-[600px] h-[600px] bg-indigo-500/5 rounded-full blur-[100px]"></div>
 
-        <div className="w-full max-w-[400px] relative z-20 px-6">
+        <div className="w-full max-w-[400px] relative z-20 px-4">
             
             <Card variant="panel" className="p-0 overflow-hidden flex flex-col shadow-2xl border-border-subtle bg-surface-main/80 backdrop-blur-xl">
                 
                 {/* Header */}
-                <div className="p-8 pb-6 flex flex-col items-center text-center">
-                    <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-accent-primary to-indigo-600 text-white flex items-center justify-center mb-5 shadow-lg shadow-accent-primary/20">
+                <div className="p-5 pb-6 flex flex-col items-center text-center">
+                    <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-accent-primary to-indigo-600 text-white flex items-center justify-center mb-5 shadow-lg shadow-accent-primary/20">
                         <Heart size={28} fill="currentColor" />
                     </div>
 
-                    <h2 className="text-2xl font-bold text-text-primary tracking-tight mb-2">
+                    <h2 className="text-lg font-bold text-text-primary tracking-tight mb-2">
                         {step === 'credentials' ? 'Welcome Back' : 'Connect to Workspace'}
                     </h2>
                     <p className="text-sm text-text-secondary max-w-[260px] mx-auto leading-relaxed">
@@ -173,7 +173,7 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ onLogin }) => {
                 </div>
 
                 {/* Form Body */}
-                <div className="flex-1 p-8 pt-0 relative min-h-[280px]">
+                <div className="flex-1 p-5 pt-0 relative min-h-[280px]">
                     {error && (
                         <div className="mb-6 p-3 rounded-xl bg-status-error/10 border border-status-error/20 flex items-center gap-3 animate-in slide-in-from-top-2">
                             <CheckCircle2 size={16} className="text-status-error rotate-45" />

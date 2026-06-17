@@ -80,11 +80,15 @@ export const useWorkTimer = (currentUser: User | null, sessionStartTime: number 
         localStorage.removeItem(STORAGE_KEYS.BREAK_REASON);
     }, []);
 
-    // Timer Tick
+    // Timer Tick (HTML5 Web Worker implementation to bypass aggressive browser-tab sleep sleep-throttling)
     useEffect(() => {
         if (!currentUser || !sessionStartTime) return;
 
-        const interval = setInterval(() => {
+        let worker: Worker | null = null;
+        let workerUrl: string | null = null;
+        let fallbackInterval: any = null;
+
+        const updateClock = () => {
             const now = Date.now();
             const totalElapsed = now - sessionStartTime;
             const currentBreak = isOnBreak && breakStartTime ? (now - breakStartTime) : 0;
@@ -92,20 +96,109 @@ export const useWorkTimer = (currentUser: User | null, sessionStartTime: number 
             
             const nextSeconds = Math.max(0, Math.floor(actualWork / 1000));
             setWorkTimeSeconds(prev => prev === nextSeconds ? prev : nextSeconds);
-        }, 1000);
+        };
 
-        return () => clearInterval(interval);
+        try {
+            const workerCode = `
+                let intervalId = null;
+                self.onmessage = (e) => {
+                    if (e.data === 'start') {
+                        if (intervalId) clearInterval(intervalId);
+                        intervalId = setInterval(() => {
+                            self.postMessage('tick');
+                        }, 1000);
+                    } else if (e.data === 'stop') {
+                        if (intervalId) {
+                            clearInterval(intervalId);
+                            intervalId = null;
+                        }
+                    }
+                };
+            `;
+            const blob = new Blob([workerCode], { type: 'application/javascript' });
+            workerUrl = URL.createObjectURL(blob);
+            worker = new Worker(workerUrl);
+
+            worker.onmessage = () => {
+                updateClock();
+            };
+
+            worker.postMessage('start');
+        } catch (err) {
+            console.warn('[WebWorker Timer] Fallback activated due to sandbox sandboxing rules:', err);
+            fallbackInterval = setInterval(updateClock, 1000);
+        }
+
+        return () => {
+            if (worker) {
+                worker.postMessage('stop');
+                worker.terminate();
+            }
+            if (workerUrl) {
+                URL.revokeObjectURL(workerUrl);
+            }
+            if (fallbackInterval) {
+                clearInterval(fallbackInterval);
+            }
+        };
     }, [currentUser, sessionStartTime, isOnBreak, breakStartTime, totalBreakTime]);
 
+    // Break Timer Tick (HTML5 Web Worker integration)
     useEffect(() => {
-        let interval: any;
-        if (isOnBreak && breakStartTime) {
-            interval = setInterval(() => {
-                const nextDuration = Date.now() - breakStartTime;
-                setCurrentBreakDuration(prev => Math.abs(prev - nextDuration) < 500 ? prev : nextDuration);
-            }, 1000);
+        if (!isOnBreak || !breakStartTime) return;
+
+        let worker: Worker | null = null;
+        let workerUrl: string | null = null;
+        let fallbackInterval: any = null;
+
+        const updateBreakClock = () => {
+            const nextDuration = Date.now() - breakStartTime;
+            setCurrentBreakDuration(prev => Math.abs(prev - nextDuration) < 500 ? prev : nextDuration);
+        };
+
+        try {
+            const workerCode = `
+                let intervalId = null;
+                self.onmessage = (e) => {
+                    if (e.data === 'start') {
+                        if (intervalId) clearInterval(intervalId);
+                        intervalId = setInterval(() => {
+                            self.postMessage('tick');
+                        }, 1000);
+                    } else if (e.data === 'stop') {
+                        if (intervalId) {
+                            clearInterval(intervalId);
+                            intervalId = null;
+                        }
+                    }
+                };
+            `;
+            const blob = new Blob([workerCode], { type: 'application/javascript' });
+            workerUrl = URL.createObjectURL(blob);
+            worker = new Worker(workerUrl);
+
+            worker.onmessage = () => {
+                updateBreakClock();
+            };
+
+            worker.postMessage('start');
+        } catch (err) {
+            console.warn('[WebWorker Break Timer] Fallback activated:', err);
+            fallbackInterval = setInterval(updateBreakClock, 1000);
         }
-        return () => clearInterval(interval);
+
+        return () => {
+            if (worker) {
+                worker.postMessage('stop');
+                worker.terminate();
+            }
+            if (workerUrl) {
+                URL.revokeObjectURL(workerUrl);
+            }
+            if (fallbackInterval) {
+                clearInterval(fallbackInterval);
+            }
+        };
     }, [isOnBreak, breakStartTime]);
 
     return {

@@ -30,14 +30,14 @@ export const ChatSidebar: React.FC<ChatSidebarProps> = ({
 
     return (
         <div className={`flex-col bg-surface-alt border-r border-border-subtle shrink-0 transition-all ${mobileView === 'list' ? 'flex w-full' : 'hidden md:flex w-80'}`}>
-            <div className="p-8 pb-4 flex items-center justify-between">
-                <h2 className="text-2xl font-[700] tracking-tighter  italic text-text-primary">Messages</h2>
+            <div className="p-5 pb-4 flex items-center justify-between">
+                <h2 className="text-lg font-[700] tracking-tighter  italic text-text-primary">Messages</h2>
             </div>
-            <div className="px-6 pb-4">
+            <div className="px-4 pb-4">
                 <div className="relative group">
                     <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted group-focus-within:text-accent-primary transition-colors"/>
                     <input autoComplete="off" data-lpignore="true" data-prevent-autofill="true" spellCheck={false} 
-                        className="w-full bg-surface-main border border-border-subtle rounded-2xl py-3 pl-10 pr-4 text-xs font-bold outline-none focus:border-accent-primary focus:shadow-lg transition-all" 
+                        className="w-full bg-surface-main border border-border-subtle rounded-xl py-3 pl-10 pr-4 text-sm font-bold outline-none focus:border-accent-primary focus:shadow-lg transition-all" 
                         placeholder="Search..." 
                         value={searchQuery} 
                         onChange={(e) => setSearchQuery(e.target.value)}
@@ -46,20 +46,20 @@ export const ChatSidebar: React.FC<ChatSidebarProps> = ({
             </div>
             <div className="flex-1 overflow-y-auto px-4 space-y-1 custom-scrollbar">
                 <div className="px-4 py-2">
-                    <p className="text-xs font-bold text-text-muted  tracking-[0.3em]">Channels</p>
+                    <p className="text-sm font-bold text-text-muted  tracking-[0.3em]">Channels</p>
                 </div>
                 {filteredChannels.publicChans.map(c => (
                     <button 
                         key={c.id} 
                         onClick={() => { setActiveChannelId(c.id); setMobileView('chat'); sfx.playClick(); }} 
-                        className={`w-full flex items-center gap-3 p-4 rounded-2xl transition-all group ${activeChannelId === c.id ? 'bg-surface-main border border-border-subtle shadow-md' : 'hover:bg-surface-main/40 border border-transparent'}`}
+                        className={`w-full flex items-center gap-3 p-4 rounded-xl transition-all group ${activeChannelId === c.id ? 'bg-surface-main border border-border-subtle shadow-md' : 'hover:bg-surface-main/40 border border-transparent'}`}
                     >
-                        <div className={`w-10 h-10 rounded-2xl flex items-center justify-center transition-all ${activeChannelId === c.id ? 'bg-accent-primary text-white shadow-lg shadow-accent-primary/20' : 'bg-surface-main border border-border-subtle text-text-muted group-hover:text-accent-primary'}`}>
+                        <div className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all ${activeChannelId === c.id ? 'bg-accent-primary text-white shadow-lg shadow-accent-primary/20' : 'bg-surface-main border border-border-subtle text-text-muted group-hover:text-accent-primary'}`}>
                             {c.type === 'group' ? <Users size={20}/> : c.type === 'private' ? <ShieldAlert size={20}/> : <Hash size={20}/>}
                         </div>
                         <div className="text-left flex-1 truncate">
                             <p className={`text-sm font-[700]  tracking-tight transition-colors ${activeChannelId === c.id ? 'text-text-primary' : 'text-text-secondary group-hover:text-text-primary'}`}>{c.name}</p>
-                            <p className="text-xs font-bold text-text-muted  tracking-widest mt-0.5">Active</p>
+                            <p className="text-sm font-bold text-text-muted  tracking-widest mt-0.5">Active</p>
                         </div>
                         {/* Added unreadCount check which is now supported by updated ChatChannel interface */}
                         {c.unreadCount ? <div className="w-2 h-2 rounded-full bg-accent-primary shadow-sm animate-pulse"></div> : null}
@@ -67,7 +67,7 @@ export const ChatSidebar: React.FC<ChatSidebarProps> = ({
                 ))}
                 
                 <div className="px-4 py-2 mt-6">
-                    <p className="text-xs font-bold text-text-muted  tracking-[0.3em]">Direct Messages</p>
+                    <p className="text-sm font-bold text-text-muted  tracking-[0.3em]">Direct Messages</p>
                 </div>
                 {safeDmChannels.map(u => {
                     const dmId = getDmChannelId(currentUser.id, u.id);
@@ -75,10 +75,10 @@ export const ChatSidebar: React.FC<ChatSidebarProps> = ({
                         <button 
                             key={u.id} 
                             onClick={() => { setActiveChannelId(dmId); setMobileView('chat'); sfx.playClick(); }} 
-                            className={`w-full flex items-center gap-3 p-4 rounded-2xl transition-all group ${activeChannelId === dmId ? 'bg-surface-main border border-border-subtle shadow-md' : 'hover:bg-surface-main/40 border border-transparent'}`}
+                            className={`w-full flex items-center gap-3 p-4 rounded-xl transition-all group ${activeChannelId === dmId ? 'bg-surface-main border border-border-subtle shadow-md' : 'hover:bg-surface-main/40 border border-transparent'}`}
                         >
-                            <div className="w-10 h-10 rounded-2xl overflow-hidden bg-surface-main border border-border-subtle relative group-hover:scale-105 transition-transform shadow-sm">
-                                {u.avatar ? <img src={u.avatar} className="w-full h-full object-cover" /> : <div className="w-full h-full flex items-center justify-center font-[700] text-xs bg-surface-alt text-accent-primary">{u.name.charAt(0)}</div>}
+                            <div className="w-10 h-10 rounded-xl overflow-hidden bg-surface-main border border-border-subtle relative group-hover:scale-105 transition-transform shadow-sm">
+                                {u.avatar ? <img src={u.avatar} className="w-full h-full object-cover" /> : <div className="w-full h-full flex items-center justify-center font-[700] text-sm bg-surface-alt text-accent-primary">{u.name.charAt(0)}</div>}
                                 <div className={`absolute bottom-0 right-0 w-3 h-3 rounded-full border-2 border-surface-main ${ 
                                     u.currentStatus === 'online' ? 'bg-status-success' : 
                                     u.currentStatus === 'break' ? 'bg-status-warning' : 
@@ -87,20 +87,20 @@ export const ChatSidebar: React.FC<ChatSidebarProps> = ({
                             </div>
                             <div className="text-left flex-1 truncate">
                                 <p className={`text-sm font-[700] tracking-tight transition-colors ${activeChannelId === dmId ? 'text-text-primary' : 'text-text-secondary group-hover:text-text-primary'}`}>{u.name}</p>
-                                <p className="text-xs font-bold text-text-muted  tracking-widest mt-0.5">Status: {u.currentStatus || 'Offline'}</p>
+                                <p className="text-sm font-bold text-text-muted  tracking-widest mt-0.5">Status: {u.currentStatus || 'Offline'}</p>
                             </div>
                         </button>
                     );
                 })}
             </div>
-            <div className="p-6 border-t border-border-subtle bg-surface-highlight">
+            <div className="p-4 border-t border-border-subtle bg-surface-highlight">
                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-2xl overflow-hidden border-2 border-accent-primary shadow-lg ring-4 ring-accent-primary/5">
+                    <div className="w-10 h-10 rounded-xl overflow-hidden border-2 border-accent-primary shadow-lg ring-4 ring-accent-primary/5">
                         <img src={currentUser.avatar} className="w-full h-full object-cover" />
                     </div>
                     <div className="flex-1 min-w-0">
-                        <p className="text-xs font-[700] text-text-primary  tracking-tight truncate">{currentUser.name}</p>
-                        <p className="text-xs font-bold text-accent-primary  tracking-[0.2em] animate-pulse">Updating...</p>
+                        <p className="text-sm font-[700] text-text-primary  tracking-tight truncate">{currentUser.name}</p>
+                        <p className="text-sm font-bold text-accent-primary  tracking-[0.2em] animate-pulse">Updating...</p>
                     </div>
                  </div>
             </div>

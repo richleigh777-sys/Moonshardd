@@ -38,6 +38,8 @@ export interface SmartLead extends Sale {
   estimatedValue: number;
   lastContactDaysAgo: number;
   conversionProbability: number;
+  name?: string;
+  interactionCount?: number;
 }
 
 export interface AdaptiveUserProfile {

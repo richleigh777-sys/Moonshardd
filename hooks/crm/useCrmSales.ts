@@ -252,7 +252,28 @@ export const useCrmSales = (
     const updateSale = useCallback(async (id: string, updates: Partial<Sale>, expectedUpdatedAt?: number, originalData?: Sale) => {
         if (!window.confirm("Save changes to this record?")) return;
         try {
+            const prevSale = originalData || salesRef.current.find(s => s.id === id);
             await nexusGateway.update('sales', id, updates, expectedUpdatedAt, originalData);
+            
+            if (currentUser && prevSale) {
+                const changedFields = Object.keys(updates).filter(k => 
+                    (updates as any)[k] !== (prevSale as any)[k] && k !== 'updatedAt'
+                );
+                if (changedFields.length > 0) {
+                    const details = changedFields.map(k => `${k}: ${(prevSale as any)[k]} -> ${(updates as any)[k]}`).join(', ').substring(0, 500);
+                    
+                    let actionName = 'ORDER_UPDATED';
+                    if (updates.pipelineStatus && updates.pipelineStatus !== prevSale.pipelineStatus) {
+                        actionName = 'PIPELINE_STAGE_CHANGED';
+                    }
+                    
+                    await logAudit({
+                        action: actionName,
+                        details: `Order/Pipeline updated for deal ${id}: ${details}`,
+                        module: 'SALE'
+                    });
+                }
+            }
         } catch (error) {
             console.error("Sale update failed", error);
             if (error && (error as any).name === 'ConflictError') {
@@ -260,7 +281,7 @@ export const useCrmSales = (
             }
             alert("Failed to save changes. Please try again.");
         }
-    }, []);
+    }, [currentUser, logAudit, salesRef]);
 
     const deleteSale = useCallback(async (id: string) => {
         if (!window.confirm("⚠️ PERMANENT DELETE ⚠️\n\nAre you sure you want to purge this record?")) return;

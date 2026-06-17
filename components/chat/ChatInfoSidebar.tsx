@@ -39,7 +39,7 @@ export const ChatInfoSidebar: React.FC<ChatInfoSidebarProps> = ({ isOpen, onClos
     return (
         <div className="w-80 border-l border-border-subtle bg-surface-alt flex flex-col h-full animate-in slide-in-from-right-10 duration-200 shadow-xl relative z-40">
             {/* Header */}
-            <div className="h-[60px] px-6 border-b border-border-subtle flex items-center justify-between shrink-0 bg-surface-main">
+            <div className="h-[60px] px-4 border-b border-border-subtle flex items-center justify-between shrink-0 bg-surface-main">
                 <h3 className="text-sm font-semibold text-text-primary">Details</h3>
                 <button onClick={onClose} className="p-1.5 hover:bg-surface-highlight rounded-md text-text-muted hover:text-text-primary transition-colors">
                     <X size={16} />
@@ -49,16 +49,16 @@ export const ChatInfoSidebar: React.FC<ChatInfoSidebarProps> = ({ isOpen, onClos
             {/* Tabs */}
             <div className="p-4 pb-0 shrink-0">
                 <div className="flex bg-surface-main p-1 rounded-md">
-                    <button onClick={() => setActiveTab('media')} className={`flex-1 py-1.5 text-xs font-semibold rounded-sm transition-all ${activeTab === 'media' ? 'bg-surface-highlight text-text-primary shadow-sm' : 'text-text-muted hover:text-text-primary'}`} title="Photos">
+                    <button onClick={() => setActiveTab('media')} className={`flex-1 py-1.5 text-sm font-semibold rounded-sm transition-all ${activeTab === 'media' ? 'bg-surface-highlight text-text-primary shadow-sm' : 'text-text-muted hover:text-text-primary'}`} title="Photos">
                         <Image size={16} className="mx-auto"/>
                     </button>
-                    <button onClick={() => setActiveTab('files')} className={`flex-1 py-1.5 text-xs font-semibold rounded-sm transition-all ${activeTab === 'files' ? 'bg-surface-highlight text-text-primary shadow-sm' : 'text-text-muted hover:text-text-primary'}`} title="Documents">
+                    <button onClick={() => setActiveTab('files')} className={`flex-1 py-1.5 text-sm font-semibold rounded-sm transition-all ${activeTab === 'files' ? 'bg-surface-highlight text-text-primary shadow-sm' : 'text-text-muted hover:text-text-primary'}`} title="Documents">
                         <FileText size={16} className="mx-auto"/>
                     </button>
-                    <button onClick={() => setActiveTab('links')} className={`flex-1 py-1.5 text-xs font-semibold rounded-sm transition-all ${activeTab === 'links' ? 'bg-surface-highlight text-text-primary shadow-sm' : 'text-text-muted hover:text-text-primary'}`} title="Links">
+                    <button onClick={() => setActiveTab('links')} className={`flex-1 py-1.5 text-sm font-semibold rounded-sm transition-all ${activeTab === 'links' ? 'bg-surface-highlight text-text-primary shadow-sm' : 'text-text-muted hover:text-text-primary'}`} title="Links">
                         <Link size={16} className="mx-auto"/>
                     </button>
-                    <button onClick={() => setActiveTab('pinned')} className={`flex-1 py-1.5 text-xs font-semibold rounded-sm transition-all ${activeTab === 'pinned' ? 'bg-surface-highlight text-text-primary shadow-sm' : 'text-text-muted hover:text-text-primary'}`} title="Pinned">
+                    <button onClick={() => setActiveTab('pinned')} className={`flex-1 py-1.5 text-sm font-semibold rounded-sm transition-all ${activeTab === 'pinned' ? 'bg-surface-highlight text-text-primary shadow-sm' : 'text-text-muted hover:text-text-primary'}`} title="Pinned">
                         <Pin size={16} className="mx-auto"/>
                     </button>
                 </div>
@@ -97,7 +97,7 @@ export const ChatInfoSidebar: React.FC<ChatInfoSidebarProps> = ({ isOpen, onClos
                                 </div>
                                 <div className="flex-1 min-w-0">
                                     <p className="text-sm font-medium text-text-primary truncate">{item.att.name}</p>
-                                    <p className="text-xs text-text-muted">{item.att.size}</p>
+                                    <p className="text-sm text-text-muted">{item.att.size}</p>
                                 </div>
                                 <Download size={16} className="text-text-muted opacity-0 group-hover:opacity-100 transition-opacity"/>
                             </div>
@@ -116,11 +116,11 @@ export const ChatInfoSidebar: React.FC<ChatInfoSidebarProps> = ({ isOpen, onClos
                     <div className="space-y-2">
                         {data.links.map((item, i) => (
                             <a key={i} href={item.preview.url} target="_blank" rel="noopener noreferrer" className="block p-3 rounded-md border border-border-subtle bg-surface-main hover:bg-surface-highlight transition-all group">
-                                <div className="flex items-center gap-2 mb-1.5 text-xs font-semibold text-accent-secondary">
+                                <div className="flex items-center gap-2 mb-1.5 text-sm font-semibold text-accent-secondary">
                                     <Link size={14}/> External Link
                                 </div>
                                 <p className="text-sm font-medium text-text-primary line-clamp-2 leading-snug mb-1 group-hover:text-indigo-300 transition-colors">{item.preview.title}</p>
-                                <p className="text-xs text-text-muted truncate">{item.preview.url}</p>
+                                <p className="text-sm text-text-muted truncate">{item.preview.url}</p>
                             </a>
                         ))}
                         {data.links.length === 0 && (
@@ -138,10 +138,10 @@ export const ChatInfoSidebar: React.FC<ChatInfoSidebarProps> = ({ isOpen, onClos
                         {data.pinned.map((msg) => (
                             <div key={msg.id} onClick={() => onNavigateToMsg(msg.id)} className="p-3 rounded-md border border-border-subtle bg-surface-main cursor-pointer hover:bg-surface-highlight transition-colors relative group">
                                 <div className="flex items-center justify-between mb-2">
-                                    <div className="flex items-center gap-1.5 text-xs font-semibold text-accent-secondary">
+                                    <div className="flex items-center gap-1.5 text-sm font-semibold text-accent-secondary">
                                         <Pin size={14} fill="currentColor"/> Pinned
                                     </div>
-                                    <span className="text-xs text-text-muted">{new Date(msg.timestamp).toLocaleDateString()}</span>
+                                    <span className="text-sm text-text-muted">{new Date(msg.timestamp).toLocaleDateString()}</span>
                                 </div>
                                 <p className="text-sm text-text-primary line-clamp-3 leading-relaxed">"{msg.text}"</p>
                             </div>

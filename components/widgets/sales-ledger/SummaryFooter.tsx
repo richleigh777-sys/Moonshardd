@@ -20,8 +20,6 @@ export const SummaryFooter: React.FC<SummaryFooterProps> = React.memo(({
         {/* Stats */}
         <div className="flex gap-4 items-center">
             <span>Rows: {count}</span>
-            <span className="text-status-success">Approved: {approved}</span>
-            <span className="text-status-warning">Pending: {pending}</span>
             <div className="w-px h-3 bg-border-subtle mx-1"></div>
             <div className="flex gap-2 items-center text-text-primary">
                 <span>Total Volume:</span>

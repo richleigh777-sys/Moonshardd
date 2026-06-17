@@ -372,7 +372,7 @@ export const ChatWindow: React.FC<Props> = ({
                  {pinnedMessages.length > 1 && (
                      <button 
                         onClick={() => setShowPinnedMsgs(!showPinnedMsgs)} 
-                        className="ml-4 shrink-0 text-xs font-bold text-accent-secondary hover:underline"
+                        className="ml-4 shrink-0 text-sm font-bold text-accent-secondary hover:underline"
                      >
                          {showPinnedMsgs ? 'Hide' : `See all (${pinnedMessages.length})`}
                      </button>
@@ -389,7 +389,7 @@ export const ChatWindow: React.FC<Props> = ({
                 </div>
                 {pinnedMessages.map((pm) => (
                     <div key={pm.id} onClick={() => jumpToMessage(pm.id)} className="bg-surface-main p-3 border border-border-subtle rounded-lg cursor-pointer hover:border-accent-secondary/50 transition-colors">
-                        <div className="text-xs text-text-muted mb-1 flex justify-between">
+                        <div className="text-sm text-text-muted mb-1 flex justify-between">
                             <span>{pm.senderName}</span>
                             <span>{new Date(pm.timestamp).toLocaleDateString()}</span>
                         </div>
@@ -468,7 +468,7 @@ export const ChatWindow: React.FC<Props> = ({
 
         {/* INPUT CAPSULE */}
         <div className="absolute bottom-4 left-0 right-0 z-30 flex flex-col items-center px-4 pointer-events-none">
-            <div className={`w-full ${isMaximized ? 'max-w-full px-6' : 'max-w-3xl'} pointer-events-auto flex flex-col gap-2`}>
+            <div className={`w-full ${isMaximized ? 'max-w-full px-4' : 'max-w-3xl'} pointer-events-auto flex flex-col gap-2`}>
                 
                 {/* Pending Attachments Staging Area */}
                 {pendingAttachments.length > 0 && (
@@ -487,7 +487,7 @@ export const ChatWindow: React.FC<Props> = ({
                                 ) : (
                                     <div className={`w-16 h-16 flex flex-col items-center justify-center bg-surface-main border border-border-subtle rounded-md ${att.isScanning ? 'animate-pulse' : ''}`}>
                                         {att.isScanning ? <UploadCloud size={16} className="text-accent-secondary animate-bounce" /> : <FileText size={16} className="text-text-muted mb-1"/>}
-                                        <span className="text-[10px] font-semibold text-text-muted ">{att.isScanning ? 'Scan...' : att.size}</span>
+                                        <span className="text-sm font-semibold text-text-muted ">{att.isScanning ? 'Scan...' : att.size}</span>
                                     </div>
                                 )}
                                 <button 
@@ -597,7 +597,7 @@ export const ChatWindow: React.FC<Props> = ({
 
       {/* ENCRYPTED GEOLOCATION BROADCASTER MODAL */}
       <Modal isOpen={showLocationModal} onClose={() => setShowLocationModal(false)} title="Share Encrypted Location">
-          <div className="flex flex-col gap-6">
+          <div className="flex flex-col gap-4">
               <p className="text-sm font-semibold text-text-muted leading-relaxed">
                   Select a predefined high-priority enterprise HQ node, or type a custom address coordinates below to broadcast safely on the secure channel.
               </p>
@@ -614,20 +614,20 @@ export const ChatWindow: React.FC<Props> = ({
                               key={loc.name}
                               type="button"
                               onClick={() => { setSelectedPresetLocation(loc.val); setCustomLocation(''); }}
-                              className={`p-4 border text-left rounded-2xl flex items-center justify-between transition-all font-semibold ${isSelected ? 'border-indigo-500 bg-indigo-500/10 text-indigo-500' : 'border-border-subtle hover:bg-surface-alt text-text-primary bg-surface-main'}`}
+                              className={`p-4 border text-left rounded-xl flex items-center justify-between transition-all font-semibold ${isSelected ? 'border-indigo-500 bg-indigo-500/10 text-indigo-500' : 'border-border-subtle hover:bg-surface-alt text-text-primary bg-surface-main'}`}
                           >
                               <div className="flex items-center gap-3">
                                   <MapPin className="text-indigo-500" size={18} />
                                   <span>{loc.name}</span>
                               </div>
-                              <span className="text-[11px] text-text-muted font-mono">{isSelected ? 'SELECTED' : 'PRESET'}</span>
+                              <span className="text-sm text-text-muted font-mono">{isSelected ? 'SELECTED' : 'PRESET'}</span>
                           </button>
                       );
                   })}
               </div>
 
               <div className="flex flex-col gap-2">
-                  <label className="text-xs font-[700] tracking-wider text-text-muted">CUSTOM ADDRESS OR DATA LINK</label>
+                  <label className="text-sm font-[700] tracking-wider text-text-muted">CUSTOM ADDRESS OR DATA LINK</label>
                   <input
                       type="text"
                       placeholder="e.g. Clients Head Office, Tokyo, Japan"
@@ -648,7 +648,7 @@ export const ChatWindow: React.FC<Props> = ({
                   <button
                       type="button"
                       onClick={() => handleLocationSubmit(customLocation || selectedPresetLocation)}
-                      className="px-6 py-2.5 rounded-xl bg-indigo-500 text-surface-main font-bold hover:bg-indigo-600 shadow-sm transition-colors text-sm"
+                      className="px-4 py-2.5 rounded-xl bg-indigo-500 text-surface-main font-bold hover:bg-indigo-600 shadow-sm transition-colors text-sm"
                   >
                       Share Coordinate
                   </button>

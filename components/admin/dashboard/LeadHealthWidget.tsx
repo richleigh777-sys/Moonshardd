@@ -35,7 +35,7 @@ export const LeadHealthWidget: React.FC<LeadHealthWidgetProps> = ({ notes, now }
     }, [notes, now]);
 
     return (
-        <Card variant="panel" className="h-[400px] w-[350px] p-4 md:p-6 bg-surface-main/30 backdrop-blur-3xl relative overflow-hidden group border border-border-strong rounded-2xl md:rounded-3xl hover:border-accent-primary/20 transition-all shadow-panel">
+        <Card variant="panel" className="h-[300px] w-full lg:w-[300px] p-4 md:p-4 bg-surface-main/30 backdrop-blur-3xl relative overflow-hidden group border border-border-strong rounded-xl md:rounded-xl hover:border-accent-primary/20 transition-all shadow-panel">
             <div className="absolute inset-0 bg-gradient-to-br from-accent-primary/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity z-0"></div>
             <div className="absolute -top-10 -right-10 p-4 opacity-[0.03] group-hover:opacity-5 group-hover:scale-110 transition-all z-0 blur-[2px]">
                 <Database size={140} />
@@ -43,19 +43,19 @@ export const LeadHealthWidget: React.FC<LeadHealthWidgetProps> = ({ notes, now }
             
             <div className="flex items-center justify-between mb-8 relative z-10">
                 <div className="flex items-center gap-3">
-                    <div className={`p-3 rounded-2xl border flex items-center justify-center shadow-inner group-hover:scale-110 transition-transform ${stats.health > 80 ? 'bg-emerald-500/10 text-status-success border-emerald-500/20' : 'bg-amber-500/10 text-status-warning border-amber-500/20'}`}>
+                    <div className={`p-3 rounded-xl border flex items-center justify-center shadow-inner group-hover:scale-110 transition-transform ${stats.health > 80 ? 'bg-emerald-500/10 text-status-success border-emerald-500/20' : 'bg-amber-500/10 text-status-warning border-amber-500/20'}`}>
                         <ShieldCheck size={24} strokeWidth={2.5} />
                     </div>
                     <div>
                         <h3 className="text-sm font-[700]  text-text-primary tracking-[0.2em] leading-none drop-shadow-sm">CRM Hygiene</h3>
-                        <p className="text-[10px] font-[700] text-text-muted  mt-1 tracking-widest">Data Structure Integrity</p>
+                        <p className="text-sm font-[700] text-text-muted  mt-1 tracking-widest">Data Structure Integrity</p>
                     </div>
                 </div>
                 <div className="text-right bg-surface-alt/80 backdrop-blur-md px-3 py-1.5 rounded-xl border border-border-strong shadow-inner ring-1 ring-white/5">
-                    <span className={`text-2xl md:text-3xl font-[700] font-display tracking-tighter drop-shadow-sm ${stats.health > 80 ? 'text-status-success shadow-emerald-500/20' : 'text-status-warning shadow-amber-500/20'}`}>
+                    <span className={`text-lg md:text-xl font-[700] font-display tracking-tighter drop-shadow-sm ${stats.health > 80 ? 'text-status-success shadow-emerald-500/20' : 'text-status-warning shadow-amber-500/20'}`}>
                         {stats.health}%
                     </span>
-                    <p className="text-[10px] font-[700] text-text-muted  tracking-[0.2em] mt-0.5">System Health</p>
+                    <p className="text-sm font-[700] text-text-muted  tracking-[0.2em] mt-0.5">System Health</p>
                 </div>
             </div>
 
@@ -97,7 +97,7 @@ export const LeadHealthWidget: React.FC<LeadHealthWidgetProps> = ({ notes, now }
             <div className="mt-8 pt-4 border-t border-border-strong relative z-10">
                 <div className="flex items-start gap-3 bg-surface-main/60 backdrop-blur-sm p-4 rounded-xl border border-border-strong italic shadow-inner group-hover:border-accent-primary/30 transition-colors">
                     <Activity size={18} className="text-accent-primary animate-pulse shrink-0 mt-0.5" />
-                    <p className="text-xs font-[700] text-text-primary  tracking-widest leading-relaxed opacity-90 font-mono">
+                    <p className="text-sm font-[700] text-text-primary  tracking-widest leading-relaxed opacity-90 font-mono">
                         {stats.health > 85 
                             ? "Organizational protocols are stable. Lead leaks minimized." 
                             : "Quiet leaks detected in follow-up loops. Enforce directive: No lead left idle."}
@@ -116,11 +116,11 @@ const MetricRow = ({ label, value, icon: Icon, color, glow, progress, inverse = 
                     <Icon size={14} className={glow} strokeWidth={2.5}/>
                 </div>
                 <div>
-                    <p style={labelStyle} className="text-[10px] font-[700] text-text-primary  tracking-[0.2em] leading-none drop-shadow-sm">{label}</p>
+                    <p style={labelStyle} className="text-sm font-[700] text-text-primary  tracking-[0.2em] leading-none drop-shadow-sm">{label}</p>
                 </div>
             </div>
             <div className={`bg-surface-main px-2 py-1 rounded-[4px] border border-border-strong shadow-inner ring-1 ring-white/5`}>
-                <span className={`text-[10px] font-[700] font-display tracking-widest ${color}`}>{value}</span>
+                <span className={`text-sm font-[700] font-display tracking-widest ${color}`}>{value}</span>
             </div>
         </div>
         <div className="h-1.5 bg-surface-alt/80 rounded-full overflow-hidden border border-border-strong shadow-inner">

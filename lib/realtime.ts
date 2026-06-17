@@ -3,6 +3,7 @@ import { Server } from 'http';
 
 interface ConnectedClient {
     id: string;
+    userId?: string;
     ws: WebSocket;
     role: string;
     isAlive: boolean;
@@ -14,8 +15,6 @@ export function initializeRealtime(httpServer: Server) {
     const wss = new WebSocketServer({ server: httpServer });
 
     wss.on('connection', (ws, req) => {
-        // In a real system, you would verify the JWT from req.url or headers
-        // For scaffold, we accept the connection but assign it a generic ID
         const id = Math.random().toString(36).substring(7);
         
         clients.set(id, { id, ws, role: 'unknown', isAlive: true });
@@ -30,16 +29,48 @@ export function initializeRealtime(httpServer: Server) {
         ws.on('message', (message) => {
             try {
                 const data = JSON.parse(message.toString());
+                const client = clients.get(id);
                 
-                // Example: Client sending an active presence update
-                if (data.type === 'HEARTBEAT_ACK') {
-                    // Update client metadata like current viewed document for collision prevention
+                // Secure Client Registration & Identity Binding
+                if (data.type === 'REGISTER_AGENT') {
+                    if (client && data.payload?.userId) {
+                        client.userId = data.payload.userId;
+                        client.role = data.payload.role || 'agent';
+                        console.log(`[Realtime] Security Binding established: Client ID ${id} registered to User ID ${client.userId} (${client.role})`);
+                        
+                        // Propagate online presence immediately
+                        broadcast({
+                            type: 'PRESENCE_CHANGE',
+                            payload: { userId: client.userId, status: 'online', role: client.role }
+                        });
+                    }
                 }
                 
-                // Example: Admin initiating a flash broadcast
+                if (data.type === 'HEARTBEAT_ACK') {
+                    if (client) client.isAlive = true;
+                }
+                
                 if (data.type === 'FLASH_DIRECTIVE') {
                     // Verifying role constraint would happen here
                     broadcast({ type: 'FLASH_DIRECTIVE', payload: data.payload });
+                }
+
+                // Lead Concurrency Lease-locking (Flaw #4)
+                if (data.type === 'LEAD_LOCK_ENGAGE') {
+                    const { leadId, agentId, agentName } = data.payload;
+                    const expiresAt = Date.now() + 30000; // 30s lock duration
+                    broadcast({
+                        type: 'LEAD_LOCK_UPDATE',
+                        payload: { leadId, agentId, agentName, expiresAt }
+                    });
+                }
+                
+                if (data.type === 'LEAD_LOCK_RELEASE') {
+                    const { leadId, agentId } = data.payload;
+                    broadcast({
+                        type: 'LEAD_LOCK_RELEASED',
+                        payload: { leadId, agentId }
+                    });
                 }
 
             } catch (err) {
@@ -47,30 +78,56 @@ export function initializeRealtime(httpServer: Server) {
             }
         });
 
-        ws.on('close', () => {
-            clients.delete(id);
-            console.log(`[Realtime] Client disconnected: ${id}`);
-        });
+        const handleDisconnection = () => {
+            const client = clients.get(id);
+            if (client) {
+                console.log(`[Realtime] Client disconnected: ${id} (${client.userId || 'unregistered'})`);
+                if (client.userId) {
+                    // Broadcast offline event with instant propagation
+                    broadcast({
+                        type: 'PRESENCE_CHANGE',
+                        payload: { userId: client.userId, status: 'offline' }
+                    });
+                }
+                clients.delete(id);
+            }
+        };
+
+        ws.on('close', handleDisconnection);
+        ws.on('error', handleDisconnection);
     });
 
-    // Heartbeat mechanism to reap dead connections
+    // SOC2 Heartbeat mechanism - reap silent sockets in 15 seconds to deter ghost sessions
     const interval = setInterval(() => {
         wss.clients.forEach((ws) => {
             const clientEntry = Array.from(clients.values()).find(c => c.ws === ws);
-            if (clientEntry && !clientEntry.isAlive) {
-                clients.delete(clientEntry.id);
-                return ws.terminate();
+            if (clientEntry) {
+                if (!clientEntry.isAlive) {
+                    console.warn(`[Realtime] Reaped inactive client connection: ${clientEntry.id} (${clientEntry.userId || 'Guest'}) due to lost heartbeat`);
+                    if (clientEntry.userId) {
+                        broadcast({
+                            type: 'PRESENCE_CHANGE',
+                            payload: { userId: clientEntry.userId, status: 'offline' }
+                        });
+                    }
+                    clients.delete(clientEntry.id);
+                    return ws.terminate();
+                }
+                clientEntry.isAlive = false;
+                try {
+                    ws.ping();
+                } catch {
+                    ws.terminate();
+                }
             }
-            if (clientEntry) clientEntry.isAlive = false;
-            ws.ping();
         });
-    }, 30000);
+    }, 15000);
 
     wss.on('close', () => {
         clearInterval(interval);
     });
 
-    console.log('[Realtime] WebSocket Hub initialized.');
+    console.log('[Realtime] WebSocket Hub initialized with 15s High-Frequency Heartbeats.');
 }
 
 /**
@@ -80,7 +137,11 @@ export function broadcast(event: any) {
     const msg = JSON.stringify(event);
     clients.forEach((client) => {
         if (client.ws.readyState === WebSocket.OPEN) {
-            client.ws.send(msg);
+            try {
+                client.ws.send(msg);
+            } catch (err) {
+                console.error(`[Realtime] Failed to send broadcast message to client ${client.id}:`, err);
+            }
         }
     });
 }

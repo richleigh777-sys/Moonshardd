@@ -6,15 +6,16 @@ interface CardProps {
   children: React.ReactNode;
   className?: string;
   onClick?: React.MouseEventHandler<HTMLDivElement>;
-  variant?: 'default' | 'panel' | 'glass' | 'refraction';
+  variant?: 'default' | 'panel' | 'widget' | 'glass' | 'refraction';
 }
 
 export const Card = React.memo(({ children, className = "", onClick, variant = 'default' }: CardProps) => {
     const variants = {
-        default: "bg-surface-main/60 backdrop-blur-2xl shadow-panel border border-border-subtle",
-        panel:   "bg-surface-main/60 backdrop-blur-2xl shadow-panel border border-border-subtle", 
-        glass:   "bg-surface-main/30 backdrop-blur-2xl border border-border-subtle shadow-float text-shadow-sm",
-        refraction: "bg-gradient-to-br from-surface-main/80 to-surface-alt/40 backdrop-blur-3xl border border-border-subtle shadow-float"
+        default: "bg-surface-main shadow-panel border border-border-subtle",
+        panel:   "bg-surface-main shadow-panel border border-border-subtle", 
+        widget:  "bg-surface-widget shadow-panel border border-border-subtle",
+        glass:   "bg-surface-main/80 backdrop-blur-2xl border border-border-subtle shadow-float text-shadow-sm",
+        refraction: "bg-gradient-to-br from-surface-main to-surface-widget backdrop-blur-3xl border border-border-subtle shadow-float"
     };
 
     return (
@@ -126,7 +127,7 @@ export const Badge = ({ children, status = 'default', className = "" }: { childr
   };
 
   return (
-    <span className={`inline-flex items-center justify-center px-2 py-0.5 text-[10px] md:text-[11px] font-medium tracking-wide border rounded-md leading-none ${getStyles(status)} ${className}`}>
+    <span className={`inline-flex items-center justify-center px-2 py-0.5 text-xs md:text-xs font-medium tracking-wide border rounded-md leading-none ${getStyles(status)} ${className}`}>
       {children || status}
     </span>
   );

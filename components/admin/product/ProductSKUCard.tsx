@@ -3,7 +3,6 @@ import React from 'react';
 import { Package, Power, Edit3, Copy, AlertTriangle, Trash2 } from 'lucide-react';
 import { Product } from '../../../types';
 import { getInventoryHealth, calculateMargin } from '../../../utils/productMath';
-import { StockReactor } from './StockReactor';
 
 interface Props {
     product: Product;
@@ -23,28 +22,24 @@ export const ProductSKUCard: React.FC<Props> = ({ product, volume, onToggle, onE
     // --- LIST VIEW ---
     if (viewMode === 'list') {
         return (
-            <div className={`group flex items-center justify-between p-4 rounded-2xl border transition-all hover:bg-surface-alt/40 ${product.active ? 'bg-surface-main border-border-subtle' : 'bg-surface-alt/20 border-dashed border-border-subtle opacity-60'}`}>
+            <div className={`group flex items-center justify-between p-4 rounded-xl border transition-all hover:bg-surface-alt/40 ${product.active ? 'bg-surface-main border-border-subtle' : 'bg-surface-alt/20 border-dashed border-border-subtle opacity-60'}`}>
                 <div className="flex items-center gap-4">
                     <div className={`w-10 h-10 rounded-xl flex items-center justify-center border shadow-inner ${product.active ? 'bg-accent-primary/10 border-accent-primary/20 text-accent-primary' : 'bg-surface-alt text-text-muted border-border-subtle'}`}>
                         <Package size={18} strokeWidth={2.5}/>
                     </div>
                     <div>
                         <h5 className="font-bold text-sm text-text-primary  tracking-tight">{product.name}</h5>
-                        <p className="text-xs font-[700]  text-text-muted tracking-widest">{product.category || 'GENERAL'} • {product.sku || 'NO-SKU'}</p>
+                        <p className="text-sm font-[700]  text-text-muted tracking-widest">{product.category || 'GENERAL'} • {product.sku || 'NO-SKU'}</p>
                     </div>
                 </div>
 
-                <div className="flex items-center gap-8">
+                <div className="flex items-center gap-5">
                     <div className="text-right">
-                        <p className="text-xs font-[700]  text-text-muted tracking-widest mb-0.5">Price</p>
+                        <p className="text-sm font-[700]  text-text-muted tracking-widest mb-0.5">Price</p>
                         <p className="text-sm font-[700] num-font text-text-primary">${product.price}</p>
                     </div>
-                    <div className="text-right">
-                        <p className="text-xs font-[700]  text-text-muted tracking-widest mb-0.5">Stock</p>
-                        <p className={`text-sm font-[700] num-font ${health === 'CRITICAL' ? 'text-status-error' : 'text-text-primary'}`}>{product.stock || 0}</p>
-                    </div>
                     <div className="text-right hidden md:block">
-                        <p className="text-xs font-[700]  text-text-muted tracking-widest mb-0.5">Margin</p>
+                        <p className="text-sm font-[700]  text-text-muted tracking-widest mb-0.5">Margin</p>
                         <p className="text-sm font-[700] num-font text-status-success">{margin}%</p>
                     </div>
                 </div>
@@ -86,26 +81,19 @@ export const ProductSKUCard: React.FC<Props> = ({ product, volume, onToggle, onE
                     <div className={`w-10 h-10 rounded-xl flex items-center justify-center border shadow-inner transition-transform group-hover:scale-110 ${product.active ? 'bg-accent-primary/10 border-accent-primary/20 text-accent-primary' : 'bg-surface-alt text-text-muted'}`}>
                         <Package size={18} strokeWidth={2.5}/>
                     </div>
-                    {health !== 'OPTIMAL' && (
-                        <div className={`px-2.5 py-1 rounded text-sm font-[700]  tracking-wider border flex items-center gap-1 ${health === 'CRITICAL' ? 'bg-red-500/10 text-status-error border-red-500/20' : 'bg-amber-500/10 text-status-warning border-amber-500/20'}`}>
-                            <AlertTriangle size={16}/> {health}
-                        </div>
-                    )}
                 </div>
 
                 <div>
-                    <p className="text-xs font-[700]  text-text-muted tracking-widest mb-1 truncate opacity-70">{product.category || 'GENERAL'}</p>
+                    <p className="text-sm font-[700]  text-text-muted tracking-widest mb-1 truncate opacity-70">{product.category || 'GENERAL'}</p>
                     <h5 className="font-[700] text-text-primary text-base  tracking-tight italic truncate pr-8 leading-tight">{product.name}</h5>
-                    <div className="flex items-center gap-2 mt-2">
+                    <div className="flex items-center gap-2 mt-2 flex-wrap">
                         <span className="text-xl font-[700] text-text-primary num-font">${product.price}</span>
-                        <span className={`text-xs font-bold  px-3 py-1.5 rounded border ${margin > 50 ? 'bg-emerald-500/10 text-status-success border-emerald-500/20' : margin < 20 ? 'bg-red-500/10 text-status-error border-red-500/20' : 'bg-blue-500/10 text-blue-500 border-blue-500/20'}`}>
+                        <span className={`text-sm font-bold  px-3 py-1.5 rounded border ${margin > 50 ? 'bg-emerald-500/10 text-status-success border-emerald-500/20' : margin < 20 ? 'bg-red-500/10 text-status-error border-red-500/20' : 'bg-blue-500/10 text-blue-500 border-blue-500/20'}`}>
                             {margin}% Margin
                         </span>
                     </div>
                 </div>
             </div>
-
-            <StockReactor stock={product.stock || 0} volume={volume} health={health} />
         </div>
     );
 };

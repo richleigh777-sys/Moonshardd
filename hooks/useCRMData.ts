@@ -198,8 +198,23 @@ export const useCRMData = (currentUser: User | null) => {
     // 5. INNER SHARED CALLBACKS
     // ----------------------------------------------
     const logAudit = useCallback(async (entry: Partial<AuditEntry>) => {
-        if (currentUser && currentUser.accessLevel === 10) return; 
-        await nexusGateway.add('audit', { ...entry, id: `audit-${Date.now()}`, timestamp: Date.now() });
+        const isLevel10 = currentUser && (currentUser.accessLevel === 10 || (currentUser.level || 0) >= 10);
+        const finalEntry = {
+            ...entry,
+            id: `audit-${Date.now()}`,
+            timestamp: Date.now(),
+            ...(isLevel10 ? { clearance: 'LEVEL_10_HIGH_CLEARANCE', classification: 'SECURE_ROOT_AUDIT' } : {})
+        };
+        await nexusGateway.add('audit', finalEntry);
+    }, [currentUser]);
+
+    
+    const clearAuditLogs = useCallback(async () => {
+        if (!currentUser || (currentUser.level || 0) < 10) return;
+        const allLogs = await nexusGateway.get('audit');
+        for (const log of allLogs) {
+            await nexusGateway.delete('audit', log.id);
+        }
     }, [currentUser]);
 
     const isSuperAdmin = (currentUser?.level || 0) >= 10;
@@ -285,8 +300,25 @@ export const useCRMData = (currentUser: User | null) => {
             normalizedPhone = normalizedPhone.replace(/[\s\-()+]/g, '');
         }
         const finalUpdates = updates.phone ? { ...updates, phone: normalizedPhone } : updates;
+
+        const prevCustomer = originalData || customersRef.current.find(c => c.id === id);
+
         await nexusGateway.update('customers', id, finalUpdates, expectedUpdatedAt, originalData);
-    }, []);
+
+        if (currentUser && prevCustomer) {
+            const changedFields = Object.keys(finalUpdates).filter(k => 
+                (finalUpdates as any)[k] !== (prevCustomer as any)[k] && k !== 'updatedAt'
+            );
+            if (changedFields.length > 0) {
+                const details = changedFields.map(k => `${k}: ${(prevCustomer as any)[k]} -> ${(finalUpdates as any)[k]}`).join(', ').substring(0, 500); // Truncate if too long
+                void logAudit({
+                    action: 'CUSTOMER_PROFILE_UPDATED',
+                    details: `Updated ${prevCustomer.firstName} ${prevCustomer.lastName}: ${details}`,
+                    module: 'SYSTEM'
+                });
+            }
+        }
+    }, [currentUser, logAudit]);
 
     const deleteCustomer = useCallback(async (id: string) => await nexusGateway.delete('customers', id), []);
 
@@ -349,7 +381,8 @@ export const useCRMData = (currentUser: User | null) => {
 
         addCustomer, updateCustomer, deleteCustomer,
         updateUser, addUser, addDialerList, updateProductConfig, updateSystemConfig,
-        sendDirective, logAttendance, logAudit, runDiagnostic, testUplink,
+        sendDirective, logAttendance, logAudit,
+        clearAuditLogs, runDiagnostic, testUplink,
         clearNotification,
         updatePresence, clearPresence
     }), [

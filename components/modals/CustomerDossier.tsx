@@ -114,21 +114,21 @@ export const CustomerDossier: React.FC<CustomerDossierProps> = ({ profile, onClo
     <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-300">
       <div className="absolute inset-0" onClick={onClose}></div>
 
-      <div className="bg-surface-main w-full max-w-5xl max-h-[90vh] overflow-hidden rounded-3xl shadow-2xl border border-border-subtle flex flex-col relative z-10 animate-in zoom-in-95 duration-300">
+      <div className="bg-surface-main w-full max-w-5xl max-h-[90vh] overflow-hidden rounded-xl shadow-2xl border border-border-subtle flex flex-col relative z-10 animate-in zoom-in-95 duration-300">
         
         {/* HERO HEADER */}
-        <div className="p-8 border-b border-border-subtle flex justify-between items-start bg-surface-alt/50 backdrop-blur-md relative overflow-hidden shrink-0">
+        <div className="p-5 border-b border-border-subtle flex justify-between items-start bg-surface-alt/50 backdrop-blur-md relative overflow-hidden shrink-0">
             <div className={`absolute top-0 right-0 w-96 h-96 blur-[100px] rounded-full opacity-20 pointer-events-none ${
                 profile.status === 'VIP' ? 'bg-indigo-500' : 
                 profile.status === 'At Risk' ? 'bg-red-500' : 'bg-emerald-500'
             }`}></div>
 
-            <div className="relative z-10 flex items-center gap-6">
-                <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-surface-highlight to-surface-alt flex items-center justify-center border border-border-subtle shadow-lg">
-                    <span className="text-4xl font-[700] text-text-primary">{profile.name.charAt(0)}</span>
+            <div className="relative z-10 flex items-center gap-4">
+                <div className="w-20 h-20 rounded-xl bg-gradient-to-br from-surface-highlight to-surface-alt flex items-center justify-center border border-border-subtle shadow-lg">
+                    <span className="text-lg font-[700] text-text-primary">{profile.name.charAt(0)}</span>
                 </div>
                 <div>
-                    <h2 className="text-3xl font-[700]  italic text-text-primary tracking-tighter flex items-center gap-3">
+                    <h2 className="text-xl font-[700]  italic text-text-primary tracking-tighter flex items-center gap-3">
                         {profile.name}
                         <span className={`px-3 py-1 rounded-lg text-xs font-[700]  tracking-widest border ${
                             profile.status === 'VIP' ? 'bg-accent-secondary/10 text-accent-secondary border-indigo-500/30' :
@@ -139,7 +139,7 @@ export const CustomerDossier: React.FC<CustomerDossierProps> = ({ profile, onClo
                         </span>
                     </h2>
                     
-                    <div className="flex flex-wrap gap-6 text-xs font-bold text-text-secondary  tracking-widest mt-2">
+                    <div className="flex flex-wrap gap-4 text-xs font-bold text-text-secondary  tracking-widest mt-2">
                         {profile.email && <span className="flex items-center gap-2 hover:text-accent-primary cursor-pointer"><Mail size={16}/> {profile.email}</span>}
                         {profile.phone && <span className="flex items-center gap-2 hover:text-accent-primary cursor-pointer"><Phone size={16}/> {profile.phone}</span>}
                         <span className="flex items-center gap-2 text-text-muted"><Briefcase size={16}/> {profile.orderCount} Orders</span>
@@ -166,7 +166,7 @@ export const CustomerDossier: React.FC<CustomerDossierProps> = ({ profile, onClo
         </div>
 
         {/* TABS */}
-        <div className="px-8 flex items-center gap-6 border-b border-border-subtle bg-surface-main shrink-0">
+        <div className="px-8 flex items-center gap-4 border-b border-border-subtle bg-surface-main shrink-0">
             {['overview', 'timeline', 'financials'].map((tab) => (
                 <button
                     key={tab}
@@ -195,11 +195,11 @@ export const CustomerDossier: React.FC<CustomerDossierProps> = ({ profile, onClo
                                     <p className="text-xs text-text-secondary mt-1">{profile.phone || 'No phone number available'}</p>
                                 </div>
                             </div>
-                            <div className="flex items-center gap-6">
-                                <span className="text-2xl font-mono text-text-primary bg-surface-main px-4 py-2 rounded-lg border border-border-subtle tracking-widest">
+                            <div className="flex items-center gap-4">
+                                <span className="text-lg font-mono text-text-primary bg-surface-main px-4 py-2 rounded-lg border border-border-subtle tracking-widest">
                                     {Math.floor(callDuration / 60).toString().padStart(2, '0')}:{(callDuration % 60).toString().padStart(2, '0')}
                                 </span>
-                                <button onClick={handleSendComms} className="bg-status-error hover:bg-red-600 text-white px-6 py-3 rounded-lg text-xs font-[700] tracking-widest flex items-center gap-2 transition-all">
+                                <button onClick={handleSendComms} className="bg-status-error hover:bg-red-600 text-white px-4 py-3 rounded-lg text-xs font-[700] tracking-widest flex items-center gap-2 transition-all">
                                     <PhoneOff size={16} /> End & Log Call
                                 </button>
                             </div>
@@ -215,7 +215,7 @@ export const CustomerDossier: React.FC<CustomerDossierProps> = ({ profile, onClo
                                 className="flex-1 bg-surface-alt border border-border-subtle rounded-xl p-4 text-sm resize-none h-24 focus:border-accent-primary outline-none transition-colors"
                             />
                             <div className="flex flex-col gap-2">
-                                <button onClick={handleSendComms} disabled={!commsText.trim()} className="bg-accent-primary hover:bg-accent-secondary disabled:opacity-50 text-white px-6 h-full rounded-xl text-xs font-[700] tracking-widest flex flex-col items-center justify-center gap-2 transition-all">
+                                <button onClick={handleSendComms} disabled={!commsText.trim()} className="bg-accent-primary hover:bg-accent-secondary disabled:opacity-50 text-white px-4 h-full rounded-xl text-xs font-[700] tracking-widest flex flex-col items-center justify-center gap-2 transition-all">
                                     <Send size={18} />
                                     <span>Send SMS</span>
                                 </button>
@@ -232,7 +232,7 @@ export const CustomerDossier: React.FC<CustomerDossierProps> = ({ profile, onClo
                                 className="flex-1 bg-surface-alt border border-border-subtle rounded-xl p-4 text-sm resize-none h-32 focus:border-accent-primary outline-none transition-colors"
                             />
                             <div className="flex flex-col gap-2">
-                                <button onClick={handleSendComms} disabled={!commsText.trim()} className="bg-accent-primary hover:bg-accent-secondary disabled:opacity-50 text-white px-6 h-full rounded-xl text-xs font-[700] tracking-widest flex flex-col items-center justify-center gap-2 transition-all">
+                                <button onClick={handleSendComms} disabled={!commsText.trim()} className="bg-accent-primary hover:bg-accent-secondary disabled:opacity-50 text-white px-4 h-full rounded-xl text-xs font-[700] tracking-widest flex flex-col items-center justify-center gap-2 transition-all">
                                     <Send size={18} />
                                     <span>Send Email</span>
                                 </button>
@@ -243,19 +243,19 @@ export const CustomerDossier: React.FC<CustomerDossierProps> = ({ profile, onClo
             </div>
         )}
 
-        <div className="flex-1 overflow-y-auto p-8 custom-scrollbar bg-surface-alt/10">
+        <div className="flex-1 overflow-y-auto p-5 custom-scrollbar bg-surface-alt/10">
             {activeTab === 'overview' && (
                 <div className="space-y-8 animate-in slide-in-from-right-4 duration-300">
                      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                         <Card className="p-5 flex flex-col justify-between group hover:border-status-success/30 border border-border-subtle">
                             <div className="flex justify-between mb-2 text-status-success"><DollarSign size={24} strokeWidth={2.5} /></div>
                             <p className="text-xs font-[700]  text-text-muted tracking-widest">Lifetime Value</p>
-                            <p className="text-2xl font-[700] text-text-primary num-font group-hover:text-status-success transition-colors">${profile.totalSpent.toLocaleString()}</p>
+                            <p className="text-lg font-[700] text-text-primary num-font group-hover:text-status-success transition-colors">${profile.totalSpent.toLocaleString()}</p>
                         </Card>
                         <Card className="p-5 flex flex-col justify-between group hover:border-indigo-500/30 border border-border-subtle">
                             <div className="flex justify-between mb-2 text-accent-secondary"><Package size={24} strokeWidth={2.5} /></div>
                             <p className="text-xs font-[700]  text-text-muted tracking-widest">Orders</p>
-                            <p className="text-2xl font-[700] text-text-primary num-font group-hover:text-accent-secondary transition-colors">{profile.orderCount}</p>
+                            <p className="text-lg font-[700] text-text-primary num-font group-hover:text-accent-secondary transition-colors">{profile.orderCount}</p>
                         </Card>
                         <Card className="p-5 flex flex-col justify-between group hover:border-status-warning/30 border border-border-subtle">
                             <div className="flex justify-between mb-2 text-status-warning"><Trophy size={24} strokeWidth={2.5} /></div>
@@ -269,12 +269,12 @@ export const CustomerDossier: React.FC<CustomerDossierProps> = ({ profile, onClo
                         </Card>
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div className="bg-surface-main p-6 rounded-3xl border border-border-subtle">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="bg-surface-main p-4 rounded-xl border border-border-subtle">
                              <h4 className="text-xs font-[700]  text-text-primary tracking-widest mb-4 flex items-center gap-2"><MapPin size={16} className="text-accent-primary"/> Location Intel</h4>
                              <p className="text-sm font-medium text-text-secondary">{profile.address || 'No Address on File'}</p>
                         </div>
-                        <div className="bg-surface-main p-6 rounded-3xl border border-border-subtle">
+                        <div className="bg-surface-main p-4 rounded-xl border border-border-subtle">
                              <h4 className="text-xs font-[700]  text-text-primary tracking-widest mb-4 flex items-center gap-2"><ShieldCheck size={16} className="text-status-success"/> Behavioral Tags</h4>
                              <div className="flex flex-wrap gap-2">
                                 {profile.tags.length > 0 ? profile.tags.map(t => (
@@ -299,7 +299,7 @@ export const CustomerDossier: React.FC<CustomerDossierProps> = ({ profile, onClo
                                 <div className={`absolute -left-[21px] top-1 w-10 h-10 rounded-xl border-4 border-surface-alt flex items-center justify-center bg-surface-main ${event.color}`}>
                                     <event.icon size={16} strokeWidth={2.5}/>
                                 </div>
-                                <div className="bg-surface-main p-4 rounded-2xl border border-border-subtle hover:border-accent-primary/30 transition-all shadow-sm">
+                                <div className="bg-surface-main p-4 rounded-xl border border-border-subtle hover:border-accent-primary/30 transition-all shadow-sm">
                                     <div className="flex justify-between items-start mb-1">
                                         <h5 className="text-sm font-bold text-text-primary">{event.title}</h5>
                                         <span className="text-xs font-mono text-text-muted">{new Date(event.timestamp).toLocaleString()}</span>

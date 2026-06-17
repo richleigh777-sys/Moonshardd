@@ -88,7 +88,7 @@ export const TabTrigger: React.FC<TabTriggerProps> = ({ value, children, classNa
 
   const isActive = context.activeTab === value;
   
-  const verticalStyles = `w-full ${isCollapsed ? 'px-0 justify-center' : 'px-3 justify-start'} py-2.5 flex items-center gap-3 text-sm font-semibold transition-all duration-200 hover:translate-x-1 outline-none rounded-xl mb-1 group relative ${
+  const verticalStyles = `w-full px-1 py-3 flex flex-col items-center justify-center gap-1 transition-all duration-200 hover:translate-y-[1px] outline-none rounded-xl mb-2 group relative overflow-hidden ${
     isActive 
       ? 'bg-accent-primary/10 text-accent-primary shadow-[inset_0_0_10px_rgba(0,0,0,0.1)] border border-accent-primary/20' 
       : 'text-text-secondary hover:bg-surface-highlight hover:text-text-primary border border-transparent'
@@ -117,7 +117,7 @@ export const TabTrigger: React.FC<TabTriggerProps> = ({ value, children, classNa
               {icon}
           </span>
       )}
-      {!isCollapsed && <span className="whitespace-nowrap overflow-hidden transition-opacity duration-200 tracking-wide">{children}</span>}
+      {!isCollapsed && <span className={`${context.orientation === 'vertical' ? 'text-xs font-bold text-center whitespace-normal leading-tight opacity-90 mt-1 max-w-full px-0.5' : 'whitespace-nowrap'} overflow-hidden transition-opacity duration-200 tracking-wide`}>{children}</span>}
     </button>
   );
 };

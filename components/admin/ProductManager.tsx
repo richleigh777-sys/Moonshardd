@@ -135,7 +135,7 @@ export const ProductManager: React.FC<Props> = ({ configForm, setConfigForm, onS
                 <>
                     <SupplyChainHUD stats={productLogic.stats} />
 
-                    <Card variant="panel" className="flex-1 flex flex-col overflow-hidden rounded-2xl p-0 border-border-subtle bg-surface-main shadow-2xl relative">
+                    <Card variant="panel" className="flex-1 flex flex-col overflow-hidden rounded-xl p-0 border-border-subtle bg-surface-main shadow-2xl relative">
                         
                         <CatalogToolbar 
                             totalItems={configForm.products.length}
@@ -197,7 +197,7 @@ export const ProductManager: React.FC<Props> = ({ configForm, setConfigForm, onS
                                     <span className="text-sm font-[700]  text-text-muted tracking-widest leading-none">Load: Optimal</span>
                                 </div>
                             </div>
-                            <span className="text-xs font-mono text-text-muted opacity-40  tracking-[0.2em]">Product Module v4.1</span>
+                            <span className="text-sm font-mono text-text-muted opacity-40  tracking-[0.2em]">Product Module v4.1</span>
                         </div>
 
                         <ProductConfigModal 

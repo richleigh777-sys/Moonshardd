@@ -2,112 +2,113 @@ import React, { useState } from 'react';
 import { Network, Users, Globe, Database, Activity, GitCommit, Bot, ShieldCheck, Mail, Workflow, Zap, AlertTriangle, Lightbulb, TrendingDown, Target, Scale, ZapOff, Repeat, RefreshCw, Briefcase, Share2, Server, MonitorSmartphone, Settings, Heart, TrendingUp, Trophy } from 'lucide-react';
 import { Card } from '../../../../ui/Base';
 import { SectionHeader } from '../SectionHeader';
+import { motion, AnimatePresence } from 'motion/react';
 
 export const EcosystemTab: React.FC = () => {
     const [activeNode, setActiveNode] = useState<string | null>(null);
     const [viewMode, setViewMode] = useState<'core' | 'sustainability' | 'actor' | 'cld' | 'sna' | 'terminals' | 'approved_flow' | 'clm_loop' | 'cx_growth' | 'gamification'>('core');
 
     const coreNodes = [
-        { id: 'admin', label: 'Command Deck', type: 'actor', icon: ShieldCheck, color: 'text-purple-400', bg: 'bg-purple-500/10', border: 'border-purple-500/30', x: 50, y: 20 },
-        { id: 'agents', label: 'Operatives', type: 'actor', icon: Users, color: 'text-blue-400', bg: 'bg-blue-500/10', border: 'border-blue-500/30', x: 25, y: 45 },
-        { id: 'customers', label: 'Customers', type: 'actor', icon: Globe, color: 'text-emerald-400', bg: 'bg-emerald-500/10', border: 'border-emerald-500/30', x: 75, y: 45 },
+        { id: 'admin', label: 'Command Deck', type: 'actor', icon: ShieldCheck, color: 'text-[#C084FC]', bg: 'bg-[#C084FC]/10', border: 'border-[#C084FC]/30', x: 50, y: 20 },
+        { id: 'agents', label: 'Operatives', type: 'actor', icon: Users, color: 'text-[#60A5FA]', bg: 'bg-[#60A5FA]/10', border: 'border-[#60A5FA]/30', x: 25, y: 45 },
+        { id: 'customers', label: 'Customers', type: 'actor', icon: Globe, color: 'text-[#34D399]', bg: 'bg-[#34D399]/10', border: 'border-[#34D399]/30', x: 75, y: 45 },
         
-        { id: 'crm', label: 'Core DB', type: 'resource', icon: Database, color: 'text-cyan-400', bg: 'bg-cyan-500/10', border: 'border-cyan-500/30', x: 50, y: 55 },
-        { id: 'ai', label: 'Gemini AI', type: 'resource', icon: Bot, color: 'text-pink-400', bg: 'bg-pink-500/10', border: 'border-pink-500/30', x: 25, y: 75 },
-        { id: 'payment', label: 'Payment API', type: 'resource', icon: Zap, color: 'text-amber-400', bg: 'bg-amber-500/10', border: 'border-amber-500/30', x: 75, y: 75 },
+        { id: 'crm', label: 'Core DB', type: 'resource', icon: Database, color: 'text-[#22D3EE]', bg: 'bg-[#22D3EE]/10', border: 'border-[#22D3EE]/30', x: 50, y: 55 },
+        { id: 'ai', label: 'Gemini AI', type: 'resource', icon: Bot, color: 'text-[#F472B6]', bg: 'bg-[#F472B6]/10', border: 'border-[#F472B6]/30', x: 25, y: 75 },
+        { id: 'payment', label: 'Payment API', type: 'resource', icon: Zap, color: 'text-[#FBBF24]', bg: 'bg-[#FBBF24]/10', border: 'border-[#FBBF24]/30', x: 75, y: 75 },
 
-        { id: 'playbooks', label: 'Playbook Engine', type: 'process', icon: Workflow, color: 'text-status-warning', bg: 'bg-status-warning/10', border: 'border-status-warning/30', x: 35, y: 35 },
-        { id: 'enrollment', label: 'Enrollment', type: 'process', icon: GitCommit, color: 'text-orange-400', bg: 'bg-orange-500/10', border: 'border-orange-500/30', x: 65, y: 60 },
+        { id: 'playbooks', label: 'Playbook Engine', type: 'process', icon: Workflow, color: 'text-[#FBBF24]', bg: 'bg-[#FBBF24]/10', border: 'border-[#FBBF24]/30', x: 35, y: 35 },
+        { id: 'enrollment', label: 'Enrollment', type: 'process', icon: GitCommit, color: 'text-[#FB923C]', bg: 'bg-[#FB923C]/10', border: 'border-[#FB923C]/30', x: 65, y: 60 },
     ];
 
     const sustainNodes = [
-        { id: 'burnout', label: 'Agent Burnout', type: 'pressure', icon: TrendingDown, color: 'text-red-500', bg: 'bg-red-500/10', border: 'border-red-500/50', x: 10, y: 30 },
-        { id: 'compliance', label: 'Regulation', type: 'pressure', icon: Scale, color: 'text-emerald-600', bg: 'bg-emerald-600/10', border: 'border-emerald-600/50', x: 90, y: 30 },
+        { id: 'burnout', label: 'Agent Burnout', type: 'pressure', icon: TrendingDown, color: 'text-[#EF4444]', bg: 'bg-[#EF4444]/10', border: 'border-[#EF4444]/50', x: 10, y: 30 },
+        { id: 'compliance', label: 'Regulation', type: 'pressure', icon: Scale, color: 'text-[#059669]', bg: 'bg-[#059669]/10', border: 'border-[#059669]/50', x: 90, y: 30 },
         
-        { id: 'retention', label: 'Wellness Focus', type: 'intervention', icon: Lightbulb, color: 'text-yellow-300', bg: 'bg-yellow-300/10', border: 'border-yellow-300/50', x: 20, y: 15 },
-        { id: 'automation', label: 'Auto-Triage', type: 'intervention', icon: Target, color: 'text-cyan-300', bg: 'bg-cyan-300/10', border: 'border-cyan-300/50', x: 80, y: 15 },
-        { id: 'feedback', label: 'Feedback Loop', type: 'leverage_point', icon: Activity, color: 'text-pink-400', bg: 'bg-pink-500/10', border: 'border-pink-500/50', x: 50, y: 85 },
+        { id: 'retention', label: 'Wellness Focus', type: 'intervention', icon: Lightbulb, color: 'text-[#FDE047]', bg: 'bg-[#FDE047]/10', border: 'border-[#FDE047]/50', x: 20, y: 15 },
+        { id: 'automation', label: 'Auto-Triage', type: 'intervention', icon: Target, color: 'text-[#67E8F9]', bg: 'bg-[#67E8F9]/10', border: 'border-[#67E8F9]/50', x: 80, y: 15 },
+        { id: 'feedback', label: 'Feedback Loop', type: 'leverage_point', icon: Activity, color: 'text-[#F472B6]', bg: 'bg-[#F472B6]/10', border: 'border-[#F472B6]/50', x: 50, y: 85 },
     ];
 
     const cldNodes = [
-        { id: 'sales_pressure', label: 'Sales Pressure', type: 'variable', icon: Target, color: 'text-red-400', bg: 'bg-red-500/10', border: 'border-red-500/50', x: 20, y: 30 },
-        { id: 'agent_effort', label: 'Agent Effort', type: 'variable', icon: Activity, color: 'text-blue-400', bg: 'bg-blue-500/10', border: 'border-blue-500/50', x: 50, y: 20 },
-        { id: 'customer_satisfaction', label: 'Customer Satisfaction', type: 'variable', icon: Globe, color: 'text-emerald-400', bg: 'bg-emerald-500/10', border: 'border-emerald-500/50', x: 80, y: 30 },
-        { id: 'revenue', label: 'Revenue/Acquisitions', type: 'variable', icon: Zap, color: 'text-green-400', bg: 'bg-green-500/10', border: 'border-green-500/50', x: 80, y: 70 },
-        { id: 'attrition', label: 'Agent Attrition', type: 'variable', icon: TrendingDown, color: 'text-purple-400', bg: 'bg-purple-500/10', border: 'border-purple-500/50', x: 20, y: 70 },
-        { id: 'training_cost', label: 'Training Cost', type: 'variable', icon: Briefcase, color: 'text-orange-400', bg: 'bg-orange-500/10', border: 'border-orange-500/50', x: 50, y: 85 },
-        { id: 'reinforcing_loop', label: 'Burnout Loop (R)', type: 'loop', icon: Repeat, color: 'text-red-300', bg: 'bg-red-500/20', border: 'border-red-500/60', x: 35, y: 50 },
-        { id: 'balancing_loop', label: 'Sales Loop (B)', type: 'loop', icon: RefreshCw, color: 'text-emerald-300', bg: 'bg-emerald-500/20', border: 'border-emerald-500/60', x: 65, y: 50 },
+        { id: 'sales_pressure', label: 'Sales Pressure', type: 'variable', icon: Target, color: 'text-[#F87171]', bg: 'bg-[#EF4444]/10', border: 'border-[#EF4444]/50', x: 20, y: 30 },
+        { id: 'agent_effort', label: 'Agent Effort', type: 'variable', icon: Activity, color: 'text-[#60A5FA]', bg: 'bg-[#3B82F6]/10', border: 'border-[#3B82F6]/50', x: 50, y: 20 },
+        { id: 'customer_satisfaction', label: 'Customer Satisfaction', type: 'variable', icon: Globe, color: 'text-[#34D399]', bg: 'bg-[#10B981]/10', border: 'border-[#10B981]/50', x: 80, y: 30 },
+        { id: 'revenue', label: 'Revenue/Acquisitions', type: 'variable', icon: Zap, color: 'text-[#4ADE80]', bg: 'bg-[#22C55E]/10', border: 'border-[#22C55E]/50', x: 80, y: 70 },
+        { id: 'attrition', label: 'Agent Attrition', type: 'variable', icon: TrendingDown, color: 'text-[#C084FC]', bg: 'bg-[#A855F7]/10', border: 'border-[#A855F7]/50', x: 20, y: 70 },
+        { id: 'training_cost', label: 'Training Cost', type: 'variable', icon: Briefcase, color: 'text-[#FB923C]', bg: 'bg-[#F97316]/10', border: 'border-[#F97316]/50', x: 50, y: 85 },
+        { id: 'reinforcing_loop', label: 'Burnout Loop (R)', type: 'loop', icon: Repeat, color: 'text-[#FCA5A5]', bg: 'bg-[#EF4444]/20', border: 'border-[#EF4444]/60', x: 35, y: 50 },
+        { id: 'balancing_loop', label: 'Sales Loop (B)', type: 'loop', icon: RefreshCw, color: 'text-[#6EE7B7]', bg: 'bg-[#10B981]/20', border: 'border-[#10B981]/60', x: 65, y: 50 },
     ];
 
     const snaNodes = [
-        { id: 'admin1', label: 'Lead Admin', type: 'central_node', icon: ShieldCheck, color: 'text-purple-400', bg: 'bg-purple-500/10', border: 'border-purple-500/50', x: 50, y: 50 },
-        { id: 'team_alpha', label: 'Team Alpha', type: 'cluster', icon: Users, color: 'text-blue-400', bg: 'bg-blue-500/10', border: 'border-blue-500/50', x: 25, y: 25 },
-        { id: 'team_beta', label: 'Team Beta', type: 'cluster', icon: Users, color: 'text-cyan-400', bg: 'bg-cyan-500/10', border: 'border-cyan-500/50', x: 75, y: 25 },
-        { id: 'external_vendors', label: 'Vendors', type: 'cluster', icon: Briefcase, color: 'text-orange-400', bg: 'bg-orange-500/10', border: 'border-orange-500/50', x: 75, y: 75 },
-        { id: 'qa_team', label: 'QA / Compliance', type: 'cluster', icon: Target, color: 'text-pink-400', bg: 'bg-pink-500/10', border: 'border-pink-500/50', x: 25, y: 75 },
+        { id: 'admin1', label: 'Lead Admin', type: 'central_node', icon: ShieldCheck, color: 'text-[#C084FC]', bg: 'bg-[#A855F7]/10', border: 'border-[#A855F7]/50', x: 50, y: 50 },
+        { id: 'team_alpha', label: 'Team Alpha', type: 'cluster', icon: Users, color: 'text-[#60A5FA]', bg: 'bg-[#3B82F6]/10', border: 'border-[#3B82F6]/50', x: 25, y: 25 },
+        { id: 'team_beta', label: 'Team Beta', type: 'cluster', icon: Users, color: 'text-[#22D3EE]', bg: 'bg-[#06B6D4]/10', border: 'border-[#06B6D4]/50', x: 75, y: 25 },
+        { id: 'external_vendors', label: 'Vendors', type: 'cluster', icon: Briefcase, color: 'text-[#FB923C]', bg: 'bg-[#F97316]/10', border: 'border-[#F97316]/50', x: 75, y: 75 },
+        { id: 'qa_team', label: 'QA / Compliance', type: 'cluster', icon: Target, color: 'text-[#F472B6]', bg: 'bg-[#EC4899]/10', border: 'border-[#EC4899]/50', x: 25, y: 75 },
     ];
 
     const terminalNodes = [
-        { id: 'admin_root', label: 'Admin Portal', type: 'terminal', icon: ShieldCheck, color: 'text-purple-400', bg: 'bg-purple-500/10', border: 'border-purple-500/50', x: 15, y: 50 },
-        { id: 'sys_config', label: 'System Config', type: 'component', icon: Settings, color: 'text-purple-300', bg: 'bg-purple-500/10', border: 'border-purple-500/30', x: 35, y: 20 },
-        { id: 'roster_mgr', label: 'Roster Manager', type: 'component', icon: Users, color: 'text-purple-300', bg: 'bg-purple-500/10', border: 'border-purple-500/30', x: 35, y: 40 },
-        { id: 'audit_dash', label: 'Audit Log', type: 'component', icon: Activity, color: 'text-purple-300', bg: 'bg-purple-500/10', border: 'border-purple-500/30', x: 35, y: 60 },
-        { id: 'ledger_admin', label: 'Sales Ledger', type: 'component', icon: Database, color: 'text-purple-300', bg: 'bg-purple-500/10', border: 'border-purple-500/30', x: 35, y: 80 },
+        { id: 'admin_root', label: 'Admin Portal', type: 'terminal', icon: ShieldCheck, color: 'text-[#C084FC]', bg: 'bg-[#A855F7]/10', border: 'border-[#A855F7]/50', x: 15, y: 50 },
+        { id: 'sys_config', label: 'System Config', type: 'component', icon: Settings, color: 'text-[#D8B4FE]', bg: 'bg-[#A855F7]/10', border: 'border-[#A855F7]/30', x: 35, y: 20 },
+        { id: 'roster_mgr', label: 'Roster Manager', type: 'component', icon: Users, color: 'text-[#D8B4FE]', bg: 'bg-[#A855F7]/10', border: 'border-[#A855F7]/30', x: 35, y: 40 },
+        { id: 'audit_dash', label: 'Audit Log', type: 'component', icon: Activity, color: 'text-[#D8B4FE]', bg: 'bg-[#A855F7]/10', border: 'border-[#A855F7]/30', x: 35, y: 60 },
+        { id: 'ledger_admin', label: 'Sales Ledger', type: 'component', icon: Database, color: 'text-[#D8B4FE]', bg: 'bg-[#A855F7]/10', border: 'border-[#A855F7]/30', x: 35, y: 80 },
         
-        { id: 'state_bus', label: 'Global State (CRM)', type: 'state', icon: Server, color: 'text-emerald-400', bg: 'bg-emerald-500/10', border: 'border-emerald-500/50', x: 50, y: 50 },
+        { id: 'state_bus', label: 'Global State (CRM)', type: 'state', icon: Server, color: 'text-[#34D399]', bg: 'bg-[#10B981]/10', border: 'border-[#10B981]/50', x: 50, y: 50 },
         
-        { id: 'agent_root', label: 'Agent Portal', type: 'terminal', icon: MonitorSmartphone, color: 'text-blue-400', bg: 'bg-blue-500/10', border: 'border-blue-500/50', x: 85, y: 50 },
-        { id: 'agent_dash', label: 'Agent Metrics Dash', type: 'component', icon: Activity, color: 'text-blue-300', bg: 'bg-blue-500/10', border: 'border-blue-500/30', x: 65, y: 20 },
-        { id: 'smart_queue', label: 'Smart Queue', type: 'component', icon: Workflow, color: 'text-blue-300', bg: 'bg-blue-500/10', border: 'border-blue-500/30', x: 65, y: 40 },
-        { id: 'enrollment', label: 'Enrollment Form', type: 'component', icon: GitCommit, color: 'text-blue-300', bg: 'bg-blue-500/10', border: 'border-blue-500/30', x: 65, y: 60 },
-        { id: 'disposition', label: 'Disposition', type: 'component', icon: GitCommit, color: 'text-orange-400', bg: 'bg-orange-500/10', border: 'border-orange-500/30', x: 65, y: 80 },
+        { id: 'agent_root', label: 'Agent Portal', type: 'terminal', icon: MonitorSmartphone, color: 'text-[#60A5FA]', bg: 'bg-[#3B82F6]/10', border: 'border-[#3B82F6]/50', x: 85, y: 50 },
+        { id: 'agent_dash', label: 'Agent Metrics Dash', type: 'component', icon: Activity, color: 'text-[#93C5FD]', bg: 'bg-[#3B82F6]/10', border: 'border-[#3B82F6]/30', x: 65, y: 20 },
+        { id: 'smart_queue', label: 'Smart Queue', type: 'component', icon: Workflow, color: 'text-[#93C5FD]', bg: 'bg-[#3B82F6]/10', border: 'border-[#3B82F6]/30', x: 65, y: 40 },
+        { id: 'enrollment', label: 'Enrollment Form', type: 'component', icon: GitCommit, color: 'text-[#93C5FD]', bg: 'bg-[#3B82F6]/10', border: 'border-[#3B82F6]/30', x: 65, y: 60 },
+        { id: 'disposition', label: 'Disposition', type: 'component', icon: GitCommit, color: 'text-[#FB923C]', bg: 'bg-[#F97316]/10', border: 'border-[#F97316]/30', x: 65, y: 80 },
     ];
 
     const approvedFlowNodes = [
-        { id: 'pending_sale', label: 'Agent Submits Sale', type: 'event', icon: GitCommit, color: 'text-slate-400', bg: 'bg-surface-alt', border: 'border-border-subtle', x: 50, y: 15 },
-        { id: 'admin_approves', label: 'Admin Approves (Terminal)', type: 'event', icon: ShieldCheck, color: 'text-emerald-400', bg: 'bg-emerald-500/10', border: 'border-emerald-500/50', x: 50, y: 35 },
-        { id: 'crm_update', label: 'CRM Sync (Status = Approved)', type: 'state', icon: Server, color: 'text-blue-400', bg: 'bg-blue-500/10', border: 'border-blue-500/50', x: 50, y: 55 },
+        { id: 'pending_sale', label: 'Agent Submits Sale', type: 'event', icon: GitCommit, color: 'text-[#94A3B8]', bg: 'bg-surface-main shadow-inner', border: 'border-border-subtle', x: 50, y: 15 },
+        { id: 'admin_approves', label: 'Admin Approves (Terminal)', type: 'event', icon: ShieldCheck, color: 'text-[#34D399]', bg: 'bg-[#10B981]/10', border: 'border-[#10B981]/50', x: 50, y: 35 },
+        { id: 'crm_update', label: 'CRM Sync (Status = Approved)', type: 'state', icon: Server, color: 'text-[#60A5FA]', bg: 'bg-[#3B82F6]/10', border: 'border-[#3B82F6]/50', x: 50, y: 55 },
         
-        { id: 'admin_dash_rev', label: 'Admin Revenue KPI', type: 'component', icon: Zap, color: 'text-green-400', bg: 'bg-green-500/10', border: 'border-green-500/50', x: 20, y: 85 },
-        { id: 'admin_health', label: 'Health Scorecard', type: 'component', icon: Activity, color: 'text-pink-400', bg: 'bg-pink-500/10', border: 'border-pink-500/50', x: 50, y: 85 },
-        { id: 'admin_audit', label: 'Audit / Ledger', type: 'component', icon: Database, color: 'text-purple-400', bg: 'bg-purple-500/10', border: 'border-purple-500/50', x: 80, y: 85 },
+        { id: 'admin_dash_rev', label: 'Admin Revenue KPI', type: 'component', icon: Zap, color: 'text-[#4ADE80]', bg: 'bg-[#22C55E]/10', border: 'border-[#22C55E]/50', x: 20, y: 85 },
+        { id: 'admin_health', label: 'Health Scorecard', type: 'component', icon: Activity, color: 'text-[#F472B6]', bg: 'bg-[#EC4899]/10', border: 'border-[#EC4899]/50', x: 50, y: 85 },
+        { id: 'admin_audit', label: 'Audit / Ledger', type: 'component', icon: Database, color: 'text-[#C084FC]', bg: 'bg-[#A855F7]/10', border: 'border-[#A855F7]/50', x: 80, y: 85 },
 
-        { id: 'agent_metrics', label: 'Agent Dash Metrics', type: 'component', icon: Users, color: 'text-cyan-400', bg: 'bg-cyan-500/10', border: 'border-cyan-500/50', x: 15, y: 55 },
-        { id: 'smart_queue_adv', label: 'Queue Advances', type: 'component', icon: Workflow, color: 'text-orange-400', bg: 'bg-orange-500/10', border: 'border-orange-500/50', x: 85, y: 55 },
+        { id: 'agent_metrics', label: 'Agent Dash Metrics', type: 'component', icon: Users, color: 'text-[#22D3EE]', bg: 'bg-[#06B6D4]/10', border: 'border-[#06B6D4]/50', x: 15, y: 55 },
+        { id: 'smart_queue_adv', label: 'Queue Advances', type: 'component', icon: Workflow, color: 'text-[#FB923C]', bg: 'bg-[#F97316]/10', border: 'border-[#F97316]/50', x: 85, y: 55 },
     ];
 
     const clmNodes = [
-        { id: 'approved_event', label: 'Sale Approved', type: 'event', icon: Zap, color: 'text-green-400', bg: 'bg-green-500/10', border: 'border-green-500/30', x: 50, y: 20 },
-        { id: 'clm_engine', label: 'CRM Lifecycle Engine', type: 'process', icon: Server, color: 'text-emerald-400', bg: 'bg-emerald-500/10', border: 'border-emerald-500/30', x: 50, y: 40 },
-        { id: 'agent_queue', label: 'Agent Notification Queue', type: 'component', icon: Workflow, color: 'text-blue-400', bg: 'bg-blue-500/10', border: 'border-blue-500/30', x: 50, y: 60 },
+        { id: 'approved_event', label: 'Sale Approved', type: 'event', icon: Zap, color: 'text-[#4ADE80]', bg: 'bg-[#22C55E]/10', border: 'border-[#22C55E]/30', x: 50, y: 20 },
+        { id: 'clm_engine', label: 'CRM Lifecycle Engine', type: 'process', icon: Server, color: 'text-[#34D399]', bg: 'bg-[#10B981]/10', border: 'border-[#10B981]/30', x: 50, y: 40 },
+        { id: 'agent_queue', label: 'Agent Notification Queue', type: 'component', icon: Workflow, color: 'text-[#60A5FA]', bg: 'bg-[#3B82F6]/10', border: 'border-[#3B82F6]/30', x: 50, y: 60 },
         
-        { id: 'feedback_call', label: 'Follow Up / Feedback', type: 'event', icon: Activity, color: 'text-pink-400', bg: 'bg-pink-500/10', border: 'border-pink-500/30', x: 20, y: 80 },
-        { id: 'upsell_call', label: 'Cross/Up-Sell Offer', type: 'event', icon: Target, color: 'text-orange-400', bg: 'bg-orange-500/10', border: 'border-orange-500/30', x: 50, y: 80 },
-        { id: 'reorder_call', label: 'Reorder / Winback', type: 'event', icon: RefreshCw, color: 'text-purple-400', bg: 'bg-purple-500/10', border: 'border-purple-500/30', x: 80, y: 80 },
-        { id: 'repeat_cycle', label: 'Revenue Loop (Cycle)', type: 'loop', icon: Repeat, color: 'text-emerald-300', bg: 'bg-emerald-500/20', border: 'border-emerald-500/60', x: 80, y: 40 },
+        { id: 'feedback_call', label: 'Follow Up / Feedback', type: 'event', icon: Activity, color: 'text-[#F472B6]', bg: 'bg-[#EC4899]/10', border: 'border-[#EC4899]/30', x: 20, y: 80 },
+        { id: 'upsell_call', label: 'Cross/Up-Sell Offer', type: 'event', icon: Target, color: 'text-[#FB923C]', bg: 'bg-[#F97316]/10', border: 'border-[#F97316]/30', x: 50, y: 80 },
+        { id: 'reorder_call', label: 'Reorder / Winback', type: 'event', icon: RefreshCw, color: 'text-[#C084FC]', bg: 'bg-[#A855F7]/10', border: 'border-[#A855F7]/30', x: 80, y: 80 },
+        { id: 'repeat_cycle', label: 'Revenue Loop (Cycle)', type: 'loop', icon: Repeat, color: 'text-[#6EE7B7]', bg: 'bg-[#10B981]/20', border: 'border-[#10B981]/60', x: 80, y: 40 },
     ];
 
     const cxNodes = [
-        { id: 'customer_profile', label: 'Customers Feel Known', type: 'state', icon: Heart, color: 'text-pink-400', bg: 'bg-pink-500/10', border: 'border-pink-500/30', x: 25, y: 30 },
-        { id: 'service_interaction', label: 'Service Interactions', type: 'event', icon: Workflow, color: 'text-blue-400', bg: 'bg-blue-500/10', border: 'border-blue-500/30', x: 50, y: 30 },
-        { id: 'retention_rate', label: 'Stay Longer (Retention)', type: 'variable', icon: ShieldCheck, color: 'text-emerald-400', bg: 'bg-emerald-500/10', border: 'border-emerald-500/30', x: 25, y: 70 },
-        { id: 'order_value', label: 'Higher Order Value', type: 'variable', icon: TrendingUp, color: 'text-purple-400', bg: 'bg-purple-500/10', border: 'border-purple-500/30', x: 75, y: 70 },
-        { id: 'growth_engine', label: 'CX Growth Engine', type: 'loop', icon: Zap, color: 'text-green-400', bg: 'bg-green-500/20', border: 'border-green-500/60', x: 50, y: 85 },
+        { id: 'customer_profile', label: 'Customers Feel Known', type: 'state', icon: Heart, color: 'text-[#F472B6]', bg: 'bg-[#EC4899]/10', border: 'border-[#EC4899]/30', x: 25, y: 30 },
+        { id: 'service_interaction', label: 'Service Interactions', type: 'event', icon: Workflow, color: 'text-[#60A5FA]', bg: 'bg-[#3B82F6]/10', border: 'border-[#3B82F6]/30', x: 50, y: 30 },
+        { id: 'retention_rate', label: 'Stay Longer (Retention)', type: 'variable', icon: ShieldCheck, color: 'text-[#34D399]', bg: 'bg-[#10B981]/10', border: 'border-[#10B981]/30', x: 25, y: 70 },
+        { id: 'order_value', label: 'Higher Order Value', type: 'variable', icon: TrendingUp, color: 'text-[#C084FC]', bg: 'bg-[#A855F7]/10', border: 'border-[#A855F7]/30', x: 75, y: 70 },
+        { id: 'growth_engine', label: 'CX Growth Engine', type: 'loop', icon: Zap, color: 'text-[#4ADE80]', bg: 'bg-[#22C55E]/20', border: 'border-[#22C55E]/60', x: 50, y: 85 },
     ];
 
     const gamificationNodes = [
-        { id: 'leaderboard', label: 'Clear Leaderboards', type: 'component', icon: Trophy, color: 'text-amber-400', bg: 'bg-amber-500/10', border: 'border-amber-500/30', x: 50, y: 30 },
-        { id: 'peer_competition', label: 'Intra-team Competition', type: 'event', icon: Users, color: 'text-blue-400', bg: 'bg-blue-500/10', border: 'border-blue-500/30', x: 25, y: 55 },
-        { id: 'morale', label: 'High Morale', type: 'variable', icon: Heart, color: 'text-pink-400', bg: 'bg-pink-500/10', border: 'border-pink-500/30', x: 50, y: 80 },
-        { id: 'agent_effort_gamified', label: 'Sustained Effort', type: 'variable', icon: Activity, color: 'text-emerald-400', bg: 'bg-emerald-500/10', border: 'border-emerald-500/30', x: 75, y: 55 },
-        { id: 'sales_volume_gamified', label: 'Sales Volume', type: 'variable', icon: Zap, color: 'text-green-400', bg: 'bg-green-500/10', border: 'border-green-500/30', x: 50, y: 55 },
+        { id: 'leaderboard', label: 'Clear Leaderboards', type: 'component', icon: Trophy, color: 'text-[#FBBF24]', bg: 'bg-[#F59E0B]/10', border: 'border-[#F59E0B]/30', x: 50, y: 30 },
+        { id: 'peer_competition', label: 'Intra-team Competition', type: 'event', icon: Users, color: 'text-[#60A5FA]', bg: 'bg-[#3B82F6]/10', border: 'border-[#3B82F6]/30', x: 25, y: 55 },
+        { id: 'morale', label: 'High Morale', type: 'variable', icon: Heart, color: 'text-[#F472B6]', bg: 'bg-[#EC4899]/10', border: 'border-[#EC4899]/30', x: 50, y: 80 },
+        { id: 'agent_effort_gamified', label: 'Sustained Effort', type: 'variable', icon: Activity, color: 'text-[#34D399]', bg: 'bg-[#10B981]/10', border: 'border-[#10B981]/30', x: 75, y: 55 },
+        { id: 'sales_volume_gamified', label: 'Sales Volume', type: 'variable', icon: Zap, color: 'text-[#4ADE80]', bg: 'bg-[#22C55E]/10', border: 'border-[#22C55E]/30', x: 50, y: 55 },
     ];
 
     const getNodesByMode = () => {
         switch(viewMode) {
             case 'sustainability': return [...coreNodes, ...sustainNodes];
-            case 'actor': return coreNodes; // Or a subset, we can just use core for actor mapping generally or emphasize actors.
+            case 'actor': return coreNodes;
             case 'cld': return cldNodes;
             case 'sna': return snaNodes;
             case 'terminals': return terminalNodes;
@@ -239,7 +240,7 @@ export const EcosystemTab: React.FC = () => {
     const getEdgesByMode = () => {
         switch(viewMode) {
             case 'sustainability': return [...coreEdges, ...sustainEdges];
-            case 'actor': return coreEdges.filter(e => e.source === 'admin' || e.source === 'agents' || e.target === 'agents' || e.target === 'admin' || e.source === 'customers' || e.target === 'customers'); // Focus mostly on actors. Let's just return coreEdges for now and let the user see the system.
+            case 'actor': return coreEdges.filter(e => e.source === 'admin' || e.source === 'agents' || e.target === 'agents' || e.target === 'admin' || e.source === 'customers' || e.target === 'customers');
             case 'cld': return cldEdges;
             case 'sna': return snaEdges;
             case 'terminals': return terminalEdges;
@@ -255,79 +256,46 @@ export const EcosystemTab: React.FC = () => {
     const edges = getEdgesByMode();
 
     return (
-        <div className="space-y-6">
-            <SectionHeader icon={Network} title="Ecosystem Mapping" sub="System Architecture & Service Relationships" color="text-cyan-400" />
+        <motion.div 
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="space-y-8"
+        >
+            <SectionHeader icon={Network} title="Ecosystem Mapping" sub="System Architecture & Service Relationships" color="text-[#22D3EE]" />
             
-            <p className="text-sm text-text-muted leading-relaxed">
+            <p className="text-base text-text-muted leading-relaxed max-w-3xl font-medium">
                 Visualize the relationships, components, feedback loops, and patterns inside the platform ecosystem. 
                 Instead of treating a problem as a simple sequence of steps, this map helps you see how different 
                 actors, processes, resources, and pressures influence one another in real-time.
             </p>
 
-            <div className="flex flex-wrap items-center gap-2 border-b border-border-subtle pb-4">
-                <button 
-                    onClick={() => setViewMode('core')}
-                    className={`px-4 py-2 rounded-lg text-sm font-bold transition-colors ${viewMode === 'core' ? 'bg-accent-primary text-white' : 'bg-surface-alt text-text-muted hover:text-text-primary'}`}
-                >
-                    Core Services
-                </button>
-                <button 
-                    onClick={() => setViewMode('sustainability')}
-                    className={`px-4 py-2 rounded-lg text-sm font-bold transition-colors ${viewMode === 'sustainability' ? 'bg-amber-500 text-white' : 'bg-surface-alt text-text-muted hover:text-text-primary'}`}
-                >
-                    Sustainability
-                </button>
-                <button 
-                    onClick={() => setViewMode('actor')}
-                    className={`px-4 py-2 rounded-lg text-sm font-bold transition-colors ${viewMode === 'actor' ? 'bg-blue-500 text-white' : 'bg-surface-alt text-text-muted hover:text-text-primary'}`}
-                >
-                    Actor Mapping
-                </button>
-                <button 
-                    onClick={() => setViewMode('cld')}
-                    className={`px-4 py-2 rounded-lg text-sm font-bold transition-colors ${viewMode === 'cld' ? 'bg-emerald-500 text-white' : 'bg-surface-alt text-text-muted hover:text-text-primary'}`}
-                >
-                    Causal Loop (CLD)
-                </button>
-                <button 
-                    onClick={() => setViewMode('sna')}
-                    className={`px-4 py-2 rounded-lg text-sm font-bold transition-colors ${viewMode === 'sna' ? 'bg-purple-500 text-white' : 'bg-surface-alt text-text-muted hover:text-text-primary'}`}
-                >
-                    Network Analysis (SNA)
-                </button>
-                <button 
-                    onClick={() => setViewMode('terminals')}
-                    className={`px-4 py-2 rounded-lg text-sm font-bold transition-colors ${viewMode === 'terminals' ? 'bg-indigo-500 text-white' : 'bg-surface-alt text-text-muted hover:text-text-primary'}`}
-                >
-                    User Views
-                </button>
-                <button 
-                    onClick={() => setViewMode('approved_flow')}
-                    className={`px-4 py-2 rounded-lg text-sm font-bold transition-colors ${viewMode === 'approved_flow' ? 'bg-emerald-400 text-slate-800' : 'bg-surface-alt text-text-muted hover:text-text-primary'}`}
-                >
-                    Sale Approved Matrix
-                </button>
-                <button 
-                    onClick={() => setViewMode('clm_loop')}
-                    className={`px-4 py-2 rounded-lg text-sm font-bold transition-colors ${viewMode === 'clm_loop' ? 'bg-orange-500 text-white' : 'bg-surface-alt text-text-muted hover:text-text-primary'}`}
-                >
-                    Customer Lifecycle (CLM)
-                </button>
-                <button 
-                    onClick={() => setViewMode('cx_growth')}
-                    className={`px-4 py-2 rounded-lg text-sm font-bold transition-colors ${viewMode === 'cx_growth' ? 'bg-pink-500 text-white' : 'bg-surface-alt text-text-muted hover:text-text-primary'}`}
-                >
-                    CX as Growth Engine
-                </button>
-                <button 
-                    onClick={() => setViewMode('gamification')}
-                    className={`px-4 py-2 rounded-lg text-sm font-bold transition-colors ${viewMode === 'gamification' ? 'bg-amber-500 text-slate-900' : 'bg-surface-alt text-text-muted hover:text-text-primary'}`}
-                >
-                    Gamification & Morale
-                </button>
+            <div className="flex flex-wrap items-center gap-3 border-b border-border-subtle pb-6">
+                {[
+                    { id: 'core', label: 'Core Services', color: 'bg-[#3B82F6]' },
+                    { id: 'sustainability', label: 'Sustainability', color: 'bg-[#F59E0B]' },
+                    { id: 'actor', label: 'Actor Mapping', color: 'bg-[#3B82F6]' },
+                    { id: 'cld', label: 'Causal Loop (CLD)', color: 'bg-[#10B981]' },
+                    { id: 'sna', label: 'Network Analysis (SNA)', color: 'bg-[#A855F7]' },
+                    { id: 'terminals', label: 'User Views', color: 'bg-[#6366F1]' },
+                    { id: 'approved_flow', label: 'Sale Approved Matrix', color: 'bg-[#10B981]' },
+                    { id: 'clm_loop', label: 'Customer Lifecycle', color: 'bg-[#F97316]' },
+                    { id: 'cx_growth', label: 'CX as Growth Engine', color: 'bg-[#EC4899]' },
+                    { id: 'gamification', label: 'Gamification & Morale', color: 'bg-[#F59E0B]' },
+                ].map(mode => (
+                    <button 
+                        key={mode.id}
+                        onClick={() => setViewMode(mode.id as any)}
+                        className={`px-4 py-2 rounded-xl text-sm font-black uppercase tracking-widest transition-all duration-300 ${viewMode === mode.id ? `${mode.color} text-white shadow-lg border border-white/20` : 'bg-surface-main text-text-muted hover:text-text-primary border border-border-subtle hover:border-border-strong'}`}
+                    >
+                        {mode.label}
+                    </button>
+                ))}
             </div>
 
-            <Card className="p-1 min-h-[500px] bg-surface-alt/20 overflow-hidden relative border-border-subtle group">
+            <div className="min-h-[550px] bg-surface-main overflow-hidden relative border border-border-subtle rounded-3xl group shadow-inner">
+                {/* Background Grid Pattern */}
+                <div className="absolute inset-0 max-w-full h-full pointer-events-none opacity-30" style={{ backgroundImage: 'radial-gradient(var(--border-strong) 1px, transparent 1px)', backgroundSize: '40px 40px' }}></div>
+
                 <svg className="w-full h-full absolute inset-0 pointer-events-none" viewBox="0 0 100 100" preserveAspectRatio="none">
                     {edges.map((edge, i) => {
                         const sourceNode = nodes.find(n => n.id === edge.source);
@@ -337,17 +305,17 @@ export const EcosystemTab: React.FC = () => {
                         const isActive = activeNode === null || activeNode === edge.source || activeNode === edge.target;
                         
                         return (
-                            <g key={i} className={`transition-opacity duration-300 ${isActive ? 'opacity-100' : 'opacity-10'}`}>
+                            <g key={i} className={`transition-opacity duration-300 ${isActive ? 'opacity-100' : 'opacity-[0.15]'}`}>
                                 <path 
                                     d={`M ${sourceNode.x} ${sourceNode.y} Q ${(sourceNode.x + targetNode.x) / 2 + 10} ${(sourceNode.y + targetNode.y) / 2 - 10} ${targetNode.x} ${targetNode.y}`}
                                     fill="none" 
-                                    stroke="currentColor" 
+                                    stroke="var(--border-strong)" 
                                     strokeWidth="0.4"
                                     strokeDasharray={edge.strokeDasharray}
-                                    className="text-border-strong drop-shadow-md"
+                                    className="drop-shadow-md opacity-50"
                                 />
                                 {edge.pulse && isActive && (
-                                    <circle r="0.6" fill="currentColor" className="text-accent-primary animate-[dash_3s_linear_infinite]">
+                                    <circle r="0.6" fill="#3B82F6" className="animate-[dash_3s_linear_infinite] drop-shadow-[0_0_5px_rgba(59,130,246,0.8)]">
                                         <animateMotion dur="3s" repeatCount="indefinite" path={`M ${sourceNode.x} ${sourceNode.y} Q ${(sourceNode.x + targetNode.x) / 2 + 10} ${(sourceNode.y + targetNode.y) / 2 - 10} ${targetNode.x} ${targetNode.y}`} />
                                     </circle>
                                 )}
@@ -357,289 +325,201 @@ export const EcosystemTab: React.FC = () => {
                 </svg>
 
                 <div className="w-full h-full absolute inset-0">
-                    {nodes.map(node => (
-                        <div 
-                            key={node.id}
-                            className={`absolute transform -translate-x-1/2 -translate-y-1/2 flex flex-col items-center justify-center gap-1.5 transition-all duration-300 cursor-pointer ${activeNode === node.id || activeNode === null ? 'scale-100 opacity-100 z-20' : 'scale-90 opacity-40 z-10'}`}
-                            style={{ left: `${node.x}%`, top: `${node.y}%` }}
-                            onMouseEnter={() => setActiveNode(node.id)}
-                            onMouseLeave={() => setActiveNode(null)}
-                        >
-                            <div className={`p-4 rounded-full border-2 ${node.bg} ${node.border} shadow-xl backdrop-blur-md relative group-hover:shadow-[0_0_20px_var(--accent-primary)] transition-shadow`}>
-                                <node.icon className={`w-8 h-8 ${node.color}`} />
-                                <div className="absolute -inset-2 rounded-full border border-dashed border-text-muted/20 animate-[spin_10s_linear_infinite]" />
-                            </div>
-                            <div className="text-center bg-surface-main/80 backdrop-blur-md px-3 py-1 rounded-full border border-border-subtle shadow-lg">
-                                <p className={`text-xs font-bold whitespace-nowrap ${node.color}`}>{node.label}</p>
-                                <p className="text-[9px] uppercase font-bold text-text-muted tracking-wider">{node.type}</p>
-                            </div>
-                        </div>
-                    ))}
+                    <AnimatePresence>
+                        {nodes.map(node => (
+                            <motion.div 
+                                initial={{ opacity: 0, scale: 0.8 }}
+                                animate={{ opacity: 1, scale: activeNode === node.id || activeNode === null ? 1 : 0.9 }}
+                                exit={{ opacity: 0, scale: 0.8 }}
+                                key={node.id}
+                                className={`absolute transform -translate-x-1/2 -translate-y-1/2 flex flex-col items-center justify-center gap-2 transition-all duration-300 cursor-pointer ${activeNode === node.id || activeNode === null ? 'z-20' : 'opacity-40 z-10'}`}
+                                style={{ left: `${node.x}%`, top: `${node.y}%` }}
+                                onMouseEnter={() => setActiveNode(node.id)}
+                                onMouseLeave={() => setActiveNode(null)}
+                            >
+                                <div className={`p-4 rounded-[20px] border border-white/5 ${node.bg} shadow-[0_10px_30px_rgba(0,0,0,0.5)] backdrop-blur-xl relative transition-all group-hover:scale-105`}>
+                                    <node.icon className={`w-8 h-8 ${node.color}`} strokeWidth={1.5} />
+                                    <div className={`absolute -inset-2 rounded-3xl border border-dashed ${node.border} animate-[spin_10s_linear_infinite] opacity-50`} />
+                                </div>
+                                <div className="text-center bg-surface-main/90 backdrop-blur-2xl px-4 py-2 rounded-xl border border-border-subtle shadow-xl">
+                                    <p className={`text-xs font-black whitespace-nowrap ${node.color} tracking-wide`}>{node.label}</p>
+                                    <p className="text-[10px] uppercase font-black text-text-muted tracking-widest mt-0.5">{node.type}</p>
+                                </div>
+                            </motion.div>
+                        ))}
+                    </AnimatePresence>
                 </div>
 
                 {/* Edge tooltips when active */}
-                {activeNode && (
-                    <div className="absolute bottom-4 left-4 right-4 bg-surface-main/80 backdrop-blur-md border border-border-subtle p-4 rounded-xl shadow-xl flex gap-6 overflow-x-auto custom-scrollbar pointer-events-auto z-30">
-                        <div className="shrink-0 flex items-center gap-3 pr-4 border-r border-border-subtle">
-                            {(() => {
-                                const activeData = nodes.find(n => n.id === activeNode);
-                                return activeData ? (
-                                    <>
-                                        <div className={`p-2 rounded-lg ${activeData.bg}`}><activeData.icon className={`w-6 h-6 ${activeData.color}`} /></div>
-                                        <div>
-                                            <p className="text-sm font-bold text-text-primary">{activeData.label}</p>
-                                            <p className="text-xs text-text-muted capitalize">{activeData.type} Node</p>
+                <AnimatePresence>
+                    {activeNode && (
+                        <motion.div 
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: 10 }}
+                            className="absolute bottom-6 left-6 right-6 bg-surface-main/95 backdrop-blur-2xl border border-border-subtle p-5 rounded-3xl shadow-2xl flex gap-6 overflow-x-auto custom-scrollbar pointer-events-auto z-30"
+                        >
+                            <div className="shrink-0 flex items-center gap-4 pr-6 border-r border-border-subtle">
+                                {(() => {
+                                    const activeData = nodes.find(n => n.id === activeNode);
+                                    return activeData ? (
+                                        <>
+                                            <div className={`p-3 rounded-xl border border-white/5 ${activeData.bg} shadow-inner`}><activeData.icon className={`w-6 h-6 ${activeData.color}`} /></div>
+                                            <div>
+                                                <p className="text-sm font-black text-text-primary tracking-wide">{activeData.label}</p>
+                                                <p className="text-xs font-bold text-text-muted uppercase tracking-widest mt-1">{activeData.type} Node</p>
+                                            </div>
+                                        </>
+                                    ) : null;
+                                })()}
+                            </div>
+                            <div className="flex flex-wrap gap-5 items-center">
+                                {edges.filter(e => e.source === activeNode).map(e => {
+                                    const target = nodes.find(n => n.id === e.target);
+                                    return (
+                                        <div key={e.target} className="flex flex-col text-sm space-y-1.5 font-medium">
+                                            <span className="text-text-muted uppercase tracking-widest text-xs font-black">Outbound: <span className="font-black text-text-primary ml-1">{e.type}</span></span>
+                                            <span className="font-bold border border-border-strong px-3 py-1.5 rounded-lg bg-surface-alt text-text-primary shadow-inner">{target?.label}</span>
                                         </div>
-                                    </>
-                                ) : null;
-                            })()}
-                        </div>
-                        <div className="flex flex-wrap gap-4 items-center">
-                            {edges.filter(e => e.source === activeNode).map(e => {
-                                const target = nodes.find(n => n.id === e.target);
-                                return (
-                                    <div key={e.target} className="flex flex-col text-xs space-y-1">
-                                        <span className="text-text-muted">Outbound: <span className="font-bold text-text-primary">{e.type}</span></span>
-                                        <span className="font-bold border border-border-subtle px-2 py-0.5 rounded-full bg-surface-alt">{target?.label}</span>
-                                    </div>
-                                )
-                            })}
-                            {edges.filter(e => e.target === activeNode).map(e => {
-                                const source = nodes.find(n => n.id === e.source);
-                                return (
-                                    <div key={e.source} className="flex flex-col text-xs space-y-1">
-                                        <span className="text-text-muted">Inbound: <span className="font-bold text-text-primary">{e.type}</span></span>
-                                        <span className="font-bold border border-border-subtle px-2 py-0.5 rounded-full bg-surface-alt">{source?.label}</span>
-                                    </div>
-                                )
-                            })}
-                        </div>
-                    </div>
-                )}
-            </Card>
+                                    )
+                                })}
+                                {edges.filter(e => e.target === activeNode).map(e => {
+                                    const source = nodes.find(n => n.id === e.source);
+                                    return (
+                                        <div key={e.source} className="flex flex-col text-sm space-y-1.5 font-medium">
+                                            <span className="text-text-muted uppercase tracking-widest text-xs font-black">Inbound: <span className="font-black text-text-primary ml-1">{e.type}</span></span>
+                                            <span className="font-bold border border-border-strong px-3 py-1.5 rounded-lg bg-surface-alt text-text-primary shadow-inner">{source?.label}</span>
+                                        </div>
+                                    )
+                                })}
+                            </div>
+                        </motion.div>
+                    )}
+                </AnimatePresence>
+            </div>
 
-            <div className={`grid gap-4 mt-6 grid-cols-2 md:grid-cols-3 lg:grid-cols-4`}>
+            <div className={`grid gap-5 mt-8 grid-cols-2 lg:grid-cols-4`}>
                 {(viewMode === 'core' || viewMode === 'sustainability' || viewMode === 'actor') && (
-                    <Card className="p-4 bg-surface-main border-border-subtle">
-                        <div className="flex items-center gap-2 mb-2">
-                            <Users className="text-blue-400 w-5 h-5" />
-                            <h4 className="font-bold text-sm">Actors</h4>
+                    <div className="p-6 bg-surface-main/50 border border-border-subtle rounded-3xl shadow-inner">
+                        <div className="flex items-center gap-3 mb-3">
+                            <div className="p-2 bg-[#3B82F6]/10 rounded-lg"><Users className="text-[#60A5FA] w-4 h-4" /></div>
+                            <h4 className="font-black text-sm text-text-primary tracking-wide">Actors</h4>
                         </div>
-                        <p className="text-xs text-text-muted">Participants triggering events (Admins, Agents, Leads).</p>
-                    </Card>
+                        <p className="text-sm text-text-muted font-medium leading-relaxed">Participants triggering events (Admins, Agents, Leads).</p>
+                    </div>
                 )}
                 {(viewMode === 'core' || viewMode === 'sustainability') && (
                     <>
-                        <Card className="p-4 bg-surface-main border-border-subtle">
-                            <div className="flex items-center gap-2 mb-2">
-                                <Workflow className="text-orange-400 w-5 h-5" />
-                                <h4 className="font-bold text-sm">Processes</h4>
+                        <div className="p-6 bg-surface-main/50 border border-border-subtle rounded-3xl shadow-inner">
+                            <div className="flex items-center gap-3 mb-3">
+                                <div className="p-2 bg-[#F97316]/10 rounded-lg"><Workflow className="text-[#FB923C] w-4 h-4" /></div>
+                                <h4 className="font-black text-sm text-text-primary tracking-wide">Processes</h4>
                             </div>
-                            <p className="text-xs text-text-muted">Orchestrated sequences (Enrollment, Automation, Telemetry).</p>
-                        </Card>
-                        <Card className="p-4 bg-surface-main border-border-subtle">
-                            <div className="flex items-center gap-2 mb-2">
-                                <Database className="text-cyan-400 w-5 h-5" />
-                                <h4 className="font-bold text-sm">Resources</h4>
+                            <p className="text-sm text-text-muted font-medium leading-relaxed">Orchestrated sequences (Enrollment, Automation, Telemetry).</p>
+                        </div>
+                        <div className="p-6 bg-surface-main/50 border border-border-subtle rounded-3xl shadow-inner">
+                            <div className="flex items-center gap-3 mb-3">
+                                <div className="p-2 bg-[#06B6D4]/10 rounded-lg"><Database className="text-[#22D3EE] w-4 h-4" /></div>
+                                <h4 className="font-black text-sm text-text-primary tracking-wide">Resources</h4>
                             </div>
-                            <p className="text-xs text-text-muted">Infrastructure, data stores, API gateways.</p>
-                        </Card>
+                            <p className="text-sm text-text-muted font-medium leading-relaxed">Infrastructure, data stores, API gateways.</p>
+                        </div>
                     </>
                 )}
                 {viewMode === 'sustainability' && (
                     <>
-                        <Card className="p-4 bg-surface-main border-border-subtle">
-                            <div className="flex items-center gap-2 mb-2">
-                                <TrendingDown className="text-red-500 w-5 h-5" />
-                                <h4 className="font-bold text-sm">Pressures</h4>
+                        <div className="p-6 bg-surface-main/50 border border-border-subtle rounded-3xl shadow-inner">
+                            <div className="flex items-center gap-3 mb-3">
+                                <div className="p-2 bg-[#EF4444]/10 rounded-lg"><TrendingDown className="text-[#EF4444] w-4 h-4" /></div>
+                                <h4 className="font-black text-sm text-text-primary tracking-wide">Pressures</h4>
                             </div>
-                            <p className="text-xs text-text-muted">External or systemic forces that degrade ecosystem health over time.</p>
-                        </Card>
-                        <Card className="p-4 bg-surface-main border-border-subtle">
-                            <div className="flex items-center gap-2 mb-2">
-                                <Target className="text-cyan-300 w-5 h-5" />
-                                <h4 className="font-bold text-sm">Interventions</h4>
+                            <p className="text-sm text-text-muted font-medium leading-relaxed">External or systemic forces that degrade ecosystem health over time.</p>
+                        </div>
+                        <div className="p-6 bg-surface-main/50 border border-border-subtle rounded-3xl shadow-inner">
+                            <div className="flex items-center gap-3 mb-3">
+                                <div className="p-2 bg-[#06B6D4]/10 rounded-lg"><Target className="text-[#67E8F9] w-4 h-4" /></div>
+                                <h4 className="font-black text-sm text-text-primary tracking-wide">Interventions</h4>
                             </div>
-                            <p className="text-xs text-text-muted">Strategic leverage points designed to mitigate pressures and restore balance.</p>
-                        </Card>
+                            <p className="text-sm text-text-muted font-medium leading-relaxed">Strategic leverage points designed to mitigate pressures and restore balance.</p>
+                        </div>
                     </>
                 )}
                 {viewMode === 'cld' && (
                     <>
-                        <Card className="p-4 bg-surface-main border-border-subtle">
-                            <div className="flex items-center gap-2 mb-2">
-                                <Activity className="text-blue-400 w-5 h-5" />
-                                <h4 className="font-bold text-sm">Variables</h4>
+                        <div className="p-6 bg-surface-main/50 border border-border-subtle rounded-3xl shadow-inner">
+                            <div className="flex items-center gap-3 mb-3">
+                                <div className="p-2 bg-[#3B82F6]/10 rounded-lg"><Activity className="text-[#60A5FA] w-4 h-4" /></div>
+                                <h4 className="font-black text-sm text-text-primary tracking-wide">Variables</h4>
                             </div>
-                            <p className="text-xs text-text-muted">Measurable factors within the system that interact.</p>
-                        </Card>
-                        <Card className="p-4 bg-surface-main border-border-subtle">
-                            <div className="flex items-center gap-2 mb-2">
-                                <Repeat className="text-red-400 w-5 h-5" />
-                                <h4 className="font-bold text-sm">Reinforcing Loop (R)</h4>
+                            <p className="text-sm text-text-muted font-medium leading-relaxed">Measurable factors within the system that interact.</p>
+                        </div>
+                        <div className="p-6 bg-surface-main/50 border border-border-subtle rounded-3xl shadow-inner">
+                            <div className="flex items-center gap-3 mb-3">
+                                <div className="p-2 bg-[#EF4444]/10 rounded-lg"><Repeat className="text-[#F87171] w-4 h-4" /></div>
+                                <h4 className="font-black text-sm text-text-primary tracking-wide">Reinforcing Loop</h4>
                             </div>
-                            <p className="text-xs text-text-muted">A loop that amplifies change (e.g., Burnout → Attrition → More Burnout).</p>
-                        </Card>
-                        <Card className="p-4 bg-surface-main border-border-subtle">
-                            <div className="flex items-center gap-2 mb-2">
-                                <RefreshCw className="text-emerald-400 w-5 h-5" />
-                                <h4 className="font-bold text-sm">Balancing Loop (B)</h4>
+                            <p className="text-sm text-text-muted font-medium leading-relaxed">A loop that amplifies change (e.g., Burnout → Attrition → More Burnout).</p>
+                        </div>
+                        <div className="p-6 bg-surface-main/50 border border-border-subtle rounded-3xl shadow-inner">
+                            <div className="flex items-center gap-3 mb-3">
+                                <div className="p-2 bg-[#10B981]/10 rounded-lg"><RefreshCw className="text-[#34D399] w-4 h-4" /></div>
+                                <h4 className="font-black text-sm text-text-primary tracking-wide">Balancing Loop</h4>
                             </div>
-                            <p className="text-xs text-text-muted">A loop that counters change and creates stability in the system.</p>
-                        </Card>
+                            <p className="text-sm text-text-muted font-medium leading-relaxed">A loop that counters change and creates stability in the system.</p>
+                        </div>
                     </>
                 )}
                 {viewMode === 'sna' && (
                     <>
-                        <Card className="p-4 bg-surface-main border-border-subtle">
-                            <div className="flex items-center gap-2 mb-2">
-                                <ShieldCheck className="text-purple-400 w-5 h-5" />
-                                <h4 className="font-bold text-sm">Central Nodes</h4>
+                        <div className="p-6 bg-surface-main/50 border border-border-subtle rounded-3xl shadow-inner">
+                            <div className="flex items-center gap-3 mb-3">
+                                <div className="p-2 bg-[#A855F7]/10 rounded-lg"><ShieldCheck className="text-[#C084FC] w-4 h-4" /></div>
+                                <h4 className="font-black text-sm text-text-primary tracking-wide">Central Nodes</h4>
                             </div>
-                            <p className="text-xs text-text-muted">Highly connected individuals with significant influence over the network.</p>
-                        </Card>
-                        <Card className="p-4 bg-surface-main border-border-subtle">
-                            <div className="flex items-center gap-2 mb-2">
-                                <Users className="text-blue-400 w-5 h-5" />
-                                <h4 className="font-bold text-sm">Clusters</h4>
+                            <p className="text-sm text-text-muted font-medium leading-relaxed">Highly connected individuals with significant influence over the network.</p>
+                        </div>
+                        <div className="p-6 bg-surface-main/50 border border-border-subtle rounded-3xl shadow-inner">
+                            <div className="flex items-center gap-3 mb-3">
+                                <div className="p-2 bg-[#3B82F6]/10 rounded-lg"><Users className="text-[#60A5FA] w-4 h-4" /></div>
+                                <h4 className="font-black text-sm text-text-primary tracking-wide">Clusters</h4>
                             </div>
-                            <p className="text-xs text-text-muted">Tightly knit groups or sub-teams that operate with overlapping ties.</p>
-                        </Card>
-                        <Card className="p-4 bg-surface-main border-border-subtle">
-                            <div className="flex items-center gap-2 mb-2">
-                                <Share2 className="text-emerald-400 w-5 h-5" />
-                                <h4 className="font-bold text-sm">Bridges</h4>
+                            <p className="text-sm text-text-muted font-medium leading-relaxed">Tightly knit groups or sub-teams that operate with overlapping ties.</p>
+                        </div>
+                        <div className="p-6 bg-surface-main/50 border border-border-subtle rounded-3xl shadow-inner">
+                            <div className="flex items-center gap-3 mb-3">
+                                <div className="p-2 bg-[#10B981]/10 rounded-lg"><Share2 className="text-[#34D399] w-4 h-4" /></div>
+                                <h4 className="font-black text-sm text-text-primary tracking-wide">Bridges</h4>
                             </div>
-                            <p className="text-xs text-text-muted">Entities facilitating communication between disconnected clusters.</p>
-                        </Card>
+                            <p className="text-sm text-text-muted font-medium leading-relaxed">Entities facilitating communication between disconnected clusters.</p>
+                        </div>
                     </>
                 )}
                 {viewMode === 'terminals' && (
                     <>
-                        <Card className="p-4 bg-surface-main border-border-subtle">
-                            <div className="flex items-center gap-2 mb-2">
-                                <MonitorSmartphone className="text-blue-400 w-5 h-5" />
-                                <h4 className="font-bold text-sm">Interfaces</h4>
+                        <div className="p-6 bg-surface-main/50 border border-border-subtle rounded-3xl shadow-inner">
+                            <div className="flex items-center gap-3 mb-3">
+                                <div className="p-2 bg-[#3B82F6]/10 rounded-lg"><MonitorSmartphone className="text-[#60A5FA] w-4 h-4" /></div>
+                                <h4 className="font-black text-sm text-text-primary tracking-wide">Interfaces</h4>
                             </div>
-                            <p className="text-xs text-text-muted">The core root interfaces for each type of system actor.</p>
-                        </Card>
-                        <Card className="p-4 bg-surface-main border-border-subtle">
-                            <div className="flex items-center gap-2 mb-2">
-                                <GitCommit className="text-orange-400 w-5 h-5" />
-                                <h4 className="font-bold text-sm">Input / Output</h4>
+                            <p className="text-sm text-text-muted font-medium leading-relaxed">The core root interfaces for each type of system actor.</p>
+                        </div>
+                        <div className="p-6 bg-surface-main/50 border border-border-subtle rounded-3xl shadow-inner">
+                            <div className="flex items-center gap-3 mb-3">
+                                <div className="p-2 bg-[#F97316]/10 rounded-lg"><GitCommit className="text-[#FB923C] w-4 h-4" /></div>
+                                <h4 className="font-black text-sm text-text-primary tracking-wide">Input/Output</h4>
                             </div>
-                            <p className="text-xs text-text-muted">Components reacting to and gathering explicit data inputs from users.</p>
-                        </Card>
-                        <Card className="p-4 bg-surface-main border-border-subtle">
-                            <div className="flex items-center gap-2 mb-2">
-                                <Server className="text-emerald-400 w-5 h-5" />
-                                <h4 className="font-bold text-sm">State & Config Bus</h4>
+                            <p className="text-sm text-text-muted font-medium leading-relaxed">Components reacting to and gathering explicit data inputs from users.</p>
+                        </div>
+                        <div className="p-6 bg-surface-main/50 border border-border-subtle rounded-3xl shadow-inner">
+                            <div className="flex items-center gap-3 mb-3">
+                                <div className="p-2 bg-[#10B981]/10 rounded-lg"><Server className="text-[#34D399] w-4 h-4" /></div>
+                                <h4 className="font-black text-sm text-text-primary tracking-wide">State Engine</h4>
                             </div>
-                            <p className="text-xs text-text-muted">The central sync engine adjusting client-side UI based on live Admin toggles.</p>
-                        </Card>
-                    </>
-                )}
-                {viewMode === 'approved_flow' && (
-                    <>
-                        <Card className="p-4 bg-surface-main border-border-subtle">
-                            <div className="flex items-center gap-2 mb-2">
-                                <MonitorSmartphone className="text-blue-400 w-5 h-5" />
-                                <h4 className="font-bold text-sm">Interface Nodes</h4>
-                            </div>
-                            <p className="text-xs text-text-muted">Agent and Admin interfaces mapping local updates to global states via the central CRM store.</p>
-                        </Card>
-                        <Card className="p-4 bg-surface-main border-border-subtle">
-                            <div className="flex items-center gap-2 mb-2">
-                                <Zap className="text-green-400 w-5 h-5" />
-                                <h4 className="font-bold text-sm">Action Dispatches</h4>
-                            </div>
-                            <p className="text-xs text-text-muted">An update in status filters down to dependent components to trigger sum/count calculations on the frontend.</p>
-                        </Card>
-                        <Card className="p-4 bg-surface-main border-border-subtle">
-                            <div className="flex items-center gap-2 mb-2">
-                                <Workflow className="text-orange-400 w-5 h-5" />
-                                <h4 className="font-bold text-sm">Feedback Impacts</h4>
-                            </div>
-                            <p className="text-xs text-text-muted">A closed deal refreshes queues, adds to analytics, and feeds data back into Admin KPI trackers immediately in real-time.</p>
-                        </Card>
-                    </>
-                )}
-                {viewMode === 'clm_loop' && (
-                    <>
-                        <Card className="p-4 bg-surface-main border-border-subtle">
-                            <div className="flex items-center gap-2 mb-2">
-                                <Server className="text-emerald-400 w-5 h-5" />
-                                <h4 className="font-bold text-sm">CLM Engine</h4>
-                            </div>
-                            <p className="text-xs text-text-muted">Once a sale is approved, the CRM automatically schedules future timelines for this customer profile.</p>
-                        </Card>
-                        <Card className="p-4 bg-surface-main border-border-subtle">
-                            <div className="flex items-center gap-2 mb-2">
-                                <Workflow className="text-blue-400 w-5 h-5" />
-                                <h4 className="font-bold text-sm">Agent Notification</h4>
-                            </div>
-                            <p className="text-xs text-text-muted">The system injects timed callback tasks (Feedback, Upsell, Reorder) straight into agent Smart Queues.</p>
-                        </Card>
-                        <Card className="p-4 bg-surface-main border-border-subtle">
-                            <div className="flex items-center gap-2 mb-2">
-                                <Repeat className="text-orange-400 w-5 h-5" />
-                                <h4 className="font-bold text-sm">Revenue Cycle</h4>
-                            </div>
-                            <p className="text-xs text-text-muted">A successful win-back or reorder feeds right back into the engine, sustaining lifetime value (LTV).</p>
-                        </Card>
-                    </>
-                )}
-                {viewMode === 'cx_growth' && (
-                    <>
-                        <Card className="p-4 bg-surface-main border-border-subtle">
-                            <div className="flex items-center gap-2 mb-2">
-                                <Heart className="text-pink-400 w-5 h-5" />
-                                <h4 className="font-bold text-sm">Service as Growth</h4>
-                            </div>
-                            <p className="text-xs text-text-muted">Turning every customer interaction into an opportunity for personalized upselling.</p>
-                        </Card>
-                        <Card className="p-4 bg-surface-main border-border-subtle">
-                            <div className="flex items-center gap-2 mb-2">
-                                <ShieldCheck className="text-emerald-400 w-5 h-5" />
-                                <h4 className="font-bold text-sm">Retention Impact</h4>
-                            </div>
-                            <p className="text-xs text-text-muted">Customers who feel known and valued predictably stay longer, expanding their lifespan.</p>
-                        </Card>
-                        <Card className="p-4 bg-surface-main border-border-subtle">
-                            <div className="flex items-center gap-2 mb-2">
-                                <TrendingUp className="text-purple-400 w-5 h-5" />
-                                <h4 className="font-bold text-sm">Higher Order Value</h4>
-                            </div>
-                            <p className="text-xs text-text-muted">Trusted relationships allow agents to offer higher-tier solutions tailored to exact needs.</p>
-                        </Card>
-                    </>
-                )}
-                {viewMode === 'gamification' && (
-                    <>
-                        <Card className="p-4 bg-surface-main border-border-subtle">
-                            <div className="flex items-center gap-2 mb-2">
-                                <Trophy className="text-amber-400 w-5 h-5" />
-                                <h4 className="font-bold text-sm">Clear Leaderboards</h4>
-                            </div>
-                            <p className="text-xs text-text-muted">Real-time ranking of agent performance based on approved sales and LTV contributions.</p>
-                        </Card>
-                        <Card className="p-4 bg-surface-main border-border-subtle">
-                            <div className="flex items-center gap-2 mb-2">
-                                <Users className="text-blue-400 w-5 h-5" />
-                                <h4 className="font-bold text-sm">Intra-team Competition</h4>
-                            </div>
-                            <p className="text-xs text-text-muted">Fosters healthy peer-to-peer competition and accountability pushing standard volume metrics higher.</p>
-                        </Card>
-                        <Card className="p-4 bg-surface-main border-border-subtle">
-                            <div className="flex items-center gap-2 mb-2">
-                                <Heart className="text-pink-400 w-5 h-5" />
-                                <h4 className="font-bold text-sm">Morale & Effort Loop</h4>
-                            </div>
-                            <p className="text-xs text-text-muted">Recognition and friendly rivalry keep morale high, directly sustaining long-term agent call effort.</p>
-                        </Card>
+                            <p className="text-sm text-text-muted font-medium leading-relaxed">The central sync engine adjusting UI based on live Admin toggles.</p>
+                        </div>
                     </>
                 )}
             </div>
-        </div>
+        </motion.div>
     );
 };

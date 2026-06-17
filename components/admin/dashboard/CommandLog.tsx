@@ -29,7 +29,7 @@ export const CommandLog: React.FC<CommandLogProps> = ({ logs, className = "" }) 
     };
 
     return (
-        <div className={`bg-surface-alt rounded-xl border border-border-subtle p-3 overflow-y-auto custom-scrollbar font-mono text-xs shadow-inner ${className}`}>
+        <div className={`bg-surface-alt rounded-xl border border-border-subtle p-3 overflow-y-auto custom-scrollbar font-mono text-sm shadow-inner ${className}`}>
             {logs.length === 0 && (
                 <div className="h-full flex items-center justify-center text-slate-600 italic opacity-50">
                     System Ready... Awaiting Input

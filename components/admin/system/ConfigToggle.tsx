@@ -14,7 +14,7 @@ interface ConfigToggleProps {
 export const ConfigToggle: React.FC<ConfigToggleProps> = ({ label, active, onToggle, description, danger = false, icon: Icon }) => (
   <div 
     className={`
-        relative group flex items-center justify-between p-5 rounded-2xl border transition-all duration-300 cursor-pointer overflow-hidden
+        relative group flex items-center justify-between p-5 rounded-xl border transition-all duration-300 cursor-pointer overflow-hidden
         ${active 
             ? (danger 
                 ? 'bg-red-500/10 border-red-500/50 shadow-[0_0_20px_rgba(239,68,68,0.15)]' 
@@ -37,10 +37,10 @@ export const ConfigToggle: React.FC<ConfigToggleProps> = ({ label, active, onTog
       </div>
       
       <div className="flex flex-col">
-        <span className={`font-[700] text-xs  tracking-wider transition-colors ${active ? 'text-text-primary' : 'text-text-secondary'}`}>
+        <span className={`font-bold text-sm  tracking-wider transition-colors ${active ? 'text-text-primary' : 'text-text-secondary'}`}>
             {label}
         </span>
-        {description && <span className="text-xs text-text-muted font-medium mt-1 opacity-80 leading-relaxed max-w-sm">{description}</span>}
+        {description && <span className="text-sm text-text-muted font-medium mt-1 opacity-80 leading-relaxed max-w-sm">{description}</span>}
       </div>
     </div>
     

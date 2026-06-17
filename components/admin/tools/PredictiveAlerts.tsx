@@ -143,7 +143,7 @@ export const PredictiveAlerts: React.FC<PredictiveAlertsProps> = ({
             </div>
           ))
         ) : (
-          <div className="bg-surface-alt rounded-lg p-6 border border-border-subtle text-center">
+          <div className="bg-surface-alt rounded-lg p-4 border border-border-subtle text-center">
             <Zap className="mx-auto text-status-success mb-3" size={32} />
             <p className="font-bold text-text-primary">No Alerts</p>
             <p className="text-sm text-text-muted mt-1">Ecosystem metrics within healthy parameters.</p>

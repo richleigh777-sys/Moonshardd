@@ -40,7 +40,7 @@ export const OperativeRow: React.FC<OperativeRowProps> = React.memo(({
     return (
         <div 
             style={style}
-            className="group grid grid-cols-12 gap-4 items-center px-4 mx-3 rounded-2xl border border-transparent hover:border-accent-primary/20 hover:bg-surface-alt/40 transition-all duration-300 bg-surface-main/30 relative overflow-hidden h-[90px]"
+            className="group grid grid-cols-12 gap-4 items-center px-4 mx-3 rounded-xl border border-transparent hover:border-accent-primary/20 hover:bg-surface-alt/40 transition-all duration-300 bg-surface-main/30 relative overflow-hidden h-[90px]"
         >
             {/* Performance Glow Backdrop */}
             <div 
@@ -51,7 +51,7 @@ export const OperativeRow: React.FC<OperativeRowProps> = React.memo(({
             {/* 1. Profile */}
             <div className="col-span-4 flex items-center gap-4 pl-2 relative z-10">
                 <div className="relative shrink-0">
-                    <div className="w-12 h-12 rounded-2xl bg-surface-alt border border-border-subtle overflow-hidden shadow-lg group-hover:scale-105 group-hover:-rotate-2 transition-all">
+                    <div className="w-12 h-12 rounded-xl bg-surface-alt border border-border-subtle overflow-hidden shadow-lg group-hover:scale-105 group-hover:-rotate-2 transition-all">
                         <img src={u.avatar || getAgentAvatar(u.id)} className="w-full h-full object-cover" alt="" />
                     </div>
                     <div className={`absolute -bottom-1 -right-1 w-3.5 h-3.5 rounded-full border-[3px] border-surface-main ${
@@ -74,7 +74,7 @@ export const OperativeRow: React.FC<OperativeRowProps> = React.memo(({
 
             {/* 2. Status */}
             <div className="col-span-2 text-center relative z-10">
-                <span className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border text-xs font-[700]  tracking-wider ${
+                <span className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border text-sm font-[700]  tracking-wider ${
                     u.currentStatus === 'online' ? 'bg-emerald-500/5 text-status-success border-emerald-500/20' : 
                     u.currentStatus === 'break' ? 'bg-amber-500/5 text-status-warning border-amber-500/20' : 
                     'bg-surface-alt text-text-muted border-border-subtle'
@@ -87,20 +87,20 @@ export const OperativeRow: React.FC<OperativeRowProps> = React.memo(({
             <div className="col-span-2 relative z-10">
                 <div className="flex flex-col gap-1.5 justify-center h-full">
                     <div className="flex items-center justify-between">
-                        <span className="text-[10px] font-[700]  text-text-muted tracking-widest flex items-center gap-1"><Clock size={10}/> Uptime</span>
-                        <span className="text-xs font-mono font-bold text-text-primary">{hoursToday.toFixed(1)}h</span>
+                        <span className="text-sm font-[700]  text-text-muted tracking-widest flex items-center gap-1"><Clock size={10}/> Uptime</span>
+                        <span className="text-sm font-mono font-bold text-text-primary">{hoursToday.toFixed(1)}h</span>
                     </div>
                     {u.dailyQuota ? (
                         <div className="flex items-center justify-between">
-                            <span className="text-[10px] font-[700]  text-text-muted tracking-widest flex items-center gap-1">Quota</span>
-                            <span className={`text-[10px] font-mono font-bold px-1.5 py-0.5 rounded ${analytics.revenue >= u.dailyQuota ? 'bg-emerald-500/10 text-status-success border border-emerald-500/20' : 'bg-surface-alt text-status-warning border border-border-subtle'}`}>
+                            <span className="text-sm font-[700]  text-text-muted tracking-widest flex items-center gap-1">Quota</span>
+                            <span className={`text-sm font-mono font-bold px-1.5 py-0.5 rounded ${analytics.revenue >= u.dailyQuota ? 'bg-emerald-500/10 text-status-success border border-emerald-500/20' : 'bg-surface-alt text-status-warning border border-border-subtle'}`}>
                                 {Math.round((analytics.revenue / u.dailyQuota) * 100)}%
                             </span>
                         </div>
                     ) : (
                         <div className="flex items-center justify-between">
-                            <span className="text-[10px] font-[700]  text-text-muted tracking-widest opacity-0">Spacer</span>
-                            <span className="text-[10px] font-mono opacity-0">0%</span>
+                            <span className="text-sm font-[700]  text-text-muted tracking-widest opacity-0">Spacer</span>
+                            <span className="text-sm font-mono opacity-0">0%</span>
                         </div>
                     )}
                 </div>
@@ -109,7 +109,7 @@ export const OperativeRow: React.FC<OperativeRowProps> = React.memo(({
             {/* 4. Performance Metrics */}
             <div className="col-span-2 relative z-10">
                 <div className="flex flex-col gap-1.5">
-                    <div className="flex justify-between items-center text-xs font-[700] ">
+                    <div className="flex justify-between items-center text-sm font-[700] ">
                         <span className="text-text-muted">Revenue</span>
                         <span className="text-status-success font-mono">${analytics.revenue.toLocaleString()}</span>
                     </div>

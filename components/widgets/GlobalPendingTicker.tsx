@@ -63,7 +63,7 @@ export const GlobalPendingTicker: React.FC = () => {
         <div className="w-full bg-surface-main border-b border-border-subtle h-12 overflow-hidden flex items-center relative z-20 shadow-sm group">
             
             {/* Static Label Block */}
-            <div className="flex items-center px-6 shrink-0 h-full bg-surface-main border-r border-border-subtle relative z-20">
+            <div className="flex items-center px-4 shrink-0 h-full bg-surface-main border-r border-border-subtle relative z-20">
                 <div className="relative mr-4">
                     <Globe size={16} className="text-accent-primary animate-spin-slow opacity-100" />
                     <div className="absolute inset-0 bg-accent-primary/20 blur-md rounded-full animate-pulse"></div>

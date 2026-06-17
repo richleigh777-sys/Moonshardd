@@ -54,7 +54,7 @@ export const Modal = ({ isOpen, onClose, title, children, footer, type = 'defaul
 
       <div className={`relative w-full bg-surface-main border ${typeStyles[type]} ${isFull ? '' : 'rounded-xl'} transform transition-all duration-200 flex flex-col ${isFull ? 'h-full' : 'max-h-[90vh]'} ${sizeStyles[size]} ${isOpen ? 'scale-100 translate-y-0' : 'scale-95 translate-y-4'}`}>
         
-        <div className="flex items-center justify-between p-6 border-b border-border-subtle shrink-0">
+        <div className="flex items-center justify-between p-4 border-b border-border-subtle shrink-0">
           <h3 className="text-xl font-semibold text-text-primary tracking-tight flex items-center gap-2">
             {title}
           </h3>
@@ -63,12 +63,12 @@ export const Modal = ({ isOpen, onClose, title, children, footer, type = 'defaul
           </button>
         </div>
 
-        <div className="p-8 text-text-primary overflow-y-auto custom-scrollbar flex-1">
+        <div className="p-5 text-text-primary overflow-y-auto custom-scrollbar flex-1">
           {children}
         </div>
 
         {footer && (
-          <div className={`p-6 pt-0 flex justify-end gap-4 border-t border-border-subtle mt-auto shrink-0 bg-surface-main ${isFull ? '' : 'rounded-b-xl'}`}>
+          <div className={`p-4 pt-0 flex justify-end gap-4 border-t border-border-subtle mt-auto shrink-0 bg-surface-main ${isFull ? '' : 'rounded-b-xl'}`}>
             <div className="pt-6 w-full flex justify-end gap-4">
                 {footer}
             </div>

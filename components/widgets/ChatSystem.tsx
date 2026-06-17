@@ -7,7 +7,7 @@ export const ChatSystem: React.FC<{ isOpen: boolean; onClose: () => void }> = ({
     if (!isOpen) return null;
 
     return (
-        <div className="fixed inset-0 z-[200] flex bg-surface-alt backdrop-blur-xl p-0 md:p-8 lg:p-12 animate-in fade-in duration-300">
+        <div className="fixed inset-0 z-[200] flex bg-surface-alt backdrop-blur-xl p-0 md:p-5 lg:p-12 animate-in fade-in duration-300">
             {/* Close trigger on backdrop */}
             <div className="absolute inset-0 z-0" onClick={onClose}></div>
             
@@ -15,7 +15,7 @@ export const ChatSystem: React.FC<{ isOpen: boolean; onClose: () => void }> = ({
                 {/* Floating Close Button for Mobile/Headerless feel */}
                 <button 
                     onClick={onClose}
-                    className="absolute -top-4 -right-4 md:top-4 md:right-4 p-3 bg-surface-main border border-border-subtle rounded-2xl text-text-muted hover:text-status-error transition-all shadow-2xl hover:scale-110 active:scale-95 z-[250]"
+                    className="absolute -top-4 -right-4 md:top-4 md:right-4 p-3 bg-surface-main border border-border-subtle rounded-xl text-text-muted hover:text-status-error transition-all shadow-2xl hover:scale-110 active:scale-95 z-[250]"
                 >
                     <X size={24} strokeWidth={2.5} />
                 </button>

@@ -23,16 +23,16 @@ interface ReviewModalProps {
 // --- SUB-COMPONENTS FOR CLEANER RENDER ---
 
 const ReviewSectionHeader = ({ icon: Icon, title, color }: { icon: any, title: string, color: string }) => (
-    <h4 className={`text-xs font-[700]  ${color} tracking-[0.2em] flex items-center gap-2 border-b border-border-subtle pb-2 mb-4`}>
+    <h4 className={`text-sm font-[700]  ${color} tracking-[0.2em] flex items-center gap-2 border-b border-border-subtle pb-2 mb-4`}>
         <Icon size={16}/> {title}
     </h4>
 );
 
 const ReviewRow = ({ label, value, subValue }: { label: string, value: string, subValue?: string }) => (
     <div className="space-y-1">
-        <p className="text-xs font-[700] text-text-muted  tracking-widest opacity-70">{label}</p>
+        <p className="text-sm font-[700] text-text-muted  tracking-widest opacity-70">{label}</p>
         <p className="text-sm font-bold text-text-primary">{value}</p>
-        {subValue && <p className="text-xs text-text-secondary">{subValue}</p>}
+        {subValue && <p className="text-sm text-text-secondary">{subValue}</p>}
     </div>
 );
 
@@ -42,45 +42,45 @@ export const ReviewModal: React.FC<ReviewModalProps> = ({
     if (!show) return null;
 
     return (
-        <div className="absolute inset-0 z-[100] bg-surface-alt backdrop-blur-md flex items-center justify-center p-6 animate-in fade-in zoom-in-95 duration-300">
+        <div className="absolute inset-0 z-[100] bg-surface-alt backdrop-blur-md flex items-center justify-center p-4 animate-in fade-in zoom-in-95 duration-300">
             <div className="bg-surface-main/95 backdrop-blur-3xl w-full max-w-4xl max-h-[90vh] rounded-[3rem] border border-border-subtle shadow-[0_40px_100px_-20px_rgba(0,0,0,0.7)] overflow-hidden flex flex-col relative">
                 
                 {/* Glossy Overlay */}
                 <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent pointer-events-none z-0"></div>
 
                 {/* Header */}
-                <div className="p-8 border-b border-border-subtle bg-surface-alt/20 flex items-center justify-between shrink-0 relative z-10">
+                <div className="p-5 border-b border-border-subtle bg-surface-alt/20 flex items-center justify-between shrink-0 relative z-10">
                     <div className="flex items-center gap-5">
-                        <div className="p-4 bg-emerald-500/10 rounded-2xl text-status-success border border-emerald-500/20 shadow-neon">
+                        <div className="p-4 bg-emerald-500/10 rounded-xl text-status-success border border-emerald-500/20 shadow-neon">
                             <ShieldCheck size={32} />
                         </div>
                         <div>
-                            <h3 className="text-2xl font-[700]  tracking-tight text-text-primary italic drop-shadow-sm">Pre-Transmission Check</h3>
-                            <p className="text-xs font-bold text-text-muted  tracking-[0.4em] mt-1 flex items-center gap-2">
+                            <h3 className="text-lg font-[700]  tracking-tight text-text-primary italic drop-shadow-sm">Pre-Transmission Check</h3>
+                            <p className="text-sm font-bold text-text-muted  tracking-[0.4em] mt-1 flex items-center gap-2">
                                 <Shield size={16} className="text-status-success"/> Verified Authorization Protocol
                             </p>
                         </div>
                     </div>
                     <div className="text-right">
                         <div className="flex flex-col items-end mb-2">
-                            <p className="text-xs font-[700] text-text-muted  tracking-widest mb-1">AI Risk Assessment</p>
+                            <p className="text-sm font-[700] text-text-muted  tracking-widest mb-1">AI Risk Assessment</p>
                             <div className="flex items-center gap-2 bg-surface-main/50 px-3 py-1 rounded-lg border border-border-subtle">
                                 {grandTotal > 2500 ? (
                                     <>
                                         <div className="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></div>
-                                        <span className="text-xs font-[700] text-status-warning tracking-widest">HIGH VALUE - AUDIT REQUIRED</span>
+                                        <span className="text-sm font-[700] text-status-warning tracking-widest">HIGH VALUE - AUDIT REQUIRED</span>
                                     </>
                                 ) : (
                                     <>
                                         <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></div>
-                                        <span className="text-xs font-[700] text-status-success tracking-widest">LOW RISK (98%)</span>
+                                        <span className="text-sm font-[700] text-status-success tracking-widest">LOW RISK (98%)</span>
                                     </>
                                 )}
                             </div>
                         </div>
-                        <p className="text-xs font-[700] text-text-muted  tracking-widest mb-1">Total Order Value</p>
+                        <p className="text-sm font-[700] text-text-muted  tracking-widest mb-1">Total Order Value</p>
                         <div className="px-4 py-1 bg-surface-main/50 rounded-xl border border-border-subtle backdrop-blur-sm">
-                            <p className="text-3xl font-[700] text-text-primary num-font tracking-tight">${grandTotal.toFixed(2)}</p>
+                            <p className="text-xl font-[700] text-text-primary num-font tracking-tight">${grandTotal.toFixed(2)}</p>
                         </div>
                     </div>
                 </div>
@@ -93,7 +93,7 @@ export const ReviewModal: React.FC<ReviewModalProps> = ({
                         <div className="space-y-8">
                             <div>
                                 <ReviewSectionHeader icon={User} title="Identity Sector" color="text-accent-primary" />
-                                <div className="grid grid-cols-2 gap-6 bg-surface-alt/10 p-5 rounded-3xl border border-border-subtle">
+                                <div className="grid grid-cols-2 gap-4 bg-surface-alt/10 p-5 rounded-xl border border-border-subtle">
                                     <ReviewRow label="Client Name" value={formData.fullName} />
                                     <ReviewRow label="Phone Line" value={formData.phone} />
                                     <ReviewRow label="Email Uplink" value={formData.email || 'None Provided'} />
@@ -103,14 +103,14 @@ export const ReviewModal: React.FC<ReviewModalProps> = ({
 
                             <div>
                                 <ReviewSectionHeader icon={MapPin} title="Logistics Sector" color="text-accent-secondary" />
-                                <div className="space-y-4 bg-surface-alt/10 p-5 rounded-3xl border border-border-subtle">
+                                <div className="space-y-4 bg-surface-alt/10 p-5 rounded-xl border border-border-subtle">
                                     <ReviewRow label="Primary Shipping Manifest" value={formData.shippingAddress} />
                                     {!useShippingForBilling && (
                                         <div className="pt-3 border-t border-border-subtle border-dashed">
                                             <ReviewRow label="Alternate Billing Route" value={formData.billingAddress} />
                                         </div>
                                     )}
-                                    <div className="flex items-center gap-2 pt-2 text-xs font-[700]  text-text-muted tracking-widest bg-indigo-500/5 p-2 rounded-lg border border-indigo-500/10">
+                                    <div className="flex items-center gap-2 pt-2 text-sm font-[700]  text-text-muted tracking-widest bg-indigo-500/5 p-2 rounded-lg border border-indigo-500/10">
                                         <Globe size={16} className="text-accent-secondary"/>
                                         Client Local Time: {customerTime || 'Unknown'}
                                     </div>
@@ -122,12 +122,12 @@ export const ReviewModal: React.FC<ReviewModalProps> = ({
                         <div className="space-y-8">
                             <div>
                                 <ReviewSectionHeader icon={CreditCard} title="Logged Financial Entry" color="text-status-success" />
-                                <div className="grid grid-cols-2 gap-6 bg-emerald-500/5 p-5 rounded-3xl border border-emerald-500/10 shadow-[inset_0_0_20px_rgba(16,185,129,0.05)]">
+                                <div className="grid grid-cols-2 gap-4 bg-emerald-500/5 p-5 rounded-xl border border-emerald-500/10 shadow-[inset_0_0_20px_rgba(16,185,129,0.05)]">
                                     <ReviewRow label="Institution" value={financials.bankName} />
                                     <ReviewRow label="Network" value={financials.cardType} />
                                     
                                     <div className="space-y-1">
-                                        <p className="text-xs font-[700] text-text-muted  tracking-widest opacity-70">Masked Target</p>
+                                        <p className="text-sm font-[700] text-text-muted  tracking-widest opacity-70">Masked Target</p>
                                         <div className="flex items-center gap-2">
                                             <Shield size={16} className="text-status-success" />
                                             <p className="text-sm font-mono font-bold text-text-primary tracking-widest">**** {financials.cardNumber.slice(-4)}</p>
@@ -140,27 +140,27 @@ export const ReviewModal: React.FC<ReviewModalProps> = ({
 
                             <div>
                                 <ReviewSectionHeader icon={Receipt} title="Order Manifest" color="text-status-warning" />
-                                <div className="bg-surface-alt/20 p-6 rounded-3xl border border-border-subtle shadow-inner">
+                                <div className="bg-surface-alt/20 p-4 rounded-xl border border-border-subtle shadow-inner">
                                     <div className="space-y-3 mb-6">
                                         {cart.map((item, i) => (
                                             <div key={i} className="flex justify-between items-center group">
                                                 <div className="flex items-center gap-3">
-                                                    <div className="w-8 h-8 rounded-lg bg-surface-main border border-border-subtle flex items-center justify-center font-[700] text-xs text-text-muted shadow-sm">
+                                                    <div className="w-8 h-8 rounded-lg bg-surface-main border border-border-subtle flex items-center justify-center font-[700] text-sm text-text-muted shadow-sm">
                                                         {item.quantity.split(' ')[0]}
                                                     </div>
                                                     <div>
-                                                        <span className="text-xs font-bold text-text-primary  tracking-tight">{item.product}</span>
-                                                        <p className="text-xs font-bold text-text-muted  tracking-widest opacity-70">{item.dosage}</p>
+                                                        <span className="text-sm font-bold text-text-primary  tracking-tight">{item.product}</span>
+                                                        <p className="text-sm font-bold text-text-muted  tracking-widest opacity-70">{item.dosage}</p>
                                                     </div>
                                                 </div>
-                                                <span className="text-xs font-mono font-[700] text-text-secondary">${item.unitPrice.toFixed(2)}</span>
+                                                <span className="text-sm font-mono font-[700] text-text-secondary">${item.unitPrice.toFixed(2)}</span>
                                             </div>
                                         ))}
                                     </div>
                                     
                                     {selectedConditions.length > 0 && (
                                         <div className="mb-6 pt-4 border-t border-border-subtle border-dashed">
-                                            <p className="text-xs font-[700] text-text-muted  tracking-widest mb-2 flex items-center gap-1">
+                                            <p className="text-sm font-[700] text-text-muted  tracking-widest mb-2 flex items-center gap-1">
                                                 <HeartPulse size={16} className="text-status-error"/> Clinical Tags
                                             </p>
                                             <div className="flex flex-wrap gap-1.5">
@@ -170,8 +170,8 @@ export const ReviewModal: React.FC<ReviewModalProps> = ({
                                     )}
 
                                     <div className="mt-4 pt-4 border-t-2 border-border-subtle flex justify-between items-center">
-                                        <span className="text-xs font-[700]  tracking-widest text-text-muted">Total Order Value</span>
-                                        <span className="text-4xl font-[700] text-text-primary num-font tracking-tighter drop-shadow-sm">
+                                        <span className="text-sm font-[700]  tracking-widest text-text-muted">Total Order Value</span>
+                                        <span className="text-lg font-[700] text-text-primary num-font tracking-tighter drop-shadow-sm">
                                             ${grandTotal.toLocaleString(undefined, {minimumFractionDigits: 2})}
                                         </span>
                                     </div>
@@ -181,30 +181,30 @@ export const ReviewModal: React.FC<ReviewModalProps> = ({
                     </div>
 
                     {/* NOTES BOX */}
-                    <div className="mt-10 p-5 bg-surface-alt/10 border border-border-subtle rounded-3xl italic">
-                        <p className="text-xs font-[700]  text-text-muted tracking-widest mb-1 opacity-70">Administrative Notes</p>
-                        <p className="text-xs text-text-secondary leading-relaxed">{notes || 'No manual notes appended to record.'}</p>
+                    <div className="mt-10 p-5 bg-surface-alt/10 border border-border-subtle rounded-xl italic">
+                        <p className="text-sm font-[700]  text-text-muted tracking-widest mb-1 opacity-70">Administrative Notes</p>
+                        <p className="text-sm text-text-secondary leading-relaxed">{notes || 'No manual notes appended to record.'}</p>
                     </div>
                 </div>
 
                 {/* FOOTER ACTIONS */}
-                <div className="p-8 border-t border-border-subtle bg-surface-alt/20 flex gap-4 shrink-0 backdrop-blur-md relative z-10">
+                <div className="p-5 border-t border-border-subtle bg-surface-alt/20 flex gap-4 shrink-0 backdrop-blur-md relative z-10">
                     <button 
                         onClick={onClose} 
-                        className="flex-1 h-16 rounded-2xl bg-surface-main/50 border border-border-subtle text-sm font-[700]  tracking-[0.2em] text-text-muted hover:text-text-primary hover:bg-surface-main transition-all active:scale-95"
+                        className="flex-1 h-16 rounded-xl bg-surface-main/50 border border-border-subtle text-sm font-[700]  tracking-[0.2em] text-text-muted hover:text-text-primary hover:bg-surface-main transition-all active:scale-95"
                     >
                         Abort / Re-Edit
                     </button>
                     <button 
                         onClick={onSubmit} 
                         disabled={loading} 
-                        className="flex-[2] h-16 rounded-2xl bg-emerald-600 hover:bg-emerald-500 text-text-primary shadow-[0_0_30px_rgba(16,185,129,0.3)] hover:shadow-[0_0_50px_rgba(16,185,129,0.5)] border border-emerald-400/50 text-xs font-[700]  tracking-[0.3em] flex items-center justify-center gap-3 transition-all hover:scale-[1.02] active:scale-95 relative overflow-hidden group"
+                        className="flex-[2] h-16 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-text-primary shadow-[0_0_30px_rgba(16,185,129,0.3)] hover:shadow-[0_0_50px_rgba(16,185,129,0.5)] border border-emerald-400/50 text-sm font-[700]  tracking-[0.3em] flex items-center justify-center gap-3 transition-all hover:scale-[1.02] active:scale-95 relative overflow-hidden group"
                     >
                         <div className="absolute inset-0 bg-white/20 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000 ease-in-out pointer-events-none"></div>
                         {loading ? (
-                            <><RefreshCw size={24} className="animate-spin"/> LOGGING TO ADMIN DASHBOARD...</>
+                            <><RefreshCw size={24} className="animate-spin"/> PLACING ORDER...</>
                         ) : (
-                            <><Fingerprint size={28} strokeWidth={2.5}/> Submit Logged Sale to Sales Ledger</>
+                            <><Fingerprint size={28} strokeWidth={2.5}/> Place Order</>
                         )}
                     </button>
                 </div>

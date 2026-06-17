@@ -188,7 +188,7 @@ export const CustomSheets = () => {
                     </div>
                 </Card>
             ) : (
-                <div className="flex-1 flex flex-col items-center justify-center text-text-muted opacity-50 border-2 border-dashed border-border-subtle rounded-3xl m-4">
+                <div className="flex-1 flex flex-col items-center justify-center text-text-muted opacity-50 border-2 border-dashed border-border-subtle rounded-xl m-4">
                     <Grid size={48} className="mb-4"/>
                     <p className="text-sm font-bold  tracking-widest">Select or create a sheet</p>
                 </div>

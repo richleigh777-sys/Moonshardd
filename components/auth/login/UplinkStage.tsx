@@ -27,10 +27,10 @@ export const UplinkStage: React.FC<UplinkStageProps> = ({ userId, onBack, onSubm
                     <div className="p-2.5 bg-surface-main rounded-lg shadow-sm border border-border-subtle"><UserIcon size={16} className="text-text-primary" /></div>
                     <div>
                         <p className="text-sm font-bold text-text-primary">{userId}</p>
-                        <p className="text-xs text-text-muted mt-0.5">Authentication verified</p>
+                        <p className="text-sm text-text-muted mt-0.5">Authentication verified</p>
                     </div>
                 </div>
-                <button type="button" onClick={onBack} className="text-text-muted hover:text-text-primary transition-colors text-xs font-bold px-3 py-1.5 hover:bg-surface-main/50 rounded-lg">
+                <button type="button" onClick={onBack} className="text-text-muted hover:text-text-primary transition-colors text-sm font-bold px-3 py-1.5 hover:bg-surface-main/50 rounded-lg">
                     Change User
                 </button>
             </div>

@@ -55,7 +55,7 @@ export const AuditLog: React.FC<{ logs: AuditEntry[] }> = ({ logs }) => {
         <div className="flex h-full gap-4 relative overflow-hidden">
             {/* UPGRADE: Applied variant="panel" for glass effect */}
             <Card variant="panel" className={`flex-1 flex flex-col h-full overflow-hidden p-0 bg-surface-main border border-border-subtle shadow-xl transition-all duration-300 ${selectedLog ? 'w-2/3 mr-[400px] hidden lg:flex' : 'w-full'}`}>
-                <div className="p-6 border-b border-border-subtle flex flex-col space-y-4 bg-surface-highlight/10">
+                <div className="p-4 border-b border-border-subtle flex flex-col space-y-4 bg-surface-highlight/10">
                     <div className="flex justify-between items-start">
                         <div className="flex items-center gap-4">
                             <div className="w-10 h-10 bg-surface-main rounded-xl flex items-center justify-center shadow-sm border border-border-subtle group">

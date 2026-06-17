@@ -74,7 +74,7 @@ export const ServerCardTelemetry: React.FC<ServerCardTelemetryProps> = React.mem
         <div 
             onClick={() => isActive && onEnter(server.id)}
             className={`
-                bg-[#0A0A0A]/80 backdrop-blur-md border border-border-subtle rounded-[2.5rem] p-8 group cursor-pointer 
+                bg-[#0A0A0A]/80 backdrop-blur-md border border-border-subtle rounded-[2.5rem] p-5 group cursor-pointer 
                 transition-all duration-500 relative overflow-hidden flex flex-col h-[360px]
                 ${isActive ? 'hover:border-indigo-500/50 hover:shadow-2xl hover:shadow-indigo-500/10' : 'opacity-60 grayscale cursor-not-allowed'}
             `}
@@ -90,7 +90,7 @@ export const ServerCardTelemetry: React.FC<ServerCardTelemetryProps> = React.mem
             <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none"></div>
             
             <div className="flex justify-between items-start mb-6 relative z-10">
-                <div className={`p-4 rounded-2xl border transition-colors shadow-inner ${isActive ? 'bg-surface-highlight border-border-subtle group-hover:bg-accent-secondary/10 group-hover:text-accent-secondary' : 'bg-red-500/10 text-status-error border-red-500/20'}`}>
+                <div className={`p-4 rounded-xl border transition-colors shadow-inner ${isActive ? 'bg-surface-highlight border-border-subtle group-hover:bg-accent-secondary/10 group-hover:text-accent-secondary' : 'bg-red-500/10 text-status-error border-red-500/20'}`}>
                     {isActive ? <Server size={28} strokeWidth={1.5}/> : <Lock size={28} strokeWidth={1.5}/>}
                 </div>
                 <div className="flex items-center gap-2">
@@ -110,8 +110,8 @@ export const ServerCardTelemetry: React.FC<ServerCardTelemetryProps> = React.mem
 
             <div className="flex-1 relative z-10 flex flex-col justify-between">
                 <div>
-                    <h3 className="text-2xl font-[700] text-white group-hover:text-accent-secondary transition-colors mb-2 tracking-tight  truncate">{server.name}</h3>
-                    <div className="flex items-center gap-3 text-xs font-mono text-slate-400 font-bold ">
+                    <h3 className="text-lg font-[700] text-white group-hover:text-accent-secondary transition-colors mb-2 tracking-tight  truncate">{server.name}</h3>
+                    <div className="flex items-center gap-3 text-sm font-mono text-slate-400 font-bold ">
                         <span className={`flex items-center gap-1 ${getRegionColor(server.region)}`}>
                             <Globe size={16} fill="currentColor"/> {server.region}
                         </span>
@@ -125,11 +125,11 @@ export const ServerCardTelemetry: React.FC<ServerCardTelemetryProps> = React.mem
                 {isActive && (
                     <div className="grid grid-cols-2 gap-4 mt-6">
                         <div className="bg-surface-highlight rounded-xl p-3 border border-border-subtle">
-                            <p className="text-xs text-slate-400 font-[700]  tracking-wider mb-1">Revenue Today</p>
+                            <p className="text-sm text-slate-400 font-[700]  tracking-wider mb-1">Revenue Today</p>
                             <p className="text-lg font-[700] text-status-success num-font">${stats.revenueToday.toLocaleString()}</p>
                         </div>
                         <div className="bg-surface-highlight rounded-xl p-3 border border-border-subtle">
-                            <p className="text-xs text-slate-400 font-[700]  tracking-wider mb-1">Active Agents</p>
+                            <p className="text-sm text-slate-400 font-[700]  tracking-wider mb-1">Active Agents</p>
                             <p className="text-lg font-[700] text-blue-400 num-font">{stats.activeUsers}/{stats.totalUsers}</p>
                         </div>
                     </div>
@@ -149,7 +149,7 @@ export const ServerCardTelemetry: React.FC<ServerCardTelemetryProps> = React.mem
                         ></div>
                     </div>
                 </div>
-                <div className="flex items-center gap-2 text-xs font-[700]  text-accent-secondary whitespace-nowrap group-hover:translate-x-1 transition-transform cursor-pointer">
+                <div className="flex items-center gap-2 text-sm font-[700]  text-accent-secondary whitespace-nowrap group-hover:translate-x-1 transition-transform cursor-pointer">
                     {isActive ? 'Connect' : 'Locked'} <ArrowRight size={16} strokeWidth={3}/>
                 </div>
             </div>

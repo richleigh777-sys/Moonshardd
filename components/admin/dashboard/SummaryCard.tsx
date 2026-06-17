@@ -28,7 +28,7 @@ export const SummaryCard: React.FC<SummaryCardProps> = React.memo(({ label, valu
         <div 
             onClick={handleClick} 
             className={`
-                relative overflow-hidden rounded-3xl group transition-all duration-500 
+                relative overflow-hidden rounded-xl group transition-all duration-500 
                 hover:-translate-y-1 hover:shadow-panel h-28 lg:h-32 cursor-default select-none
                 ${onClick ? 'cursor-pointer active:scale-95' : ''}
             `}
@@ -42,14 +42,14 @@ export const SummaryCard: React.FC<SummaryCardProps> = React.memo(({ label, valu
                 ${color === 'amber' ? 'text-status-warning' : ''}
             `} />
             
-            <div style={contentStyle} className="relative z-10 p-5 lg:p-6 flex flex-col justify-between h-full">
+            <div style={contentStyle} className="relative z-10 p-4 lg:p-4 flex flex-col justify-between h-full">
                 <div className="flex justify-between items-start">
                     <div className="min-w-0 pr-2">
-                        <p className="text-[10px] lg:text-xs font-[700] text-text-muted mb-1  tracking-[0.2em] leading-none drop-shadow-sm">{label}</p>
-                        <h3 className="text-2xl lg:text-3xl font-display font-[700] text-text-primary tracking-tighter truncate leading-none drop-shadow-sm">{value}</h3>
+                        <p className="text-sm lg:text-sm font-[700] text-text-muted mb-1  tracking-[0.2em] leading-none drop-shadow-sm">{label}</p>
+                        <h3 className="text-lg lg:text-xl font-display font-[700] text-text-primary tracking-tighter truncate leading-none drop-shadow-sm">{value}</h3>
                     </div>
                     <div className={`
-                        p-3 bg-gradient-to-br from-surface-highlight to-surface-main border border-border-subtle rounded-2xl shadow-lg group-hover:scale-110 transition-transform duration-500
+                        p-3 bg-gradient-to-br from-surface-highlight to-surface-main border border-border-subtle rounded-xl shadow-lg group-hover:scale-110 transition-transform duration-500
                         ${color === 'emerald' ? 'text-status-success drop-shadow-[0_0_12px_rgba(16,185,129,0.8)]' : ''}
                         ${color === 'indigo' ? 'text-accent-secondary drop-shadow-[0_0_12px_rgba(129,140,248,0.8)]' : ''}
                         ${color === 'blue' ? 'text-accent-primary drop-shadow-[0_0_12px_rgba(0,229,255,0.8)]' : ''}
@@ -60,9 +60,9 @@ export const SummaryCard: React.FC<SummaryCardProps> = React.memo(({ label, valu
                 </div>
                 
                 <div className="flex items-center justify-between mt-auto">
-                    <span className="text-[10px] font-[700] font-mono tracking-[0.2em]  text-text-muted/60">{sub}</span>
+                    <span className="text-sm font-[700] font-mono tracking-[0.2em]  text-text-muted/60">{sub}</span>
                     {trend && (
-                        <span className={`text-[10px] lg:text-xs font-[700] flex items-center gap-1 ${color === 'emerald' ? 'text-status-success shadow-emerald-500/20' : 'text-text-muted'}`}>
+                        <span className={`text-sm lg:text-sm font-[700] flex items-center gap-1 ${color === 'emerald' ? 'text-status-success shadow-emerald-500/20' : 'text-text-muted'}`}>
                             {color === 'emerald' && <TrendingUp size={14} className="animate-pulse" />} {trend}
                         </span>
                     )}

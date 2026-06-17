@@ -123,11 +123,11 @@ export const MyProfileModal: React.FC<MyProfileModalProps> = ({ isOpen, onClose,
                         <div className="absolute inset-0 bg-gradient-to-t from-surface-main via-surface-main/60 to-transparent"></div>
                     </div>
 
-                    <div className="absolute bottom-0 left-0 w-full p-6 flex items-end justify-between z-10">
-                        <div className="flex items-end gap-6">
+                    <div className="absolute bottom-0 left-0 w-full p-4 flex items-end justify-between z-10">
+                        <div className="flex items-end gap-4">
                             {/* Avatar */}
                             <div className="relative group cursor-pointer shrink-0" onClick={() => fileInputRef.current?.click()}>
-                                <div className="w-28 h-28 rounded-3xl overflow-hidden border-4 border-surface-main shadow-2xl bg-surface-alt relative">
+                                <div className="w-28 h-28 rounded-xl overflow-hidden border-4 border-surface-main shadow-2xl bg-surface-alt relative">
                                     {avatar ? (
                                         <img src={avatar} className="w-full h-full object-cover transition-transform group-hover:scale-105" alt="Profile" />
                                     ) : (
@@ -147,7 +147,7 @@ export const MyProfileModal: React.FC<MyProfileModalProps> = ({ isOpen, onClose,
 
                             {/* Identity Text */}
                             <div className="mb-2">
-                                <h3 className="text-2xl font-[700] text-text-primary  tracking-tight flex items-center gap-2">
+                                <h3 className="text-lg font-[700] text-text-primary  tracking-tight flex items-center gap-2">
                                     {formData.name || 'Unknown Agent'}
                                     <span className="px-2.5 py-1 rounded text-xs bg-accent-primary/10 text-accent-primary border border-accent-primary/20 tracking-wider">
                                         {stats.rank}
@@ -175,7 +175,7 @@ export const MyProfileModal: React.FC<MyProfileModalProps> = ({ isOpen, onClose,
                 </div>
 
                 {/* 2. TAB NAVIGATION */}
-                <div className="px-6 border-b border-border-subtle bg-surface-main flex items-center gap-6 shrink-0">
+                <div className="px-4 border-b border-border-subtle bg-surface-main flex items-center gap-4 shrink-0">
                     <button 
                         onClick={() => setActiveTab('identity')}
                         className={`py-4 text-xs font-bold  tracking-wider border-b-2 transition-all ${activeTab === 'identity' ? 'border-accent-primary text-accent-primary' : 'border-transparent text-text-muted hover:text-text-primary'}`}
@@ -197,11 +197,11 @@ export const MyProfileModal: React.FC<MyProfileModalProps> = ({ isOpen, onClose,
                 </div>
 
                 {/* 3. CONTENT AREA */}
-                <div className="p-8 flex-1 overflow-y-auto custom-scrollbar bg-surface-alt/20">
+                <div className="p-5 flex-1 overflow-y-auto custom-scrollbar bg-surface-alt/20">
                     
                     {activeTab === 'identity' && (
                         <div className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-300">
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div className="space-y-4">
                                     <h4 className="text-xs font-[700]  text-text-muted tracking-widest flex items-center gap-2 mb-2">
                                         <UserIcon size={16} className="text-accent-primary"/> Personal Details
@@ -218,7 +218,7 @@ export const MyProfileModal: React.FC<MyProfileModalProps> = ({ isOpen, onClose,
                                     </h4>
                                     <Input label="Physical Address" name="address" value={formData.address} onChange={handleChange} />
                                     
-                                    <div className="p-4 bg-surface-main rounded-2xl border border-border-subtle mt-6">
+                                    <div className="p-4 bg-surface-main rounded-xl border border-border-subtle mt-6">
                                         <h5 className="text-xs font-bold  text-text-muted tracking-widest mb-3">Performance Snapshot</h5>
                                         <div className="grid grid-cols-2 gap-4">
                                             <div className="flex items-center gap-3">
@@ -244,7 +244,7 @@ export const MyProfileModal: React.FC<MyProfileModalProps> = ({ isOpen, onClose,
 
                     {activeTab === 'financials' && (
                         <div className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-300">
-                            <div className="p-4 bg-blue-500/5 border border-blue-500/20 rounded-2xl flex items-start gap-3 mb-6">
+                            <div className="p-4 bg-blue-500/5 border border-blue-500/20 rounded-xl flex items-start gap-3 mb-6">
                                 <Briefcase size={18} className="text-blue-500 mt-0.5 shrink-0" />
                                 <div>
                                     <h4 className="text-xs font-bold text-blue-500  tracking-wide">Payout Configuration</h4>
@@ -254,7 +254,7 @@ export const MyProfileModal: React.FC<MyProfileModalProps> = ({ isOpen, onClose,
                                 </div>
                             </div>
 
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <Input label="Bank Name" name="bankName" value={formData.bankName} onChange={handleChange} placeholder="e.g. Chase, Wells Fargo" />
                                 <Input label="Account Number" name="bankAccount" value={formData.bankAccount} onChange={handleChange} placeholder="************" />
                                 <Input label="GCash / Mobile Wallet" name="gcash" value={formData.gcash} onChange={handleChange} placeholder="09XXXXXXXXX" />
@@ -282,8 +282,8 @@ export const MyProfileModal: React.FC<MyProfileModalProps> = ({ isOpen, onClose,
                 </div>
 
                 {/* 4. FOOTER ACTIONS */}
-                <div className="p-6 border-t border-border-subtle bg-surface-main flex justify-end gap-3 shrink-0">
-                    <Button variant="secondary" onClick={onClose} className="h-12 px-6">Cancel</Button>
+                <div className="p-4 border-t border-border-subtle bg-surface-main flex justify-end gap-3 shrink-0">
+                    <Button variant="secondary" onClick={onClose} className="h-12 px-4">Cancel</Button>
                     <Button variant="primary" onClick={handleSave} disabled={isSaving} className="h-12 px-8 shadow-lg shadow-accent-primary/20">
                         {isSaving ? 'Saving Profile...' : 'Save Changes'}
                     </Button>

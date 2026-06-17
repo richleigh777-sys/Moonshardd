@@ -3,7 +3,7 @@ import { useMemo, useState } from 'react';
 import { 
     Clock, DollarSign, 
     Wallet, ChevronRight, 
-    Activity, AlertCircle, CheckCircle
+    Activity, AlertCircle, CheckCircle, User as UserIcon
 } from 'lucide-react';
 import { Modal } from '../ui/Modal';
 import { AttendanceRecord, Sale, User } from '../../types';
@@ -32,6 +32,7 @@ export const AgentTimeSheet: React.FC<Props> = ({ isOpen, onClose, currentUser, 
     const [viewDate, setViewDate] = useState(new Date());
     const [viewMode, setViewMode] = useState<ViewMode>('Month');
     const [expandedDay, setExpandedDay] = useState<string | null>(null);
+    const [showProfile, setShowProfile] = useState(false);
 
     const monthName = viewDate.toLocaleString('default', { month: 'long' });
     const year = viewDate.getFullYear();
@@ -145,19 +146,16 @@ export const AgentTimeSheet: React.FC<Props> = ({ isOpen, onClose, currentUser, 
         setExpandedDay(null);
     };
 
-    const getEfficiencyColor = (e: number) => {
-        if (e > 500) return 'text-status-success';
-        if (e > 250) return 'text-status-success';
-        if (e > 100) return 'text-status-warning';
-        return 'text-text-muted';
-    };
-
     const content = (
         <div className="space-y-6 h-full flex flex-col">
             
             {/* 1. CONTROLS */}
-            <div className="flex flex-col sm:flex-row justify-between items-center gap-4 bg-surface-alt/50 p-2 rounded-2xl border border-border-subtle shrink-0">
+            <div className="flex flex-col sm:flex-row justify-between items-center gap-4 bg-surface-alt/50 p-2 rounded-xl border border-border-subtle shrink-0">
                 <div className="flex items-center gap-1 w-full sm:w-auto justify-between sm:justify-start">
+                    <button onClick={() => { setShowProfile(!showProfile); sfx.playClick(); }} className={`p-2 rounded-xl transition-colors ${showProfile ? 'bg-accent-secondary/20 text-accent-secondary border border-accent-secondary/30' : 'text-text-muted hover:text-text-primary hover:bg-surface-main'} `} title="View Configured HR Details">
+                        <UserIcon size={18} />
+                    </button>
+                    <div className="w-px h-6 bg-border-subtle mx-2 hidden sm:block"></div>
                     <button onClick={() => handleMonthChange(-1)} className="p-2 hover:bg-surface-main rounded-xl text-text-muted hover:text-text-primary transition-colors">←</button>
                     <div className="px-4 text-center min-w-[140px]">
                         <span className="text-sm font-[700]  tracking-widest text-text-primary block">{monthName}</span>
@@ -183,39 +181,90 @@ export const AgentTimeSheet: React.FC<Props> = ({ isOpen, onClose, currentUser, 
                 </div>
             </div>
 
+            {/* HR DETAILS (COLLAPSIBLE) */}
+            {showProfile && (
+                <div className="bg-surface-alt/40 border border-border-subtle rounded-xl p-4 animate-in slide-in-from-top-4 shrink-0 flex flex-col md:flex-row gap-6">
+                    <div className="flex-1 space-y-3">
+                        <h4 className="text-xs font-[700] text-text-muted tracking-widest uppercase flex items-center gap-2">
+                            <UserIcon size={14} className="text-accent-secondary" /> Contact Details
+                        </h4>
+                        <div className="grid grid-cols-2 gap-3 text-sm">
+                            <div>
+                                <span className="text-[10px] text-text-muted uppercase tracking-widest block font-[700]">Email</span>
+                                <span className="text-text-primary font-mono">{currentUser.email || '—'}</span>
+                            </div>
+                            <div>
+                                <span className="text-[10px] text-text-muted uppercase tracking-widest block font-[700]">Phone</span>
+                                <span className="text-text-primary font-mono">{currentUser.phone || '—'}</span>
+                            </div>
+                            <div className="col-span-2">
+                                <span className="text-[10px] text-text-muted uppercase tracking-widest block font-[700]">Address</span>
+                                <span className="text-text-primary">{currentUser.address || '—'}</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div className="w-px bg-border-subtle hidden md:block"></div>
+                    <div className="flex-1 space-y-3">
+                        <h4 className="text-xs font-[700] text-text-muted tracking-widest uppercase flex items-center gap-2">
+                            <Wallet size={14} className="text-status-success" /> Payout Configuration
+                        </h4>
+                        <div className="grid grid-cols-2 gap-3 text-sm">
+                            <div>
+                                <span className="text-[10px] text-text-muted uppercase tracking-widest block font-[700]">Bank Name</span>
+                                <span className="text-text-primary font-bold">{currentUser.bankName || '—'}</span>
+                            </div>
+                            <div>
+                                <span className="text-[10px] text-text-muted uppercase tracking-widest block font-[700]">Commission Rate</span>
+                                <span className="text-status-success font-bold font-mono">{currentUser.commissionRate || 15}%</span>
+                            </div>
+                            <div className="col-span-2 pt-2 grid grid-cols-2 gap-3">
+                                <div>
+                                    <span className="text-[10px] text-text-muted uppercase tracking-widest block font-[700]">Account No.</span>
+                                    <span className="text-text-primary font-mono">{currentUser.bankAccount ? '*'.repeat(Math.max(0, currentUser.bankAccount.length - 4)) + currentUser.bankAccount.slice(-4) : '—'}</span>
+                                </div>
+                                <div>
+                                    <span className="text-[10px] text-text-muted uppercase tracking-widest block font-[700]">Mobile Wallet</span>
+                                    <span className="text-text-primary font-mono">{currentUser.gcash || '—'}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
+
             {/* 2. AGGREGATE CARDS */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3 shrink-0">
-                <Card className="p-4 bg-surface-main border border-border-subtle rounded-2xl shadow-sm relative overflow-hidden group">
+                <Card className="p-4 bg-surface-main border border-border-subtle rounded-xl shadow-sm relative overflow-hidden group">
                     <div className="absolute top-0 right-0 p-3 opacity-10 text-blue-500"><Clock size={40}/></div>
                     <p className="text-xs font-[700] text-text-muted  tracking-widest relative z-10">Logged Time</p>
-                    <p className="text-2xl font-[700] text-text-primary mt-1 num-font relative z-10">{formatDuration(totals.hours)}</p>
+                    <p className="text-lg font-[700] text-text-primary mt-1 num-font relative z-10">{formatDuration(totals.hours)}</p>
                 </Card>
-                <Card className="p-4 bg-surface-main border border-border-subtle rounded-2xl shadow-sm relative overflow-hidden group">
+                <Card className="p-4 bg-surface-main border border-border-subtle rounded-xl shadow-sm relative overflow-hidden group">
                     <div className="absolute top-0 right-0 p-3 opacity-10 text-status-success"><DollarSign size={40}/></div>
                     <p className="text-xs font-[700] text-text-muted  tracking-widest relative z-10">Gross Revenue</p>
-                    <p className="text-2xl font-[700] text-text-primary mt-1 num-font relative z-10">${totals.revenue.toLocaleString()}</p>
+                    <p className="text-lg font-[700] text-text-primary mt-1 num-font relative z-10">${totals.revenue.toLocaleString()}</p>
                     <div className="mt-1 text-xs font-bold text-status-success">{totals.approvedCount} Wins</div>
                 </Card>
-                <Card className="p-4 bg-surface-main border border-border-subtle rounded-2xl shadow-sm relative overflow-hidden group">
+                <Card className="p-4 bg-surface-main border border-border-subtle rounded-xl shadow-sm relative overflow-hidden group">
                     <div className="absolute top-0 right-0 p-3 opacity-10 text-status-error"><AlertCircle size={40}/></div>
                     <p className="text-xs font-[700] text-text-muted  tracking-widest relative z-10">Lost Opportunity</p>
-                    <p className="text-2xl font-[700] text-text-secondary mt-1 num-font relative z-10 group-hover:text-status-error transition-colors">${totals.declined.toLocaleString()}</p>
+                    <p className="text-lg font-[700] text-text-secondary mt-1 num-font relative z-10 group-hover:text-status-error transition-colors">${totals.declined.toLocaleString()}</p>
                     <div className="mt-1 text-xs font-bold text-status-error">{totals.declinedCount} Declines</div>
                 </Card>
-                <Card className="p-4 bg-emerald-50 border border-status-success/30 rounded-2xl shadow-sm dark:bg-emerald-950/20 relative overflow-hidden">
+                <Card className="p-4 bg-emerald-50 border border-status-success/30 rounded-xl shadow-sm dark:bg-emerald-950/20 relative overflow-hidden">
                     <div className="absolute top-0 right-0 p-3 opacity-10 text-emerald-300"><Wallet size={40}/></div>
                     <p className="text-xs font-[700] text-emerald-600  tracking-widest relative z-10">Net Payout</p>
-                    <p className="text-2xl font-[700] text-emerald-600 mt-1 num-font relative z-10">${totals.earnings.toLocaleString(undefined, {minimumFractionDigits: 2})}</p>
+                    <p className="text-lg font-[700] text-emerald-600 mt-1 num-font relative z-10">${totals.earnings.toLocaleString(undefined, {minimumFractionDigits: 2})}</p>
                 </Card>
             </div>
 
             {/* 3. DAILY BREAKDOWN LIST */}
-            <div className="bg-surface-main border border-border-subtle rounded-2xl overflow-hidden shadow-sm flex-1 flex flex-col min-h-0">
-                <div className="px-6 py-3 border-b border-border-subtle bg-surface-alt/40 flex justify-between items-center text-xs font-[700]  text-text-muted tracking-widest sticky top-0 z-10 shrink-0">
+            <div className="bg-surface-main border border-border-subtle rounded-xl overflow-hidden shadow-sm flex-1 flex flex-col min-h-0">
+                <div className="px-4 py-3 border-b border-border-subtle bg-surface-alt/40 flex justify-between items-center text-xs font-[700]  text-text-muted tracking-widest sticky top-0 z-10 shrink-0">
                     <span className="w-24">Date</span>
                     <span className="w-20 text-center">Hours</span>
-                    <span className="w-24 text-right">Efficiency</span>
-                    <span className="w-24 text-right">Yield</span>
+                    <span className="w-24 text-right">Commission</span>
+                    <span className="w-24 text-right">Revenue</span>
                     <span className="w-8"></span>
                 </div>
                 
@@ -223,7 +272,7 @@ export const AgentTimeSheet: React.FC<Props> = ({ isOpen, onClose, currentUser, 
                     {dailyData.filter(d => d.hasActivity).map((day) => (
                         <div key={day.dateKey} className="border-b border-border-subtle/50 group shrink-0">
                             {/* Day Summary Row */}
-                            <div onClick={() => toggleDay(day.dateKey)} className="px-6 py-4 flex justify-between items-center cursor-pointer hover:bg-surface-alt/20 transition-colors">
+                            <div onClick={() => toggleDay(day.dateKey)} className="px-4 py-4 flex justify-between items-center cursor-pointer hover:bg-surface-alt/20 transition-colors">
                                 <div className="w-24">
                                     <span className="text-xs font-bold text-text-primary block flex items-center gap-2">
                                         {day.date.toLocaleDateString(undefined, {month:'short', day:'numeric'})}
@@ -237,13 +286,14 @@ export const AgentTimeSheet: React.FC<Props> = ({ isOpen, onClose, currentUser, 
                                     </span>
                                 </div>
                                 <div className="w-24 text-right">
-                                    <span className={`text-xs font-bold ${getEfficiencyColor(day.efficiency)}`}>
-                                        ${day.efficiency.toFixed(0)}/hr
+                                    <span className="text-xs font-bold text-status-success num-font">
+                                        ${day.earnings.toFixed(2)}
                                     </span>
+                                    {day.spiffs > 0 && <span className="block text-[10px] font-bold text-status-success mt-0.5">+${day.spiffs} Spiff</span>}
                                 </div>
                                 <div className="w-24 text-right">
-                                    <span className="text-xs font-[700] text-status-success num-font">${day.revenue.toLocaleString()}</span>
-                                    {day.declinedRevenue > 0 && <span className="block text-sm font-bold text-status-error">-${day.declinedRevenue.toLocaleString()}</span>}
+                                    <span className="text-xs font-[700] text-text-primary num-font">${day.revenue.toLocaleString()}</span>
+                                    {day.declinedRevenue > 0 && <span className="block text-[10px] font-bold text-status-error leading-tight mt-0.5">-${day.declinedRevenue.toLocaleString()} Ref</span>}
                                 </div>
                                 <div className="w-8 flex justify-end">
                                     <ChevronRight size={16} className={`text-text-muted transition-transform ${expandedDay === day.dateKey ? 'rotate-90' : ''}`}/>
@@ -252,7 +302,7 @@ export const AgentTimeSheet: React.FC<Props> = ({ isOpen, onClose, currentUser, 
 
                             {/* Expanded Details */}
                             {expandedDay === day.dateKey && (
-                                <div className="bg-surface-alt/30 p-4 border-t border-border-subtle/50 animate-in slide-in-from-top-1 grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div className="bg-surface-alt/30 p-4 border-t border-border-subtle/50 animate-in slide-in-from-top-1 grid grid-cols-1 md:grid-cols-2 gap-4">
                                     
                                     {/* Left: Session Timeline */}
                                     <div className="space-y-3">

@@ -73,7 +73,7 @@ export const OperativeItem: React.FC<OperativeItemProps> = React.memo(({
     if (viewMode === 'grid') {
         return (
             <div style={style} className="p-2 h-full">
-                <div className="group relative bg-surface-main border border-border-subtle rounded-2xl p-4 hover:shadow-[0_10px_40px_-10px_rgba(0,0,0,0.1)] transition-all duration-500 h-full flex flex-col hover:-translate-y-1">
+                <div className="group relative bg-surface-main border border-border-subtle rounded-xl p-4 hover:shadow-[0_10px_40px_-10px_rgba(0,0,0,0.1)] transition-all duration-500 h-full flex flex-col hover:-translate-y-1">
                     
                     {/* Header: Avatar & Status */}
                     <div className="flex justify-between items-start mb-2">
@@ -106,10 +106,10 @@ export const OperativeItem: React.FC<OperativeItemProps> = React.memo(({
                     <div className="mb-3">
                         <h4 className="text-base font-bold text-text-primary leading-tight">{u.name}</h4>
                         <div className="flex items-center gap-2 mt-1">
-                            <span className={`text-xs font-bold px-2.5 py-1 rounded-full border flex items-center gap-1 ${rankStyle.bg} ${rankStyle.color} ${rankStyle.border}`}>
+                            <span className={`text-sm font-bold px-2.5 py-1 rounded-full border flex items-center gap-1 ${rankStyle.bg} ${rankStyle.color} ${rankStyle.border}`}>
                                 <rankStyle.icon size={16} /> {analytics.rank}
                             </span>
-                            <span className="text-xs font-medium text-text-muted">{u.team}</span>
+                            <span className="text-sm font-medium text-text-muted">{u.team}</span>
                         </div>
                     </div>
 
@@ -117,7 +117,7 @@ export const OperativeItem: React.FC<OperativeItemProps> = React.memo(({
                     <div className="flex-1 mb-3 relative min-h-[40px]">
                         <div className="flex justify-between items-end mb-1">
                              <div>
-                                 <span className="text-xs font-bold text-text-muted  tracking-wide">Daily Production</span>
+                                 <span className="text-sm font-bold text-text-muted  tracking-wide">Daily Production</span>
                                  <p className="text-lg font-bold text-text-primary num-font leading-none">${analytics.dailyRevenue.toLocaleString()}</p>
                                  <p className="text-sm text-text-muted">Total: ${analytics.revenue.toLocaleString()}</p>
                              </div>
@@ -127,14 +127,14 @@ export const OperativeItem: React.FC<OperativeItemProps> = React.memo(({
                         </div>
                         <div className="flex gap-3 pt-2 border-t border-border-subtle">
                              <div>
-                                 <p className="text-xs text-text-muted font-medium mb-0.5 leading-none">Conn</p>
-                                 <p className="text-xs font-bold text-text-primary flex items-center gap-0.5">
+                                 <p className="text-sm text-text-muted font-medium mb-0.5 leading-none">Conn</p>
+                                 <p className="text-sm font-bold text-text-primary flex items-center gap-0.5">
                                      <Zap size={16} className="text-status-warning fill-current"/> {analytics.winRate}%
                                  </p>
                              </div>
                              <div>
-                                 <p className="text-xs text-text-muted font-medium mb-0.5 leading-none">Focus</p>
-                                 <p className="text-xs font-bold text-text-primary flex items-center gap-0.5">
+                                 <p className="text-sm text-text-muted font-medium mb-0.5 leading-none">Focus</p>
+                                 <p className="text-sm font-bold text-text-primary flex items-center gap-0.5">
                                      <Clock size={16} className="text-blue-500"/> {hoursToday.toFixed(1)}h
                                  </p>
                              </div>
@@ -143,11 +143,11 @@ export const OperativeItem: React.FC<OperativeItemProps> = React.memo(({
 
                     {/* Footer Actions */}
                     <div className="grid grid-cols-2 gap-2 mt-auto">
-                        <button onClick={() => onOpenLedger(u)} className="py-1.5 rounded-lg bg-surface-alt hover:bg-surface-highlight text-xs font-bold text-text-secondary transition-colors flex items-center justify-center gap-1.5 group/btn">
+                        <button onClick={() => onOpenLedger(u)} className="py-1.5 rounded-lg bg-surface-alt hover:bg-surface-highlight text-sm font-bold text-text-secondary transition-colors flex items-center justify-center gap-1.5 group/btn">
                             <FileText size={16} className="group-hover/btn:text-accent-primary"/> Ledger
                         </button>
                         {(currentUser?.level || 0) >= 10 && (
-                            <button onClick={() => onGhost(u.id)} className="py-1.5 rounded-lg bg-surface-alt hover:bg-accent-secondary/10 text-xs font-bold text-text-secondary hover:text-accent-secondary transition-colors flex items-center justify-center gap-1.5 group/btn">
+                            <button onClick={() => onGhost(u.id)} className="py-1.5 rounded-lg bg-surface-alt hover:bg-accent-secondary/10 text-sm font-bold text-text-secondary hover:text-accent-secondary transition-colors flex items-center justify-center gap-1.5 group/btn">
                                 <Eye size={16} className="group-hover/btn:text-accent-secondary"/> Assist
                             </button>
                         )}
@@ -160,7 +160,7 @@ export const OperativeItem: React.FC<OperativeItemProps> = React.memo(({
     // --- LIST VIEW (The "Clean Row") ---
     return (
         <div style={style} className="px-2.5 py-1">
-            <div className="group flex items-center justify-between p-2 rounded-2xl bg-surface-main border border-border-subtle hover:shadow-lg transition-all duration-300">
+            <div className="group flex items-center justify-between p-2 rounded-xl bg-surface-main border border-border-subtle hover:shadow-lg transition-all duration-300">
                 
                 {/* Left: Identity */}
                 <div className="flex items-center gap-2.5 w-1/3">
@@ -171,18 +171,18 @@ export const OperativeItem: React.FC<OperativeItemProps> = React.memo(({
                         }`}></div>
                     </div>
                     <div>
-                        <h4 className="text-xs font-bold text-text-primary leading-none">{u.name}</h4>
+                        <h4 className="text-sm font-bold text-text-primary leading-none">{u.name}</h4>
                         <div className="flex items-center gap-1.5 mt-0.5">
                             <span className={`text-sm font-bold px-3 py-1.5 rounded-full ${rankStyle.bg} ${rankStyle.color}`}>
                                 {analytics.rank}
                             </span>
-                            <span className="text-xs text-text-muted">{u.team}</span>
+                            <span className="text-sm text-text-muted">{u.team}</span>
                         </div>
                     </div>
                 </div>
 
                 {/* Middle: Metrics */}
-                <div className="flex items-center gap-6 flex-1 justify-center">
+                <div className="flex items-center gap-4 flex-1 justify-center">
                     <div className="text-center">
                         <span className="block text-sm font-medium text-text-muted  leading-none">Time</span>
                         <span className="text-sm font-bold text-text-primary">{hoursToday.toFixed(1)}h</span>

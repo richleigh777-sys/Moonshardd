@@ -19,13 +19,13 @@ export const EnrollmentHeader: React.FC<EnrollmentHeaderProps> = ({
           <ShoppingCart className="w-3.5 h-3.5" strokeWidth={2.5} />
         </div>
         <div>
-          <h2 className="text-xs font-bold text-text-primary tracking-tight">Sales Entry</h2>
+          <h2 className="text-sm font-bold text-text-primary tracking-tight">Sales Entry</h2>
           <div className="flex items-center gap-1.5 mt-0.5">
-            <span className="text-xs font-semibold text-accent-primary tracking-wide bg-accent-primary/5 px-3 py-1.5 rounded border border-accent-primary/10 flex items-center gap-1">
+            <span className="text-sm font-semibold text-accent-primary tracking-wide bg-accent-primary/5 px-3 py-1.5 rounded border border-accent-primary/10 flex items-center gap-1">
               <Lock size={16} /> Data Entry V1
             </span>
             {customerTime && (
-              <span className="text-xs font-mono text-text-muted bg-surface-alt px-3 py-1.5 rounded border border-border-subtle flex items-center gap-1 animate-in fade-in">
+              <span className="text-sm font-mono text-text-muted bg-surface-alt px-3 py-1.5 rounded border border-border-subtle flex items-center gap-1 animate-in fade-in">
                 <Clock size={16} /> {customerTime}
               </span>
             )}
@@ -36,8 +36,8 @@ export const EnrollmentHeader: React.FC<EnrollmentHeaderProps> = ({
       <div className="flex items-center gap-2">
         <div className="flex items-center gap-1.5 bg-surface-alt/50 p-1 rounded-lg border border-border-subtle shadow-inner">
           <div className="px-2 border-r border-border-subtle">
-            <p className="text-xs font-bold text-text-muted tracking-wider">Order Total</p>
-            <p className="text-xs font-bold text-status-success num-font">
+            <p className="text-sm font-bold text-text-muted tracking-wider">Order Total</p>
+            <p className="text-sm font-bold text-status-success num-font">
               ${parseFloat(manualAmount || '0').toLocaleString(undefined, { minimumFractionDigits: 2 })}
             </p>
           </div>

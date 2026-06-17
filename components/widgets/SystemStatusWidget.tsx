@@ -20,7 +20,7 @@ export const SystemStatusWidget: React.FC = () => {
     }, [systemLoad]);
 
     return (
-        <Card className="p-4 bg-surface-main/40 backdrop-blur-md border-border-subtle/40 shadow-xl relative overflow-hidden group">
+        <Card className="p-4 bg-surface-widget backdrop-blur-md border-border-subtle/40 shadow-xl relative overflow-hidden group">
             <div className="absolute -right-4 -top-4 w-20 h-20 bg-emerald-500/5 rounded-full blur-2xl group-hover:bg-emerald-500/10 transition-all duration-700" />
             
             <div className="flex items-center justify-between mb-4 relative z-10">

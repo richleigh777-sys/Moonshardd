@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { User, AttendanceRecord, Sale } from '../../../types';
 import { Modal } from '../../ui/Modal';
 import { Button, Input } from '../../ui/Base';
-import { Save, User as UserIcon, Lock, Percent, AlertTriangle, Activity, Eye, ShieldAlert, FileText, History } from 'lucide-react';
+import { Save, User as UserIcon, Lock, Percent, AlertTriangle, Activity, Eye, ShieldAlert, FileText, History, Wallet } from 'lucide-react';
 import { sfx } from '../../../lib/soundService';
 import { useAuth } from '../../../hooks/useAuth';
 import { AgentTimeSheet } from '../../modals/AgentTimeSheet';
@@ -95,19 +95,19 @@ export const EditUserModal: React.FC<EditUserModalProps> = ({ isOpen, onClose, u
                     <div className="flex items-center gap-2 border-b border-border-subtle pb-4 mb-6">
                         <button 
                             onClick={() => setActiveTab('profile')} 
-                            className={`flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-[700]  tracking-wider transition-all ${activeTab === 'profile' ? 'bg-surface-main text-text-primary border border-border-subtle shadow-sm' : 'text-text-muted hover:bg-surface-alt'}`}
+                            className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-[700]  tracking-wider transition-all ${activeTab === 'profile' ? 'bg-surface-main text-text-primary border border-border-subtle shadow-sm' : 'text-text-muted hover:bg-surface-alt'}`}
                         >
                             <UserIcon size={14}/> Unit Profile
                         </button>
                         <button 
                             onClick={() => setActiveTab('audit')} 
-                            className={`flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-[700]  tracking-wider transition-all ${activeTab === 'audit' ? 'bg-surface-main text-text-primary border border-border-subtle shadow-sm' : 'text-text-muted hover:bg-surface-alt'}`}
+                            className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-[700]  tracking-wider transition-all ${activeTab === 'audit' ? 'bg-surface-main text-text-primary border border-border-subtle shadow-sm' : 'text-text-muted hover:bg-surface-alt'}`}
                         >
                             <History size={14}/> History & Audit
                         </button>
                         <button 
                             onClick={() => setActiveTab('assist')} 
-                            className={`flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-[700]  tracking-wider transition-all ${activeTab === 'assist' ? 'bg-amber-500/10 text-status-warning border border-amber-500/20 shadow-sm' : 'text-text-muted hover:bg-surface-alt'}`}
+                            className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-[700]  tracking-wider transition-all ${activeTab === 'assist' ? 'bg-amber-500/10 text-status-warning border border-amber-500/20 shadow-sm' : 'text-text-muted hover:bg-surface-alt'}`}
                         >
                             <Eye size={14}/> Assist Mode
                         </button>
@@ -118,9 +118,9 @@ export const EditUserModal: React.FC<EditUserModalProps> = ({ isOpen, onClose, u
                     {/* PROFILE TAB */}
                     {(activeTab === 'profile' || !formData.id) && (
                         <div className="space-y-8">
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 p-6 bg-surface-alt/50 rounded-3xl border border-border-subtle shadow-inner">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 bg-surface-alt/50 rounded-xl border border-border-subtle shadow-inner">
                                 <div className="space-y-4">
-                                    <h4 className="text-xs font-[700]  text-text-muted tracking-widest flex items-center gap-2 mb-2">
+                                    <h4 className="text-sm font-[700]  text-text-muted tracking-widest flex items-center gap-2 mb-2">
                                         <UserIcon size={16} className="text-accent-primary"/> Biological Handle
                                     </h4>
                                     <Input 
@@ -137,7 +137,7 @@ export const EditUserModal: React.FC<EditUserModalProps> = ({ isOpen, onClose, u
                                     />
                                 </div>
                                 <div className="space-y-4">
-                                    <h4 className="text-xs font-[700]  text-text-muted tracking-widest flex items-center gap-2 mb-2">
+                                    <h4 className="text-sm font-[700]  text-text-muted tracking-widest flex items-center gap-2 mb-2">
                                         <Lock size={16} className="text-status-warning"/> System Credentials
                                     </h4>
                                     <Input 
@@ -157,26 +157,81 @@ export const EditUserModal: React.FC<EditUserModalProps> = ({ isOpen, onClose, u
                                     />
                                 </div>
                             </div>
+                            
+                            {/* HR & FINANCE SECTION */}
+                            <div className="p-4 bg-surface-alt/30 rounded-xl border border-border-subtle shadow-inner mt-4 space-y-6">
+                                <div className="space-y-4">
+                                    <h4 className="text-sm font-[700] text-text-muted tracking-widest flex items-center gap-2 mb-2">
+                                        <FileText size={16} className="text-accent-secondary"/> Contact & HR Information
+                                    </h4>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <Input 
+                                            label="Email Address" 
+                                            value={formData.email || ''} 
+                                            onChange={e => setFormData({...formData, email: e.target.value})} 
+                                            placeholder="agent@company.com"
+                                        />
+                                        <Input 
+                                            label="Phone Number" 
+                                            value={formData.phone || ''} 
+                                            onChange={e => setFormData({...formData, phone: e.target.value})} 
+                                            placeholder="+1 (555) 000-0000"
+                                        />
+                                    </div>
+                                    <Input 
+                                        label="Home/Mailing Address" 
+                                        value={formData.address || ''} 
+                                        onChange={e => setFormData({...formData, address: e.target.value})} 
+                                        placeholder="Full address for internal HR records"
+                                    />
+                                </div>
 
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-6">
+                                <div className="pt-4 border-t border-border-subtle space-y-4">
+                                    <h4 className="text-sm font-[700] text-text-muted tracking-widest flex items-center gap-2">
+                                        <Wallet size={16} className="text-status-success"/> Payout Destination (Finance/Commissions)
+                                    </h4>
+                                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                        <Input 
+                                            label="Bank Name" 
+                                            value={formData.bankName || ''} 
+                                            onChange={e => setFormData({...formData, bankName: e.target.value})} 
+                                            placeholder="e.g. Chase, BDO"
+                                        />
+                                        <Input 
+                                            label="Bank Account No." 
+                                            value={formData.bankAccount || ''} 
+                                            onChange={e => setFormData({...formData, bankAccount: e.target.value})} 
+                                            placeholder="Account #"
+                                        />
+                                        <Input 
+                                            label="Mobile Wallet (GCash/Zelle)" 
+                                            value={formData.gcash || ''} 
+                                            onChange={e => setFormData({...formData, gcash: e.target.value})} 
+                                            placeholder="Linked Number"
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mt-6">
                                 <div className="space-y-6">
                                     <div className="space-y-2">
-                                        <label className="text-xs font-[700] text-text-muted  tracking-widest ml-1 flex justify-between">
+                                        <label className="text-sm font-[700] text-text-muted  tracking-widest ml-1 flex justify-between">
                                             <span>Role Assignment</span>
                                             <span className={formData.role === 'admin' ? 'text-accent-secondary' : 'text-slate-500'}>
                                                 {formData.role === 'admin' ? 'Director Privileges' : 'Operative Level'}
                                             </span>
                                         </label>
-                                        <div className="grid grid-cols-2 gap-2 bg-surface-alt p-1 rounded-2xl border border-border-subtle">
+                                        <div className="grid grid-cols-2 gap-2 bg-surface-alt p-1 rounded-xl border border-border-subtle">
                                             <button 
                                                 onClick={() => handleRoleChange('agent')}
-                                                className={`py-2 text-xs font-[700]  rounded-xl transition-all ${formData.role === 'agent' ? 'bg-surface-main text-text-primary shadow-sm' : 'text-text-muted hover:text-text-primary'}`}
+                                                className={`py-2 text-sm font-[700]  rounded-xl transition-all ${formData.role === 'agent' ? 'bg-surface-main text-text-primary shadow-sm' : 'text-text-muted hover:text-text-primary'}`}
                                             >
                                                 Agent
                                             </button>
                                             <button 
                                                 onClick={() => handleRoleChange('admin')}
-                                                className={`py-2 text-xs font-[700]  rounded-xl transition-all ${formData.role === 'admin' ? 'bg-indigo-500 text-white shadow-lg' : 'text-text-muted hover:text-text-primary'}`}
+                                                className={`py-2 text-sm font-[700]  rounded-xl transition-all ${formData.role === 'admin' ? 'bg-indigo-500 text-white shadow-lg' : 'text-text-muted hover:text-text-primary'}`}
                                             >
                                                 Admin
                                             </button>
@@ -184,7 +239,7 @@ export const EditUserModal: React.FC<EditUserModalProps> = ({ isOpen, onClose, u
                                     </div>
 
                                     <div className="space-y-2">
-                                        <label className="text-xs font-[700] text-text-muted  tracking-widest ml-1 flex justify-between">
+                                        <label className="text-sm font-[700] text-text-muted  tracking-widest ml-1 flex justify-between">
                                             <span>Access Clearance</span>
                                             <span className={(formData.level || formData.accessLevel) === 10 ? 'text-status-warning animate-pulse' : 'text-accent-primary'}>
                                                 Level {formData.level || formData.accessLevel} {(formData.level || formData.accessLevel) === 10 ? '(GOD MODE)' : ''}
@@ -204,7 +259,7 @@ export const EditUserModal: React.FC<EditUserModalProps> = ({ isOpen, onClose, u
                                             <span>{isSuperAdmin ? 'Director (9)' : 'Manager (5)'}</span>
                                         </div>
                                         {!isSuperAdmin && (
-                                            <div className="text-xs text-status-warning flex items-center gap-1.5 mt-2 bg-amber-500/10 p-2 rounded-lg border border-amber-500/20">
+                                            <div className="text-sm text-status-warning flex items-center gap-1.5 mt-2 bg-amber-500/10 p-2 rounded-lg border border-amber-500/20">
                                                 <AlertTriangle size={16} /> 
                                                 <span className="font-bold">Clearance capped by your rank.</span>
                                             </div>
@@ -215,7 +270,7 @@ export const EditUserModal: React.FC<EditUserModalProps> = ({ isOpen, onClose, u
                                 <div className="space-y-6">
                                     <div className="space-y-4">
                                         <div className="space-y-2">
-                                            <label className="text-xs font-[700] text-text-muted  tracking-widest ml-1 flex justify-between">
+                                            <label className="text-sm font-[700] text-text-muted  tracking-widest ml-1 flex justify-between">
                                                 <span>Yield Commission</span>
                                                 <span className="text-status-success">{formData.commissionRate || 15}% Override</span>
                                             </label>
@@ -232,7 +287,7 @@ export const EditUserModal: React.FC<EditUserModalProps> = ({ isOpen, onClose, u
                                         
                                         <div className="grid grid-cols-2 gap-4">
                                             <div className="space-y-2">
-                                                <label className="text-[10px] font-[700] text-text-muted  tracking-widest ml-1">Daily Target ($)</label>
+                                                <label className="text-sm font-[700] text-text-muted  tracking-widest ml-1">Daily Target ($)</label>
                                                 <input autoComplete="off" data-lpignore="true" data-prevent-autofill="true" spellCheck={false} 
                                                     type="number" 
                                                     value={formData.dailyQuota || ''} 
@@ -242,7 +297,7 @@ export const EditUserModal: React.FC<EditUserModalProps> = ({ isOpen, onClose, u
                                                 />
                                             </div>
                                             <div className="space-y-2">
-                                                <label className="text-[10px] font-[700] text-text-muted  tracking-widest ml-1">Monthly Target ($)</label>
+                                                <label className="text-sm font-[700] text-text-muted  tracking-widest ml-1">Monthly Target ($)</label>
                                                 <input autoComplete="off" data-lpignore="true" data-prevent-autofill="true" spellCheck={false} 
                                                     type="number" 
                                                     value={formData.monthlyQuota || ''} 
@@ -254,10 +309,10 @@ export const EditUserModal: React.FC<EditUserModalProps> = ({ isOpen, onClose, u
                                         </div>
                                     </div>
 
-                                    <div className="flex items-center justify-between p-4 bg-surface-alt/30 rounded-2xl border border-border-subtle group hover:border-accent-primary/30 transition-all cursor-pointer" onClick={() => setFormData({...formData, active: !formData.active})}>
+                                    <div className="flex items-center justify-between p-4 bg-surface-alt/30 rounded-xl border border-border-subtle group hover:border-accent-primary/30 transition-all cursor-pointer" onClick={() => setFormData({...formData, active: !formData.active})}>
                                         <div>
-                                            <p className="text-xs font-[700] text-text-primary  tracking-wider">System Authorization</p>
-                                            <p className="text-xs text-text-muted font-bold mt-0.5">Allow login and dashboard access</p>
+                                            <p className="text-sm font-[700] text-text-primary  tracking-wider">System Authorization</p>
+                                            <p className="text-sm text-text-muted font-bold mt-0.5">Allow login and dashboard access</p>
                                         </div>
                                         <div className={`relative w-12 h-6 rounded-full transition-all duration-500 ${formData.active ? 'bg-emerald-500' : 'bg-surface-main border border-border-subtle'}`}>
                                             <div className={`absolute top-1 w-4 h-4 rounded-full bg-white shadow-md transition-all duration-300 ${formData.active ? 'right-1' : 'left-1 bg-text-muted'}`}></div>
@@ -271,26 +326,26 @@ export const EditUserModal: React.FC<EditUserModalProps> = ({ isOpen, onClose, u
                     {/* AUDIT TAB */}
                     {activeTab === 'audit' && formData.id && (
                         <div className="space-y-6">
-                            <div className="bg-surface-alt p-6 rounded-3xl border border-border-subtle mb-4">
+                            <div className="bg-surface-alt p-4 rounded-xl border border-border-subtle mb-4">
                                 <h3 className="text-sm font-[700] text-white  tracking-widest flex items-center gap-2 mb-4">
                                     <ShieldAlert size={16} className="text-status-warning" />
                                     Security & Activity Audit
                                 </h3>
                                 <div className="grid grid-cols-3 gap-4">
-                                    <div className="p-4 bg-surface-main rounded-2xl border border-border-subtle">
-                                        <div className="text-[10px] text-text-muted  font-[700] tracking-widest mb-1">Status</div>
+                                    <div className="p-4 bg-surface-main rounded-xl border border-border-subtle">
+                                        <div className="text-sm text-text-muted  font-[700] tracking-widest mb-1">Status</div>
                                         <div className={`text-sm font-bold  ${formData.currentStatus === 'online' ? 'text-status-success' : 'text-text-muted'}`}>
                                             {formData.currentStatus || 'Offline'}
                                         </div>
                                     </div>
-                                    <div className="p-4 bg-surface-main rounded-2xl border border-border-subtle">
-                                        <div className="text-[10px] text-text-muted  font-[700] tracking-widest mb-1">Lifetime Deals</div>
+                                    <div className="p-4 bg-surface-main rounded-xl border border-border-subtle">
+                                        <div className="text-sm text-text-muted  font-[700] tracking-widest mb-1">Lifetime Deals</div>
                                         <div className="text-sm font-bold font-mono text-status-success">
                                             {sales.filter(s => s.agentId === formData.id).length}
                                         </div>
                                     </div>
-                                    <div className="p-4 bg-surface-main rounded-2xl border border-border-subtle">
-                                        <div className="text-[10px] text-text-muted  font-[700] tracking-widest mb-1">Last Active</div>
+                                    <div className="p-4 bg-surface-main rounded-xl border border-border-subtle">
+                                        <div className="text-sm text-text-muted  font-[700] tracking-widest mb-1">Last Active</div>
                                         <div className="text-sm font-bold font-mono text-text-primary">
                                             {formData.lastActive ? new Date(formData.lastActive).toLocaleTimeString() : 'N/A'}
                                         </div>
@@ -298,9 +353,9 @@ export const EditUserModal: React.FC<EditUserModalProps> = ({ isOpen, onClose, u
                                 </div>
                             </div>
                             
-                            <div className="bg-surface-main rounded-3xl border border-border-subtle p-6 min-h-[300px]">
-                                <h4 className="text-xs font-[700] text-text-muted  tracking-widest mb-4">Historical Record (Read-Only)</h4>
-                                <div className="h-[400px]">
+                            <div className="bg-surface-main rounded-xl border border-border-subtle p-4 min-h-[300px]">
+                                <h4 className="text-sm font-[700] text-text-muted  tracking-widest mb-4">Historical Record (Read-Only)</h4>
+                                <div className="h-[300px]">
                                     {/* We reuse the core logic but visually embed it or show raw stats */}
                                     <AgentTimeSheet
                                         isOpen={true} // Embedded
@@ -321,7 +376,7 @@ export const EditUserModal: React.FC<EditUserModalProps> = ({ isOpen, onClose, u
                             <div className="w-24 h-24 bg-amber-500/10 rounded-full flex items-center justify-center border-4 border-amber-500/20 mb-6">
                                 <Eye size={48} className="text-status-warning" />
                             </div>
-                            <h3 className="text-2xl font-[700] text-white  tracking-widest mb-2">Shadow Operative</h3>
+                            <h3 className="text-lg font-[700] text-white  tracking-widest mb-2">Shadow Operative</h3>
                             <p className="text-sm text-text-muted max-w-md mx-auto mb-8">
                                 Assist Mode allows you to temporarily assume direct control of {formData.name}'s console. You will see their active pipeline, leads, and interface identically to them. Actions taken are logged under this user.
                             </p>
@@ -338,8 +393,8 @@ export const EditUserModal: React.FC<EditUserModalProps> = ({ isOpen, onClose, u
                 {/* ACTIONS */}
                 {activeTab === 'profile' && (
                     <div className="pt-6 mt-4 border-t border-border-subtle flex flex-col sm:flex-row gap-4 shrink-0">
-                        <Button variant="secondary" onClick={onClose} className="flex-1 h-14 text-xs font-[700]  tracking-[0.2em]">Abort Sync</Button>
-                        <Button onClick={handleSubmit} variant="primary" className="flex-[2] h-14 text-xs font-[700]  tracking-[0.3em] shadow-lg shadow-accent-primary/20 bg-gradient-to-r from-accent-primary to-indigo-600 border border-border-subtle relative overflow-hidden group">
+                        <Button variant="secondary" onClick={onClose} className="flex-1 h-14 text-sm font-[700]  tracking-[0.2em]">Abort Sync</Button>
+                        <Button onClick={handleSubmit} variant="primary" className="flex-[2] h-14 text-sm font-[700]  tracking-[0.3em] shadow-lg shadow-accent-primary/20 bg-gradient-to-r from-accent-primary to-indigo-600 border border-border-subtle relative overflow-hidden group">
                                 <div className="absolute inset-0 bg-white/20 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000 ease-in-out pointer-events-none"></div>
                                 <Save size={18} className="mr-3 group-hover:rotate-12 transition-transform" /> Commit Unit Profile
                         </Button>

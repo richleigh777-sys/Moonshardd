@@ -7,6 +7,7 @@ import { CallbackManager } from '../logic/CallbackManager';
 import { SecurityLayout } from '../layout/SecurityLayout';
 import { VibeLayout } from '../layout/VibeLayout';
 import { MoneyRain } from '../ui/Celebration';
+import { useSystem } from '../../hooks/useSystem';
 import { ServerGateway } from '../auth/ServerGateway';
 import { CommandPalette } from '../layout/CommandPalette';
 import { SystemBootSequence } from './SystemBootSequence';
@@ -19,6 +20,7 @@ import { AdminPortal } from '../../views/AdminPortal';
 
 
 export const MainContent: React.FC = () => {
+    const { activeServer } = useSystem();
     const {
         currentUser, originalAdmin, exitGhostMode, view,
         isSyncing, showMoneyRain, directives, isBooting, handleLogin, handleGhostLogin
@@ -33,7 +35,7 @@ export const MainContent: React.FC = () => {
             <VibeLayout>
                 <div className="h-full w-full text-text-primary transition-all duration-300 font-sans relative">
                     <GlobalWorkers />
-                    <MoneyRain active={showMoneyRain} />
+                    <MoneyRain active={showMoneyRain && (activeServer?.config?.enableConfetti !== false)} />
                     <SyncOverlay isSyncing={isSyncing} />
                     <CallbackManager />
                     <Toast />

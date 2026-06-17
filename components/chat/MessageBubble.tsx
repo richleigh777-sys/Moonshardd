@@ -78,10 +78,10 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
 
     if (isSystem) {
         return (
-            <div className="flex justify-center my-4 w-full px-6 duration-500">
+            <div className="flex justify-center my-4 w-full px-4 duration-500">
                 <div className="bg-surface-alt/70 border border-border-subtle backdrop-blur-sm rounded-full px-4 py-1.5 flex items-center justify-center gap-2 max-w-[85%] shadow-sm">
                     {msg.text.includes('encrypted') ? <Lock size={12} className="text-status-success"/> : null}
-                    <span className="text-[11px] font-bold text-text-muted tracking-wide">
+                    <span className="text-sm font-bold text-text-muted tracking-wide">
                         {msg.text}
                     </span>
                 </div>
@@ -96,10 +96,10 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
     let radiusClass = "";
     if (isMe) {
         // Flat right side if stacked, otherwise bottom right tail
-        radiusClass = isStacked ? "rounded-l-2xl rounded-tr-2xl rounded-br-md" : "rounded-2xl rounded-br-sm";
+        radiusClass = isStacked ? "rounded-l-2xl rounded-tr-2xl rounded-br-md" : "rounded-xl rounded-br-sm";
     } else {
         // Flat left side if stacked, otherwise bottom left tail
-        radiusClass = isStacked ? "rounded-r-2xl rounded-tl-2xl rounded-bl-md" : "rounded-2xl rounded-bl-sm";
+        radiusClass = isStacked ? "rounded-r-2xl rounded-tl-2xl rounded-bl-md" : "rounded-xl rounded-bl-sm";
     }
 
     // Color differentiation
@@ -109,7 +109,7 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
 
     if (isAdmin && !isMe) {
         colorClass = "bg-rose-500/10 border border-rose-500/20 text-rose-500";
-        radiusClass = "rounded-2xl"; // Admin messages are distinct blocks
+        radiusClass = "rounded-xl"; // Admin messages are distinct blocks
     }
 
     const internalClass = "bg-amber-500/10 text-amber-600 border border-amber-500/20";
@@ -155,13 +155,13 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
                 {!isMe && !isStacked && !isInternal && (
                     <div className="flex items-center gap-1.5 mb-1.5 ml-1">
                         {isAdmin && <ShieldCheck size={14} className="text-rose-500" />}
-                        <div className={`text-xs font-bold ${isAdmin ? 'text-rose-500' : 'text-text-muted opacity-80'}`}>{msg.senderName} {isAdmin && '- Admin'}</div>
+                        <div className={`text-sm font-bold ${isAdmin ? 'text-rose-500' : 'text-text-muted opacity-80'}`}>{msg.senderName} {isAdmin && '- Admin'}</div>
                     </div>
                 )}
 
                 {/* Internal / Scheduled Badges */}
                 {(isInternal || isScheduled) && (
-                     <div className={`text-[10px] font-bold tracking-wider px-2 py-0.5 rounded-full mb-1.5 flex items-center gap-1 w-fit ${isInternal ? 'bg-amber-500/20 text-amber-600 border border-amber-500/20' : 'bg-indigo-500/20 text-indigo-500 border border-indigo-500/20'}`}>
+                     <div className={`text-sm font-bold tracking-wider px-2 py-0.5 rounded-full mb-1.5 flex items-center gap-1 w-fit ${isInternal ? 'bg-amber-500/20 text-amber-600 border border-amber-500/20' : 'bg-indigo-500/20 text-indigo-500 border border-indigo-500/20'}`}>
                         {isInternal ? <EyeOff size={12} strokeWidth={2.5} /> : <Clock size={12} strokeWidth={2.5} />}
                         {isInternal ? 'Internal Notice' : 'Sending Later'}
                      </div>
@@ -191,7 +191,7 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
                             className={`mb-2.5 p-2 rounded-lg text-[13px] border-l-[3px] flex flex-col gap-0.5 cursor-pointer opacity-90 hover:opacity-100 transition-all ${isMe ? 'bg-black/10 border-white/50 text-white' : 'bg-surface-main/80 border-accent-secondary text-text-primary backdrop-blur-sm'}`}
                             onClick={(e) => { e.stopPropagation(); onJumpTo?.(msg.replyToId!); }}
                         >
-                            <div className="flex items-center gap-1 font-bold text-xs opacity-90">
+                            <div className="flex items-center gap-1 font-bold text-sm opacity-90">
                                 <Quote size={12} /> {msg.replyToName}
                             </div>
                             <div className="truncate opacity-80 leading-tight">"{msg.replyToText}"</div>
@@ -199,7 +199,7 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
                     )}
 
                     {msg.isDeleted ? (
-                        <span className="flex items-center gap-1.5 text-xs font-medium opacity-70"><Ban size={14}/> This message was unsent</span>
+                        <span className="flex items-center gap-1.5 text-sm font-medium opacity-70"><Ban size={14}/> This message was unsent</span>
                     ) : (
                         <>
                             {msg.attachments && <MessageAttachments attachments={msg.attachments} isMe={isMe} onViewImage={onViewImage || (() => {})} />}
@@ -235,7 +235,7 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
                                         key={emoji} 
                                         onClick={() => onReaction(msg.id, emoji)} 
                                         style={{ fontFamily: EMOJI_FONT }} 
-                                        className="cursor-pointer px-2 py-0.5 bg-surface-alt border border-border-subtle rounded-full text-xs flex items-center gap-1 hover:bg-surface-highlight transition-all shadow-sm"
+                                        className="cursor-pointer px-2 py-0.5 bg-surface-alt border border-border-subtle rounded-full text-sm flex items-center gap-1 hover:bg-surface-highlight transition-all shadow-sm"
                                     >
                                         <span className="animate-in zoom-in duration-200">{emoji}</span>
                                         <span className="font-bold text-text-muted">{userIds.length}</span>
@@ -246,7 +246,7 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
                     )}
 
                     {!isEmojiOnly && (
-                        <div className={`flex items-center gap-1 text-[10px] font-bold text-text-muted transition-opacity select-none ${isStacked ? 'opacity-0 group-hover:opacity-100' : 'opacity-100'} ${isMe ? 'ml-auto' : ''}`}>
+                        <div className={`flex items-center gap-1 text-sm font-bold text-text-muted transition-opacity select-none ${isStacked ? 'opacity-0 group-hover:opacity-100' : 'opacity-100'} ${isMe ? 'ml-auto' : ''}`}>
                             <span>{new Date(msg.timestamp).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})}</span>
                             {isMe && !isInternal && !isScheduled && (
                                 <span title={isRead ? "Read" : "Delivered"}>

@@ -1,6 +1,9 @@
 import React from 'react';
 import { IdentityPanel } from './IdentityPanel';
 import { SalesFormData } from '../../../types';
+import { BiographicalSector } from './sectors/BiographicalSector';
+import { MedicalSector } from './sectors/MedicalSector';
+import { LogisticsSector } from './sectors/LogisticsSector';
 
 interface SubjectIntelligenceProps {
     formData: SalesFormData;
@@ -9,11 +12,12 @@ interface SubjectIntelligenceProps {
     handleAgeChange: (val: string) => void;
     useShippingForBilling: boolean;
     setUseShippingForBilling: (val: boolean) => void;
+    autoFillFromCustomer: (customer: any) => void;
 }
 
 export const SubjectIntelligence: React.FC<SubjectIntelligenceProps> = ({
     formData, handleIdentityChange, handleDobChange, handleAgeChange,
-    useShippingForBilling, setUseShippingForBilling
+    useShippingForBilling, setUseShippingForBilling, autoFillFromCustomer
 }) => (
     <div className="space-y-4">
         <IdentityPanel 
@@ -23,7 +27,7 @@ export const SubjectIntelligence: React.FC<SubjectIntelligenceProps> = ({
             handleAgeChange={handleAgeChange}
             useShippingForBilling={useShippingForBilling}
             setUseShippingForBilling={setUseShippingForBilling}
-            autoFillFromCustomer={() => {}}
+            autoFillFromCustomer={autoFillFromCustomer}
         />
     </div>
 );

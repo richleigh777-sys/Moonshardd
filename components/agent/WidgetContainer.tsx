@@ -61,7 +61,7 @@ export const WidgetContainer: React.FC<WidgetContainerProps> = ({
             {isPinned && (
                 <div className="absolute top-3 left-6 z-20 flex items-center gap-2 pointer-events-none">
                     <div className="w-1.5 h-1.5 rounded-full bg-accent-primary animate-pulse" />
-                    <span className="text-xs font-[700]  tracking-widest text-accent-primary opacity-60">Pinned Sector</span>
+                    <span className="text-sm font-[700]  tracking-widest text-accent-primary opacity-60">Pinned Sector</span>
                 </div>
             )}
 

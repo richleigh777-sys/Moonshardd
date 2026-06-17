@@ -1,5 +1,6 @@
 import { User } from '../../types';
 import { BaseRepository } from '../repositories/BaseRepository';
+import { RPCClient } from '../rpc';
 
 export class AuthService {
     constructor(private repository: BaseRepository) {}
@@ -83,30 +84,11 @@ export class AuthService {
         }
 
         try {
-            // Check Postgres database API
-            const res = await fetch('/api/auth/login', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ email: userId, password: userPass })
+            // Check Postgres database API via Unified RPC
+            const data = await RPCClient.post<{ user?: any, error?: string }>('/auth/login', { 
+                email: userId, 
+                password: userPass 
             });
-
-            const text = await res.text();
-            
-            let data: any = {};
-            try {
-                data = JSON.parse(text);
-            } catch (e) {
-                console.log("Failed to parse JSON response. Status:", res.status, "Body:", text.substring(0, 500));
-                if (!res.ok) {
-                    throw new Error(`Server returned status ${res.status}`);
-                }
-                throw new Error("Unexpected response format");
-            }
-            
-            if (!res.ok) {
-                // Return fallback error if Postgres API complains
-                return { error: data.error || "Authentication failed." };
-            }
 
             this.repository.setActiveServer(companyId);
             const sig = btoa(`${userId}:${companyId}:${Date.now()}`); // Mock JWT signature
@@ -114,15 +96,15 @@ export class AuthService {
             const authUser = { 
                id: userId, 
                serverId: companyId, 
-               role: data.user.role || 'agent', 
-               level: data.user.clearance || 1,
+               role: data.user?.role || 'agent', 
+               level: data.user?.clearance || 1,
                name: userId,
                passwordHash: '',
                status: 'active',
-               accessLevel: data.user.clearance || 1,
+               accessLevel: data.user?.clearance || 1,
                commissionRate: 15,
                active: true,
-               team: data.user.team || 'Alpha',
+               team: data.user?.team || 'Alpha',
                currentStatus: 'online'
             } as User;
             return { user: authUser, sig };

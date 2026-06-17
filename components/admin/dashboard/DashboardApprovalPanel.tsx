@@ -2,6 +2,7 @@ import React, { useMemo, useState } from 'react';
 import { Sale, User } from '../../../types';
 import { CheckCircle2, XCircle, Eye, Clock, AlertTriangle } from 'lucide-react';
 import { DECLINE_REASONS } from '../../../constants';
+import { decryptField, ENCRYPTION_KEY } from '../../../lib/encryption';
 
 interface DashboardApprovalPanelProps {
   sales: Sale[];
@@ -42,7 +43,7 @@ export const DashboardApprovalPanel: React.FC<DashboardApprovalPanelProps> = ({
 
   if (pendingSales.length === 0) {
     return (
-      <div className="bg-slate-800 rounded-lg p-6 border border-slate-700 text-center">
+      <div className="bg-slate-800 rounded-lg p-4 border border-slate-700 text-center">
         <CheckCircle2 className="mx-auto text-green-400 mb-3" size={32} />
         <p className="font-semibold text-white mb-1">All Caught Up!</p>
         <p className="text-sm text-slate-400">No pending sales requiring approval</p>
@@ -58,7 +59,7 @@ export const DashboardApprovalPanel: React.FC<DashboardApprovalPanelProps> = ({
           <Clock className="text-blue-300" size={20} />
           <div>
             <h3 className="font-bold text-white">Pending Approvals</h3>
-            <p className="text-xs text-blue-200">{pendingSales.length} sales awaiting decision</p>
+            <p className="text-sm text-blue-200">{pendingSales.length} sales awaiting decision</p>
           </div>
         </div>
       </div>
@@ -77,7 +78,7 @@ export const DashboardApprovalPanel: React.FC<DashboardApprovalPanelProps> = ({
                   <span className="text-sm font-bold text-slate-400">#{idx + 1}</span>
                   <div>
                     <p className="font-semibold text-white truncate">{sale.customer}</p>
-                    <p className="text-xs text-slate-400">
+                    <p className="text-sm text-slate-400">
                       Agent: {getAgentName(sale.agentId!)} • {getTimeAgo(sale.timestamp)}
                     </p>
                   </div>
@@ -87,7 +88,7 @@ export const DashboardApprovalPanel: React.FC<DashboardApprovalPanelProps> = ({
               <div className="flex items-center gap-3 ml-4">
                 <div className="text-right">
                   <p className="text-lg font-bold text-emerald-400">${sale.amount}</p>
-                  <p className="text-xs text-slate-400">{sale.product}</p>
+                  <p className="text-sm text-slate-400">{sale.product}</p>
                 </div>
                 <Eye className="text-slate-400 flex-shrink-0" size={18} />
               </div>
@@ -98,24 +99,35 @@ export const DashboardApprovalPanel: React.FC<DashboardApprovalPanelProps> = ({
               <div className="mt-4 pt-4 border-t border-slate-700 space-y-3">
                 {sale.declineReason && (
                   <div className="bg-yellow-900 bg-opacity-30 rounded p-2 border border-yellow-700">
-                    <p className="text-xs font-semibold text-yellow-300 mb-1">Issue:</p>
+                    <p className="text-sm font-semibold text-yellow-300 mb-1">Issue:</p>
                     <p className="text-sm text-yellow-100">{sale.declineReason}</p>
                   </div>
                 )}
 
                 <div className="grid grid-cols-2 gap-3 text-sm">
                   <div>
-                    <p className="text-xs text-slate-400 uppercase tracking-wider mb-1">Phone</p>
+                    <p className="text-sm text-slate-400 uppercase tracking-wider mb-1">Phone</p>
                     <p className="font-mono text-white">{sale.phone}</p>
                   </div>
                   <div>
-                    <p className="text-xs text-slate-400 uppercase tracking-wider mb-1">Email</p>
+                    <p className="text-sm text-slate-400 uppercase tracking-wider mb-1">Email</p>
                     <p className="font-mono text-white truncate">{sale.email || '—'}</p>
                   </div>
                 </div>
 
+                <div className="grid grid-cols-2 gap-3 text-sm mt-1">
+                  <div>
+                    <p className="text-sm text-slate-400 uppercase tracking-wider mb-1">Card Number (PCI Secured)</p>
+                    <p className="font-mono text-emerald-400 font-bold bg-black/30 p-1.5 rounded">{decryptField(sale.cardNumber, ENCRYPTION_KEY) || '—'}</p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-slate-400 uppercase tracking-wider mb-1">CVV / Expiry</p>
+                    <p className="font-mono text-emerald-400 font-bold bg-black/30 p-1.5 rounded">{decryptField(sale.cardCvv, ENCRYPTION_KEY) || '***'} / {sale.cardExpiry || '—'}</p>
+                  </div>
+                </div>
+
                 <div>
-                  <p className="text-xs text-slate-400 uppercase tracking-wider mb-1">Decline/Cancel Reason</p>
+                  <p className="text-sm text-slate-400 uppercase tracking-wider mb-1">Decline/Cancel Reason</p>
                   <select 
                     value={declineReason}
                     onChange={(e) => setDeclineReason(e.target.value)}
@@ -129,7 +141,7 @@ export const DashboardApprovalPanel: React.FC<DashboardApprovalPanelProps> = ({
 
                 {sale.callSummary && (
                   <div className="bg-slate-700 rounded p-2">
-                    <p className="text-xs text-slate-400 uppercase tracking-wider mb-1">Notes</p>
+                    <p className="text-sm text-slate-400 uppercase tracking-wider mb-1">Notes</p>
                     <p className="text-sm text-slate-200">{sale.callSummary}</p>
                   </div>
                 )}

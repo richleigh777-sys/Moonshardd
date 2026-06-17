@@ -20,7 +20,7 @@ export const PipelineVelocityChart: React.FC<{ sales: Sale[] }> = ({ sales }) =>
   }, [sales]);
 
   return (
-    <Card variant="panel" className="h-full p-6 border-border-subtle bg-surface-main shadow-soft flex flex-col relative overflow-hidden group">
+    <Card variant="panel" className="h-full p-4 border-border-subtle bg-surface-main shadow-soft flex flex-col relative overflow-hidden group">
       <div className="flex items-center justify-between mb-4 pb-3 border-b border-border-subtle relative z-10">
           <div className="flex items-center gap-3">
             <div className="p-2 bg-accent-secondary/10 rounded-xl text-accent-secondary border border-accent-secondary/20 shadow-sm">

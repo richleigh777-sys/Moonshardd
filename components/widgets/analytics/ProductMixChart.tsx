@@ -16,12 +16,12 @@ export const ProductMixChart: React.FC<ProductMixChartProps> = ({ data }) => {
     const total = data.reduce((acc, curr) => acc + curr.value, 0);
 
     return (
-        <Card variant="panel" className="p-0 flex flex-col bg-surface-main/30 backdrop-blur-3xl border border-border-subtle hover:border-accent-primary/20 overflow-hidden rounded-2xl md:rounded-3xl shadow-panel transition-all group min-h-[320px] relative">
+        <Card variant="panel" className="p-0 flex flex-col bg-surface-main/30 backdrop-blur-3xl border border-border-subtle hover:border-accent-primary/20 overflow-hidden rounded-xl md:rounded-xl shadow-panel transition-all group min-h-[320px] relative">
             <div className="absolute top-0 right-0 w-32 h-32 bg-amber-500/5 blur-3xl rounded-full z-0 pointer-events-none"></div>
             
-            <div className="p-4 lg:p-6 border-b border-border-subtle flex justify-between items-center bg-surface-main/60 backdrop-blur-sm shrink-0 relative z-10">
+            <div className="p-4 lg:p-4 border-b border-border-subtle flex justify-between items-center bg-surface-main/60 backdrop-blur-sm shrink-0 relative z-10">
                 <div className="flex items-center gap-4">
-                    <div className="p-3 bg-amber-500/10 rounded-2xl text-status-warning border border-amber-500/20 shadow-inner group-hover:scale-110 transition-transform">
+                    <div className="p-3 bg-amber-500/10 rounded-xl text-status-warning border border-amber-500/20 shadow-inner group-hover:scale-110 transition-transform">
                         <PieChart size={24} strokeWidth={2.5}/>
                     </div>
                     <div>
@@ -31,7 +31,7 @@ export const ProductMixChart: React.FC<ProductMixChartProps> = ({ data }) => {
                 </div>
             </div>
             
-            <div className="flex-1 p-4 lg:p-6 min-h-0 relative flex flex-col md:flex-row items-center gap-6 z-10">
+            <div className="flex-1 p-4 lg:p-4 min-h-0 relative flex flex-col md:flex-row items-center gap-4 z-10">
                 <div className="flex-1 h-full w-full min-h-[220px] relative">
                     <ChartFrame children={() => (
                         data.length > 0 ? (

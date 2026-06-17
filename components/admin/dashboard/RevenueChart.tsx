@@ -31,21 +31,21 @@ export const RevenueChart: React.FC<RevenueChartProps> = ({ data, hasSales }) =>
     }, [data, hasSales]);
 
     return (
-        <Card variant="panel" className="p-0 flex flex-col relative overflow-hidden h-full rounded-3xl group border border-border-subtle hover:border-border-subtle transition-all shadow-panel bg-surface-main/30 backdrop-blur-3xl">
+        <Card variant="panel" className="p-0 flex flex-col relative overflow-hidden h-full rounded-xl group border border-border-subtle hover:border-border-subtle transition-all shadow-panel bg-surface-main/30 backdrop-blur-3xl">
             <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-accent-primary/50 via-accent-secondary/50 to-transparent opacity-30 z-0"></div>
-            <div className="flex items-center justify-between p-6 border-b border-border-subtle bg-transparent relative z-10">
-                <h3 className="text-xs font-[700] text-text-primary flex items-center gap-4  tracking-[0.2em]">
+            <div className="flex items-center justify-between p-4 border-b border-border-subtle bg-transparent relative z-10">
+                <h3 className="text-sm font-[700] text-text-primary flex items-center gap-4  tracking-[0.2em]">
                     <div className="p-2 bg-gradient-to-br from-surface-highlight to-surface-main border border-border-subtle rounded-xl group-hover:scale-110 transition-transform shadow-lg">
                         <TrendingUp size={16} className="text-accent-primary drop-shadow-[0_0_8px_rgba(0,229,255,0.5)]"/>
                     </div>
                     Revenue Trend
                 </h3>
-                <div className="px-4 py-2 bg-surface-alt/50 rounded-xl text-[10px] font-[700]  tracking-widest text-text-primary border border-border-subtle flex items-center gap-3 backdrop-blur-md">
+                <div className="px-4 py-2 bg-surface-alt/50 rounded-xl text-sm font-[700]  tracking-widest text-text-primary border border-border-subtle flex items-center gap-3 backdrop-blur-md">
                     <span className="w-2 h-2 bg-status-success rounded-full shadow-[0_0_8px_var(--color-status-success)] animate-pulse"></span> LIQUIDITY SYNC
                 </div>
             </div>
             
-            <div className="flex-1 w-full min-h-[220px] relative z-10 p-6 pt-8">
+            <div className="flex-1 w-full min-h-[160px] relative z-10 p-4 pt-8">
                 <ChartFrame minHeight={200} children={() => (
                     hasSales ? (
                         <ResponsiveContainer width="100%" height="100%">
@@ -107,7 +107,7 @@ export const RevenueChart: React.FC<RevenueChartProps> = ({ data, hasSales }) =>
                     ) : (
                         <div className="flex flex-col items-center justify-center h-full text-text-muted opacity-30">
                             <Database size={32} className="mb-2" />
-                            <p className="text-[10px] font-[700]  tracking-[0.2em]">Awaiting Transaction Data</p>
+                            <p className="text-sm font-[700]  tracking-[0.2em]">Awaiting Transaction Data</p>
                         </div>
                     )
                 )} />

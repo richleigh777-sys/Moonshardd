@@ -19,7 +19,7 @@ export const VitalityHUD: React.FC<{ sales: Sale[] }> = ({ sales }) => {
     };
 
     return (
-        <Card variant="panel" className="h-full flex flex-col justify-center items-center p-6 bg-surface-main border-border-subtle relative overflow-hidden group">
+        <Card variant="panel" className="h-full flex flex-col justify-center items-center p-4 bg-surface-main border-border-subtle relative overflow-hidden group">
             <div className={`absolute inset-0 opacity-10 animate-pulse ${getHealthColor(score).replace('text', 'bg')}`}></div>
             
             <div className="relative z-10 flex flex-col items-center">
@@ -27,7 +27,7 @@ export const VitalityHUD: React.FC<{ sales: Sale[] }> = ({ sales }) => {
                     <Activity size={40} className={getHealthColor(score)} />
                 </div>
                 
-                <h3 className="text-3xl font-[700] num-font text-text-primary tracking-tighter">{score}%</h3>
+                <h3 className="text-xl font-[700] num-font text-text-primary tracking-tighter">{score}%</h3>
                 <p className="text-xs font-[700]  tracking-widest text-text-muted mt-1">Vitality Score</p>
                 
                 <div className="mt-4 flex gap-4">

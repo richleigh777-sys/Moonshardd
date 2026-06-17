@@ -5,6 +5,10 @@ class RealtimeClient {
     private listeners: RealtimeCallback[] = [];
     private pingInterval: any = null;
 
+    getSocketState(): number {
+        return this.ws ? this.ws.readyState : 0; // 0 is WebSocket.CONNECTING
+    }
+
     connect() {
         if (
             typeof window === 'undefined' || 

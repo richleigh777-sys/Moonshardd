@@ -11,13 +11,13 @@ interface MetricCardProps {
 }
 
 const MetricCard: React.FC<MetricCardProps> = ({ label, value, icon: Icon, color, trend }) => (
-    <div className="bg-surface-main p-6 rounded-2xl shadow-panel flex items-start justify-between group hover:shadow-md transition-all duration-300">
+    <div className="bg-surface-main p-4 rounded-xl shadow-panel flex items-start justify-between group hover:shadow-md transition-all duration-300">
         <div>
-            <p className="text-text-muted text-xs font-medium mb-1  tracking-wide">{label}</p>
-            <div className="text-2xl font-bold text-text-primary tracking-tight">
+            <p className="text-text-muted text-sm font-medium mb-1  tracking-wide">{label}</p>
+            <div className="text-lg font-bold text-text-primary tracking-tight">
                 {value}
             </div>
-            {trend && <p className="text-xs text-text-muted mt-2">{trend}</p>}
+            {trend && <p className="text-sm text-text-muted mt-2">{trend}</p>}
         </div>
         <div className={`p-3 rounded-xl ${color} bg-opacity-10 dark:bg-opacity-20`}>
             <Icon size={20} className={color.replace('bg-', 'text-')} />
@@ -36,7 +36,7 @@ interface PayrollMetricsProps {
 
 export const PayrollMetrics: React.FC<PayrollMetricsProps> = ({ metrics }) => {
     return (
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-3">
             <MetricCard 
                 label="Pending Liability" 
                 value={<KineticNumber value={metrics.pendingLiability} prefix="$" />} 

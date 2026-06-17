@@ -84,7 +84,7 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({ onGhostLogin }) => {
                 notifications={notifications} 
                 clearNotification={clearNotification}
             >
-                <div className="w-full min-h-full flex flex-col flex-1 relative">
+                <div className="w-full h-full flex flex-col flex-1 relative min-h-0">
                     {showCalculator && (
                         <div className="fixed top-24 right-6 z-[100]">
                             <QuickCalculator onClose={() => setShowCalculator(false)} />

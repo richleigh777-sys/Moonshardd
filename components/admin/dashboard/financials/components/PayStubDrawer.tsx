@@ -27,29 +27,29 @@ export const PayStubDrawer: React.FC<PayStubDrawerProps> = ({ cycle, agent, sale
     return (
         <div className="fixed inset-y-0 right-0 w-[480px] bg-surface-main border-l border-border-subtle shadow-2xl z-[100] animate-in slide-in-from-right duration-300 flex flex-col">
             {/* Header */}
-            <div className="p-6 border-b border-border-subtle flex justify-between items-center bg-surface-alt/40">
+            <div className="p-4 border-b border-border-subtle flex justify-between items-center bg-surface-alt/40">
                 <div className="flex items-center gap-4">
                     <div className="h-12 w-12 rounded-full bg-surface-alt border border-border-subtle overflow-hidden">
                         {agent.avatar ? <img src={agent.avatar} className="w-full h-full object-cover"/> : <div className="w-full h-full flex items-center justify-center text-text-muted"><Users size={20}/></div>}
                     </div>
                     <div>
                         <h3 className="text-lg font-bold text-text-primary">{agent.name}</h3>
-                        <p className="text-xs text-text-muted font-medium">{cycle.label} Statement</p>
+                        <p className="text-sm text-text-muted font-medium">{cycle.label} Statement</p>
                     </div>
                 </div>
                 <button onClick={onClose} className="p-2 hover:bg-surface-highlight rounded-full text-text-muted transition-colors"><X size={20}/></button>
             </div>
 
             {/* Scrollable Content */}
-            <div className="flex-1 overflow-y-auto custom-scrollbar p-8">
+            <div className="flex-1 overflow-y-auto custom-scrollbar p-4">
                 
                 {/* Net Pay Hero */}
-                <div className="bg-text-primary  text-surface-main dark:text-text-primary p-6 rounded-2xl mb-8 shadow-xl shadow-black/5 dark:shadow-none relative overflow-hidden ring-1 ring-white/10">
+                <div className="bg-text-primary  text-surface-main dark:text-text-primary p-4 rounded-xl mb-8 shadow-xl shadow-black/5 dark:shadow-none relative overflow-hidden ring-1 ring-white/10">
                     <div className="relative z-10">
-                        <p className="text-text-muted/60 dark:text-text-muted text-xs font-medium  tracking-wide mb-1">Net Payout</p>
-                        <p className="text-4xl font-bold tracking-tight">${net.toLocaleString(undefined, {minimumFractionDigits: 2})}</p>
+                        <p className="text-text-muted/60 dark:text-text-muted text-sm font-medium  tracking-wide mb-1">Net Payout</p>
+                        <p className="text-lg font-bold tracking-tight">${net.toLocaleString(undefined, {minimumFractionDigits: 2})}</p>
                     </div>
-                    <div className="absolute top-0 right-0 p-6 opacity-10">
+                    <div className="absolute top-0 right-0 p-4 opacity-10">
                         <Wallet size={80} />
                     </div>
                 </div>
@@ -57,20 +57,20 @@ export const PayStubDrawer: React.FC<PayStubDrawerProps> = ({ cycle, agent, sale
                 {/* Summary Grid */}
                 <div className="grid grid-cols-2 gap-4 mb-8">
                     <div className="p-4 bg-surface-alt rounded-xl border border-border-subtle">
-                        <p className="text-xs text-text-muted mb-1">Sales Volume</p>
+                        <p className="text-sm text-text-muted mb-1">Sales Volume</p>
                         <p className="text-lg font-bold text-text-primary">
                             ${sales.reduce((acc,s) => acc + Number(s.sale.amount), 0).toLocaleString()}
                         </p>
                     </div>
                     <div className="p-4 bg-surface-alt rounded-xl border border-border-subtle">
-                        <p className="text-xs text-text-muted mb-1">Commission</p>
+                        <p className="text-sm text-text-muted mb-1">Commission</p>
                         <p className="text-lg font-bold text-status-success">
                             ${totalComm.toLocaleString()}
                         </p>
                     </div>
                     {totalSpiff > 0 && (
                         <div className="p-4 bg-amber-500/10 rounded-xl border border-amber-500/20 col-span-2">
-                            <p className="text-xs text-status-warning mb-1">Performance Bonuses</p>
+                            <p className="text-sm text-status-warning mb-1">Performance Bonuses</p>
                             <p className="text-lg font-bold text-status-warning">
                                 +${totalSpiff.toLocaleString()}
                             </p>
@@ -104,11 +104,11 @@ export const PayStubDrawer: React.FC<PayStubDrawerProps> = ({ cycle, agent, sale
                                             <p className="font-medium text-text-primary flex items-center gap-2">
                                                 {item.sale.customer}
                                             </p>
-                                            <p className="text-xs text-text-muted mt-0.5">{new Date(item.timestamp).toLocaleDateString()} • {item.sale.product}</p>
+                                            <p className="text-sm text-text-muted mt-0.5">{new Date(item.timestamp).toLocaleDateString()} • {item.sale.product}</p>
                                             <div className="flex flex-wrap gap-1 mt-1.5">
-                                                <span className="text-[10px] font-bold tracking-wider px-1.5 py-0.5 bg-surface-main border border-border-subtle rounded text-text-muted">{item.payout.rateUsed}% Rate</span>
-                                                {item.payout.spiff > 0 && <span className="text-[10px] font-bold tracking-wider px-1.5 py-0.5 bg-amber-500/10 border border-amber-500/20 text-status-warning rounded">+{item.payout.spiff} Bonus</span>}
-                                                {item.payout.missedSpiff > 0 && <span className="text-[10px] font-bold tracking-wider px-1.5 py-0.5 bg-red-500/10 border border-red-500/20 text-status-error rounded flex items-center gap-1"><AlertCircle size={10}/> Missed Bonus</span>}
+                                                <span className="text-sm font-bold tracking-wider px-1.5 py-0.5 bg-surface-main border border-border-subtle rounded text-text-muted">{item.payout.rateUsed}% Rate</span>
+                                                {item.payout.spiff > 0 && <span className="text-sm font-bold tracking-wider px-1.5 py-0.5 bg-amber-500/10 border border-amber-500/20 text-status-warning rounded">+{item.payout.spiff} Bonus</span>}
+                                                {item.payout.missedSpiff > 0 && <span className="text-sm font-bold tracking-wider px-1.5 py-0.5 bg-red-500/10 border border-red-500/20 text-status-error rounded flex items-center gap-1"><AlertCircle size={10}/> Missed Bonus</span>}
                                             </div>
                                         </div>
                                         <div className="text-right flex flex-col items-end">
@@ -116,12 +116,12 @@ export const PayStubDrawer: React.FC<PayStubDrawerProps> = ({ cycle, agent, sale
                                                 ${item.payout.net.toFixed(2)}
                                                 {isExpanded ? <ChevronUp size={16} className="text-text-muted"/> : <ChevronDown size={16} className="text-text-muted"/>}
                                             </p>
-                                            <p className="text-xs text-text-muted/60 mt-0.5">Gross: ${item.sale.amount}</p>
+                                            <p className="text-sm text-text-muted/60 mt-0.5">Gross: ${item.sale.amount}</p>
                                         </div>
                                     </div>
                                     
                                     {isExpanded && (
-                                        <div className="px-4 py-3 bg-surface-main/50 border-t border-border-subtle text-xs space-y-2">
+                                        <div className="px-4 py-3 bg-surface-main/50 border-t border-border-subtle text-sm space-y-2">
                                             <div className="flex justify-between text-text-secondary">
                                                 <span>Gross Volume</span>
                                                 <span>${item.payout.grossAmount.toFixed(2)}</span>
@@ -145,7 +145,7 @@ export const PayStubDrawer: React.FC<PayStubDrawerProps> = ({ cycle, agent, sale
                                                 <div className="flex justify-between text-status-warning pt-1">
                                                     <span className="flex items-center gap-1">
                                                         Performance Bonus
-                                                        {item.payout.activeSpiffRule && <span className="opacity-60 text-[10px] ml-1">({item.payout.activeSpiffRule.name || 'Tier Reached'})</span>}
+                                                        {item.payout.activeSpiffRule && <span className="opacity-60 text-sm ml-1">({item.payout.activeSpiffRule.name || 'Tier Reached'})</span>}
                                                     </span>
                                                     <span>+${item.payout.spiff.toFixed(2)}</span>
                                                 </div>
@@ -170,7 +170,7 @@ export const PayStubDrawer: React.FC<PayStubDrawerProps> = ({ cycle, agent, sale
             </div>
 
             {/* Footer */}
-            <div className="p-6 border-t border-border-subtle bg-surface-main">
+            <div className="p-4 border-t border-border-subtle bg-surface-main">
                 <div className="flex gap-4">
                     <Button variant="secondary" className="flex-1 h-12 text-sm font-bold" onClick={onClose}>
                         Close

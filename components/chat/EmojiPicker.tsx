@@ -27,7 +27,7 @@ export const EmojiPicker: React.FC<EmojiPickerProps> = ({ onSelect, onClose, cla
   const currentEmojis = EMOJI_LIST[activeCategory] || [];
 
   return (
-    <div className={`bg-surface-main border border-border-subtle rounded-3xl shadow-xl overflow-hidden z-[150] animate-in slide-in-from-bottom-2 duration-300 backdrop-blur-xl flex flex-col ${className}`}>
+    <div className={`bg-surface-main border border-border-subtle rounded-xl shadow-xl overflow-hidden z-[150] animate-in slide-in-from-bottom-2 duration-300 backdrop-blur-xl flex flex-col ${className}`}>
       {/* Header */}
       <div className="flex items-center justify-between p-3 bg-surface-alt/80 border-b border-border-subtle shrink-0">
         <div className="flex items-center gap-2">
@@ -46,7 +46,7 @@ export const EmojiPicker: React.FC<EmojiPickerProps> = ({ onSelect, onClose, cla
                 <button
                 key={`${activeCategory}-${index}`}
                 onClick={() => handleEmojiSelect(emoji)}
-                className="h-10 w-10 flex items-center justify-center text-xl hover:bg-accent-secondary/15 rounded-2xl transition-all hover:scale-110 active:scale-95"
+                className="h-10 w-10 flex items-center justify-center text-xl hover:bg-accent-secondary/15 rounded-xl transition-all hover:scale-110 active:scale-95"
                 style={{ fontFamily: '"Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji", sans-serif' }}
                 >
                 {emoji}
@@ -66,7 +66,7 @@ export const EmojiPicker: React.FC<EmojiPickerProps> = ({ onSelect, onClose, cla
           <button
             key={cat.id}
             onClick={() => handleCategoryChange(cat.id)}
-            className={`flex-1 min-w-[36px] flex items-center justify-center p-2 text-lg rounded-2xl transition-all duration-300 grayscale hover:grayscale-0 ${
+            className={`flex-1 min-w-[36px] flex items-center justify-center p-2 text-lg rounded-xl transition-all duration-300 grayscale hover:grayscale-0 ${
               activeCategory === cat.id ? 'bg-surface-main grayscale-0 shadow-sm border border-border-subtle' : 'opacity-50 hover:opacity-100 hover:bg-surface-highlight'
             }`}
             title={cat.name}

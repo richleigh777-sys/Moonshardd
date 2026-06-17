@@ -46,8 +46,8 @@ export const EntryView: React.FC<EntryViewProps> = ({ onBack }) => {
             </div>
 
             {/* Main Content Area */}
-            <div className="flex-1 overflow-hidden relative bg-surface-alt/20 p-6 flex justify-center">
-                <div className="w-full max-w-7xl h-full flex flex-col relative z-10">
+            <div className="flex-1 overflow-y-auto custom-scrollbar relative bg-surface-alt/20 p-4 md:p-6 flex justify-center">
+                <div className="w-full xl:max-w-none h-auto min-h-full flex flex-col relative z-10 pb-16">
                     <EnrollmentFormV2 
                         onSuccess={handleSuccess} 
                         onCancel={onBack}

@@ -35,11 +35,11 @@ export const PaymentSection: React.FC<PaymentSectionProps> = ({
           </div>
           <div>
              <h3 className="text-sm font-black text-text-primary tracking-wide">CARD INFORMATION</h3>
-             <p className="text-[10px] text-text-muted uppercase tracking-wider font-semibold">Secure Agent Entry</p>
+             <p className="text-sm text-text-muted uppercase tracking-wider font-semibold">Secure Agent Entry</p>
           </div>
         </div>
         {cardStatus === 'valid' && (
-          <span className="text-xs font-bold text-status-success bg-emerald-500/10 px-3 py-1.5 rounded-lg border border-emerald-500/20 flex items-center gap-1.5 shadow-sm">
+          <span className="text-sm font-bold text-status-success bg-emerald-500/10 px-3 py-1.5 rounded-lg border border-emerald-500/20 flex items-center gap-1.5 shadow-sm">
             <CheckCircle size={14} /> VALID FORMAT
           </span>
         )}
@@ -108,7 +108,7 @@ export const PaymentSection: React.FC<PaymentSectionProps> = ({
             )}
             {cardStatus === 'invalid' && (
               <span className="absolute right-4 top-1/2 -translate-y-1/2 flex items-center gap-1.5 text-status-error">
-                <span className="text-[10px] font-bold">INVALID LENGTH</span>
+                <span className="text-sm font-bold">INVALID LENGTH</span>
                 <AlertTriangle size={16} />
               </span>
             )}
@@ -162,7 +162,7 @@ export const PaymentSection: React.FC<PaymentSectionProps> = ({
               <button
                 type="button"
                 onClick={() => setShowCvv(!showCvv)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] text-emerald-500 hover:text-emerald-400 font-bold uppercase transition-colors"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-emerald-500 hover:text-emerald-400 font-bold uppercase transition-colors"
                 title="Toggle CVV Visibility"
               >
                 {showCvv ? 'HIDE' : 'SHOW'}
@@ -175,7 +175,7 @@ export const PaymentSection: React.FC<PaymentSectionProps> = ({
           <div className="p-1 rounded-full bg-surface-main text-text-muted">
             <Lock size={12}/>
           </div>
-          <p className="text-xs leading-relaxed font-medium">
+          <p className="text-sm leading-relaxed font-medium">
             Details remain encrypted locally. Admin personnel will review and process payment through a secure gateway.
           </p>
         </div>

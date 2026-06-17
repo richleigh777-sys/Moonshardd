@@ -76,7 +76,7 @@ export const ScanAndAuditWidget: React.FC<Props> = ({ onGhostAgent }) => {
     }, [users, sales]);
 
     return (
-        <Card className="flex flex-col h-full bg-surface-main border-border-subtle shadow-sm rounded-2xl p-0 overflow-hidden group">
+        <Card className="flex flex-col h-full bg-surface-main border-border-subtle shadow-sm rounded-xl p-0 overflow-hidden group">
             <div className="p-4 border-b border-border-subtle bg-red-500/5 flex justify-between items-center">
                 <div className="flex items-center gap-2">
                     <ShieldAlert size={16} className="text-status-error" />

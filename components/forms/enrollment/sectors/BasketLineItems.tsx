@@ -1,5 +1,5 @@
 import React from 'react';
-import { ChevronRight, Trash2, Heart } from 'lucide-react';
+import { ChevronRight, Trash2, Heart, Check, Plus, Minus, Package } from 'lucide-react';
 import { CartItem, ProductConfig } from '../../../../types';
 
 interface Props {
@@ -11,73 +11,103 @@ interface Props {
 
 export const BasketLineItems: React.FC<Props> = ({ cart, updateLineItem, removeLineItem, productConfig }) => {
     return (
-        <div className="space-y-3">
+        <div className="space-y-6 animate-in fade-in duration-500">
             {cart.map((item, index) => {
                 const totalLine = ((parseInt(item.quantity)||1)*item.unitPrice);
                 
                 return (
-                    <div key={item.id || index} className="group relative bg-surface-alt/30 border border-border-subtle hover:border-status-warning/30 rounded-2xl p-4 transition-all animate-in slide-in-from-right-4 duration-500 shadow-inner hover:bg-surface-alt/80">
-                        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-amber-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity rounded-2xl pointer-events-none"></div>
-                        <div className="flex items-center gap-4 relative z-10">
-                            <div className="flex-1 grid grid-cols-12 gap-4 items-end">
-                                <div className="col-span-12 lg:col-span-6 flex flex-col gap-1.5">
-                                    <label className="text-[10px] font-[700]  text-text-muted/80 tracking-[0.2em] ml-1 flex items-center gap-1 drop-shadow-sm">
-                                        <Heart size={8} className="text-status-warning/70" /> Identifier
-                                    </label>
-                                    <select 
-                                        value={item.product}
-                                        onChange={(e) => updateLineItem(index, 'product', e.target.value)}
-                                        className="w-full bg-surface-main/60 border border-border-subtle rounded-xl px-4 py-2.5 font-bold text-sm text-text-primary outline-none cursor-pointer focus:ring-1 focus:ring-amber-500/50 transition-all appearance-none tracking-tight shadow-inset bg-[url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2224%22%20height%3D%2224%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%239CA3AF%22%20stroke-width%3D%222.5%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpolyline%20points%3D%226%209%2012%2015%2018%209%22%3E%3C%2Fpolyline%3E%3C%2Fsvg%3E')] bg-[length:1.2em_1.2em] bg-no-repeat bg-[currentColor]"
-                                        style={{ backgroundPosition: 'right 0.75rem center' }}
-                                    >
-                                        {(productConfig.products || []).map(p => <option key={p.id} value={p.name} className="bg-[#0c0c0e] text-text-primary">{p.name}</option>)}
-                                    </select>
-                                </div>
-
-                                <div className="col-span-12 lg:col-span-3 grid grid-cols-2 gap-2">
-                                    <div className="flex flex-col gap-1.5">
-                                        <label className="text-[10px] font-[700]  text-text-muted/80 tracking-[0.2em] text-center drop-shadow-sm">Qty</label>
-                                        <select 
-                                            value={item.quantity} 
-                                            onChange={(e) => updateLineItem(index, 'quantity', e.target.value)}
-                                            className="w-full bg-surface-main/60 border border-border-subtle rounded-xl px-2 py-2.5 text-xs font-bold text-center text-text-primary outline-none cursor-pointer hover:bg-surface-main/80 transition-all appearance-none shadow-inset bg-[url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2224%22%20height%3D%2224%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%239CA3AF%22%20stroke-width%3D%222.5%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpolyline%20points%3D%226%209%2012%2015%2018%209%22%3E%3C%2Fpolyline%3E%3C%2Fsvg%3E')] bg-[length:1em_1em] bg-no-repeat bg-[currentColor]"
-                                            style={{ backgroundPosition: 'right 0.25rem center', paddingRight: '1rem' }}
-                                        >
-                                            {['1','2','3','4','5','10'].map(q => <option key={q} value={q} className="bg-[#0c0c0e] text-text-primary">{q} BTLS</option>)}
-                                        </select>
-                                    </div>
-                                    <div className="flex flex-col gap-1.5">
-                                        <label className="text-[10px] font-[700]  text-text-muted/80 tracking-[0.2em] text-center drop-shadow-sm">Dose</label>
-                                        <select 
-                                            value={item.dosage} 
-                                            onChange={(e) => updateLineItem(index, 'dosage', e.target.value)}
-                                            className="w-full bg-surface-main/60 border border-border-subtle rounded-xl px-2 py-2.5 text-xs font-bold text-center text-text-primary outline-none cursor-pointer hover:bg-surface-main/80 transition-all appearance-none shadow-inset bg-[url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2224%22%20height%3D%2224%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%239CA3AF%22%20stroke-width%3D%222.5%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpolyline%20points%3D%226%209%2012%2015%2018%209%22%3E%3C%2Fpolyline%3E%3C%2Fsvg%3E')] bg-[length:1em_1em] bg-no-repeat bg-[currentColor]"
-                                            style={{ backgroundPosition: 'right 0.25rem center', paddingRight: '1rem' }}
-                                        >
-                                            {productConfig.products?.find(p => p.name === item.product)?.dosages.map(d => <option key={d} value={d} className="bg-[#0c0c0e] text-text-primary">{d}</option>)}
-                                        </select>
-                                    </div>
-                                </div>
-
-                                <div className="col-span-12 lg:col-span-3 flex flex-col items-end gap-1.5">
-                                    <label className="text-[10px] font-[700]  text-status-success/80 tracking-[0.2em] mr-1 drop-shadow-[0_0_5px_rgba(16,185,129,0.3)]">Yield</label>
-                                    <div className="bg-emerald-500/10 border border-emerald-500/20 px-4 py-2.5 rounded-xl w-full text-right flex items-center justify-between group-hover:border-emerald-500/40 transition-all shadow-inner">
-                                        <ChevronRight size={16} className="text-status-success/50 group-hover:translate-x-0.5 transition-transform" />
-                                        <span className="font-mono font-[700] text-status-success text-sm tracking-tight drop-shadow-[0_0_8px_rgba(52,211,153,0.6)]">
-                                            ${totalLine.toLocaleString(undefined, {minimumFractionDigits: 2})}
-                                        </span>
-                                    </div>
-                                </div>
-                            </div>
-
+                    <div key={item.id || index} className="space-y-4">
+                        <div className="flex items-center justify-between">
+                            <h5 className="text-sm font-bold text-text-primary tracking-widest uppercase flex items-center gap-2">
+                                <Package size={14} className="text-accent-primary" /> Item {index + 1}
+                            </h5>
                             {cart.length > 1 && (
                                 <button 
                                     onClick={() => removeLineItem(index)}
-                                    className="p-3 bg-surface-main/60 border border-border-subtle text-text-muted hover:text-rose-400 hover:bg-rose-500/10 hover:border-rose-500/30 rounded-xl transition-all active:scale-95 shrink-0 shadow-sm hover:shadow-[0_0_15px_rgba(244,63,94,0.3)]"
+                                    className="flex items-center gap-1 text-sm font-bold tracking-widest text-status-error hover:text-red-400 uppercase transition-colors"
                                 >
-                                    <Trash2 size={18} strokeWidth={2.5}/>
+                                    <Trash2 size={12}/> Remove
                                 </button>
                             )}
+                        </div>
+                        
+                        {/* Shopify-like Product Grid */}
+                        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                            {(productConfig.products || []).map(p => {
+                                const isSelected = item.product === p.name;
+                                return (
+                                    <button
+                                        key={p.id}
+                                        onClick={() => updateLineItem(index, 'product', p.name)}
+                                        className={`relative p-3 rounded-2xl flex flex-col items-center justify-center text-center gap-2 transition-all border ${isSelected ? 'bg-indigo-500/10 border-indigo-500 shadow-[0_0_20px_rgba(99,102,241,0.2)] scale-[1.02]' : 'bg-surface-alt/30 border-border-subtle hover:border-border-strong hover:bg-surface-alt/60'} group`}
+                                    >
+                                        <div className={`w-12 h-12 rounded-full flex items-center justify-center ${isSelected ? 'bg-indigo-500 text-white' : 'bg-surface-main border border-border-subtle text-text-muted'} shadow-inner`}>
+                                            <Heart size={20} className={isSelected ? 'animate-pulse' : ''} />
+                                        </div>
+                                        <div>
+                                            <p className={`text-sm font-bold ${isSelected ? 'text-text-primary' : 'text-text-muted'} tracking-tight line-clamp-2`}>{p.name}</p>
+                                            <p className="text-sm font-mono text-text-muted mt-1">${p.price.toFixed(2)}</p>
+                                        </div>
+                                        {isSelected && (
+                                            <div className="absolute top-2 right-2 w-4 h-4 rounded-full bg-indigo-500 flex items-center justify-center text-white">
+                                                <Check size={10} strokeWidth={3} />
+                                            </div>
+                                        )}
+                                    </button>
+                                );
+                            })}
+                        </div>
+                        
+                        <div className="bg-surface-alt/20 border border-border-subtle rounded-xl p-4 flex flex-col md:flex-row items-center gap-4 shadow-inner mt-2">
+                            <div className="flex-1 w-full grid grid-cols-2 md:grid-cols-3 gap-4">
+                                {/* Quantity */}
+                                <div className="flex flex-col gap-1.5">
+                                    <label className="text-sm font-bold text-text-muted uppercase tracking-widest text-center">Quantity</label>
+                                    <div className="flex items-center justify-between bg-surface-main/60 border border-border-subtle rounded-xl p-1 overflow-hidden">
+                                        <button 
+                                            onClick={() => {
+                                                const q = parseInt(item.quantity) || 1;
+                                                if (q > 1) updateLineItem(index, 'quantity', (q - 1).toString());
+                                            }}
+                                            className="w-8 h-8 rounded-lg hover:bg-surface-helper flex items-center justify-center text-text-muted hover:text-text-primary transition-colors"
+                                        >
+                                            <Minus size={14} />
+                                        </button>
+                                        <span className="text-sm font-bold w-8 text-center">{item.quantity}</span>
+                                        <button 
+                                            onClick={() => {
+                                                const q = parseInt(item.quantity) || 1;
+                                                updateLineItem(index, 'quantity', (q + 1).toString());
+                                            }}
+                                            className="w-8 h-8 rounded-lg hover:bg-surface-helper flex items-center justify-center text-text-muted hover:text-text-primary transition-colors"
+                                        >
+                                            <Plus size={14} />
+                                        </button>
+                                    </div>
+                                </div>
+                                
+                                {/* Dosage / Variant */}
+                                <div className="flex flex-col gap-1.5 md:col-span-2">
+                                    <label className="text-sm font-bold text-text-muted uppercase tracking-widest">Variant / Dosage</label>
+                                    <select 
+                                        value={item.dosage} 
+                                        onChange={(e) => updateLineItem(index, 'dosage', e.target.value)}
+                                        className="w-full bg-surface-main/60 border border-border-subtle rounded-xl px-4 py-3.5 text-sm font-bold text-text-primary outline-none cursor-pointer hover:bg-surface-main/80 transition-all appearance-none"
+                                    >
+                                        {productConfig.products?.find(p => p.name === item.product)?.dosages.map(d => <option key={d} value={d}>{d}</option>)}
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            {/* Yield */}
+                            <div className="w-full md:w-32 flex flex-col items-center md:items-end gap-1.5">
+                                <label className="text-sm font-bold text-status-success/80 uppercase tracking-widest">Subtotal</label>
+                                <div className="bg-emerald-500/10 border border-emerald-500/20 px-4 py-3 w-full rounded-xl text-center md:text-right">
+                                    <span className="font-mono font-bold text-status-success text-base drop-shadow-sm">
+                                        ${totalLine.toLocaleString(undefined, {minimumFractionDigits: 2})}
+                                    </span>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 );

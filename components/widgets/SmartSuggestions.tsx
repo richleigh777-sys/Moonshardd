@@ -86,7 +86,7 @@ export const SmartSuggestions: React.FC<SmartSuggestionsProps> = ({ sales, notes
     const wisdomStyle = getCategoryStyles(activeWisdom.category);
 
     return (
-        <Card className="h-full flex flex-col p-0 overflow-hidden bg-surface-main/40 backdrop-blur-md border-border-subtle/40 shadow-2xl relative group">
+        <Card className="h-full flex flex-col p-0 overflow-hidden bg-surface-widget backdrop-blur-md border-border-subtle/40 shadow-2xl relative group">
             <div className="absolute inset-0 bg-gradient-to-br from-amber-500/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-1000" />
             
             <div className="p-5 border-b border-border-subtle/50 bg-surface-highlight/20 flex items-center justify-between shrink-0 relative z-10">
@@ -107,7 +107,7 @@ export const SmartSuggestions: React.FC<SmartSuggestionsProps> = ({ sales, notes
             <div className="flex-1 overflow-y-auto custom-scrollbar p-5 space-y-4 relative z-10">
                 {/* 1. AUTO-GENERATED SUGGESTIONS */}
                 {suggestions.map((item, idx) => (
-                    <div key={idx} className="p-4 rounded-2xl border border-border-subtle/50 bg-surface-main/30 hover:bg-surface-main/60 transition-all duration-300 group/item hover:border-accent-primary/30 shadow-sm">
+                    <div key={idx} className="p-4 rounded-xl border border-border-subtle/50 bg-surface-widget hover:bg-surface-main/60 transition-all duration-300 group/item hover:border-accent-primary/30 shadow-sm">
                         <div className="flex gap-4">
                             <div className="mt-1 shrink-0 group-hover/item:scale-110 transition-transform duration-500">{item.icon}</div>
                             <div className="min-w-0">

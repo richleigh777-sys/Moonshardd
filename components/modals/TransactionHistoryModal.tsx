@@ -81,20 +81,20 @@ export const TransactionHistoryModal: React.FC<TransactionHistoryModalProps> = (
                 <div className="absolute -top-20 -right-20 w-64 h-64 bg-accent-primary/10 blur-[80px] rounded-full pointer-events-none" />
 
                 {/* Search Header - Refraction Glass Style */}
-                <div className="p-6 border-b border-border-subtle bg-surface-main/70 backdrop-blur-xl shrink-0 space-y-4 relative z-10">
+                <div className="p-4 border-b border-border-subtle bg-surface-main/70 backdrop-blur-xl shrink-0 space-y-4 relative z-10">
                     <div className="flex items-center gap-2 text-xs font-[700]  text-text-muted tracking-widest opacity-80">
                         <Shield size={16} className="text-status-success" />
                         <span>Search Protocol • Last 3 Transactions</span>
                     </div>
                     <div className="relative group">
-                         <div className="absolute -inset-0.5 bg-gradient-to-r from-accent-primary/20 to-indigo-500/20 rounded-2xl opacity-0 group-focus-within:opacity-100 transition-opacity blur-sm"></div>
+                         <div className="absolute -inset-0.5 bg-gradient-to-r from-accent-primary/20 to-indigo-500/20 rounded-xl opacity-0 group-focus-within:opacity-100 transition-opacity blur-sm"></div>
                          <div className="relative">
                             <Search size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-text-muted group-focus-within:text-accent-primary transition-colors" />
                             <input autoComplete="off" data-lpignore="true" data-prevent-autofill="true" spellCheck={false} 
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}
                                 placeholder="Search Name, Phone, Email, or Order ID..."
-                                className="w-full bg-surface-alt/50 border border-border-subtle rounded-2xl py-4 pl-12 pr-4 text-sm font-bold text-text-primary outline-none focus:bg-surface-main focus:border-accent-primary/50 transition-all placeholder:text-text-muted/50 shadow-inner"
+                                className="w-full bg-surface-alt/50 border border-border-subtle rounded-xl py-4 pl-12 pr-4 text-sm font-bold text-text-primary outline-none focus:bg-surface-main focus:border-accent-primary/50 transition-all placeholder:text-text-muted/50 shadow-inner"
                                 autoFocus
                             />
                             {searchQuery && (
@@ -107,7 +107,7 @@ export const TransactionHistoryModal: React.FC<TransactionHistoryModalProps> = (
                 </div>
 
                 {/* Results Area */}
-                <div className="flex-1 overflow-y-auto custom-scrollbar p-6 space-y-6 relative z-10">
+                <div className="flex-1 overflow-y-auto custom-scrollbar p-4 space-y-6 relative z-10">
                     {secureHistory.length === 0 ? (
                         <div className="flex flex-col items-center justify-center h-full text-text-muted opacity-40">
                             <div className="w-24 h-24 bg-surface-alt rounded-full flex items-center justify-center mb-6 border border-border-subtle">
@@ -128,7 +128,7 @@ export const TransactionHistoryModal: React.FC<TransactionHistoryModalProps> = (
                                     {/* Customer Header */}
                                     <div className="p-5 border-b border-border-subtle flex justify-between items-center bg-surface-alt/10 relative z-10">
                                         <div className="flex items-center gap-4">
-                                            <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-indigo-500/10 to-purple-500/10 border border-accent-secondary/20 flex items-center justify-center font-[700] text-lg text-accent-secondary">
+                                            <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-indigo-500/10 to-purple-500/10 border border-accent-secondary/20 flex items-center justify-center font-[700] text-lg text-accent-secondary">
                                                 {group.identity.customer.charAt(0)}
                                             </div>
                                             <div>
@@ -167,7 +167,7 @@ export const TransactionHistoryModal: React.FC<TransactionHistoryModalProps> = (
                                                         <div className={`w-2 h-2 rounded-full ${sale.status === 'Approved' ? 'bg-emerald-500' : 'bg-amber-500'}`}></div>
                                                     </div>
                                                     
-                                                    <div className="flex-1 bg-surface-alt/20 hover:bg-surface-alt/50 border border-border-subtle rounded-2xl p-3 transition-all flex justify-between items-center group-hover/row:border-accent-primary/20 backdrop-blur-sm">
+                                                    <div className="flex-1 bg-surface-alt/20 hover:bg-surface-alt/50 border border-border-subtle rounded-xl p-3 transition-all flex justify-between items-center group-hover/row:border-accent-primary/20 backdrop-blur-sm">
                                                         <div className="flex flex-col">
                                                             <div className="flex items-center gap-2 mb-1">
                                                                 <span className="text-xs font-[700]  text-text-secondary">{formatRelativeTime(sale.timestamp)}</span>

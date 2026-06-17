@@ -105,7 +105,7 @@ export const DashboardLiveOpsBoard: React.FC<DashboardLiveOpsBoardProps> = ({
       {/* Header & Quick Action */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h2 className="text-2xl font-bold text-text-primary tracking-tight">Live Operations Command</h2>
+          <h2 className="text-lg font-bold text-text-primary tracking-tight">Live Operations Command</h2>
           <p className="text-sm text-text-muted">Real-time floor monitoring and ecosystem health</p>
         </div>
         <div className="flex items-center gap-4">
@@ -132,11 +132,11 @@ export const DashboardLiveOpsBoard: React.FC<DashboardLiveOpsBoardProps> = ({
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <Card className="p-4 bg-surface-main border-border-subtle flex flex-col justify-between">
           <div className="flex items-center justify-between mb-2">
-            <span className="text-xs font-bold text-text-muted uppercase tracking-wider">Agents Online</span>
+            <span className="text-sm font-bold text-text-muted uppercase tracking-wider">Agents Online</span>
             <Users className="text-blue-500" size={16} />
           </div>
           <div className="flex items-end gap-2">
-            <span className="text-3xl font-black text-text-primary">{liveMetrics.onlineAgentsCount}</span>
+            <span className="text-xl font-black text-text-primary">{liveMetrics.onlineAgentsCount}</span>
             <span className="text-sm text-text-muted mb-1">/ {liveMetrics.totalAgents}</span>
           </div>
           <div className="w-full bg-surface-alt rounded-full h-1 mt-3 overflow-hidden">
@@ -146,45 +146,45 @@ export const DashboardLiveOpsBoard: React.FC<DashboardLiveOpsBoardProps> = ({
 
         <Card className="p-4 bg-surface-main border-border-subtle flex flex-col justify-between">
           <div className="flex items-center justify-between mb-2">
-            <span className="text-xs font-bold text-text-muted uppercase tracking-wider">Smart Queue</span>
+            <span className="text-sm font-bold text-text-muted uppercase tracking-wider">Smart Queue</span>
             <Workflow className="text-orange-500" size={16} />
           </div>
           <div className="flex items-end gap-2">
-            <span className="text-3xl font-black text-text-primary">{liveMetrics.activeLeadsInQueue}</span>
+            <span className="text-xl font-black text-text-primary">{liveMetrics.activeLeadsInQueue}</span>
             <span className="text-sm text-text-muted mb-1">pending router</span>
           </div>
           <div className="flex items-center gap-1 mt-3">
              <Activity size={12} className="text-status-warning" />
-             <span className="text-xs text-status-warning font-mono">Routing active</span>
+             <span className="text-sm text-status-warning font-mono">Routing active</span>
           </div>
         </Card>
 
         <Card className="p-4 bg-surface-main border-border-subtle flex flex-col justify-between">
           <div className="flex items-center justify-between mb-2">
-            <span className="text-xs font-bold text-text-muted uppercase tracking-wider">Live Pipeline Velocity</span>
+            <span className="text-sm font-bold text-text-muted uppercase tracking-wider">Live Pipeline Velocity</span>
             <Target className="text-emerald-500" size={16} />
           </div>
           <div className="flex items-end gap-2">
-            <span className="text-3xl font-black text-text-primary">{liveMetrics.recentSalesCount}</span>
+            <span className="text-xl font-black text-text-primary">{liveMetrics.recentSalesCount}</span>
             <span className="text-sm text-text-muted mb-1">last 60m</span>
           </div>
-          <p className="text-xs text-emerald-400 font-medium mt-3">+ Fresh Deal Injections</p>
+          <p className="text-sm text-emerald-400 font-medium mt-3">+ Fresh Deal Injections</p>
         </Card>
 
         <Card className="p-4 bg-surface-main border-border-subtle flex flex-col justify-between relative overflow-hidden group">
           <div className="absolute inset-0 bg-gradient-to-br from-purple-500/5 to-transparent pointer-events-none"></div>
           <div className="flex items-center justify-between mb-2 relative z-10">
-            <span className="text-xs font-bold text-text-muted uppercase tracking-wider">Shift Yield (Gross)</span>
+            <span className="text-sm font-bold text-text-muted uppercase tracking-wider">Shift Yield (Gross)</span>
             <Zap className="text-purple-500" size={16} />
           </div>
           <div className="flex items-end gap-2 relative z-10">
-            <span className="text-3xl font-black text-text-primary">${(liveMetrics.todayRevenue / 1000).toFixed(1)}k</span>
+            <span className="text-xl font-black text-text-primary">${(liveMetrics.todayRevenue / 1000).toFixed(1)}k</span>
           </div>
-          <p className="text-xs text-text-muted mt-3 relative z-10">{liveMetrics.todayApprovedCount} hard closures</p>
+          <p className="text-sm text-text-muted mt-3 relative z-10">{liveMetrics.todayApprovedCount} hard closures</p>
         </Card>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
         
         {/* Left Col: Gamification Leaderboard */}
         <div className="md:col-span-2 flex flex-col space-y-4">
@@ -195,13 +195,13 @@ export const DashboardLiveOpsBoard: React.FC<DashboardLiveOpsBoardProps> = ({
                   <Trophy className="text-amber-500" size={20} />
                   <h3 className="font-bold text-text-primary">Live Leaderboard (Gamification)</h3>
                </div>
-               <span className="text-xs bg-amber-500/10 text-amber-500 px-2 py-1 rounded font-bold uppercase tracking-wider relative z-10">Morale Loop Active</span>
+               <span className="text-sm bg-amber-500/10 text-amber-500 px-2 py-1 rounded font-bold uppercase tracking-wider relative z-10">Morale Loop Active</span>
             </div>
             
             <div className="p-0 overflow-x-auto flex-1">
               <table className="w-full text-left border-collapse">
                 <thead>
-                  <tr className="bg-surface-alt text-text-muted text-xs uppercase tracking-wider border-b border-border-subtle">
+                  <tr className="bg-surface-alt text-text-muted text-sm uppercase tracking-wider border-b border-border-subtle">
                     <th className="p-4 font-semibold w-16">Rank</th>
                     <th className="p-4 font-semibold">Operative</th>
                     <th className="p-4 font-semibold text-right">LTV Conv.</th>
@@ -219,7 +219,7 @@ export const DashboardLiveOpsBoard: React.FC<DashboardLiveOpsBoardProps> = ({
                         <td className="p-4 relative">
                           <div className="flex items-center gap-3">
                             <div className="relative">
-                              <div className="w-8 h-8 rounded-full bg-indigo-500/20 text-indigo-400 flex items-center justify-center font-bold text-xs">
+                              <div className="w-8 h-8 rounded-full bg-indigo-500/20 text-indigo-400 flex items-center justify-center font-bold text-sm">
                                 {agent.agentName.charAt(0)}
                               </div>
                               <span className={`absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full border-2 border-surface-main ${agent.status === 'online' ? 'bg-status-success' : agent.status === 'break' ? 'bg-status-warning' : 'bg-status-error'}`}></span>
@@ -241,7 +241,7 @@ export const DashboardLiveOpsBoard: React.FC<DashboardLiveOpsBoardProps> = ({
                     ))
                   ) : (
                     <tr>
-                      <td colSpan={5} className="p-8 text-center text-text-muted text-sm italic">Initializing gamification matrix... awaiting conversions.</td>
+                      <td colSpan={5} className="p-4 text-center text-text-muted text-sm italic">Initializing gamification matrix... awaiting conversions.</td>
                     </tr>
                   )}
                 </tbody>
@@ -262,14 +262,14 @@ export const DashboardLiveOpsBoard: React.FC<DashboardLiveOpsBoardProps> = ({
                <div className="bg-surface-alt/50 border border-border-subtle rounded-lg p-3 relative overflow-hidden">
                   <div className="absolute top-0 right-0 w-full h-full bg-[linear-gradient(90deg,transparent_0%,rgba(16,185,129,0.05)_50%,transparent_100%)] animate-[shimmer_2s_infinite]"></div>
                   <div className="flex items-center justify-between mb-1 relative z-10">
-                     <span className="text-xs font-bold text-text-muted">CX Winback Load</span>
-                     <span className="text-xs font-mono text-emerald-400">{liveMetrics.pendingWinbacks} queued</span>
+                     <span className="text-sm font-bold text-text-muted">CX Winback Load</span>
+                     <span className="text-sm font-mono text-emerald-400">{liveMetrics.pendingWinbacks} queued</span>
                   </div>
-                  <p className="text-[10px] text-text-muted leading-tight relative z-10">Leveraging historical profile data to dispatch tailored up-sell callbacks.</p>
+                  <p className="text-sm text-text-muted leading-tight relative z-10">Leveraging historical profile data to dispatch tailored up-sell callbacks.</p>
                </div>
 
                <div>
-                 <h4 className="text-xs font-bold text-text-secondary uppercase tracking-wider mb-2">Imminent Agent Callbacks</h4>
+                 <h4 className="text-sm font-bold text-text-secondary uppercase tracking-wider mb-2">Imminent Agent Callbacks</h4>
                  <div className="space-y-2">
                    {liveMetrics.upcomingCallbacks.length > 0 ? (
                      liveMetrics.upcomingCallbacks.slice(0, 4).map((callback) => (
@@ -279,15 +279,15 @@ export const DashboardLiveOpsBoard: React.FC<DashboardLiveOpsBoardProps> = ({
                          </div>
                          <div className="flex-1 min-w-0">
                            <p className="text-sm font-bold text-text-primary truncate">{callback.linkedSaleId ? `Lead: ${callback.linkedSaleId.substring(0,8)}` : 'CX Follow-Up'}</p>
-                           <p className="text-xs text-text-muted mt-0.5 whitespace-pre-wrap line-clamp-1">{callback.content || 'System scheduled task'}</p>
+                           <p className="text-sm text-text-muted mt-0.5 whitespace-pre-wrap line-clamp-1">{callback.content || 'System scheduled task'}</p>
                          </div>
                          <div className="text-right shrink-0 relative top-1">
-                            <span className="text-[10px] bg-surface-alt text-text-muted px-1.5 py-0.5 rounded font-mono border border-border-subtle">{formatTime(callback.reminderAt)}</span>
+                            <span className="text-sm bg-surface-alt text-text-muted px-1.5 py-0.5 rounded font-mono border border-border-subtle">{formatTime(callback.reminderAt)}</span>
                          </div>
                        </div>
                      ))
                    ) : (
-                     <div className="text-center py-4 text-xs text-text-muted italic border border-dashed border-border-subtle rounded">
+                     <div className="text-center py-4 text-sm text-text-muted italic border border-dashed border-border-subtle rounded">
                        No upcoming CLM tasks in immediate timeline.
                      </div>
                    )}
@@ -297,8 +297,8 @@ export const DashboardLiveOpsBoard: React.FC<DashboardLiveOpsBoardProps> = ({
             
             <div className="mt-4 pt-3 border-t border-border-subtle flex flex-col gap-3">
                 <div className="flex items-center justify-between">
-                    <span className="text-[10px] font-bold text-text-muted tracking-widest uppercase">System Mapping</span>
-                    <span className="text-[10px] font-bold text-status-success uppercase bg-status-success/10 px-2 py-0.5 rounded">Active & Healthy</span>
+                    <span className="text-sm font-bold text-text-muted tracking-widest uppercase">System Mapping</span>
+                    <span className="text-sm font-bold text-status-success uppercase bg-status-success/10 px-2 py-0.5 rounded">Active & Healthy</span>
                 </div>
                 <div className="h-16 w-full rounded-lg bg-surface-alt/50 border border-border-subtle relative overflow-hidden flex items-center justify-center">
                     <div className="absolute inset-0 bg-grid-slate-800/[0.05] bg-[length:12px_12px]"></div>

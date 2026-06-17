@@ -104,7 +104,7 @@ export function PresetManager({ productConfig, onUpdateConfig }: Props) {
   }, 0);
 
   return (
-    <div className="flex flex-col lg:flex-row gap-6 p-6 h-full max-w-7xl mx-auto">
+    <div className="flex flex-col lg:flex-row gap-4 p-4 h-full max-w-7xl mx-auto">
       {/* List Panel */}
       <Card className="flex-1 overflow-hidden flex flex-col bg-surface-main">
         <div className="p-4 border-b border-border-subtle flex justify-between items-center bg-surface-alt/30">
@@ -152,10 +152,10 @@ export function PresetManager({ productConfig, onUpdateConfig }: Props) {
                    <GripVertical size={16} className="text-border-subtle mt-1 opacity-0 group-hover:opacity-100" />
                    <div>
                      <h4 className="font-bold text-text-primary text-sm">{preset.name}</h4>
-                     <p className="text-xs text-text-muted mt-1 max-w-sm">{preset.description}</p>
+                     <p className="text-sm text-text-muted mt-1 max-w-sm">{preset.description}</p>
                      <div className="mt-3 flex flex-wrap gap-2">
                        {preset.items.map((item, idx) => (
-                         <div key={idx} className="bg-surface-main border border-border-subtle rounded px-2 py-1 text-[10px] font-bold text-text-secondary flex items-center gap-1">
+                         <div key={idx} className="bg-surface-main border border-border-subtle rounded px-2 py-1 text-sm font-bold text-text-secondary flex items-center gap-1">
                             <Package size={10} /> {item.product} ({item.quantity})
                          </div>
                        ))}
@@ -188,7 +188,7 @@ export function PresetManager({ productConfig, onUpdateConfig }: Props) {
                 setName('');
                 setDescription('');
                 setItems([]);
-             }} className="text-xs text-text-muted hover:text-text-primary underline">
+             }} className="text-sm text-text-muted hover:text-text-primary underline">
                 Cancel Edit
              </button>
            )}
@@ -196,7 +196,7 @@ export function PresetManager({ productConfig, onUpdateConfig }: Props) {
         
         <div className="p-5 flex-1 overflow-y-auto space-y-5">
            <div>
-             <label className="text-xs font-bold text-text-muted mb-1.5 block">PRESET NAME *</label>
+             <label className="text-sm font-bold text-text-muted mb-1.5 block">PRESET NAME *</label>
              <input
                value={name}
                onChange={e => setName(e.target.value)}
@@ -206,7 +206,7 @@ export function PresetManager({ productConfig, onUpdateConfig }: Props) {
            </div>
            
            <div>
-             <label className="text-xs font-bold text-text-muted mb-1.5 block">DESCRIPTION</label>
+             <label className="text-sm font-bold text-text-muted mb-1.5 block">DESCRIPTION</label>
              <textarea
                value={description}
                onChange={e => setDescription(e.target.value)}
@@ -217,15 +217,15 @@ export function PresetManager({ productConfig, onUpdateConfig }: Props) {
            
             <div>
              <div className="flex justify-between items-center mb-2">
-               <label className="text-xs font-bold text-text-muted">PRODUCTS IN BUNDLE *</label>
-               <button onClick={addPresetItem} className="text-[10px] bg-indigo-500 text-white px-2 py-1 rounded font-bold hover:bg-indigo-600 transition-colors flex items-center gap-1">
+               <label className="text-sm font-bold text-text-muted">PRODUCTS IN BUNDLE *</label>
+               <button onClick={addPresetItem} className="text-sm bg-indigo-500 text-white px-2 py-1 rounded font-bold hover:bg-indigo-600 transition-colors flex items-center gap-1">
                  <Plus size={12} /> ADD
                </button>
              </div>
              
              <div className="space-y-3 mb-4">
                {items.length === 0 ? (
-                 <div className="border border-dashed border-border-subtle rounded-lg p-6 text-center text-sm text-text-muted">
+                 <div className="border border-dashed border-border-subtle rounded-lg p-4 text-center text-sm text-text-muted">
                     No products added. Click Add to include products in this preset.
                  </div>
                ) : (
@@ -253,7 +253,7 @@ export function PresetManager({ productConfig, onUpdateConfig }: Props) {
                         <select 
                           value={item.product}
                           onChange={(e) => updatePresetItem(index, 'product', e.target.value)}
-                          className="w-full bg-surface-main border border-border-subtle rounded px-2 py-1 text-xs"
+                          className="w-full bg-surface-main border border-border-subtle rounded px-2 py-1 text-sm"
                         >
                            {productConfig.products.map(p => <option key={p.id} value={p.name}>{p.name}</option>)}
                         </select>
@@ -261,7 +261,7 @@ export function PresetManager({ productConfig, onUpdateConfig }: Props) {
                           <select 
                             value={item.quantity}
                             onChange={(e) => updatePresetItem(index, 'quantity', e.target.value)}
-                            className="flex-1 bg-surface-main border border-border-subtle rounded px-2 py-1 text-[10px]"
+                            className="flex-1 bg-surface-main border border-border-subtle rounded px-2 py-1 text-sm"
                           >
                              {productConfig.quantities.map(q => <option key={q} value={q}>{q}</option>)}
                           </select>
@@ -270,7 +270,7 @@ export function PresetManager({ productConfig, onUpdateConfig }: Props) {
                             <select 
                               value={item.dosage || ''}
                               onChange={(e) => updatePresetItem(index, 'dosage', e.target.value)}
-                              className="flex-1 bg-surface-main border border-border-subtle rounded px-2 py-1 text-[10px]"
+                              className="flex-1 bg-surface-main border border-border-subtle rounded px-2 py-1 text-sm"
                             >
                                {productConfig.products.find(p => p.name === item.product)?.dosages?.map(d => <option key={d} value={d}>{d}</option>)}
                             </select>
@@ -289,8 +289,8 @@ export function PresetManager({ productConfig, onUpdateConfig }: Props) {
              {items.length > 0 && (
                <div className="bg-emerald-500/10 border border-emerald-500/20 rounded-lg p-3 flex justify-between items-center shadow-inner">
                   <div className="flex flex-col">
-                     <span className="text-[10px] font-bold text-emerald-600/80 uppercase tracking-widest">Live Total Preview</span>
-                     <span className="text-xs text-text-muted mt-0.5">{items.length} items bundled</span>
+                     <span className="text-sm font-bold text-emerald-600/80 uppercase tracking-widest">Live Total Preview</span>
+                     <span className="text-sm text-text-muted mt-0.5">{items.length} items bundled</span>
                   </div>
                   <span className="text-lg font-black text-emerald-500">${liveTotal.toFixed(2)}</span>
                </div>

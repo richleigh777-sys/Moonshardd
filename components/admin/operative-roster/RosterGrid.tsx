@@ -38,7 +38,7 @@ export const RosterGrid: React.FC<RosterGridProps> = ({
     return (
         <div className="flex-1 overflow-y-auto custom-scrollbar relative px-2">
              {viewMode === 'list' && (
-                 <div className="sticky top-0 z-20 flex justify-between px-4 py-2 bg-surface-main/95 backdrop-blur-md text-xs font-bold text-text-muted  tracking-wider border-b border-border-subtle mb-1">
+                 <div className="sticky top-0 z-20 flex justify-between px-4 py-2 bg-surface-main/95 backdrop-blur-md text-sm font-bold text-text-muted  tracking-wider border-b border-border-subtle mb-1">
                     <div className="w-1/3">Partner Profile</div>
                     <div className="flex-1 text-center">Performance</div>
                     <div className="w-[140px] text-right">Actions</div>

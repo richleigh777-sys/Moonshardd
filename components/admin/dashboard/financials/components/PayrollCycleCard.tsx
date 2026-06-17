@@ -32,7 +32,7 @@ export const PayrollCycleCard: React.FC<PayrollCycleCardProps> = ({ cycle, onIns
         }[status] || 'bg-gray-100 text-gray-600';
         
         return (
-            <span className={`px-2.5 py-0.5 rounded-full text-xs font-semibold ${styles}`}>
+            <span className={`px-2.5 py-0.5 rounded-full text-sm font-semibold ${styles}`}>
                 {status}
             </span>
         );
@@ -57,10 +57,10 @@ export const PayrollCycleCard: React.FC<PayrollCycleCardProps> = ({ cycle, onIns
     };
 
     return (
-        <div className="bg-surface-main rounded-2xl shadow-panel overflow-hidden transition-all hover:shadow-md">
+        <div className="bg-surface-main rounded-xl shadow-panel overflow-hidden transition-all hover:shadow-md">
             
             {/* Cycle Header */}
-            <div className="p-6 border-b border-border-subtle flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6 bg-surface-alt/20">
+            <div className="p-4 border-b border-border-subtle flex flex-col lg:flex-row justify-between items-start lg:items-center gap-3 bg-surface-alt/20">
                 <div className="flex items-center gap-4">
                     <div className="p-3 bg-surface-alt rounded-xl border border-border-subtle shadow-sm">
                         <Calendar size={24} className="text-text-muted" />
@@ -70,7 +70,7 @@ export const PayrollCycleCard: React.FC<PayrollCycleCardProps> = ({ cycle, onIns
                             <h3 className="text-lg font-bold text-text-primary">{cycle.label}</h3>
                             {getStatusPill(cycle.status)}
                         </div>
-                        <div className="flex items-center gap-4 text-xs font-medium text-text-muted">
+                        <div className="flex items-center gap-4 text-sm font-medium text-text-muted">
                             <span>{cycle.startDate.toLocaleDateString()} - {cycle.endDate.toLocaleDateString()}</span>
                             <span className="w-1 h-1 rounded-full bg-border-subtle"></span>
                             <span className="flex items-center gap-1"><Clock size={16}/> Pay Date: {cycle.payDate.toLocaleDateString()}</span>
@@ -78,22 +78,22 @@ export const PayrollCycleCard: React.FC<PayrollCycleCardProps> = ({ cycle, onIns
                     </div>
                 </div>
 
-                <div className="flex items-center gap-6 w-full lg:w-auto justify-between lg:justify-end">
+                <div className="flex items-center gap-3 w-full lg:w-auto justify-between lg:justify-end">
                     <div className="text-right">
-                        <p className="text-xs font-medium text-text-muted mb-1  tracking-wider">Cycle Liability</p>
-                        <p className="text-2xl font-bold text-text-primary tracking-tight">
+                        <p className="text-sm font-medium text-text-muted mb-1  tracking-wider">Cycle Liability</p>
+                        <p className="text-lg font-bold text-text-primary tracking-tight">
                             ${(cycle as any).totalLiability.toLocaleString(undefined, {minimumFractionDigits: 2})}
                         </p>
                     </div>
                     <div className="flex gap-2">
                         {cycle.status !== 'Paid' && (
-                            <Button variant="secondary" className="h-10 text-xs font-bold text-text-muted border-border-subtle hover:bg-surface-highlight transition-all">
+                            <Button variant="secondary" className="h-10 text-sm font-bold text-text-muted border-border-subtle hover:bg-surface-highlight transition-all">
                                 {cycle.status === 'Open' ? <Lock size={16} className="mr-2"/> : <CheckCircle2 size={16} className="mr-2"/>}
                                 {cycle.status === 'Open' ? 'Lock' : 'Finalize'}
                             </Button>
                         )}
                         {isSuperAdmin && (
-                            <Button onClick={handleMasterExport} className="h-10 px-4 bg-text-primary hover:bg-text-secondary text-surface-main rounded-xl shadow-lg text-xs font-bold  tracking-wide transition-all">
+                            <Button onClick={handleMasterExport} className="h-10 px-4 bg-text-primary hover:bg-text-secondary text-surface-main rounded-xl shadow-lg text-sm font-bold  tracking-wide transition-all">
                                 <Download size={16} className="mr-2"/> Export File
                             </Button>
                         )}
@@ -134,7 +134,7 @@ export const PayrollCycleCard: React.FC<PayrollCycleCardProps> = ({ cycle, onIns
                                 <td className="py-4 font-semibold text-text-primary">
                                     <div className="flex flex-col">
                                         <span>{p.agent.name}</span>
-                                        <span className="text-xs font-normal text-text-muted/60">{p.salesCount} Deals • {p.agent.bankName}</span>
+                                        <span className="text-sm font-normal text-text-muted/60">{p.salesCount} Deals • {p.agent.bankName}</span>
                                     </div>
                                 </td>
                                 <td className="py-4 text-right font-mono text-text-muted">
@@ -149,7 +149,7 @@ export const PayrollCycleCard: React.FC<PayrollCycleCardProps> = ({ cycle, onIns
                                 <td className="py-4 text-right" onClick={(e) => e.stopPropagation()}>
                                     <button 
                                         onClick={() => onAdjust({ cycleId: cycle.id, agentId: p.agent.id, currentVal: p.manualAdj })}
-                                        className={`px-3 py-1 rounded-full text-xs font-medium border transition-all ${p.manualAdj !== 0 ? 'bg-blue-500/10 text-blue-500 border-blue-500/20' : 'bg-transparent border-transparent text-text-muted hover:bg-surface-highlight hover:border-border-subtle'}`}
+                                        className={`px-3 py-1 rounded-full text-sm font-medium border transition-all ${p.manualAdj !== 0 ? 'bg-blue-500/10 text-blue-500 border-blue-500/20' : 'bg-transparent border-transparent text-text-muted hover:bg-surface-highlight hover:border-border-subtle'}`}
                                     >
                                         {p.manualAdj > 0 ? '+' : ''}{p.manualAdj === 0 ? 'Add' : p.manualAdj}
                                     </button>

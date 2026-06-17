@@ -48,7 +48,7 @@ const useRecoveryLogic = (sales: Sale[]) => {
 };
 
 export const RecoveryEngine = ({ sales, onAction }: Props) => {
-  const { scripts, addNote, currentUser, logScriptUsage } = useCRM();
+  const { scripts, addNote, currentUser, logScriptUsage, customers, updateCustomer } = useCRM();
   const { setToast } = useSystem();
   
   const [viewMode, setViewMode] = useState<'console' | 'schedule'>('console');
@@ -92,6 +92,18 @@ export const RecoveryEngine = ({ sales, onAction }: Props) => {
 
   const handleScheduleSubmit = async (note: any) => {
       await addNote(note);
+      
+      if (activeOp && activeOp.phone) {
+          const cleanPhone = (activeOp.phone || '').replace(/\D/g, '');
+          const match = customers.find(c => (c.phone || '').replace(/\D/g, '') === cleanPhone);
+          if (match) {
+              await updateCustomer(match.id, {
+                  nextActionDate: note.timestamp || Date.now() + 86400000,
+                  nextActionType: 'Reorder' // Recovery / Winback
+              });
+          }
+      }
+
       setToast({ title: 'Recovery', message: "Care Call Scheduled", type: 'success' });
       setViewMode('console');
       if (activeOp && activeOp.status !== 'Rescue In Progress') {
@@ -101,7 +113,7 @@ export const RecoveryEngine = ({ sales, onAction }: Props) => {
 
   if (rescueOps.length === 0) {
       return (
-        <Card variant="panel" className="h-full flex flex-col items-center justify-center p-8 opacity-50 border-dashed border-border-subtle bg-surface-alt/10">
+        <Card variant="panel" className="h-full flex flex-col items-center justify-center p-5 opacity-50 border-dashed border-border-subtle bg-surface-alt/10">
             <div className="w-20 h-20 rounded-[2rem] bg-emerald-500/10 flex items-center justify-center mb-4 border border-emerald-500/20 shadow-sm">
                 <CheckCircle size={40} className="text-status-success" strokeWidth={1.5} />
             </div>
@@ -171,10 +183,10 @@ export const RecoveryEngine = ({ sales, onAction }: Props) => {
             <div className="flex-1 flex flex-col relative bg-surface-main min-w-0">
                 {activeOp && activeScript ? (
                     <>
-                        <div className="p-6 border-b border-border-subtle flex justify-between items-start bg-gradient-to-r from-surface-alt/10 to-transparent">
+                        <div className="p-4 border-b border-border-subtle flex justify-between items-start bg-gradient-to-r from-surface-alt/10 to-transparent">
                             <div className="min-w-0 pr-4">
                                 <div className="flex items-center gap-3 mb-2 flex-wrap">
-                                    <h2 className="text-3xl font-[700] text-text-primary  tracking-tighter italic truncate">{activeOp.customer}</h2>
+                                    <h2 className="text-xl font-[700] text-text-primary  tracking-tighter italic truncate">{activeOp.customer}</h2>
                                     <div className={`w-3 h-3 rounded-full ${activeScript.isFresh ? 'bg-emerald-500 shadow-[0_0_10px_#10B981]' : 'bg-amber-500'} animate-pulse`}></div>
                                 </div>
                                 <div className="flex items-center gap-4 text-xs font-bold text-text-muted flex-wrap">
@@ -189,7 +201,7 @@ export const RecoveryEngine = ({ sales, onAction }: Props) => {
                         </div>
 
                         {viewMode === 'schedule' ? (
-                            <div className="flex-1 p-8 bg-surface-main">
+                            <div className="flex-1 p-5 bg-surface-main">
                                 <div className="max-w-2xl mx-auto h-full flex flex-col">
                                     <div className="flex items-center justify-between mb-6">
                                         <h3 className="text-xl font-bold text-text-primary flex items-center gap-2">
@@ -211,12 +223,12 @@ export const RecoveryEngine = ({ sales, onAction }: Props) => {
                         ) : (
                             <div className="flex-1 flex flex-col min-h-0 relative">
                                 {/* Objection Tabs */}
-                                <div className="px-6 py-4 border-b border-border-subtle overflow-x-auto scrollbar-hide flex gap-3 shrink-0 bg-surface-alt/10">
+                                <div className="px-4 py-4 border-b border-border-subtle overflow-x-auto scrollbar-hide flex gap-3 shrink-0 bg-surface-alt/10">
                                     {Object.entries(OBJECTION_METADATA).slice(0, 10).map(([id, meta]) => (
                                         <button
                                             key={id}
                                             onClick={() => { setActiveObjection(id as ObjectionType === activeObjection ? null : id as ObjectionType); sfx.playClick(); }}
-                                            className={`px-4 py-2.5 rounded-2xl border flex items-center gap-2 text-xs font-[700]  tracking-wider transition-all whitespace-nowrap ${
+                                            className={`px-4 py-2.5 rounded-xl border flex items-center gap-2 text-xs font-[700]  tracking-wider transition-all whitespace-nowrap ${
                                                 activeObjection === id 
                                                 ? `bg-accent-primary text-white border-accent-primary shadow-lg scale-105` 
                                                 : `bg-surface-main border-border-subtle text-text-muted hover:text-text-primary hover:bg-surface-alt`
@@ -228,10 +240,10 @@ export const RecoveryEngine = ({ sales, onAction }: Props) => {
                                     ))}
                                 </div>
 
-                                <div className="flex-1 overflow-y-auto p-8 custom-scrollbar">
+                                <div className="flex-1 overflow-y-auto p-5 custom-scrollbar">
                                     <div className="max-w-4xl mx-auto space-y-8">
-                                        <div className="p-6 bg-surface-alt/30 rounded-[2rem] border border-border-subtle relative group hover:border-accent-primary/20 transition-all shadow-sm">
-                                            <div className="absolute -left-3 top-6 w-7 h-7 bg-surface-main border-2 border-accent-primary rounded-full flex items-center justify-center text-sm font-[700] text-accent-primary shadow-md z-10">1</div>
+                                        <div className="p-4 bg-surface-alt/30 rounded-[2rem] border border-border-subtle relative group hover:border-accent-primary/20 transition-all shadow-sm">
+                                            <div className="absolute -left-3 top-4 w-7 h-7 bg-surface-main border-2 border-accent-primary rounded-full flex items-center justify-center text-sm font-[700] text-accent-primary shadow-md z-10">1</div>
                                             <div className="flex items-center gap-2 mb-4 pb-2 border-b border-border-subtle/50">
                                                 <Activity size={16} className="text-accent-primary"/>
                                                 <span className="text-xs font-[700]  tracking-[0.2em] text-accent-primary">Empathy & Care</span>
@@ -239,8 +251,8 @@ export const RecoveryEngine = ({ sales, onAction }: Props) => {
                                             <div className="text-lg md:text-xl font-medium text-text-primary leading-relaxed tracking-wide" dangerouslySetInnerHTML={{__html: activeScript.hook}}></div>
                                         </div>
 
-                                        <div className="p-6 bg-surface-alt/30 rounded-[2rem] border border-border-subtle relative group hover:border-emerald-500/20 transition-all shadow-sm">
-                                            <div className="absolute -left-3 top-6 w-7 h-7 bg-surface-main border-2 border-emerald-500 rounded-full flex items-center justify-center text-sm font-[700] text-status-success shadow-md z-10">2</div>
+                                        <div className="p-4 bg-surface-alt/30 rounded-[2rem] border border-border-subtle relative group hover:border-emerald-500/20 transition-all shadow-sm">
+                                            <div className="absolute -left-3 top-4 w-7 h-7 bg-surface-main border-2 border-emerald-500 rounded-full flex items-center justify-center text-sm font-[700] text-status-success shadow-md z-10">2</div>
                                             <div className="flex items-center gap-2 mb-4 pb-2 border-b border-border-subtle/50">
                                                 <Activity size={16} className="text-status-success"/>
                                                 <span className="text-xs font-[700]  tracking-[0.2em] text-status-success">The Solution</span>
@@ -251,9 +263,9 @@ export const RecoveryEngine = ({ sales, onAction }: Props) => {
                                 </div>
 
                                 {/* Footer Actions */}
-                                <div className="p-6 border-t border-border-subtle bg-surface-alt/30 flex gap-4 shrink-0 backdrop-blur-xl">
+                                <div className="p-4 border-t border-border-subtle bg-surface-alt/30 flex gap-4 shrink-0 backdrop-blur-xl">
                                     {dismissId === activeOp.id ? (
-                                        <div className="flex-1 flex items-center justify-between bg-surface-main border border-border-subtle rounded-2xl px-6 animate-in slide-in-from-bottom-2 fade-in">
+                                        <div className="flex-1 flex items-center justify-between bg-surface-main border border-border-subtle rounded-xl px-4 animate-in slide-in-from-bottom-2 fade-in">
                                             <span className="text-xs font-[700] text-text-muted  tracking-wider">Close this file?</span>
                                             <div className="flex gap-3">
                                                 <Button variant="secondary" onClick={() => setDismissId(null)} className="h-10 text-xs">Back</Button>
@@ -288,13 +300,13 @@ export const RecoveryEngine = ({ sales, onAction }: Props) => {
 
         {/* Lead Routing Protocol Overlay Modal */}
         {showLogicGuide && (
-            <div className="absolute inset-0 bg-neutral-950/85 backdrop-blur-md z-50 flex items-center justify-center p-6 animate-in fade-in duration-200">
-                <div className="bg-surface-main border border-border-subtle rounded-3xl p-8 max-w-4xl w-full max-h-[90%] overflow-y-auto shadow-2xl relative flex flex-col">
+            <div className="absolute inset-0 bg-neutral-950/85 backdrop-blur-md z-50 flex items-center justify-center p-4 animate-in fade-in duration-200">
+                <div className="bg-surface-main border border-border-subtle rounded-xl p-5 max-w-4xl w-full max-h-[90%] overflow-y-auto shadow-2xl relative flex flex-col">
                     
                     {/* Header */}
                     <div className="flex justify-between items-start mb-6">
                         <div className="flex items-center gap-3">
-                            <div className="p-2.5 bg-indigo-500/10 text-accent-secondary rounded-2xl border border-indigo-500/15">
+                            <div className="p-2.5 bg-indigo-500/10 text-accent-secondary rounded-xl border border-indigo-500/15">
                                 <Network size={22} className="animate-pulse text-indigo-400" />
                             </div>
                             <div>
@@ -314,7 +326,7 @@ export const RecoveryEngine = ({ sales, onAction }: Props) => {
                     <div className="space-y-6">
                         
                         {/* Phase 1 */}
-                        <div className="bg-surface-alt/40 border border-border-subtle p-5 rounded-2xl flex flex-col md:flex-row gap-4 items-start text-left">
+                        <div className="bg-surface-alt/40 border border-border-subtle p-5 rounded-xl flex flex-col md:flex-row gap-4 items-start text-left">
                             <div className="w-10 h-10 rounded-xl bg-blue-500/10 border border-blue-500/20 text-blue-400 flex items-center justify-center font-bold text-sm shrink-0">1</div>
                             <div className="flex-1 space-y-2">
                                 <h4 className="text-sm font-bold text-white flex items-center gap-2">
@@ -324,13 +336,13 @@ export const RecoveryEngine = ({ sales, onAction }: Props) => {
                                     When an agent receives or initiates a call inside the integrated dialer, ViciDial triggers a secure web gateway sync.
                                 </p>
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3 pt-1">
-                                    <div className="bg-surface-main/30 border border-border-subtle p-3 rounded-xl">
+                                    <div className="bg-surface-widget border border-border-subtle p-3 rounded-xl">
                                         <span className="text-[10px] font-bold text-indigo-400 uppercase tracking-wider block mb-1">ViciDial Push (Autodialer)</span>
                                         <p className="text-[11px] text-text-muted">
                                             Logs customer contact automatically in the background. Duplicate checker verifies existing phones to prevent overwriting. Saved strictly to Super Admin <b>Unique Customer Profile</b>.
                                         </p>
                                     </div>
-                                    <div className="bg-surface-main/30 border border-border-subtle p-3 rounded-xl">
+                                    <div className="bg-surface-widget border border-border-subtle p-3 rounded-xl">
                                         <span className="text-[10px] font-bold text-emerald-400 uppercase tracking-wider block mb-1">Manual Agent Form</span>
                                         <p className="text-[11px] text-text-muted">
                                             Agent directly inputs data and submits. Saves real-time customer and active transaction records immediately.
@@ -341,7 +353,7 @@ export const RecoveryEngine = ({ sales, onAction }: Props) => {
                         </div>
 
                         {/* Phase 2 */}
-                        <div className="bg-surface-alt/40 border border-border-subtle p-5 rounded-2xl flex flex-col md:flex-row gap-4 items-start text-left">
+                        <div className="bg-surface-alt/40 border border-border-subtle p-5 rounded-xl flex flex-col md:flex-row gap-4 items-start text-left">
                             <div className="w-10 h-10 rounded-xl bg-purple-500/10 border border-purple-500/20 text-purple-400 flex items-center justify-center font-bold text-sm shrink-0">2</div>
                             <div className="flex-1 space-y-2">
                                 <h4 className="text-sm font-bold text-white flex items-center gap-2">
@@ -368,7 +380,7 @@ export const RecoveryEngine = ({ sales, onAction }: Props) => {
                         </div>
 
                         {/* Phase 3 */}
-                        <div className="bg-surface-alt/40 border border-border-subtle p-5 rounded-2xl flex flex-col md:flex-row gap-4 items-start text-left">
+                        <div className="bg-surface-alt/40 border border-border-subtle p-5 rounded-xl flex flex-col md:flex-row gap-4 items-start text-left">
                             <div className="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 flex items-center justify-center font-bold text-sm shrink-0">3</div>
                             <div className="flex-1 space-y-2">
                                 <h4 className="text-sm font-bold text-white flex items-center gap-2">
@@ -404,7 +416,7 @@ export const RecoveryEngine = ({ sales, onAction }: Props) => {
 
                     {/* Footer confirmation */}
                     <div className="mt-8 pt-4 border-t border-border-subtle flex justify-end">
-                        <Button variant="primary" onClick={() => { setShowLogicGuide(false); sfx.playConfirm(); }} className="px-6 h-11 text-xs font-bold tracking-widest uppercase">
+                        <Button variant="primary" onClick={() => { setShowLogicGuide(false); sfx.playConfirm(); }} className="px-4 h-11 text-xs font-bold tracking-widest uppercase">
                             Understood Protocols
                         </Button>
                     </div>

@@ -48,7 +48,7 @@ const Sparkline = ({ data, color }: { data: number[], color: string }) => {
 };
 
 export const StatCard: React.FC<StatCardProps> = ({ title, value, sub, icon: Icon, color, trend, trendDir = 'up', sparklineData }) => (
-    <div className="bg-surface-main rounded-3xl border border-border-subtle p-5 shadow-soft hover:shadow-lg transition-all duration-300 flex flex-col justify-between h-full relative overflow-hidden group hover:-translate-y-1">
+    <div className="bg-surface-main rounded-xl border border-border-subtle p-5 shadow-soft hover:shadow-lg transition-all duration-300 flex flex-col justify-between h-full relative overflow-hidden group hover:-translate-y-1">
         
         {/* Background Sparkline */}
         {sparklineData && (
@@ -57,13 +57,13 @@ export const StatCard: React.FC<StatCardProps> = ({ title, value, sub, icon: Ico
             </div>
         )}
 
-        <div className={`absolute -right-6 -top-6 p-8 opacity-[0.03] transition-transform duration-700 group-hover:scale-110 group-hover:rotate-12 ${color.replace('text-', 'bg-')}`}>
+        <div className={`absolute -right-6 -top-4 p-5 opacity-[0.03] transition-transform duration-700 group-hover:scale-110 group-hover:rotate-12 ${color.replace('text-', 'bg-')}`}>
             <Icon size={120} />
         </div>
         
         <div className="relative z-10">
             <div className="flex justify-between items-start mb-4">
-                <div className={`p-3 rounded-2xl bg-surface-alt border border-border-subtle ${color} shadow-sm group-hover:scale-110 transition-transform`}>
+                <div className={`p-3 rounded-xl bg-surface-alt border border-border-subtle ${color} shadow-sm group-hover:scale-110 transition-transform`}>
                     <Icon size={20} strokeWidth={2.5}/>
                 </div>
                 {trend && (
@@ -75,7 +75,7 @@ export const StatCard: React.FC<StatCardProps> = ({ title, value, sub, icon: Ico
             </div>
             
             <div>
-                <h3 className="text-3xl font-[700] text-text-primary num-font tracking-tight mb-1 drop-shadow-sm">{value}</h3>
+                <h3 className="text-xl font-[700] text-text-primary num-font tracking-tight mb-1 drop-shadow-sm">{value}</h3>
                 <p className="text-xs font-bold text-text-secondary  tracking-widest opacity-80">{title}</p>
             </div>
         </div>

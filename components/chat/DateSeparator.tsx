@@ -12,7 +12,7 @@ export const DateSeparator: React.FC<DateSeparatorProps> = ({ date }) => {
                 <div className="w-full border-t border-border-subtle"></div>
             </div>
             <div className="relative flex justify-center">
-                <span className="px-3 py-0.5 text-xs font-semibold text-text-muted bg-surface-main select-none">
+                <span className="px-3 py-0.5 text-sm font-semibold text-text-muted bg-surface-main select-none">
                     {date.toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' })}
                 </span>
             </div>

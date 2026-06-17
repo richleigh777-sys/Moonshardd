@@ -65,11 +65,11 @@ export const ProductBasket: React.FC<ProductBasketProps> = ({
           </div>
           <div>
             <h3 className="text-sm font-black text-text-primary tracking-wide">ORDER BASKET</h3>
-            <p className="text-[10px] text-text-muted uppercase tracking-wider font-semibold">Active Cart Items</p>
+            <p className="text-sm text-text-muted uppercase tracking-wider font-semibold">Active Cart Items</p>
           </div>
         </div>
         <div className="text-right">
-          <span className="text-[10px] font-bold text-text-muted tracking-wider block mb-0.5">SUBTOTAL</span>
+          <span className="text-sm font-bold text-text-muted tracking-wider block mb-0.5">SUBTOTAL</span>
           <span className="text-xl font-black text-status-success num-font leading-none flex items-center justify-end gap-1">
              <span className="text-sm text-status-success/70">$</span>
              {calculatedTotal.toLocaleString(undefined, { minimumFractionDigits: 2 })}
@@ -83,7 +83,7 @@ export const ProductBasket: React.FC<ProductBasketProps> = ({
           <div className="py-8 text-center flex flex-col items-center justify-center border-2 border-dashed border-border-subtle rounded-xl bg-surface-alt/20">
              <ShoppingCart size={32} className="text-text-muted/30 mb-2" />
              <p className="text-sm font-bold text-text-muted">Basket is empty</p>
-             <p className="text-xs text-text-muted/70 mt-1">Add items below to begin</p>
+             <p className="text-sm text-text-muted/70 mt-1">Add items below to begin</p>
           </div>
         ) : (
           cart.map((item) => {
@@ -106,7 +106,7 @@ export const ProductBasket: React.FC<ProductBasketProps> = ({
                     <select
                       value={item.quantity}
                       onChange={(e) => updateCartItem(item.id || '', 'quantity', e.target.value)}
-                      className="bg-surface-main border border-border-subtle rounded-md px-2 py-1 text-xs text-text-secondary font-bold outline-none focus:border-accent-primary cursor-pointer"
+                      className="bg-surface-main border border-border-subtle rounded-md px-2 py-1 text-sm text-text-secondary font-bold outline-none focus:border-accent-primary cursor-pointer"
                     >
                       <option>30 Day Supply</option>
                       <option>90 Day Supply</option>
@@ -118,7 +118,7 @@ export const ProductBasket: React.FC<ProductBasketProps> = ({
                       <select
                         value={item.dosage}
                         onChange={(e) => updateCartItem(item.id || '', 'dosage', e.target.value)}
-                        className="bg-surface-main border border-border-subtle rounded-md px-2 py-1 text-xs text-text-secondary font-bold outline-none focus:border-accent-primary cursor-pointer"
+                        className="bg-surface-main border border-border-subtle rounded-md px-2 py-1 text-sm text-text-secondary font-bold outline-none focus:border-accent-primary cursor-pointer"
                       >
                         {productConfig.products?.find((p: any) => p.name === item.product)?.dosages?.map((d: string) => (
                           <option key={d} value={d}>{d}</option>
@@ -137,7 +137,7 @@ export const ProductBasket: React.FC<ProductBasketProps> = ({
               </div>
 
               {/* Breakdown */}
-              <div className="flex justify-between items-center text-xs border-t border-border-subtle pt-2 mt-1">
+              <div className="flex justify-between items-center text-sm border-t border-border-subtle pt-2 mt-1">
                 <div className="flex items-center gap-2">
                   <span className="text-text-muted">Unit Price:</span>
                   <span className="font-bold text-text-primary">${item.unitPrice}</span>
@@ -162,14 +162,14 @@ export const ProductBasket: React.FC<ProductBasketProps> = ({
       {/* Add Product */}
       {productConfig.products && productConfig.products.length > 0 && (
         <div className="mb-5 py-4 border-y border-border-subtle relative z-10 bg-surface-alt/30 -mx-5 px-5">
-          <p className="text-[10px] font-bold text-text-muted mb-3 uppercase tracking-wider">Quick Add Product</p>
+          <p className="text-sm font-bold text-text-muted mb-3 uppercase tracking-wider">Quick Add Product</p>
           <div className="flex flex-wrap gap-2">
             {productConfig.products.map((product: any) => (
               <button
                 key={product.id}
                 type="button"
                 onClick={() => addProduct(product)}
-                className="text-xs px-3 py-1.5 bg-surface-main border border-border-subtle hover:border-accent-primary text-text-secondary hover:text-accent-primary rounded-lg transition-all flex items-center gap-1.5 shadow-sm hover:shadow-md"
+                className="text-sm px-3 py-1.5 bg-surface-main border border-border-subtle hover:border-accent-primary text-text-secondary hover:text-accent-primary rounded-lg transition-all flex items-center gap-1.5 shadow-sm hover:shadow-md"
               >
                 <Plus size={14} className="opacity-70" /> <span className="font-semibold">{product.name}</span>
               </button>
@@ -180,7 +180,7 @@ export const ProductBasket: React.FC<ProductBasketProps> = ({
 
       {/* Notes */}
       <div className="relative z-10">
-        <label className="text-[11px] font-bold text-text-muted tracking-widest mb-1.5 block">CALL NOTES & INSTRUCTIONS</label>
+        <label className="text-sm font-bold text-text-muted tracking-widest mb-1.5 block">CALL NOTES & INSTRUCTIONS</label>
         <textarea
           value={notes}
           onChange={(e) => setNotes(e.target.value)}

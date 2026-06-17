@@ -36,6 +36,7 @@ export const CommandBar: React.FC<CommandBarProps> = React.memo(({ count, isBulk
                     onChange={(e) => { onAction(e.target.value); e.target.value = ""; }}
                 >
                     <option value="">Batch Actions...</option>
+                    <option value="copy-sheets">Copy for Client Sheets (TSV)</option>
                     <option value="Approved">Mark Approved</option>
                     <option value="Declined">Mark Declined</option>
                     <option value="edit">Bulk Edit</option>

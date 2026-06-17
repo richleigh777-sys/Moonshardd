@@ -22,6 +22,8 @@ const API_KEY =
   (import.meta as any).env?.VITE_GOOGLE_MAPS_API_KEY ||
   '';
 
+import { AutoScaler } from './components/layout/AutoScaler';
+
 const App: React.FC = () => {
     const content = (
         <QueryClientProvider client={queryClient}>
@@ -29,7 +31,9 @@ const App: React.FC = () => {
                 <SystemProvider>
                     <CRMProvider>
                         <CRMPerformanceProvider>
-                            <MainContent />
+                            <AutoScaler>
+                                <MainContent />
+                            </AutoScaler>
                         </CRMPerformanceProvider>
                     </CRMProvider>
                 </SystemProvider>

@@ -92,7 +92,7 @@ export const FormSelect = ({ icon: Icon, children, className = "", ...props }: a
                 className={`
                     w-full bg-transparent border-none outline-none py-2 px-4 
                     ${Icon ? 'pl-9' : 'pl-3'} pr-8
-                    text-xs font-bold text-text-primary appearance-none cursor-pointer
+                    text-sm font-bold text-text-primary appearance-none cursor-pointer
                     ${className}
                 `}
             >

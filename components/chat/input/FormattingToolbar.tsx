@@ -32,7 +32,7 @@ export const FormattingToolbar: React.FC<FormattingToolbarProps> = ({ onFormat }
                 </button>
             ))}
             <div className="flex-1"></div>
-            <span className="text-xs font-mono text-text-muted opacity-50  tracking-wider">Markdown</span>
+            <span className="text-sm font-mono text-text-muted opacity-50  tracking-wider">Markdown</span>
         </div>
     );
 };

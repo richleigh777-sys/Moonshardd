@@ -41,7 +41,7 @@ export const ScriptLibrary: React.FC<ScriptLibraryProps> = ({
                         value={searchTerm}
                         onChange={e => setSearchTerm(e.target.value)}
                         placeholder="Search Knowledge Base..."
-                        className="w-full bg-surface-main border border-border-subtle rounded-xl py-2.5 pl-9 pr-4 text-xs font-bold text-text-primary outline-none focus:border-accent-primary transition-all shadow-inner placeholder:text-text-muted/50"
+                        className="w-full bg-surface-main border border-border-subtle rounded-xl py-2.5 pl-9 pr-4 text-sm font-bold text-text-primary outline-none focus:border-accent-primary transition-all shadow-inner placeholder:text-text-muted/50"
                     />
                 </div>
                 <div className="flex gap-1.5 overflow-x-auto scrollbar-hide pb-1">
@@ -49,7 +49,7 @@ export const ScriptLibrary: React.FC<ScriptLibraryProps> = ({
                         <button
                             key={t}
                             onClick={() => { setFilterType(t as any); sfx.playClick(); }}
-                            className={`px-3 py-1.5 rounded-lg text-xs font-[700]  tracking-wider border transition-all whitespace-nowrap ${
+                            className={`px-3 py-1.5 rounded-lg text-sm font-[700]  tracking-wider border transition-all whitespace-nowrap ${
                                 filterType === t 
                                 ? 'bg-accent-primary text-white border-accent-primary shadow-sm' 
                                 : 'text-text-muted border-transparent hover:text-text-primary hover:bg-surface-alt'
@@ -75,7 +75,7 @@ export const ScriptLibrary: React.FC<ScriptLibraryProps> = ({
                 {filteredScripts.length === 0 && (
                     <div className="flex flex-col items-center justify-center h-64 opacity-40 text-text-muted gap-3">
                         <FileText size={32} strokeWidth={1}/>
-                        <p className="text-xs font-[700]  tracking-widest">No Scripts Found</p>
+                        <p className="text-sm font-[700]  tracking-widest">No Scripts Found</p>
                     </div>
                 )}
             </div>

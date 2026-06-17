@@ -54,6 +54,7 @@ export type CRMContextType = {
     sendDirective: (d: Partial<TacticalDirective>) => Promise<void>;
     logAttendance: (type: string, reason?: string, duration?: number) => Promise<void>;
     logAudit: (entry: Partial<AuditEntry>) => Promise<void>;
+    clearAuditLogs?: () => Promise<void>;
     runDiagnostic: () => void;
     testUplink: () => Promise<any>;
     clearNotification: (id: string) => Promise<void>;

@@ -32,7 +32,7 @@ export const useAdminPortalLogic = () => {
     
     const allowedTabs = useMemo(() => {
         if (isSuperAdmin) {
-            return ['overview', 'nexus', 'enrollment', 'pipeline', 'ledger', 'sales_pool', 'retention', 'roster', 'standings', 'intel', 'comms', 'scripts', 'automation', 'catalog', 'system', 'sheets', 'payroll', 'dialer_data', 'audit'];
+            return ['overview', 'nexus', 'enrollment', 'pipeline', 'ledger', 'sales_pool', 'retention', 'roster', 'standings', 'intel', 'comms', 'scripts', 'automation', 'catalog', 'system', 'sheets', 'payroll', 'audit'];
         } else {
             const configuredPerms = systemConfig.permissions?.manager || ['overview', 'enrollment', 'pipeline', 'ledger', 'roster', 'payroll', 'audit'];
             return configuredPerms.filter(t => t !== 'nexus');

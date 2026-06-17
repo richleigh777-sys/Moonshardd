@@ -54,7 +54,7 @@ export const AudioRecorder: React.FC<AudioRecorderProps> = ({ recordTime, onCanc
             
             <button 
                 onClick={onSend} 
-                className="z-10 h-10 px-4 bg-status-error hover:bg-red-600 text-text-primary rounded-xl shadow-lg shadow-red-500/30 flex items-center gap-2 text-xs font-[700]  tracking-widest transition-all hover:scale-105 active:scale-95"
+                className="z-10 h-10 px-4 bg-status-error hover:bg-red-600 text-text-primary rounded-xl shadow-lg shadow-red-500/30 flex items-center gap-2 text-sm font-[700]  tracking-widest transition-all hover:scale-105 active:scale-95"
                 title="Send Audio"
             >
                 Send <Send size={16} fill="currentColor" />

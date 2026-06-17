@@ -9,7 +9,7 @@ export const TruthLedger: React.FC<{ logs: AuditEntry[] }> = ({ logs }) => {
 
     return (
         <Card variant="panel" className="flex flex-col h-full overflow-hidden border-border-subtle bg-surface-main shadow-2xl rounded-[2rem]">
-            <div className="p-6 border-b border-border-subtle bg-surface-alt/40 flex justify-between items-center backdrop-blur-md sticky top-0 z-20">
+            <div className="p-4 border-b border-border-subtle bg-surface-alt/40 flex justify-between items-center backdrop-blur-md sticky top-0 z-20">
                 <div>
                     <h3 className="text-lg font-bold text-text-primary  tracking-tight flex items-center gap-3">
                         <div className="p-2 bg-accent-primary/10 rounded-xl text-accent-primary border border-accent-primary/20">

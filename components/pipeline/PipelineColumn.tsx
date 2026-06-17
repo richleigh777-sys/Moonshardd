@@ -100,7 +100,7 @@ export const PipelineColumn = React.memo<PipelineColumnProps>(({
                 
                 {(sales.length === 0 || isDragOver) && (
                     <div className={`
-                        h-32 border-2 border-dashed rounded-2xl flex flex-col items-center justify-center text-text-muted transition-all duration-300
+                        h-32 border-2 border-dashed rounded-xl flex flex-col items-center justify-center text-text-muted transition-all duration-300
                         ${isDragOver 
                             ? 'border-accent-primary/50 bg-accent-primary/5 opacity-100 scale-100' 
                             : 'border-border-subtle/40 opacity-40 scale-95'

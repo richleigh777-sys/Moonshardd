@@ -64,13 +64,13 @@ export const ScenarioPlanner: React.FC<ScenarioPlannerProps> = ({
   return (
     <div className="space-y-4">
       {/* Sliders */}
-      <Card className="p-6 bg-surface-main border-border-subtle space-y-6">
+      <Card className="p-4 bg-surface-main border-border-subtle space-y-6">
         <div>
           <h3 className="font-bold text-text-primary text-lg flex items-center gap-2">
             <Lightbulb className="text-amber-400" size={24} />
             Scenario Planning
           </h3>
-          <p className="text-xs text-text-muted mt-1">
+          <p className="text-sm text-text-muted mt-1">
             Adjust the sliders below to simulate how changes in commission rates and retention campaign effectiveness would impact overall payroll and profit margins.
           </p>
         </div>
@@ -91,7 +91,7 @@ export const ScenarioPlanner: React.FC<ScenarioPlannerProps> = ({
             }
             className="w-full accent-amber-500 hover:accent-amber-400 focus:accent-amber-500"
           />
-          <p className="text-xs text-text-muted mt-2">Current System Base: {systemConfig.baseCommission}%</p>
+          <p className="text-sm text-text-muted mt-2">Current System Base: {systemConfig.baseCommission}%</p>
         </div>
 
         {/* Recovery Rate */}
@@ -110,14 +110,14 @@ export const ScenarioPlanner: React.FC<ScenarioPlannerProps> = ({
             }
             className="w-full accent-emerald-500"
           />
-          <p className="text-xs text-text-muted mt-2">
+          <p className="text-sm text-text-muted mt-2">
             Estimated {scenario.recoveryRate}% of pending/stale leads convertible via active CLM Engine pushes
           </p>
         </div>
       </Card>
 
       {/* Results */}
-      <Card className="p-6 bg-surface-main border-border-subtle">
+      <Card className="p-4 bg-surface-main border-border-subtle">
         <h3 className="font-bold text-text-primary mb-4 flex items-center gap-2">
           <BarChart3 className="text-blue-500" size={20} />
           Impact Analysis Projection
@@ -126,7 +126,7 @@ export const ScenarioPlanner: React.FC<ScenarioPlannerProps> = ({
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {/* Current State */}
           <div className="bg-surface-alt rounded-lg p-4 border border-border-subtle">
-            <p className="text-xs text-text-muted font-bold uppercase tracking-wider mb-3">Current Pipeline</p>
+            <p className="text-sm text-text-muted font-bold uppercase tracking-wider mb-3">Current Pipeline</p>
             <div className="space-y-2">
               <div className="flex justify-between items-center">
                 <span className="text-sm text-text-secondary">Expected Revenue:</span>
@@ -151,7 +151,7 @@ export const ScenarioPlanner: React.FC<ScenarioPlannerProps> = ({
 
           {/* Projected State */}
           <div className={`rounded-lg p-4 border transition-colors ${analysis.recommended ? 'bg-status-success/5 border-status-success/30' : 'bg-surface-alt border-border-subtle'}`}>
-            <p className="text-xs text-text-muted font-bold uppercase tracking-wider mb-3">Hypothetical Pipeline</p>
+            <p className="text-sm text-text-muted font-bold uppercase tracking-wider mb-3">Hypothetical Pipeline</p>
             <div className="space-y-2">
               <div className="flex justify-between items-center">
                 <span className="text-sm text-text-secondary">Expected Revenue:</span>
@@ -201,7 +201,7 @@ export const ScenarioPlanner: React.FC<ScenarioPlannerProps> = ({
              </div>
              {analysis.recommended && (
                  <button 
-                    className="px-4 py-2 bg-status-success hover:bg-emerald-600 text-white rounded-lg text-xs font-bold transition-transform active:scale-95 shadow-md shrink-0"
+                    className="px-4 py-2 bg-status-success hover:bg-emerald-600 text-white rounded-lg text-sm font-bold transition-transform active:scale-95 shadow-md shrink-0"
                     onClick={() => setToast({ title: "System Notification", message: "Action executed.", type: "info" })}
                  >
                     Apply Scenario

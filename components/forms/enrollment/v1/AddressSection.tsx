@@ -13,14 +13,14 @@ const inputClass = "w-full px-4 py-2.5 bg-slate-900/50 border border-slate-700 r
 export const AddressSection: React.FC<AddressSectionProps> = ({ formData, onChange, useShippingForBilling, onToggleBilling }) => {
   return (
     <div className="bg-slate-800 rounded-xl border border-slate-700 shadow-sm overflow-hidden">
-      <div className="border-b border-slate-700/50 bg-slate-800/80 px-6 py-4 flex items-center gap-3">
+      <div className="border-b border-slate-700/50 bg-slate-800/80 px-4 py-4 flex items-center gap-3">
         <div className="p-2 bg-emerald-500/10 rounded-md">
           <Home size={18} className="text-emerald-400" />
         </div>
         <h3 className="font-bold text-white text-lg tracking-tight">Location & Address</h3>
       </div>
       
-      <div className="p-6 space-y-5">
+      <div className="p-4 space-y-5">
         {/* Shipping Address Container */}
         <div className="space-y-4">
           <label className="text-sm font-semibold text-slate-300 flex items-center gap-2">

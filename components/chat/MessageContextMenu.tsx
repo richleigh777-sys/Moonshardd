@@ -71,7 +71,7 @@ export const MessageContextMenu: React.FC<MessageContextMenuProps> = ({
         >
             <div 
                 ref={menuRef}
-                className="absolute w-64 bg-surface-main/95 backdrop-blur-xl border border-border-subtle rounded-2xl shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200 flex flex-col"
+                className="absolute w-64 bg-surface-main/95 backdrop-blur-xl border border-border-subtle rounded-xl shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200 flex flex-col"
                 style={{ top: coords.y, left: coords.x }}
             >
                 {/* 1. REACTION BAR */}
@@ -97,7 +97,7 @@ export const MessageContextMenu: React.FC<MessageContextMenuProps> = ({
                     
                     {/* EXPANDED PICKER */}
                     {showEmojiPicker && (
-                        <div className="absolute left-full top-0 ml-2 shadow-2xl rounded-2xl overflow-hidden border border-border-subtle w-72 h-64 bg-surface-main z-50 animate-in slide-in-from-left-2">
+                        <div className="absolute left-full top-0 ml-2 shadow-2xl rounded-xl overflow-hidden border border-border-subtle w-72 h-64 bg-surface-main z-50 animate-in slide-in-from-left-2">
                              <EmojiPicker 
                                 onSelect={(e) => handleAction(() => onReaction(e))} 
                                 onClose={() => setShowEmojiPicker(false)}
@@ -134,7 +134,7 @@ export const MessageContextMenu: React.FC<MessageContextMenuProps> = ({
 const MenuItem = ({ icon: Icon, label, onClick, color = "text-text-primary hover:bg-surface-alt" }: any) => (
     <button 
         onClick={onClick}
-        className={`w-full flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-bold transition-all group ${color}`}
+        className={`w-full flex items-center gap-3 px-3 py-2 rounded-xl text-sm font-bold transition-all group ${color}`}
     >
         <Icon size={16} className="opacity-70 group-hover:opacity-100 group-hover:scale-110 transition-transform" />
         {label}

@@ -19,6 +19,7 @@ export const useAgentPortalLogic = () => {
     const [showCalculator, setShowCalculator] = useState(false);
     const [showScratchpad, setShowScratchpad] = useState(false);
     const [showTimeSheet, setShowTimeSheet] = useState(false);
+    const [showDialer, setShowDialer] = useState(false);
 
     useEffect(() => {
         const unsubscribe = realtimeClient.subscribe((event) => {
@@ -37,7 +38,7 @@ export const useAgentPortalLogic = () => {
     const allowedTerminals = useMemo(() => {
         const rawList = systemConfig.permissions?.agent || [
             'dash', 'rhythm', 'comms', 'enrollment', 'pipeline', 'recovery', 'callbacks', 'contacts',
-            'ledger', 'payouts', 'standings', 'scripts', 'analytics', 'dialer'
+            'ledger', 'payouts', 'standings', 'scripts', 'analytics'
         ];
         return rawList.filter(t => t !== 'contacts');
     }, [systemConfig.permissions]);
@@ -113,6 +114,7 @@ export const useAgentPortalLogic = () => {
         currentUser, sales, notes, deleteNote, attendance, notifications, clearNotification,
         view, setView, isFocusMode, setIsFocusMode, showCalculator, setShowCalculator,
         showScratchpad, setShowScratchpad, showTimeSheet, setShowTimeSheet,
+        showDialer, setShowDialer,
         isAllowed, mySales, myNotes, setToast
     };
 };

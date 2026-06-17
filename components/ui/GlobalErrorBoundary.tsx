@@ -75,9 +75,9 @@ export class GlobalErrorBoundary extends Component<GlobalErrorBoundaryProps, Glo
       }
 
       return (
-        <div className="fixed inset-0 z-[9999] h-screen w-screen bg-surface-main flex items-center justify-center p-6 font-sans overflow-hidden">
+        <div className="fixed inset-0 z-[9999] h-screen w-screen bg-surface-main flex items-center justify-center p-4 font-sans overflow-hidden">
             
-            <Card className="max-w-md w-full p-8 shadow-xl">
+            <Card className="max-w-md w-full p-5 shadow-xl">
                 <div className="flex flex-col items-center text-center mb-6">
                     <div className="w-12 h-12 rounded-full bg-red-100 flex items-center justify-center text-red-600 mb-4">
                         <ShieldAlert size={24} />

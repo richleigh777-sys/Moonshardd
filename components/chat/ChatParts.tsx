@@ -15,7 +15,7 @@ import { AudioPlayer } from '../ui/Base';
 const CRMLeadBlock = ({ title, details }: { title: string, details: any[] }) => {
     const [opened, setOpened] = useState(false);
     return (
-        <div className="bg-amber-50 border border-amber-200 rounded-3xl p-4 my-2 w-full max-w-[300px] font-sans break-words shadow-sm text-gray-800">
+        <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 my-2 w-full max-w-[300px] font-sans break-words shadow-sm text-gray-800">
             <div className="flex items-center gap-2 mb-3 pb-3 border-b border-amber-200/60">
                 <div className="p-2 bg-amber-400 text-amber-900 rounded-full">
                     <FileText size={16} />
@@ -43,7 +43,7 @@ const CRMLeadBlock = ({ title, details }: { title: string, details: any[] }) => 
 const TeamsStackBlock = ({ title, details }: { title: string, details: any[] }) => {
     const [sent, setSent] = useState(false);
     return (
-        <div className="bg-sky-50 border border-sky-200 rounded-3xl p-4 my-2 w-full max-w-[320px] font-sans break-words shadow-sm relative overflow-hidden text-gray-800">
+        <div className="bg-sky-50 border border-sky-200 rounded-xl p-4 my-2 w-full max-w-[320px] font-sans break-words shadow-sm relative overflow-hidden text-gray-800">
             <div className="absolute -right-4 -top-4 text-sky-200/40">
                 <Globe size={80} />
             </div>
@@ -74,7 +74,7 @@ const TeamsStackBlock = ({ title, details }: { title: string, details: any[] }) 
 const DNCBlock = ({ title, details }: { title: string, details: any[] }) => {
     const [confirmed, setConfirmed] = useState(false);
     return (
-        <div className="bg-rose-50 border border-rose-200 rounded-3xl p-4 my-2 w-full max-w-[300px] font-sans break-words shadow-sm text-gray-800">
+        <div className="bg-rose-50 border border-rose-200 rounded-xl p-4 my-2 w-full max-w-[300px] font-sans break-words shadow-sm text-gray-800">
             <div className="flex items-center gap-2 mb-3 pb-3 border-b border-rose-200/60">
                 <div className="p-2 bg-rose-400 text-white rounded-full shadow-sm">
                     <PhoneOff size={16} />
@@ -102,7 +102,7 @@ const DNCBlock = ({ title, details }: { title: string, details: any[] }) => {
 const CallbackBlock = ({ title, details }: { title: string, details: any[] }) => {
     const [scheduled, setScheduled] = useState(false);
     return (
-        <div className="bg-orange-50 border border-orange-200 rounded-3xl p-4 my-2 w-full max-w-[300px] font-sans break-words shadow-sm text-gray-800">
+        <div className="bg-orange-50 border border-orange-200 rounded-xl p-4 my-2 w-full max-w-[300px] font-sans break-words shadow-sm text-gray-800">
             <div className="flex items-center gap-2 mb-3 pb-3 border-b border-orange-200/60">
                 <div className="p-2 bg-orange-400 text-white rounded-full shadow-sm">
                     <CalendarClock size={16} />
@@ -248,10 +248,10 @@ export const MessageAttachments = React.memo(({ attachments, isMe, onViewImage }
             {attachments.map((at, i) => (
                 <div key={i} className="relative group/att">
                     {at.type === 'image' && (
-                        <div className="relative group/img cursor-pointer overflow-hidden rounded-3xl" onClick={(e) => { e.stopPropagation(); onViewImage(at.url, at.name); }}>
+                        <div className="relative group/img cursor-pointer overflow-hidden rounded-xl" onClick={(e) => { e.stopPropagation(); onViewImage(at.url, at.name); }}>
                             <img 
                                 src={at.url} 
-                                className={`w-full h-auto border-2 border-black/5 shadow-sm group-hover/img:scale-105 transition-transform duration-500 rounded-3xl ${at.isScanning ? 'blur-sm grayscale' : ''}`} 
+                                className={`w-full h-auto border-2 border-black/5 shadow-sm group-hover/img:scale-105 transition-transform duration-500 rounded-xl ${at.isScanning ? 'blur-sm grayscale' : ''}`} 
                                 alt={at.name} 
                             />
                             {at.isScanning && (
@@ -260,25 +260,25 @@ export const MessageAttachments = React.memo(({ attachments, isMe, onViewImage }
                                     <span className="text-sm font-semibold text-indigo-700 tracking-wide animate-pulse bg-white/80 px-4 py-1.5 rounded-full shadow-sm">Checking picture...</span>
                                 </div>
                             )}
-                            <div className="absolute inset-0 bg-black/0 group-hover/img:bg-black/5 transition-colors rounded-3xl"></div>
+                            <div className="absolute inset-0 bg-black/0 group-hover/img:bg-black/5 transition-colors rounded-xl"></div>
                         </div>
                     )}
                     {at.type === 'audio' && (
-                        <div className={`rounded-3xl overflow-hidden ${isMe ? 'bg-indigo-600 border border-indigo-400' : 'bg-surface-alt border border-border-subtle'}`}>
+                        <div className={`rounded-xl overflow-hidden ${isMe ? 'bg-indigo-600 border border-indigo-400' : 'bg-surface-alt border border-border-subtle'}`}>
                             <AudioPlayer src={at.url} />
                         </div>
                     )}
                     {at.type === 'file' && (
-                        <div className={`relative flex items-center gap-4 p-4 rounded-3xl border transition-all ${isMe ? 'bg-indigo-500 border-indigo-400 text-white' : 'bg-surface-main border-border-subtle'} ${at.isScanning ? 'opacity-60' : ''}`}>
-                            <div className={`p-3 rounded-2xl shadow-sm ${isMe ? 'bg-indigo-400/50' : 'bg-surface-highlight'}`}>
+                        <div className={`relative flex items-center gap-4 p-4 rounded-xl border transition-all ${isMe ? 'bg-indigo-500 border-indigo-400 text-white' : 'bg-surface-main border-border-subtle'} ${at.isScanning ? 'opacity-60' : ''}`}>
+                            <div className={`p-3 rounded-xl shadow-sm ${isMe ? 'bg-indigo-400/50' : 'bg-surface-highlight'}`}>
                                 {at.isScanning ? <UploadCloud size={24} className={`animate-bounce ${isMe ? 'text-white' : 'text-accent-secondary'}`} /> : <FileText size={24}/>}
                             </div>
                             <div className="flex-1 truncate min-w-0">
                                 <p className="text-sm font-bold truncate mb-0.5">{at.name}</p>
                                 <div className="flex items-center gap-2">
-                                    <p className={`text-xs font-medium ${isMe ? 'opacity-80' : 'opacity-60'}`}>{at.size || 'Document'}</p>
+                                    <p className={`text-sm font-medium ${isMe ? 'opacity-80' : 'opacity-60'}`}>{at.size || 'Document'}</p>
                                     {at.isEncrypted && (
-                                        <span className={`flex items-center gap-1 text-[11px] font-bold px-2.5 py-1 rounded-full ${isMe ? 'bg-white/20 text-white' : 'bg-emerald-100 text-emerald-700'}`}>
+                                        <span className={`flex items-center gap-1 text-sm font-bold px-2.5 py-1 rounded-full ${isMe ? 'bg-white/20 text-white' : 'bg-emerald-100 text-emerald-700'}`}>
                                             <Lock size={12} fill="currentColor" /> Safe
                                         </span>
                                     )}
@@ -301,7 +301,7 @@ export const MessagePoll = React.memo(({ poll, isMe, currentUserId, onVote }: { 
     const totalVotes = poll.options.reduce((acc, o) => acc + o.votes, 0);
 
     return (
-        <div className={`mb-3 p-5 rounded-3xl border ${isMe ? 'bg-indigo-500/90 border-indigo-400/50 text-white' : 'bg-surface-main border-border-subtle'}`}>
+        <div className={`mb-3 p-5 rounded-xl border ${isMe ? 'bg-indigo-500/90 border-indigo-400/50 text-white' : 'bg-surface-main border-border-subtle'}`}>
             <div className="flex items-start gap-3 mb-5 font-bold text-base leading-snug">
                 <div className={`p-2 rounded-xl mt-0.5 shrink-0 ${isMe ? 'bg-white/20' : 'bg-indigo-100 text-indigo-600'}`}><BarChart2 size={18}/></div>
                 {poll.question}
@@ -313,8 +313,8 @@ export const MessagePoll = React.memo(({ poll, isMe, currentUserId, onVote }: { 
 
                     return (
                         <div key={opt.id} className="relative group/poll cursor-pointer" onClick={(e) => { e.stopPropagation(); onVote?.(opt.id); }}>
-                            <div className={`absolute inset-0 rounded-2xl transition-all duration-700 ease-out ${isMe ? 'bg-white/20' : 'bg-indigo-50'}`} style={{ width: `${percentage}%` }}></div>
-                            <div className={`relative w-full px-4 py-3.5 text-sm font-semibold rounded-2xl border-2 flex justify-between items-center transition-all ${
+                            <div className={`absolute inset-0 rounded-xl transition-all duration-700 ease-out ${isMe ? 'bg-white/20' : 'bg-indigo-50'}`} style={{ width: `${percentage}%` }}></div>
+                            <div className={`relative w-full px-4 py-3.5 text-sm font-semibold rounded-xl border-2 flex justify-between items-center transition-all ${
                                     isSelected 
                                     ? (isMe ? 'border-white bg-white/10 shadow-sm' : 'border-indigo-400 bg-white shadow-sm text-indigo-700') 
                                     : (isMe ? 'border-indigo-400/30 hover:bg-white/10' : 'border-border-subtle hover:bg-surface-alt bg-white')
@@ -337,8 +337,8 @@ export const MessagePoll = React.memo(({ poll, isMe, currentUserId, onVote }: { 
 });
 
 export const MessageLocation = React.memo(({ location, isMe }: { location: LocationData, isMe: boolean }) => (
-    <div className={`mb-3 p-1.5 rounded-3xl border overflow-hidden ${isMe ? 'bg-indigo-500/90 border-indigo-400/50' : 'bg-surface-main border-border-subtle'}`}>
-        <div className="h-32 bg-gray-100 relative items-center justify-center rounded-2xl overflow-hidden shadow-inner">
+    <div className={`mb-3 p-1.5 rounded-xl border overflow-hidden ${isMe ? 'bg-indigo-500/90 border-indigo-400/50' : 'bg-surface-main border-border-subtle'}`}>
+        <div className="h-32 bg-gray-100 relative items-center justify-center rounded-xl overflow-hidden shadow-inner">
             <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cartographer.png')] opacity-20"></div>
             <div className="absolute inset-0 flex items-center justify-center">
                  <div className="w-10 h-10 bg-indigo-500 rounded-full flex items-center justify-center shadow-xl animate-bounce text-white z-10">
@@ -359,7 +359,7 @@ export const MessageLocation = React.memo(({ location, isMe }: { location: Locat
 ));
 
 export const MessageLinkPreview = React.memo(({ preview, isMe }: { preview: LinkPreview, isMe: boolean }) => (
-    <div className={`mt-3 rounded-3xl overflow-hidden border transition-shadow hover:shadow-md ${isMe ? 'border-indigo-400/50 bg-indigo-500/30' : 'border-border-subtle bg-surface-main'}`}>
+    <div className={`mt-3 rounded-xl overflow-hidden border transition-shadow hover:shadow-md ${isMe ? 'border-indigo-400/50 bg-indigo-500/30' : 'border-border-subtle bg-surface-main'}`}>
         {preview.image && <div className="h-44 w-full bg-cover bg-center border-b border-black/5" style={{backgroundImage: `url(${preview.image})`}}></div>}
         <div className={`p-4 ${isMe ? 'text-white' : 'text-gray-800'}`}>
             <p className="text-[15px] font-bold truncate mb-1.5">{preview.title}</p>
@@ -377,7 +377,7 @@ export const MessageActions = ({
     const pickerRef = React.useRef<HTMLDivElement>(null);
 
     return (
-        <div className={`absolute -top-12 ${isMe ? 'right-0' : 'left-0'} z-30 flex items-center gap-1 p-1.5 rounded-2xl bg-surface-main/95 backdrop-blur-xl border border-border-subtle shadow-lg animate-in fade-in zoom-in-95 duration-200 select-none`}>
+        <div className={`absolute -top-12 ${isMe ? 'right-0' : 'left-0'} z-30 flex items-center gap-1 p-1.5 rounded-xl bg-surface-main/95 backdrop-blur-xl border border-border-subtle shadow-lg animate-in fade-in zoom-in-95 duration-200 select-none`}>
             {['👍', '❤️', '😂', '🎉'].map(emoji => (
                 <button 
                     key={emoji}
@@ -401,7 +401,7 @@ export const MessageActions = ({
                         <EmojiPicker 
                             onSelect={(e) => { onReaction(msgId, e); setShowPicker(false); onClose(); }} 
                             onClose={() => setShowPicker(false)} 
-                            className="border border-border-subtle shadow-2xl rounded-3xl overflow-hidden"
+                            className="border border-border-subtle shadow-2xl rounded-xl overflow-hidden"
                         />
                     </div>
                 )}
@@ -431,9 +431,9 @@ export const ContextBanner = ({
     if (!replyTo && !editingMsg) return null;
     
     return (
-        <div className="flex items-center justify-between px-6 py-4 border-b border-border-subtle/50 bg-indigo-50/30 rounded-t-[2.5rem]">
+        <div className="flex items-center justify-between px-4 py-4 border-b border-border-subtle/50 bg-indigo-50/30 rounded-t-[2.5rem]">
             <div className="flex items-center gap-3.5 overflow-hidden">
-                <div className={`p-2.5 rounded-2xl ${editingMsg ? 'bg-amber-100 text-amber-600' : 'bg-indigo-100 text-indigo-500 shadow-sm'}`}>
+                <div className={`p-2.5 rounded-xl ${editingMsg ? 'bg-amber-100 text-amber-600' : 'bg-indigo-100 text-indigo-500 shadow-sm'}`}>
                     {editingMsg ? <Edit2 size={18}/> : <Reply size={18} className="scale-110"/>}
                 </div>
                 <div className="flex flex-col min-w-0">
@@ -457,7 +457,7 @@ export const DragOverlay = () => (
         <div className="w-28 h-28 bg-indigo-100 rounded-full flex items-center justify-center mb-6 animate-bounce shadow-lg">
             <UploadCloud size={56} className="text-indigo-500" />
         </div>
-        <h3 className="text-3xl font-bold text-gray-900 drop-shadow-sm">Drop here!</h3>
+        <h3 className="text-xl font-bold text-gray-900 drop-shadow-sm">Drop here!</h3>
         <p className="text-base font-medium text-gray-500 mt-3">Release your files to add them to the chat</p>
     </div>
 );

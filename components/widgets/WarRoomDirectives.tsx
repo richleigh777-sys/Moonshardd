@@ -41,8 +41,8 @@ export const WarRoomDirectives: React.FC<{ directives: TacticalDirective[] }> = 
     };
 
     return (
-        <div className={`fixed top-6 left-1/2 -translate-x-1/2 z-[100] w-full max-w-xl px-4 transition-all duration-500 ${visible ? 'translate-y-0 opacity-100' : '-translate-y-8 opacity-0'}`}>
-            <div className={`border rounded-2xl p-6 backdrop-blur-xl flex flex-col gap-3 ${urgencyStyles[latest.urgency]}`}>
+        <div className={`fixed top-4 left-1/2 -translate-x-1/2 z-[100] w-full max-w-xl px-4 transition-all duration-500 ${visible ? 'translate-y-0 opacity-100' : '-translate-y-8 opacity-0'}`}>
+            <div className={`border rounded-xl p-4 backdrop-blur-xl flex flex-col gap-3 ${urgencyStyles[latest.urgency]}`}>
                 <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
                         <Bell className="animate-bounce" size={16} />

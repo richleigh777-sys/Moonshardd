@@ -148,7 +148,7 @@ export const GodModePanel = () => {
                 ))}
             </div>
 
-            <div className="flex-1 flex flex-col md:flex-row gap-6 min-h-0">
+            <div className="flex-1 flex flex-col md:flex-row gap-4 min-h-0">
                 {/* Console */}
                 <div className="w-full md:w-80 flex flex-col gap-4">
                     <Card variant="refraction" className="flex-1 p-0 overflow-hidden bg-surface-main border-border-subtle shadow-sm flex flex-col font-mono text-xs relative group border border-border-subtle">
@@ -197,7 +197,7 @@ export const GodModePanel = () => {
                             </div>
                         </div>
                     </div>
-                    <div className="flex-1 relative p-6 overflow-y-auto custom-scrollbar">
+                    <div className="flex-1 relative p-4 overflow-y-auto custom-scrollbar">
                         <div className={`grid grid-cols-1 lg:grid-cols-2 gap-4 transition-all duration-700 ${isOptimizing ? 'scale-95 opacity-40 blur-sm' : ''}`}>
                             {memoryMap.map((mem) => (
                                 <MemoryBlock key={mem.id} {...mem} active={inspectTarget === mem.id} isDefragging={isOptimizing} onClick={() => handleInspect(mem.id)} />

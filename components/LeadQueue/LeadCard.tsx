@@ -39,7 +39,7 @@ export const LeadCard: React.FC<LeadCardProps> = ({ lead, index }) => {
             </p>
           )}
         </div>
-        <span className="text-2xl font-bold text-green-400">${lead.amount}</span>
+        <span className="text-lg font-bold text-green-400">${lead.amount}</span>
       </div>
 
       {lead.reason && (
@@ -50,7 +50,7 @@ export const LeadCard: React.FC<LeadCardProps> = ({ lead, index }) => {
 
       {lead.suggestedScript && (
         <div className="mb-3 bg-slate-900 rounded p-3 border border-slate-600">
-          <p className="text-xs font-semibold text-slate-400 uppercase mb-1">💬 Script</p>
+          <p className="text-sm font-semibold text-slate-400 uppercase mb-1">💬 Script</p>
           <p className="text-sm text-slate-200 italic">"{lead.suggestedScript}"</p>
         </div>
       )}
@@ -76,7 +76,7 @@ export const LeadCard: React.FC<LeadCardProps> = ({ lead, index }) => {
         </button>
       </div>
 
-      <div className="mt-3 flex gap-2 text-xs text-slate-400">
+      <div className="mt-3 flex gap-2 text-sm text-slate-400">
         <span>Score: {lead.score}/100</span>
         <span>•</span>
         <span>Conversion: {lead.conversionProbability}%</span>

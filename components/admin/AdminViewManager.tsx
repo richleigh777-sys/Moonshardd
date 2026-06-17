@@ -14,7 +14,6 @@ import { AdminAnalytics } from '../widgets/AdminAnalytics';
 import { PerformanceCenter } from '../widgets/PerformanceCenter';
 import { SystemConfigPanel } from './SystemConfigPanel';
 import { GodModePanel } from '../widgets/GodModePanel';
-import { DialerDataListManager } from './DialerDataListManager';
 import { CRMAuditDashboard } from './CRMAuditDashboard';
 import { UniqueSalesPool } from './UniqueSalesPool';
 import { sfx } from '../../lib/soundService';
@@ -75,7 +74,7 @@ export const AdminViewManager: React.FC<AdminTerminalManagerProps> = ({
             {isAllowed('pipeline') && <TabContent value="pipeline" className="w-full h-full"><PipelineBoard sales={sales} /></TabContent>}
             {isAllowed('retention') && <TabContent value="retention" className="w-full h-full"><RetentionView sales={sales} /></TabContent>}
             {isAllowed('ledger') && (
-                <TabContent value="ledger" className="w-full h-full">
+                <TabContent value="ledger" className="w-full h-full flex flex-col flex-1 min-h-0">
                     <SalesLedger 
                         sales={sales} 
                         onAction={handleLedgerAction} 
@@ -106,10 +105,9 @@ export const AdminViewManager: React.FC<AdminTerminalManagerProps> = ({
             {isAllowed('standings') && <TabContent value="standings" className="w-full h-full"><TeamLeaderboard currentUserName={currentUser?.name || 'Admin'} currentUserRole="admin" currentUserTeam={currentUser.team || 'All'} currentUserLevel={currentUser.level} /></TabContent>}
             {isAllowed('comms') && <TabContent value="comms" className="w-full h-full"><MessagingLayout /></TabContent>}
             {isAllowed('scripts') && <TabContent value="scripts" className="w-full h-full"><ScriptManager /></TabContent>}
-            {isAllowed('dialer_data') && <TabContent value="dialer_data" className="w-full h-full"><DialerDataListManager /></TabContent>}
             {isAllowed('catalog') && <TabContent value="catalog" className="w-full h-full"><ProductManager configForm={productConfig} setConfigForm={updateProductConfig} onSave={updateProductConfig} /></TabContent>}
             {isAllowed('intel') && (
-                <TabContent value="intel" className="w-full h-full flex flex-col gap-6">
+                <TabContent value="intel" className="w-full h-full flex flex-col gap-4">
                     <AdminAnalytics sales={sales} />
                     <PerformanceCenter sales={sales} currentUser={currentUser!} attendance={[]} users={users} />
                 </TabContent>

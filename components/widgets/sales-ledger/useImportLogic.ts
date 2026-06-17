@@ -6,7 +6,7 @@ import { sfx } from '../../../lib/soundService';
 import { parseCSV } from './utils';
 import { Sale } from '../../../types';
 import { GLOBAL_REGISTRY } from '../../../lib/registry';
-import { normalizePhone } from '../../../views/utils/dataSanitizer';
+import { normalizePhone, parseFullAddressString } from '../../../views/utils/dataSanitizer';
 
 export const useImportLogic = (onImport?: (data: Partial<Sale>[]) => Promise<any>) => {
     const { setToast } = useSystem();
@@ -134,6 +134,20 @@ export const useImportLogic = (onImport?: (data: Partial<Sale>[]) => Promise<any
                         }
                         if (sysKey === 'phone' && value) {
                             value = normalizePhone(value);
+                        }
+                        
+                        if (sysKey === 'address' && value && typeof value === 'string') {
+                            const parsed = parseFullAddressString(value);
+                            value = parsed.street || value;
+                            if (parsed.city && !columnMapping['city'] && !columnMapping['shippingCity']) {
+                                entry['city'] = parsed.city;
+                            }
+                            if (parsed.state && !columnMapping['state'] && !columnMapping['shippingState']) {
+                                entry['state'] = parsed.state;
+                            }
+                            if (parsed.zip && !columnMapping['zip'] && !columnMapping['shippingZip']) {
+                                entry['zip'] = parsed.zip;
+                            }
                         }
                         
                         if (sysKey !== 'date') {

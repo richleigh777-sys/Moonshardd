@@ -30,7 +30,7 @@ export const PollCreator: React.FC<PollCreatorProps> = ({ onSubmit, onCancel }) 
                 className="text-lg font-bold"
             />
             <div className="space-y-3">
-                <label className="text-xs font-[700]  text-text-muted tracking-[0.2em]">Options</label>
+                <label className="text-sm font-[700]  text-text-muted tracking-[0.2em]">Options</label>
                 {options.map((opt, i) => (
                     <Input 
                         key={i} 
@@ -45,13 +45,13 @@ export const PollCreator: React.FC<PollCreatorProps> = ({ onSubmit, onCancel }) 
                     />
                 ))}
                 {options.length < 5 && (
-                    <button onClick={addOption} className="text-xs text-accent-primary font-bold hover:underline flex items-center gap-1.5 mt-2 transition-all">
+                    <button onClick={addOption} className="text-sm text-accent-primary font-bold hover:underline flex items-center gap-1.5 mt-2 transition-all">
                         <Plus size={16}/> Add Option
                     </button>
                 )}
             </div>
             <div className="flex justify-end gap-3 pt-6 border-t border-border-subtle">
-                <Button variant="secondary" onClick={onCancel} className="h-12 px-6">Cancel</Button>
+                <Button variant="secondary" onClick={onCancel} className="h-12 px-4">Cancel</Button>
                 <Button 
                     variant="primary" 
                     disabled={!question || options.some(o => !o)} 
