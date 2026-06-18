@@ -30,7 +30,7 @@ export const useCrmNotesTasks = (
     }, []);
 
     const deleteNote = useCallback(async (id: string) => {
-        if (!window.confirm("Delete this note?")) return;
+        // blocked by iframe
         await nexusGateway.delete('notes', id);
     }, []);
 

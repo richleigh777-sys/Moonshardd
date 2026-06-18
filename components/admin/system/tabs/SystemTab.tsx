@@ -119,10 +119,10 @@ export const SystemTab: React.FC<SystemTabProps> = ({ config, onChange }) => {
                         <button 
                             className="h-14 px-8 bg-gradient-to-b from-red-600 to-red-700 hover:from-red-500 hover:to-red-600 text-white rounded-xl text-sm font-black uppercase tracking-widest shadow-[0_0_30px_rgba(220,38,38,0.3)] flex items-center gap-3 transition-all hover:scale-[1.02] active:scale-[0.98] border border-red-400/30 shrink-0"
                             onClick={() => {
-                                if(confirm("CONFIRM SYSTEM FLUSH? Interface will reload.")) {
+                                // if(confirm("CONFIRM SYSTEM FLUSH? Interface will reload.")) {
                                     sfx.playDecline();
                                     window.location.reload();
-                                }
+                                // }
                             }}
                         >
                             <Trash2 size={16} className="group-hover:rotate-12 transition-transform duration-300"/>
@@ -167,10 +167,10 @@ export const SystemTab: React.FC<SystemTabProps> = ({ config, onChange }) => {
                                 variant="secondary" 
                                 className="w-full h-12 gap-2 text-sm font-black tracking-wider uppercase text-status-error bg-surface-main border-border-strong hover:bg-red-500/20 hover:border-red-500/30"
                                 onClick={async () => {
-                                    if(confirm("Confirm destructive seed? This will overwrite core server configs.")) {
+                                // if(confirm("Confirm destructive seed? This will overwrite core server configs.")) {
                                         await nexusGateway.seed();
                                         setToast({ title: "Alert", message: "Nexus Seed Successful. Please refresh.", type: "warning" });
-                                    }
+                                // }
                                 }}
                             >
                                 <Database size={16} className="group-hover:scale-110 transition-transform" /> Hard Seed Cloud

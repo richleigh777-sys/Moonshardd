@@ -141,7 +141,7 @@ export const OmniSearch = () => {
                                                             <button 
                                                                 className="opacity-0 group-hover:opacity-100 transition-opacity bg-[#3B82F6] hover:bg-[#2563EB] text-white text-sm font-[800] uppercase tracking-widest px-3 py-1.5 rounded-lg shadow-[0_0_15px_rgba(59,130,246,0.2)] hover:scale-105 active:scale-95"
                                                                 onClick={() => {
-                                                                    if (window.confirm("Engage this customer and load them into a new order form?")) {
+                                                                    // if (window.confirm("Engage this customer and load them into a new order form?")) {
                                                                         setIsOpen(false);
                                                                         const navigateEvent = new CustomEvent('NAVIGATE', { detail: 'enrollment' });
                                                                         window.dispatchEvent(navigateEvent);
@@ -149,7 +149,7 @@ export const OmniSearch = () => {
                                                                             const loadEvent = new CustomEvent('LOAD_LEAD', { detail: sale });
                                                                             window.dispatchEvent(loadEvent);
                                                                         }, 100);
-                                                                    }
+                                                                    // }
                                                                 }}
                                                             >
                                                                 Engage

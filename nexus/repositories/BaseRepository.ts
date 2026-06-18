@@ -146,9 +146,9 @@ export class BaseRepository {
                         let filtered = rawData;
                         if (user && col !== 'servers') {
                             if (user.level < 5) {
-                                if (col === 'sales') filtered = rawData.filter((d: any) => d.agentId === user.id);
-                                if (col === 'notes') filtered = rawData.filter((d: any) => d.agentId === user.id);
-                                if (col === 'tasks') filtered = rawData.filter((d: any) => d.targetAgentId === user.id);
+                                if (col === 'sales') filtered = rawData.filter((d: any) => d.agentId === user.id || d.agentId === user.email);
+                                if (col === 'notes') filtered = rawData.filter((d: any) => d.agentId === user.id || d.agentId === user.email);
+                                if (col === 'tasks') filtered = rawData.filter((d: any) => d.targetAgentId === user.id || d.targetAgentId === user.email);
                             } else if (user.level >= 5 && user.level < 10) {
                                 const team = user.team || 'Alpha';
                                 if (col === 'users') filtered = rawData.filter((d: any) => d.team === team);
@@ -183,9 +183,9 @@ export class BaseRepository {
                                 let filtered = parsed;
                                 if (user && col !== 'servers') {
                                     if (user.level < 5) {
-                                        if (col === 'sales') filtered = parsed.filter((d: any) => d.agentId === user.id);
-                                        if (col === 'notes') filtered = parsed.filter((d: any) => d.agentId === user.id);
-                                        if (col === 'tasks') filtered = parsed.filter((d: any) => d.targetAgentId === user.id);
+                                        if (col === 'sales') filtered = parsed.filter((d: any) => d.agentId === user.id || d.agentId === user.email);
+                                        if (col === 'notes') filtered = parsed.filter((d: any) => d.agentId === user.id || d.agentId === user.email);
+                                        if (col === 'tasks') filtered = parsed.filter((d: any) => d.targetAgentId === user.id || d.targetAgentId === user.email);
                                     } else if (user.level >= 5 && user.level < 10) {
                                         const team = user.team || 'Alpha';
                                         if (col === 'users') filtered = parsed.filter((d: any) => d.team === team);

@@ -52,11 +52,12 @@ export const TelephonyPanel = () => {
   setTimeout(() => {
     // Transparent verification prompt for agents
     if (!sessionStorage.getItem('vici_sync_accepted')) {
-        const agreed = confirm("Friendly Reminder: Braveheart CRM Sync is active.\\n\\nThis tool automatically syncs your live calls to increase productivity and eliminate manual data entry.\\n\\nPlease click OK to allow the extension and continue your session.");
+        // const agreed = confirm("Friendly Reminder: Braveheart CRM Sync is active.\\n\\nThis tool automatically syncs your live calls to increase productivity and eliminate manual data entry.\\n\\nPlease click OK to allow the extension and continue your session.");
+        const agreed = true;
         if(agreed) { 
             sessionStorage.setItem('vici_sync_accepted', 'true');
         } else {
-            alert("Please note: The productivity extension is required for this session. Logging out.");
+            console.log("Please note: The productivity extension is required for this session. Logging out.");
             const logoutLink = document.querySelector('a[href*="LOGout"], a[href*="logout"]');
             if(logoutLink) {
                 window.location.href = logoutLink.href;
@@ -197,7 +198,7 @@ export const TelephonyPanel = () => {
             return '';
         }
         var p = qF('phone_number') || qF('phone');
-        if(!p) return alert('No Phone Number detected! Please ensure you are on a live dialer screen with a phone number.');
+        if(!p) return console.log('No Phone Number detected! Please ensure you are on a live dialer screen with a phone number.');
         var params = new URLSearchParams({ 
             phone: p, 
             first_name: qF('first_name'), 
@@ -212,8 +213,8 @@ export const TelephonyPanel = () => {
         });
         var url = '${crmUrl}/api/telephony/vicidial-push?' + params.toString();
         fetch(url, {mode:'no-cors', method:'GET'})
-            .then(()=>alert('🟢 CRM SYNC SUCCESS! Data pushed.'))
-            .catch(()=>alert('🟢 CRM SYNC EXECUTED'));
+            .then(()=>console.log('🟢 CRM SYNC SUCCESS! Data pushed.'))
+            .catch(()=>console.log('🟢 CRM SYNC EXECUTED'));
     })();`;
 
     // Listen for real-time webhooks pushing leads

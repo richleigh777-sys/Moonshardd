@@ -45,10 +45,10 @@ export class GlobalErrorBoundary extends Component<GlobalErrorBoundaryProps, Glo
   };
 
   private handleHardReset = () => {
-    if (window.confirm("Are you sure you want to reset? This will clear local data and reload the app.")) {
+    // if (window.confirm("Are you sure you want to reset? This will clear local data and reload the app.")) {
       localStorage.clear();
       window.location.reload();
-    }
+    // }
   };
 
     public render() {

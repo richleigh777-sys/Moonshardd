@@ -1,6 +1,6 @@
 
-import React, { useState, useEffect } from 'react';
-import { ArrowRight, Globe, Shield, Server, Lock } from 'lucide-react';
+import React, { useState, useEffect, useMemo } from 'react';
+import { ArrowRight, Globe, Shield, Server, Lock, Settings, Trash2, Key, Database as DbIcon, Activity } from 'lucide-react';
 
 interface ServerCardTelemetryProps {
     server: any;
@@ -12,22 +12,38 @@ interface ServerCardTelemetryProps {
 }
 
 interface ServerStats {
-    load: number;
-    revenueToday: number;
-    activeUsers: number;
-    totalUsers: number;
+    healthScore: number;
+    apiUsage: number;
+    apiLimit: number;
+    storageUsed: number;
+    storageLimit: number;
 }
-
-const initialStats: ServerStats = { 
-    load: 0, 
-    revenueToday: 0, 
-    activeUsers: 0, 
-    totalUsers: 0 
-};
 
 export const ServerCardTelemetry: React.FC<ServerCardTelemetryProps> = React.memo(({ 
     server, isActive, onEnter, onEdit, onDelete, getRegionColor 
 }) => {
+    // Determine Environment Type
+    const envType = useMemo(() => {
+        const name = server.name.toLowerCase();
+        if (name.includes('sandbox') || name.includes('test')) return 'Sandbox';
+        if (name.includes('dev')) return 'Development';
+        return 'Production';
+    }, [server.name]);
+
+    const initialStats = useMemo(() => {
+        // Generate stable fake stats based on server ID to prevent jumping
+        const seed = server.id.charCodeAt(0) + server.id.charCodeAt(server.id.length - 1);
+        const rand = (seed % 100) / 100;
+        
+        return { 
+            healthScore: 90 + Math.floor(rand * 10), 
+            apiUsage: Math.floor(rand * 8000) + 1000, 
+            apiLimit: envType === 'Production' ? 100000 : 10000, 
+            storageUsed: Math.floor(rand * 800) + 50, // GB
+            storageLimit: envType === 'Production' ? 1000 : 100 // GB
+        };
+    }, [server.id, envType]);
+
     const [stats, setStats] = useState<ServerStats>(initialStats);
     const [loadHistory, setLoadHistory] = useState<number[]>(Array(20).fill(10));
 
@@ -35,122 +51,104 @@ export const ServerCardTelemetry: React.FC<ServerCardTelemetryProps> = React.mem
     useEffect(() => {
         const interval = setInterval(() => {
             setStats(prev => {
-                const newLoad = Math.min(100, Math.max(5, prev.load + (Math.random() * 10 - 5)));
+                // Fluctuate health slightly
+                const newHealth = Math.min(100, Math.max(70, prev.healthScore + (Math.random() * 4 - 2)));
                 
                 setLoadHistory(curr => {
-                    const next = [...curr.slice(1), newLoad];
+                    const next = [...curr.slice(1), 100 - newHealth]; // Inverse health for load
                     return next;
                 });
 
                 return {
                     ...prev,
-                    load: newLoad,
-                    revenueToday: prev.revenueToday,
-                    activeUsers: prev.activeUsers,
-                    totalUsers: prev.totalUsers
+                    healthScore: newHealth,
+                    apiUsage: prev.apiUsage + Math.floor(Math.random() * 5) // Simulate API calls ticking up
                 };
             });
-        }, 1000); // 1s tick for smoother graphs
+        }, 1500);
         return () => clearInterval(interval);
     }, [server.id]);
 
-    // Generate SVG Path for Sparkline
-    const getPath = () => {
-        const max = 100;
-        const width = 300; // Arbitrary coordinate width
-        const height = 40;
-        const step = width / (loadHistory.length - 1);
-
-        const points = loadHistory.map((val, i) => {
-            const x = i * step;
-            const y = height - (val / max) * height;
-            return `${x},${y}`;
-        });
-
-        return `M 0,${height} L ${points.join(' L ')} L ${width},${height} Z`;
+    const envColors = {
+        'Production': 'bg-emerald-500/10 text-emerald-500 border border-emerald-500/20',
+        'Sandbox': 'bg-amber-500/10 text-amber-500 border border-amber-500/20',
+        'Development': 'bg-purple-500/10 text-purple-500 border border-purple-500/20'
     };
 
     return (
         <div 
             onClick={() => isActive && onEnter(server.id)}
             className={`
-                bg-[#0A0A0A]/80 backdrop-blur-md border border-border-subtle rounded-[2.5rem] p-5 group cursor-pointer 
-                transition-all duration-500 relative overflow-hidden flex flex-col h-[360px]
-                ${isActive ? 'hover:border-indigo-500/50 hover:shadow-2xl hover:shadow-indigo-500/10' : 'opacity-60 grayscale cursor-not-allowed'}
+                bg-surface-main border border-border-strong rounded-2xl p-6 group cursor-pointer 
+                transition-all duration-300 relative flex flex-col h-[280px] shadow-sm
+                ${isActive ? 'hover:border-accent-primary/50 hover:shadow-md' : 'opacity-60 grayscale cursor-not-allowed'}
             `}
         >
-            {/* Background Sparkline Visualization */}
-            <div className="absolute bottom-0 left-0 right-0 h-32 opacity-10 pointer-events-none transition-opacity group-hover:opacity-20">
-                <svg viewBox="0 0 300 40" className="w-full h-full" preserveAspectRatio="none">
-                    <path d={getPath()} fill="currentColor" className={isActive ? 'text-accent-secondary' : 'text-slate-500'} />
-                </svg>
-            </div>
-
-            <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-indigo-500 to-purple-500 opacity-0 group-hover:opacity-100 transition-opacity"></div>
-            <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none"></div>
-            
-            <div className="flex justify-between items-start mb-6 relative z-10">
-                <div className={`p-4 rounded-xl border transition-colors shadow-inner ${isActive ? 'bg-surface-highlight border-border-subtle group-hover:bg-accent-secondary/10 group-hover:text-accent-secondary' : 'bg-red-500/10 text-status-error border-red-500/20'}`}>
-                    {isActive ? <Server size={28} strokeWidth={1.5}/> : <Lock size={28} strokeWidth={1.5}/>}
+            <div className="flex justify-between items-start mb-6">
+                <div className={`p-3 rounded-xl border transition-colors ${isActive ? 'bg-accent-primary/10 border-accent-primary/30 text-accent-primary' : 'bg-status-error/10 text-status-error border-status-error/30'}`}>
+                    {isActive ? <Server size={24} strokeWidth={2}/> : <Lock size={24} strokeWidth={2}/>}
                 </div>
-                <div className="flex items-center gap-2">
-                    <div className="opacity-0 group-hover:opacity-100 transition-all flex gap-2 transform translate-x-4 group-hover:translate-x-0">
-                        {/* Use Settings Icon for Edit */}
-                        <button onClick={(e) => onEdit(server, e)} className="p-2 hover:bg-surface-highlight rounded-xl text-slate-500 hover:text-white transition-colors">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l-.22-.39a2 2 0 0 0-.73-2.73l-.15-.1a2 2 0 0 1-1-1.72v-.51a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
+                <div className="flex items-center gap-3">
+                    <span className={`text-[10px] uppercase tracking-widest font-bold px-2 py-1 rounded-md ${envColors[envType as keyof typeof envColors]}`}>
+                        {envType}
+                    </span>
+                    <div className="opacity-0 group-hover:opacity-100 transition-all flex gap-1">
+                        <button onClick={(e) => onEdit(server, e)} className="p-2 hover:bg-surface-alt rounded-lg text-text-muted hover:text-text-primary transition-colors">
+                            <Settings size={18}/>
                         </button>
-                        {/* Use Trash Icon for Delete */}
-                        <button onClick={(e) => onDelete(server, e)} className="p-2 hover:bg-red-500/20 rounded-xl text-slate-500 hover:text-status-error transition-colors">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>
+                        <button onClick={(e) => onDelete(server, e)} className="p-2 hover:bg-status-error/10 hover:text-status-error rounded-lg text-text-muted transition-colors">
+                            <Trash2 size={18}/>
                         </button>
                     </div>
-                    <div className={`w-2 h-2 rounded-full ${isActive ? 'bg-emerald-500 shadow-[0_0_8px_#10B981] animate-pulse' : 'bg-red-500'}`}></div>
                 </div>
             </div>
 
-            <div className="flex-1 relative z-10 flex flex-col justify-between">
-                <div>
-                    <h3 className="text-lg font-[700] text-white group-hover:text-accent-secondary transition-colors mb-2 tracking-tight  truncate">{server.name}</h3>
-                    <div className="flex items-center gap-3 text-sm font-mono text-slate-400 font-bold ">
-                        <span className={`flex items-center gap-1 ${getRegionColor(server.region)}`}>
-                            <Globe size={16} fill="currentColor"/> {server.region}
-                        </span>
-                        <span className="w-1 h-1 bg-slate-700 rounded-full"></span>
-                        <span className="flex items-center gap-1">
-                            <Shield size={16}/> Key: {server.accessKey}
-                        </span>
-                    </div>
+            <div className="flex-1">
+                <h3 className="text-xl font-bold text-text-primary group-hover:text-accent-primary transition-colors mb-2 truncate">{server.name}</h3>
+                <div className="flex items-center gap-3 text-sm text-text-secondary font-medium">
+                    <span className={`flex items-center gap-1.5 ${getRegionColor(server.region)}`}>
+                        <Globe size={16}/> {server.region}
+                    </span>
+                    <span className="flex items-center gap-1.5">
+                        <Key size={16}/> ID: {server.id.substring(0, 8)}
+                    </span>
                 </div>
 
                 {isActive && (
                     <div className="grid grid-cols-2 gap-4 mt-6">
-                        <div className="bg-surface-highlight rounded-xl p-3 border border-border-subtle">
-                            <p className="text-sm text-slate-400 font-[700]  tracking-wider mb-1">Revenue Today</p>
-                            <p className="text-lg font-[700] text-status-success num-font">${stats.revenueToday.toLocaleString()}</p>
+                        <div className="bg-surface-alt rounded-xl p-3 border border-border-subtle hover:border-accent-primary/30 transition-colors">
+                            <p className="text-[10px] text-text-muted font-bold tracking-wider uppercase mb-1 flex items-center gap-1.5"><DbIcon size={12}/> DATA STORAGE</p>
+                            <p className="text-base font-bold text-text-primary">{stats.storageUsed} <span className="text-sm font-medium text-text-muted">/ {stats.storageLimit} GB</span></p>
+                            <div className="h-1 w-full bg-surface-main rounded-full mt-2 overflow-hidden">
+                                <div className="h-full bg-accent-primary" style={{ width: `${(stats.storageUsed / stats.storageLimit) * 100}%` }}></div>
+                            </div>
                         </div>
-                        <div className="bg-surface-highlight rounded-xl p-3 border border-border-subtle">
-                            <p className="text-sm text-slate-400 font-[700]  tracking-wider mb-1">Active Agents</p>
-                            <p className="text-lg font-[700] text-blue-400 num-font">{stats.activeUsers}/{stats.totalUsers}</p>
+                        <div className="bg-surface-alt rounded-xl p-3 border border-border-subtle hover:border-accent-primary/30 transition-colors">
+                            <p className="text-[10px] text-text-muted font-bold tracking-wider uppercase mb-1 flex items-center gap-1.5"><Activity size={12}/> API QUOTA 24H</p>
+                            <p className="text-base font-bold text-text-primary">{(stats.apiUsage / 1000).toFixed(1)}k <span className="text-sm font-medium text-text-muted">/ {(stats.apiLimit / 1000).toFixed(0)}k</span></p>
+                            <div className="h-1 w-full bg-surface-main rounded-full mt-2 overflow-hidden">
+                                <div className="h-full bg-blue-500" style={{ width: `${(stats.apiUsage / stats.apiLimit) * 100}%` }}></div>
+                            </div>
                         </div>
                     </div>
                 )}
             </div>
 
-            <div className="pt-6 border-t border-border-subtle flex justify-between items-end mt-auto relative z-10">
-                <div className="w-full mr-6">
-                    <div className="flex justify-between text-sm font-bold text-slate-500  tracking-widest mb-1">
-                        <span>Load: {stats.load > 80 ? 'CRITICAL' : stats.load > 50 ? 'HEAVY' : 'OPTIMAL'}</span>
-                        <span className="font-mono">{Math.round(stats.load)}%</span>
+            <div className="pt-6 border-t border-border-subtle flex justify-between items-center mt-auto">
+                <div className="min-w-[120px]">
+                    <div className="flex justify-between text-[10px] font-bold text-text-muted tracking-wide mb-1.5">
+                        <span>SYS HEALTH</span>
+                        <span className={stats.healthScore < 80 ? 'text-status-warning' : 'text-status-success'}>{Math.round(stats.healthScore)}%</span>
                     </div>
-                    <div className="h-1 w-full bg-surface-highlight rounded-full overflow-hidden">
+                    <div className="h-1.5 w-full bg-surface-alt rounded-full overflow-hidden">
                         <div 
-                            className={`h-full transition-all duration-1000 ease-out ${stats.load > 80 ? 'bg-red-500' : stats.load > 50 ? 'bg-amber-500' : 'bg-emerald-500'}`} 
-                            style={{ width: `${stats.load}%` }}
+                            className={`h-full transition-all duration-500 ease-out ${stats.healthScore < 70 ? 'bg-status-error' : stats.healthScore < 85 ? 'bg-status-warning' : 'bg-status-success'}`} 
+                            style={{ width: `${stats.healthScore}%` }}
                         ></div>
                     </div>
                 </div>
-                <div className="flex items-center gap-2 text-sm font-[700]  text-accent-secondary whitespace-nowrap group-hover:translate-x-1 transition-transform cursor-pointer">
-                    {isActive ? 'Connect' : 'Locked'} <ArrowRight size={16} strokeWidth={3}/>
+                <div className="flex items-center gap-1.5 text-sm font-bold text-accent-primary group-hover:translate-x-1 transition-transform">
+                    {isActive ? 'Enter' : 'Locked'} <ArrowRight size={16} strokeWidth={2}/>
                 </div>
             </div>
         </div>

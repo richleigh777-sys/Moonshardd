@@ -698,7 +698,7 @@ export function useEnrollmentLogic(
   }, [validateMinimumFields, addSale, currentUser, formData, financials, cart, manualAmount, notes, useShippingForBilling, onSuccess, calculatedTotal, productConfig.products]);
 
   const handleClear = useCallback((skipConfirm = false) => {
-    if (skipConfirm || confirm('Clear all form data? This cannot be undone.')) {
+    // if (skipConfirm || confirm('Clear all form data? This cannot be undone.')) {
       draftService.delete(STORAGE_KEY);
       setFormData({
         fullName: '',

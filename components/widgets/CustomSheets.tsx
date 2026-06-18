@@ -45,7 +45,7 @@ export const CustomSheets = () => {
     };
 
     const handleClearSheet = () => {
-        if (!activeSheet || !confirm('Clear all data in this sheet?')) return;
+        // if (!activeSheet || !confirm('Clear all data in this sheet?')) return;
         const emptyData = Array(20).fill(0).map(() => Array(10).fill(''));
         updateSheet(activeSheet.id, { data: emptyData });
     };

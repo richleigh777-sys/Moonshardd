@@ -60,14 +60,14 @@ export const ProductManager: React.FC<Props> = ({ configForm, setConfigForm, onS
     };
 
     const handleDelete = (id: string) => {
-        if (confirm("Are you sure you want to purge this SKU? This action cannot be undone.")) {
+        // if (confirm("Are you sure you want to purge this SKU? This action cannot be undone.")) {
             sfx.playDecline();
             const newProds = configForm.products.filter(p => p.id !== id);
             const newConfig = { ...configForm, products: newProds };
             setConfigForm(newConfig);
             onSave(newConfig);
             setToast({ title: 'Catalog', message: "SKU Purged from Database", type: "info" });
-        }
+        // }
     };
 
     const handleDuplicate = (p: Product) => {
@@ -84,8 +84,8 @@ export const ProductManager: React.FC<Props> = ({ configForm, setConfigForm, onS
             return;
         }
 
-        const confirmed = window.confirm(`Confirm catalog update for ${updatedProduct.name}?`);
-        if (!confirmed) return;
+        // const confirmed = window.confirm(`Confirm catalog update for ${updatedProduct.name}?`);
+        // if (!confirmed) return;
 
         const newProds = [...configForm.products];
         const index = newProds.findIndex(p => p.id === updatedProduct.id);

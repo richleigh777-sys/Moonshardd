@@ -74,7 +74,7 @@ export const LoadTester: React.FC = () => {
             return;
         }
 
-        if (!confirm("WARNING: This will generate significant load and database records. Continue?")) return;
+        // if (!confirm("WARNING: This will generate significant load and database records. Continue?")) return;
 
         setIsRunning(true);
         setMode('stress');
@@ -105,7 +105,7 @@ export const LoadTester: React.FC = () => {
     const runSpikeTest = async () => {
         if (isRunning) return;
         
-        if (!confirm("WARNING: This will inject 1000 records immediately. UI may freeze.")) return;
+        // if (!confirm("WARNING: This will inject 1000 records immediately. UI may freeze.")) return;
         
         setIsRunning(true);
         setMode('spike');

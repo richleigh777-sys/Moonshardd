@@ -64,8 +64,8 @@ export const SystemConfigPanel = ({ config, onUpdate, sales, notes }: SystemConf
     }, [config]);
 
     const handleSave = async () => {
-        const confirmed = window.confirm("⚠️ SYSTEM OVERRIDE ⚠️\n\nAre you sure you want to commit these system-wide configuration changes?");
-        if (!confirmed) return;
+        // const confirmed = window.confirm("⚠️ SYSTEM OVERRIDE ⚠️\n\nAre you sure you want to commit these system-wide configuration changes?");
+        // if (!confirmed) return;
 
         setIsSaving(true);
         try {

@@ -1,6 +1,6 @@
 
 import { useState, useEffect, useRef } from 'react';
-import { Database, Plus, Shield, Cpu, Trash2, AlertTriangle, Terminal } from 'lucide-react';
+import { Database, Plus, Shield, Cpu, Trash2, AlertTriangle, Terminal, Building, Key } from 'lucide-react';
 import { Button } from '../ui/Base';
 import { useSystem } from '../../hooks/useSystem';
 import { useAuth } from '../../hooks/useAuth';
@@ -23,13 +23,6 @@ export const ServerGateway: React.FC = () => {
     
     // Purge Sequence State
     const [isPurging, setIsPurging] = useState(false);
-    const [purgeLogs, setPurgeLogs] = useState<string[]>([]);
-    const purgeLogEndRef = useRef<HTMLDivElement>(null);
-
-    // Auto-scroll logs
-    useEffect(() => {
-        purgeLogEndRef.current?.scrollIntoView({ behavior: "smooth" });
-    }, [purgeLogs]);
 
     const handleEnterServer = (serverId: string) => {
         sfx.playSubmit();
@@ -57,7 +50,6 @@ export const ServerGateway: React.FC = () => {
         setDeleteConfirmation('');
         setIsDeleteOpen(true);
         setIsPurging(false);
-        setPurgeLogs([]);
         sfx.playAlarm(); 
     };
 
@@ -89,57 +81,52 @@ export const ServerGateway: React.FC = () => {
     };
 
     const getRegionColor = (region: string) => {
-        if (region.includes('East')) return 'text-accent-secondary';
+        if (region.includes('East')) return 'text-accent-primary';
         if (region.includes('West')) return 'text-status-warning';
-        if (region.includes('EU')) return 'text-blue-400';
+        if (region.includes('EU')) return 'text-blue-500';
         return 'text-status-success';
     };
 
     return (
-        <div className="h-screen w-full bg-surface-alt text-white flex flex-col items-center justify-center p-5 relative overflow-hidden font-sans">
-            {/* Background Effects */}
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-indigo-900/20 via-[#050505] to-[#050505]"></div>
-            <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:40px_40px] pointer-events-none opacity-20"></div>
-
-            <div className="max-w-7xl w-full relative z-10 space-y-12 h-full flex flex-col">
+        <div className="min-h-screen w-full bg-surface-main text-text-primary flex flex-col items-center px-6 py-12 relative font-sans">
+            
+            <div className="max-w-6xl w-full relative z-10 space-y-10 flex flex-col">
                 
-                {/* Header */}
-                <div className="flex flex-col md:flex-row justify-between items-end border-b border-border-subtle pb-8 gap-4 shrink-0 mt-8">
+                {/* Elegant Header */}
+                <div className="flex flex-col md:flex-row justify-between items-end pb-8 border-b border-border-subtle gap-4 shrink-0">
                     <div>
-                        <h1 className="text-5xl font-[700]  tracking-tighter mb-4 flex items-center gap-4">
-                            <div className="p-3 bg-indigo-600/20 rounded-xl border border-indigo-500/30 text-accent-secondary shadow-neon">
-                                <Database size={40} strokeWidth={1.5}/> 
+                        <h1 className="text-3xl font-extrabold tracking-tight mb-3 flex items-center gap-3 text-text-primary">
+                            <div className="p-2.5 bg-accent-primary/10 rounded-xl border border-accent-primary/20 text-accent-primary shadow-sm">
+                                <Building size={28} strokeWidth={2}/> 
                             </div>
-                            <span className="text-transparent bg-clip-text bg-gradient-to-r from-white to-slate-400">Command Deck</span>
+                            Organization Workspaces
                         </h1>
-                        <div className="flex items-center gap-4 text-sm font-mono text-slate-500  tracking-widest pl-2">
-                            <span className="flex items-center gap-2"><Cpu size={16} className="text-status-success"/> System Online</span>
-                            <div className="w-1 h-1 bg-slate-700 rounded-full"></div>
-                            <span>Director Uplink • {currentUser?.name}</span>
-                            <div className="w-1 h-1 bg-slate-700 rounded-full"></div>
-                            <span className="text-status-warning flex items-center gap-1"><Shield size={16}/> Security Level 10</span>
+                        <div className="flex items-center gap-3 text-sm font-medium text-text-secondary">
+                            <span className="flex items-center gap-1.5"><Cpu size={16} className="text-status-success"/> Systems Online</span>
+                            <div className="w-1 h-1 bg-border-strong rounded-full"></div>
+                            <span>Welcome back, {currentUser?.name || 'Administrator'}</span>
+                            <div className="w-1 h-1 bg-border-strong rounded-full"></div>
+                            <span className="text-status-warning flex items-center gap-1.5"><Shield size={16}/> Sec Level 10</span>
                         </div>
                     </div>
-                    <Button onClick={openCreateModal} className="h-14 px-8 bg-indigo-600 hover:bg-indigo-500 text-white font-[700]  tracking-widest shadow-lg shadow-indigo-500/20 rounded-xl transition-all hover:scale-105 active:scale-95 flex items-center gap-3">
-                        <Plus size={18} className="stroke-[3px]"/> Deploy Node
+                    <Button onClick={openCreateModal} className="h-12 px-6 bg-text-primary hover:bg-black dark:bg-white dark:hover:bg-gray-200 dark:text-black text-white font-bold tracking-wide rounded-xl transition-all shadow-md active:scale-95 flex items-center gap-2">
+                        <Plus size={18} strokeWidth={2}/> Create Instance
                     </Button>
                 </div>
 
-                {/* Server Grid - Scrollable Container */}
-                <div className="flex-1 overflow-y-auto custom-scrollbar pb-10">
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 pr-2">
-                        {serverList.map(server => (
-                            <ServerCardTelemetry 
-                                key={server.id}
-                                server={server}
-                                isActive={server.status === 'active'}
-                                onEnter={handleEnterServer}
-                                onEdit={openEditModal}
-                                onDelete={openDeleteModal}
-                                getRegionColor={getRegionColor}
-                            />
-                        ))}
-                    </div>
+                {/* Server Grid */}
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {serverList.map(server => (
+                        <ServerCardTelemetry 
+                            key={server.id}
+                            server={server}
+                            isActive={server.status === 'active'}
+                            onEnter={handleEnterServer}
+                            onEdit={openEditModal}
+                            onDelete={openDeleteModal}
+                            getRegionColor={getRegionColor}
+                        />
+                    ))}
                 </div>
             </div>
 
@@ -148,8 +135,8 @@ export const ServerGateway: React.FC = () => {
                 isOpen={isCreateOpen}
                 onClose={() => setIsCreateOpen(false)}
                 onSave={handleSaveCreate}
-                title="Deploy Infrastructure"
-                actionLabel="Initialize Server"
+                title="Create Workspace Instance"
+                actionLabel="Initialize Instance"
             />
 
             {/* Edit Modal */}
@@ -159,66 +146,65 @@ export const ServerGateway: React.FC = () => {
                 initialName={targetServer?.name}
                 initialRegion={targetServer?.region}
                 onSave={handleSaveEdit}
-                title="Reconfigure Node"
-                actionLabel="Save Configuration"
+                title="Workspace Configuration"
+                actionLabel="Save Settings"
             />
 
             {/* NUCLEAR PURGE MODAL */}
-            <div className={`fixed inset-0 z-[9999] flex items-center justify-center bg-black/90 backdrop-blur-xl transition-opacity duration-300 ${isDeleteOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}>
-                <div className={`w-full max-w-md bg-[#120505] border-2 border-red-900/50 rounded-xl p-5 shadow-[0_0_100px_rgba(239,68,68,0.2)] transform transition-all duration-300 ${isDeleteOpen ? 'scale-100' : 'scale-95'}`}>
+            <div className={`fixed inset-0 z-[9999] flex items-center justify-center bg-black/60 backdrop-blur-sm transition-opacity duration-300 ${isDeleteOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}>
+                <div className={`w-full max-w-md bg-surface-main border border-border-strong rounded-2xl p-6 shadow-2xl transform transition-all duration-300 ${isDeleteOpen ? 'scale-100' : 'scale-95'}`}>
                     
                     {isPurging ? (
-                        <div className="flex flex-col items-center justify-center h-[320px]">
-                            <div className="p-4 bg-red-500/10 rounded-xl border border-red-500/20 mb-4 animate-pulse">
+                        <div className="flex flex-col items-center justify-center h-[280px]">
+                            <div className="p-4 bg-status-error/10 rounded-xl border border-status-error/20 mb-4 animate-pulse">
                                 <Trash2 size={32} className="text-status-error" />
                             </div>
-                            <h2 className="text-sm font-bold text-text-primary mb-2">Deleting Server...</h2>
-                            <p className="text-sm text-text-muted text-center max-w-[250px]">
-                                This server and all of its associated data are being permanently removed.
+                            <h2 className="text-base font-bold text-text-primary mb-2">Purging Workspace...</h2>
+                            <p className="text-sm text-text-secondary text-center max-w-[250px]">
+                                Destroying data cluster and flushing core records.
                             </p>
                         </div>
                     ) : (
                         // CONFIRMATION VIEW
                         <>
                             <div className="flex items-center gap-4 text-status-error mb-6">
-                                <div className="p-3 bg-red-500/10 rounded-xl border border-red-500/20">
-                                    <AlertTriangle size={32} strokeWidth={2} className="animate-pulse" />
+                                <div className="p-3 bg-status-error/10 rounded-xl border border-status-error/20">
+                                    <AlertTriangle size={28} strokeWidth={2} className="animate-pulse" />
                                 </div>
                                 <div>
-                                    <h2 className="text-xl font-[700]  tracking-widest">Nuclear Protocol</h2>
-                                    <p className="text-sm font-bold text-status-error/60  tracking-[0.2em]">Irreversible Action</p>
+                                    <h2 className="text-lg font-bold">Destructive Action</h2>
+                                    <p className="text-xs font-bold text-status-error/80 uppercase tracking-widest">Cannot be undone</p>
                                 </div>
                             </div>
                             
-                            <p className="text-sm font-medium text-slate-300 mb-6 leading-relaxed">
-                                You are about to purge <span className="text-white font-[700]">{targetServer?.name}</span>. 
-                                This will delete all sales data, user accounts, and audit logs associated with this node. 
-                                This cannot be undone.
+                            <p className="text-sm font-medium text-text-secondary mb-6 leading-relaxed">
+                                You are about to permanently delete <span className="text-text-primary font-bold">{targetServer?.name}</span>. 
+                                All records, settings, and staff associations inside this workspace will be removed.
                             </p>
 
                             <div className="space-y-2 mb-8">
-                                <label className="text-sm font-[700]  text-status-error/60 tracking-widest ml-1">Type server name to confirm</label>
-                                <input autoComplete="off" data-lpignore="true" data-prevent-autofill="true" spellCheck={false} 
+                                <label className="text-xs font-bold text-text-muted uppercase tracking-wider ml-1">Type workspace name</label>
+                                <input autoComplete="off" spellCheck={false} 
                                     value={deleteConfirmation}
                                     onChange={(e) => setDeleteConfirmation(e.target.value)}
                                     placeholder={targetServer?.name}
-                                    className="w-full bg-red-500/5 border-2 border-red-900/30 rounded-xl p-4 text-sm font-bold text-white outline-none focus:border-red-500 transition-all placeholder:text-white/10"
+                                    className="w-full bg-surface-alt border border-border-strong rounded-xl p-3 text-sm font-bold text-text-primary outline-none focus:border-status-error focus:ring-1 focus:ring-status-error transition-all"
                                 />
                             </div>
 
                             <div className="flex gap-3">
                                 <button 
                                     onClick={() => { setIsDeleteOpen(false); setDeleteConfirmation(''); }}
-                                    className="flex-1 h-14 rounded-xl border border-border-subtle text-slate-400 font-bold  tracking-wider text-sm hover:bg-surface-highlight transition-all"
+                                    className="flex-1 h-12 rounded-xl border border-border-strong text-text-secondary font-bold text-sm hover:bg-surface-alt transition-colors"
                                 >
-                                    Abort
+                                    Cancel
                                 </button>
                                 <button 
                                     onClick={handleConfirmDelete}
                                     disabled={deleteConfirmation !== targetServer?.name}
-                                    className="flex-1 h-14 rounded-xl bg-red-600 hover:bg-red-500 disabled:opacity-50 disabled:cursor-not-allowed text-white font-[700]  tracking-widest text-sm shadow-lg shadow-red-900/40 flex items-center justify-center gap-2 group transition-all"
+                                    className="flex-1 h-12 rounded-xl bg-status-error hover:bg-red-600 disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold text-sm shadow-sm flex items-center justify-center gap-2 transition-all"
                                 >
-                                    <Trash2 size={16} className="group-hover:rotate-12 transition-transform" /> Purge Node
+                                    Delete Workspace
                                 </button>
                             </div>
                         </>

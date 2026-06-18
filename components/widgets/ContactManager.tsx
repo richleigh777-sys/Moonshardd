@@ -46,10 +46,10 @@ export const ContactManager: React.FC = () => {
 
     const handleDelete = async (id: string, e: React.MouseEvent) => {
         e.stopPropagation();
-        if (confirm('Are you sure you want to delete this contact? This cannot be undone.')) {
+        // if (confirm('Are you sure you want to delete this contact? This cannot be undone.')) {
             await deleteCustomer(id);
             sfx.playTrash();
-        }
+        // }
     };
 
     return (

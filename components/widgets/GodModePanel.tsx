@@ -58,7 +58,7 @@ export const GodModePanel = () => {
 
     const handleLoadTest = async () => {
         if (isLoadingTest) return;
-        if (!confirm("This will inject 400+ simulated records into the live database. Ensure this is a test server. Proceed?")) return;
+        // if (!confirm("This will inject 400+ simulated records into the live database. Ensure this is a test server. Proceed?")) return;
         setIsLoadingTest(true);
         sfx.playSubmit();
         addToUplink('INITIATING THERMAL LOAD TEST...');
@@ -81,7 +81,7 @@ export const GodModePanel = () => {
     };
 
     const handleInjectLeads = async () => {
-        if (!confirm("This will securely inject 20 detailed mock leads to simulate an active pipeline. Proceed?")) return;
+        // if (!confirm("This will securely inject 20 detailed mock leads to simulate an active pipeline. Proceed?")) return;
         sfx.playSubmit();
         addToUplink('DOWNLOADING LEAD PACKAGE...');
         addToUplink('Injecting 20 highly detailed CRM leads...');
@@ -96,7 +96,7 @@ export const GodModePanel = () => {
     };
 
     const handleInjectClosedSales = async () => {
-        if (!confirm("This will inject 10 agents with 1 closed sale each into a single team (Delta Force). Proceed?")) return;
+        // if (!confirm("This will inject 10 agents with 1 closed sale each into a single team (Delta Force). Proceed?")) return;
         sfx.playSubmit();
         addToUplink('INJECTING TEAM SALES DATA...');
         try {
@@ -120,11 +120,11 @@ export const GodModePanel = () => {
     };
 
     const performFactoryReset = () => {
-        if (confirm("Are you sure? This deletes ALL local data.")) {
+        // if (confirm("Are you sure? This deletes ALL local data.")) {
             sfx.playDecline();
             localStorage.clear();
             window.location.reload();
-        }
+        // }
     };
 
     const stats = useMemo(() => [

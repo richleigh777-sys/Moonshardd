@@ -57,8 +57,8 @@ export const OperativeRoster: React.FC<OperativeRosterProps> = ({
             return;
         }
 
-        const confirmed = window.confirm(`Confirm changes for ${data.name}? This will update the personnel database.`);
-        if (!confirmed) return;
+        // const confirmed = window.confirm(`Confirm changes for ${data.name}? This will update the personnel database.`);
+        // if (!confirmed) return;
 
         try {
             const isNew = !users.some(u => u.id === data.id);

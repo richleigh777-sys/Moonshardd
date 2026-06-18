@@ -345,13 +345,20 @@ export const useCRMData = (currentUser: User | null) => {
         return users.filter(u => u.id === currentUser.id || u.managerId === currentUser.id || (u.team && currentUser.team && u.team === currentUser.team));
     }, [users, currentUser, isSuperAdmin]);
 
-    const validIds = useMemo(() => new Set(fUsers.map(u => u.id)), [fUsers]);
+    const validIds = useMemo(() => {
+        const ids = new Set(fUsers.map(u => u.id));
+        if (currentUser?.id) {
+            ids.add(currentUser.id);
+            if (currentUser.email) ids.add(currentUser.email);
+        }
+        return ids;
+    }, [fUsers, currentUser]);
 
-    const fSales = useMemo(() => isSuperAdmin ? sales : sales.filter(s => validIds.has(s.agentId)), [sales, isSuperAdmin, validIds]);
-    const fNotes = useMemo(() => isSuperAdmin ? notes : notes.filter(n => validIds.has(n.agentId || '')), [notes, isSuperAdmin, validIds]);
-    const fTasks = useMemo(() => isSuperAdmin ? tasks : tasks.filter(t => validIds.has(t.targetAgentId || '')), [tasks, isSuperAdmin, validIds]);
-    const fAuditLogs = useMemo(() => isSuperAdmin ? auditLogs : auditLogs.filter(a => validIds.has(a.agentId || '')), [auditLogs, isSuperAdmin, validIds]);
-    const fAttendance = useMemo(() => isSuperAdmin ? attendance : attendance.filter(a => validIds.has(a.agentId || '')), [attendance, isSuperAdmin, validIds]);
+    const fSales = useMemo(() => isSuperAdmin ? sales : sales.filter(s => s.agentId === currentUser?.id || validIds.has(s.agentId)), [sales, isSuperAdmin, validIds, currentUser?.id]);
+    const fNotes = useMemo(() => isSuperAdmin ? notes : notes.filter(n => n.agentId === currentUser?.id || validIds.has(n.agentId || '')), [notes, isSuperAdmin, validIds, currentUser?.id]);
+    const fTasks = useMemo(() => isSuperAdmin ? tasks : tasks.filter(t => t.targetAgentId === currentUser?.id || validIds.has(t.targetAgentId || '')), [tasks, isSuperAdmin, validIds, currentUser?.id]);
+    const fAuditLogs = useMemo(() => isSuperAdmin ? auditLogs : auditLogs.filter(a => a.agentId === currentUser?.id || validIds.has(a.agentId || '')), [auditLogs, isSuperAdmin, validIds, currentUser?.id]);
+    const fAttendance = useMemo(() => isSuperAdmin ? attendance : attendance.filter(a => a.agentId === currentUser?.id || validIds.has(a.agentId || '')), [attendance, isSuperAdmin, validIds, currentUser?.id]);
     
     const fNotifications = useMemo(() => {
         if (!currentUser) return [];
@@ -393,6 +400,7 @@ export const useCRMData = (currentUser: User | null) => {
         addCustomer, updateCustomer, deleteCustomer,
         updateUser, addUser, addDialerList, updateProductConfig, updateSystemConfig,
         sendDirective, logAttendance, logAudit, runDiagnostic, testUplink,
+        clearAuditLogs,
         clearNotification,
         updatePresence, clearPresence
     ]);

@@ -38,148 +38,151 @@ export const AgentScriptHub: React.FC = () => {
     };
 
     return (
-        <div className="flex flex-col h-full bg-surface-main/90 rounded-[1.25rem] border border-border-subtle shadow-panel overflow-hidden relative font-mono backdrop-blur-3xl group">
+        <div className="flex flex-col h-full bg-surface-main rounded-2xl border border-border-strong shadow-lg overflow-hidden relative font-mono text-sm group">
             {/* Background Grid */}
-            <div className="absolute inset-0 bg-[linear-gradient(rgba(0,0,0,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(0,0,0,0.03)_1px,transparent_1px)] dark:bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:32px_32px] pointer-events-none opacity-50"></div>
-            <div className="absolute -inset-px bg-gradient-to-br from-emerald-500/5 via-transparent to-accent-primary/5 dark:from-emerald-500/10 dark:to-black/10 opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none"></div>
+            <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:32px_32px] pointer-events-none opacity-40"></div>
+            <div className="absolute inset-0 bg-gradient-to-br from-accent-primary/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-1000 pointer-events-none"></div>
             
             {/* Header */}
-            <div className="p-4 border-b border-border-subtle bg-surface-highlight/80  flex flex-col md:flex-row md:justify-between md:items-center gap-4 backdrop-blur-md shrink-0 relative z-20">
-                <div className="flex items-center gap-3">
-                    <div className="p-2 bg-status-success/10 rounded-lg flex items-center justify-center text-status-success border border-emerald-500/20 shadow-[0_0_15px_rgba(16,185,129,0.15)]">
-                        <Terminal size={18} strokeWidth={2.5}/>
+            <div className="px-6 py-4 border-b border-border-subtle bg-surface-alt/50 flex flex-col md:flex-row md:justify-between md:items-center gap-4 relative z-20">
+                <div className="flex items-center gap-4">
+                    <div className="p-2.5 bg-accent-primary/10 rounded-xl border border-accent-primary/20 text-accent-primary shadow-sm">
+                        <Terminal size={20} strokeWidth={2}/>
                     </div>
                     <div>
-                        <h3 className="text-sm font-[700] text-text-primary  tracking-widest drop-shadow-md">
-                            Sales Scripts
+                        <h3 className="text-base font-bold text-text-primary tracking-tight">
+                            Dialogue Scripts Directory
                         </h3>
-                        <p className="text-[10px] font-bold text-text-muted  tracking-[0.2em] flex items-center gap-1.5 mt-0.5">
-                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.2)] dark:shadow-[0_0_8px_rgba(16,185,129,0.5)] animate-pulse"></span>
-                            Secure Comms Link Active
+                        <p className="text-xs font-bold text-text-muted flex items-center gap-2 mt-1 uppercase tracking-widest">
+                            <span className="w-1.5 h-1.5 rounded-full bg-status-success shadow-[0_0_8px_rgba(16,185,129,0.5)] animate-pulse"></span>
+                            Live Comm Link
                         </p>
                     </div>
                 </div>
                 
                 <div className="flex flex-col sm:flex-row gap-3">
-                    <div className="relative group w-full sm:w-64">
-                        <div className="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted group-focus-within:text-emerald-600 dark:group-focus-within:text-status-success transition-colors">
-                            <Search size={14} />
+                    <div className="relative w-full sm:w-64">
+                        <div className="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted transition-colors">
+                            <Search size={16} />
                         </div>
-                        <input autoComplete="off" data-lpignore="true" data-prevent-autofill="true" spellCheck={false} 
-                            placeholder="QUERY DATABANKS..."
+                        <input autoComplete="off" spellCheck={false} 
+                            placeholder="Search scripts..."
                             value={searchTerm}
                             onChange={e => setSearchTerm(e.target.value)}
-                            className="w-full bg-surface-alt border border-border-subtle rounded-lg py-2 pl-9 pr-4 text-xs font-bold text-status-success outline-none focus:border-status-success/50 focus:bg-surface-highlight0 dark:focus:bg-surface-highlight transition-all placeholder:text-text-muted dark:placeholder:text-gray-600  tracking-wider drop-shadow-sm"
+                            className="w-full bg-surface-main border border-border-strong rounded-xl py-2 pl-10 pr-4 text-sm font-medium text-text-primary outline-none focus:border-accent-primary focus:ring-1 focus:ring-accent-primary transition-all placeholder:text-text-muted"
                         />
                     </div>
-                    <div className="flex gap-1 bg-surface-alt p-1 rounded-lg border border-border-subtle overflow-x-auto scrollbar-hide">
+                    <div className="flex gap-1.5 bg-surface-main p-1.5 rounded-xl border border-border-strong overflow-x-auto scrollbar-hide">
                         {(['All', 'Sales', 'Rebuttal', 'FollowUp', 'Rescue'] as const).map(type => (
                             <button
                                 key={type}
                                 onClick={() => { setActiveType(type); sfx.playClick(); }}
-                                className={`px-3 py-1.5 rounded text-[10px] font-[700]  tracking-widest transition-all whitespace-nowrap ${
+                                className={`px-3 py-1.5 rounded-lg text-[11px] font-bold tracking-wider uppercase transition-colors whitespace-nowrap ${
                                     activeType === type 
-                                    ? 'bg-emerald-50 dark:bg-emerald-500/20 border border-status-success/30 text-status-success shadow-[0_0_15px_rgba(16,185,129,0.15)]' 
-                                    : 'text-text-muted hover:text-text-primary dark:hover:text-text-primary hover:bg-surface-highlight'
+                                    ? 'bg-accent-primary text-white shadow-sm' 
+                                    : 'text-text-muted hover:text-text-primary hover:bg-surface-alt'
                                 }`}
                             >
-                                {type === 'All' ? '*' : type}
+                                {type === 'All' ? 'All' : type}
                             </button>
                         ))}
                     </div>
                 </div>
             </div>
 
-            <div className="flex flex-1 overflow-hidden relative z-10 flex-col md:flex-row bg-transparent">
+            <div className="flex flex-1 overflow-hidden relative z-10 flex-col md:flex-row bg-surface-main/30">
                 {/* Left Side: Directory List */}
-                <div className="w-full md:w-80 lg:w-96 border-b md:border-b-0 md:border-r border-border-subtle bg-transparent flex flex-col shrink-0">
-                    <div className="p-3 border-b border-border-subtle bg-surface-alt text-[10px] font-[700] tracking-widest  flex items-center justify-between text-text-muted shadow-inner">
-                        <span className="drop-shadow-sm">Directory Listing</span>
-                        <span className="drop-shadow-sm">{filtered.length} Objects</span>
+                <div className="w-full md:w-80 border-b md:border-b-0 md:border-r border-border-subtle bg-surface-main/50 flex flex-col shrink-0">
+                    <div className="px-5 py-3 border-b border-border-subtle bg-surface-alt/30 text-xs font-bold uppercase tracking-widest flex items-center justify-between text-text-muted">
+                        <span>Index</span>
+                        <span>{filtered.length} File{filtered.length !== 1 && 's'}</span>
                     </div>
-                    <div className="flex-1 overflow-y-auto custom-scrollbar p-3 space-y-2">
+                    <div className="flex-1 overflow-y-auto custom-scrollbar p-3 space-y-1.5">
                         {filtered.map(script => (
                             <button 
                                 key={script.id}
                                 onClick={() => handleSelect(script)}
-                                className={`w-full text-left p-3 rounded-xl border transition-all duration-200 flex flex-col gap-2 relative group overflow-hidden ${
+                                className={`w-full text-left p-3.5 rounded-xl border transition-all duration-200 flex flex-col gap-2.5 relative group overflow-hidden ${
                                     activeScript?.id === script.id 
-                                    ? 'bg-status-success/10 border-status-success/30 shadow-[inset_4px_0_0_#10b981]' 
-                                    : 'bg-surface-alt border-border-subtle hover:border-border-strong hover:bg-surface-highlight'
+                                    ? 'bg-accent-primary/10 border-accent-primary/30 shadow-sm' 
+                                    : 'bg-surface-main border-transparent hover:border-border-strong hover:bg-surface-alt'
                                 }`}
                             >
                                 <div className="flex justify-between items-start w-full relative z-10">
-                                    <div className="flex items-center gap-2 min-w-0">
-                                        <Hash size={12} className={activeScript?.id === script.id ? 'text-status-success drop-shadow-[0_0_5px_rgba(16,185,129,0.5)]' : 'text-text-muted group-hover:text-text-primary dark:group-hover:text-text-muted'} />
-                                        <span className={`text-[11px] font-bold  truncate tracking-wider drop-shadow-sm ${activeScript?.id === script.id ? 'text-text-primary' : 'text-text-secondary'}`}>
+                                    <div className="flex items-center gap-2.5 min-w-0 w-full">
+                                        <Hash size={14} className={activeScript?.id === script.id ? 'text-accent-primary flex-shrink-0' : 'text-text-muted group-hover:text-text-secondary flex-shrink-0'} />
+                                        <span className={`text-sm font-bold truncate ${activeScript?.id === script.id ? 'text-text-primary' : 'text-text-secondary group-hover:text-text-primary'}`}>
                                             {script.title}
                                         </span>
                                     </div>
                                 </div>
-                                <div className="flex items-center gap-3 relative z-10">
-                                    <span className={`text-[9px] font-[700]  tracking-[0.2em] px-1.5 py-0.5 rounded border ${
-                                        script.type === 'Rebuttal' ? 'bg-status-error/10 border-status-error/30 text-red-600 dark:text-status-error shadow-[0_0_8px_rgba(239,68,68,0.15)]' : 
-                                        script.type === 'Sales' ? 'bg-status-success/10 border-status-success/30 text-status-success shadow-[0_0_8px_rgba(16,185,129,0.15)]' :
-                                        'bg-blue-50 dark:bg-blue-500/10 border-blue-500/30 text-blue-600 dark:text-blue-400 shadow-[0_0_8px_rgba(59,130,246,0.15)]'
+                                <div className="flex items-center justify-between w-full relative z-10 pl-6">
+                                    <span className={`text-[10px] font-bold tracking-widest px-2 py-0.5 rounded-md uppercase border ${
+                                        script.type === 'Rebuttal' ? 'bg-status-error/10 border-status-error/20 text-status-error' : 
+                                        script.type === 'Sales' ? 'bg-status-success/10 border-status-success/20 text-status-success' :
+                                        script.type === 'Rescue' ? 'bg-status-warning/10 border-status-warning/20 text-status-warning' :
+                                        'bg-blue-500/10 border-blue-500/20 text-blue-500'
                                     }`}>
                                         {script.type}
                                     </span>
-                                    <span className="text-[10px] text-text-muted flex items-center gap-1 font-mono hover:text-text-primary dark:hover:text-text-muted transition-colors">
-                                        <Zap size={10} /> {script.usageCount} uses
+                                    <span className="text-[11px] font-medium text-text-muted flex items-center gap-1.5">
+                                        <Zap size={12} className="text-text-muted" /> {script.usageCount}
                                     </span>
                                 </div>
                             </button>
                         ))}
 
                         {filtered.length === 0 && (
-                            <div className="flex flex-col items-center justify-center p-5 text-text-muted dark:text-gray-600 text-center">
-                                <Search size={24} className="mb-2 opacity-50 drop-shadow-sm" />
-                                <p className="text-[10px]  tracking-widest drop-shadow-sm">No matching records found in databanks.</p>
+                            <div className="flex flex-col items-center justify-center p-8 text-text-muted text-center h-40">
+                                <Search size={28} className="mb-3 opacity-30" />
+                                <p className="text-xs uppercase tracking-widest font-bold">No scripts found</p>
                             </div>
                         )}
                     </div>
                 </div>
 
                 {/* Right Side: Script Viewer */}
-                <div className="flex-1 flex flex-col bg-transparent min-w-0 relative">
+                <div className="flex-1 flex flex-col bg-surface-main min-w-0 relative">
                     {activeScript ? (
                         <>
-                            <div className="p-4 md:p-4 border-b border-border-subtle flex justify-between items-start bg-surface-highlight/30 dark:bg-black/20 shadow-inner">
+                            <div className="px-8 py-6 border-b border-border-subtle flex flex-col sm:flex-row sm:justify-between sm:items-start gap-4">
                                 <div>
                                     <div className="flex items-center gap-2 mb-2">
-                                        <Crosshair size={14} className="text-status-success drop-shadow-[0_0_5px_rgba(16,185,129,0.5)]" />
-                                        <span className="text-[10px] font-[700] text-text-muted  tracking-widest drop-shadow-sm font-mono">Target Payload: {activeScript.id.substring(0,8)}</span>
+                                        <Crosshair size={14} className="text-accent-primary" />
+                                        <span className="text-xs font-bold text-text-muted tracking-widest uppercase">Target Payload ID: {activeScript.id.substring(0,8)}</span>
                                     </div>
-                                    <h2 className="text-xl md:text-lg font-[700] text-text-primary  tracking-tight drop-shadow-md">
+                                    <h2 className="text-2xl font-bold text-text-primary tracking-tight">
                                         {activeScript.title}
                                     </h2>
                                 </div>
                                 <button 
                                     onClick={() => handleCopy(activeScript.id, activeScript.content)}
-                                    className={`flex items-center gap-2 px-4 py-2 text-xs font-[700]  tracking-wider rounded-lg border transition-all shadow-sm ${
+                                    className={`flex items-center gap-2 px-5 py-2.5 text-sm font-bold rounded-xl transition-all shadow-sm ${
                                         copiedId === activeScript.id 
-                                        ? 'bg-emerald-50 dark:bg-emerald-500/20 text-status-success border-status-success/50 shadow-[0_0_15px_rgba(16,185,129,0.2)] dark:shadow-[0_0_15px_rgba(16,185,129,0.3)]' 
-                                        : 'bg-surface-alt text-text-secondary border-border-subtle hover:bg-surface-highlight hover:text-text-primary'
+                                        ? 'bg-status-success text-white' 
+                                        : 'bg-text-primary text-surface-main hover:bg-text-primary/90'
                                     }`}
                                 >
-                                    {copiedId === activeScript.id ? <><Check size={14} strokeWidth={3}/> ACCESSED</> : <><Copy size={14}/> EXTRACT</>}
+                                    {copiedId === activeScript.id ? <><Check size={16} strokeWidth={3}/> COPIED</> : <><Copy size={16}/> COPY DIALOGUE</>}
                                 </button>
                             </div>
                             
-                            <div className="flex-1 overflow-y-auto p-4 md:p-5 custom-scrollbar">
-                                <div className="bg-surface-alt border border-border-subtle rounded-xl p-4 relative group overflow-hidden shadow-inner">
-                                    <div className="absolute top-0 left-0 w-1 h-full bg-emerald-500/30 group-hover:bg-emerald-500/50 transition-colors"></div>
-                                    <div className="whitespace-pre-wrap text-text-secondary text-sm md:text-base leading-relaxed font-sans drop-shadow-sm">
+                            <div className="flex-1 overflow-y-auto p-8 custom-scrollbar">
+                                <div className="bg-surface-alt border border-border-subtle rounded-2xl p-6 relative group overflow-hidden shadow-sm h-full max-h-full">
+                                    <div className="absolute top-0 left-0 w-1.5 h-full bg-accent-primary/20 group-hover:bg-accent-primary/50 transition-colors"></div>
+                                    <div className="whitespace-pre-wrap text-text-primary text-base leading-loose font-sans">
                                         {activeScript.content}
                                     </div>
                                 </div>
                             </div>
                         </>
                     ) : (
-                         <div className="flex-1 flex flex-col items-center justify-center text-text-muted dark:text-gray-600 p-5 text-center drop-shadow-sm">
-                            <Terminal size={48} strokeWidth={1} className="mb-4" />
-                            <p className="text-sm font-[700]  tracking-[0.2em]">Awaiting Selection</p>
-                            <p className="text-xs mt-2 opacity-60">Select a payload from the directory to decypher.</p>
+                         <div className="flex-1 flex flex-col items-center justify-center text-text-muted p-5 text-center">
+                            <div className="p-5 bg-surface-alt rounded-2xl border border-border-subtle mb-5">
+                                <Terminal size={40} className="text-text-muted/50" />
+                            </div>
+                            <p className="text-sm font-bold tracking-widest uppercase text-text-primary mb-2">Awaiting Selection</p>
+                            <p className="text-xs font-medium text-text-muted max-w-[250px]">Select a dialogue from the directory panel to view constraints.</p>
                         </div>
                     )}
                 </div>

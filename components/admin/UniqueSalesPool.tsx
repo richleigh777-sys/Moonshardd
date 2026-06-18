@@ -635,7 +635,7 @@ export const UniqueSalesPool: React.FC = () => {
 
     // Handle delete customer
     const handleDelete = async (id: string, name: string) => {
-        if (window.confirm(`Are you absolutely sure you want to permanently delete customer "${name}"? This action is irreversible.`)) {
+        // if (window.confirm(`Are you absolutely sure you want to permanently delete customer "${name}"? This action is irreversible.`)) {
             playClick();
             try {
                 await deleteCustomer(id);
@@ -653,7 +653,7 @@ export const UniqueSalesPool: React.FC = () => {
                     type: 'error'
                 });
             }
-        }
+        // }
     };
 
     // Auto complete billing with shipping values
@@ -906,7 +906,7 @@ export const UniqueSalesPool: React.FC = () => {
 
         let added = 0;
         let updated = 0;
-        let importResultsData: any = { added: 0, stitched: 0, stitchedDetails: [], addedDetails: [] };
+        const importResultsData: any = { added: 0, stitched: 0, stitchedDetails: [], addedDetails: [] };
 
         // Create a fast Map to track phones and ensure duplicates from the SAME CSV file are stitched, not duplicated
         const phoneDbMap = new Map<string, Customer>();

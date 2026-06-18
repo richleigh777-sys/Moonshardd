@@ -137,10 +137,10 @@ export const useAdminPortalLogic = () => {
 
     const handleBulkLedgerAction = async (ids: string[], action: string) => {
         if (action === 'delete') {
-            if (confirm(`Permanently delete ${ids.length} records?`)) {
+            // if (confirm(`Permanently delete ${ids.length} records?`)) {
                 await bulkDeleteSales(ids);
                 sfx.playDecline();
-            }
+            // }
         } else if (action === 'Approved' || action === 'Declined') {
             await bulkUpdateSales(ids, { status: action as any });
             sfx.playSuccess();

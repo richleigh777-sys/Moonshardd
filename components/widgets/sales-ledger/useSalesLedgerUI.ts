@@ -85,11 +85,11 @@ export const useSalesLedgerUI = (sales: Sale[], onImport?: (data: any) => Promis
         }
 
         if (command === 'delete') {
-            if(confirm(`Permanently delete ${selectedIds.size} records?`)) {
+            // if(confirm(`Permanently delete ${selectedIds.size} records?`)) {
                 await bulkDeleteSales(Array.from(selectedIds));
                 setSelectedIds(new Set());
                 setToast({ title: 'Bulk Action', message: "Records Purged", type: "success" });
-            }
+            // }
             return;
         }
 

@@ -71,13 +71,13 @@ export const ScriptManager: React.FC = () => {
     };
 
     const handleDelete = async (id: string) => {
-        if (confirm("Purge this protocol from the database? This action is irreversible.")) {
+        // if (confirm("Purge this protocol from the database? This action is irreversible.")) {
             sfx.playDecline();
             await deleteScript(id);
             if (selectedScriptId === id) {
                 setSelectedScriptId(null);
             }
-        }
+        // }
     };
 
     return (

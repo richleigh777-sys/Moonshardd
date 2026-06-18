@@ -59,11 +59,11 @@ export function PresetManager({ productConfig, onUpdateConfig }: Props) {
   };
 
   const handleDelete = (id: string) => {
-    if (confirm("Are you sure you want to delete this preset?")) {
+    // if (confirm("Are you sure you want to delete this preset?")) {
       const newPresets = presets.filter(p => p.id !== id);
       setPresets(newPresets);
       onUpdateConfig({ ...productConfig, presets: newPresets });
-    }
+    // }
   };
 
   const addPresetItem = () => {

@@ -70,9 +70,9 @@ export const SnapshotsTab = () => {
             setToast({ title: "Notice", message: "Demo snapshot detected. Wrapping active config for simulation.", type: "info" });
         }
 
-        if (!window.confirm(`WARNING: Deploying "${snap?.name}" will overwrite the active system configurations. Proceed?`)) {
-            return;
-        }
+        // if (!window.confirm(`WARNING: Deploying "${snap?.name}" will overwrite the active system configurations. Proceed?`)) {
+        //     return;
+        // }
 
         setDeployingId(id);
         
@@ -92,7 +92,7 @@ export const SnapshotsTab = () => {
 
     const handleDelete = (id: string) => {
         const snap = snapshots.find(s => s.id === id);
-        if (window.confirm(`Are you sure you want to permanently delete snapshot "${snap?.name}"?`)) {
+        // if (window.confirm(`Are you sure you want to permanently delete snapshot "${snap?.name}"?`)) {
             sfx.playDecline();
             setDeletingId(id);
             setTimeout(() => {
@@ -100,7 +100,7 @@ export const SnapshotsTab = () => {
                 setDeletingId(null);
                 setToast({ title: "Snapshot Deleted", message: "Package removed from system.", type: "success" });
             }, 600);
-        }
+        // }
     };
 
     const handleExport = (id: string) => {
@@ -108,7 +108,7 @@ export const SnapshotsTab = () => {
         const snap = snapshots.find(s => s.id === id);
         
         // Simulating the payload if missing
-        let snapDataToExport = { ...snap };
+        const snapDataToExport = { ...snap };
         if (!snapDataToExport.payload) {
              snapDataToExport.payload = {
                  systemConfig,

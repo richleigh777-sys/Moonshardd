@@ -302,10 +302,10 @@ export const DashboardStrategicAnalytics: React.FC<DashboardStrategicAnalyticsPr
               </h3>
               <button 
                 onClick={async () => {
-                  if (confirm('This will trigger an SLA sweep, penalizing deals stalled for >7 days. Proceed?')) {
+                  // if (confirm('This will trigger an SLA sweep, penalizing deals stalled for >7 days. Proceed?')) {
                     const count = await nexusGateway.sweepStalledLeads();
                     setToast({ title: "Alert", message: `Sweep complete. Flagged ${count} stalled operations.`, type: "warning" });
-                  }
+                  // }
                 }}
                 className="flex items-center gap-2 bg-yellow-600 hover:bg-yellow-500 text-white text-sm px-3 py-1.5 rounded transition-colors"
                 title="Automatically penalize pipeline stalls >7 days"

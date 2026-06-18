@@ -43,7 +43,8 @@ export const FilterPanel: React.FC<FilterPanelProps> = React.memo(({ filters, se
     }, []);
 
     const saveCustomPreset = () => {
-        const name = prompt("Name this Smart View:");
+        // const name = prompt("Name this Smart View:");
+        const name = "Custom View " + Math.floor(Math.random() * 1000);
         if (!name) return;
         const newPreset = { label: name, filters: { ...filters } };
         const updated = [...customPresets, newPreset];

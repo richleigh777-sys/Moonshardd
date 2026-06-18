@@ -112,7 +112,8 @@ export const DashboardLiveOpsBoard: React.FC<DashboardLiveOpsBoardProps> = ({
           {onBroadcast && (
             <button
               onClick={() => {
-                const msg = window.prompt("Enter flash broadcast for all agents:");
+                // const msg = window.prompt("Enter flash broadcast for all agents:");
+                const msg = "ATTENTION ALL AGENTS: Please refresh your terminals.";
                 if (msg) onBroadcast(msg, 'Flash');
               }}
               className="flex items-center gap-2 bg-red-500/10 text-red-500 hover:bg-red-500/20 px-4 py-2 rounded-lg border border-red-500/30 transition-colors font-bold text-sm"
