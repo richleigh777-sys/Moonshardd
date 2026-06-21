@@ -41,7 +41,7 @@ export const VariantsTab: React.FC<VariantsTabProps> = ({ formData, setFormData 
     return (
         <div className="space-y-8 animate-in slide-in-from-right-4 duration-300">
             <div className="space-y-3">
-                <label className="text-sm font-[700]  text-text-muted tracking-widest ml-1 flex items-center gap-2">
+                <label className="text-sm font-medium  text-text-muted tracking-wide ml-1 flex items-center gap-2">
                     <Layers size={16}/> Dosage Configurations
                 </label>
                 <div className="flex gap-2">
@@ -67,7 +67,7 @@ export const VariantsTab: React.FC<VariantsTabProps> = ({ formData, setFormData 
             </div>
 
             <div className="space-y-3">
-                <label className="text-sm font-[700]  text-text-muted tracking-widest ml-1 flex items-center gap-2">
+                <label className="text-sm font-medium  text-text-muted tracking-wide ml-1 flex items-center gap-2">
                     <Package size={16}/> Quantity Bundles
                 </label>
                 <div className="flex gap-2">

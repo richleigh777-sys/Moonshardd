@@ -17,8 +17,8 @@ export const ConfigToggle: React.FC<ConfigToggleProps> = ({ label, active, onTog
         relative group flex items-center justify-between p-5 rounded-xl border transition-all duration-300 cursor-pointer overflow-hidden
         ${active 
             ? (danger 
-                ? 'bg-red-500/10 border-red-500/50 shadow-[0_0_20px_rgba(239,68,68,0.15)]' 
-                : 'bg-emerald-500/10 border-status-success/50 shadow-[0_0_20px_rgba(16,185,129,0.15)]') 
+                ? 'bg-red-500/10 border-red-500/50 shadow-sm' 
+                : 'bg-emerald-500/10 border-status-success/50 shadow-sm') 
             : 'bg-surface-main/40 border-border-subtle hover:bg-surface-alt hover:border-border-subtle/80'}
     `} 
     onClick={(e) => { e.preventDefault(); onToggle(); sfx.playClick(); }}

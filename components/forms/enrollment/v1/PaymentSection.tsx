@@ -34,7 +34,7 @@ export const PaymentSection: React.FC<PaymentSectionProps> = ({
             <Lock size={18} strokeWidth={2.5} />
           </div>
           <div>
-             <h3 className="text-sm font-black text-text-primary tracking-wide">CARD INFORMATION</h3>
+             <h3 className="text-sm font-bold text-text-primary tracking-wide">CARD INFORMATION</h3>
              <p className="text-sm text-text-muted uppercase tracking-wider font-semibold">Secure Agent Entry</p>
           </div>
         </div>
@@ -82,7 +82,7 @@ export const PaymentSection: React.FC<PaymentSectionProps> = ({
             <input
               type="text"
               name="cardNumber"
-              autoComplete="new-password"
+              autoComplete="none" data-lpignore="true" data-1p-ignore="true" data-form-type="other"
               value={financials.cardNumber}
               onChange={(e) => {
                 const val = e.target.value;
@@ -95,7 +95,7 @@ export const PaymentSection: React.FC<PaymentSectionProps> = ({
               }}
               placeholder="Card Number"
               maxLength={19}
-              className={`w-full bg-surface-alt/70 border rounded-xl pl-11 pr-10 py-3 text-sm font-mono tracking-widest outline-none transition-all shadow-inner ${
+              className={`w-full bg-surface-alt/70 border rounded-xl pl-11 pr-10 py-3 text-sm font-mono tracking-wide outline-none transition-all shadow-inner ${
                 cardStatus === 'valid'
                   ? 'border-status-success/50 focus:border-status-success focus:ring-4 focus:ring-status-success/10 focus:bg-surface-main text-text-primary'
                   : cardStatus === 'invalid'
@@ -121,7 +121,7 @@ export const PaymentSection: React.FC<PaymentSectionProps> = ({
             <div className="flex items-center gap-2">
               <select
                 name="cardExpMonth"
-                autoComplete="off"
+                autoComplete="none" data-lpignore="true" data-1p-ignore="true" data-form-type="other"
                 value={financials.cardExpMonth || ''}
                 onChange={handleFinancialChange}
                 className="w-1/2 bg-surface-alt/70 border border-border-subtle rounded-xl px-2 py-3 text-sm font-mono text-center outline-none focus:border-emerald-500/50 focus:ring-4 focus:ring-emerald-500/10 transition-all cursor-pointer"
@@ -134,7 +134,7 @@ export const PaymentSection: React.FC<PaymentSectionProps> = ({
               <span className="text-text-muted font-bold text-lg">/</span>
               <select
                 name="cardExpYear"
-                autoComplete="off"
+                autoComplete="none" data-lpignore="true" data-1p-ignore="true" data-form-type="other"
                 value={financials.cardExpYear || ''}
                 onChange={handleFinancialChange}
                 className="w-1/2 bg-surface-alt/70 border border-border-subtle rounded-xl px-2 py-3 text-sm font-mono text-center outline-none focus:border-emerald-500/50 focus:ring-4 focus:ring-emerald-500/10 transition-all cursor-pointer"
@@ -152,7 +152,7 @@ export const PaymentSection: React.FC<PaymentSectionProps> = ({
               <input
                 type={showCvv ? 'text' : 'password'}
                 name="cardCvv"
-                autoComplete="new-password"
+                autoComplete="none" data-lpignore="true" data-1p-ignore="true" data-form-type="other"
                 value={financials.cardCvv}
                 onChange={handleFinancialChange}
                 placeholder="CVV"

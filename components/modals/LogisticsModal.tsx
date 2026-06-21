@@ -70,13 +70,13 @@ export const LogisticsModal: React.FC<LogisticsModalProps> = ({ isOpen, onClose,
                             <carrierInfo.icon size={32} className={carrierInfo.color} />
                         </div>
                         <div>
-                            <h3 className="text-lg font-[700] text-text-primary tracking-tight">{carrierInfo.name}</h3>
+                            <h3 className="text-lg font-medium text-text-primary tracking-tight">{carrierInfo.name}</h3>
                             <p className="text-sm font-mono font-bold text-text-muted mt-1 tracking-wider">{sale.trackingId || 'NO_ID_ASSIGNED'}</p>
                         </div>
                     </div>
 
                     <div className="flex flex-col items-end gap-2 relative z-10">
-                        <div className={`px-4 py-1.5 rounded-lg border text-xs font-[700]  tracking-widest ${
+                        <div className={`px-4 py-1.5 rounded-lg border text-xs font-medium  tracking-wide ${
                             sale.deliveryStatus === 'Delivered' ? 'bg-emerald-500/10 text-status-success border-emerald-500/20' : 
                             sale.deliveryStatus === 'Out for Delivery' ? 'bg-amber-500/10 text-status-warning border-amber-500/20 animate-pulse' :
                             'bg-surface-main text-text-muted border-border-subtle'
@@ -101,7 +101,7 @@ export const LogisticsModal: React.FC<LogisticsModalProps> = ({ isOpen, onClose,
                     <Card className="p-5 border-border-subtle bg-surface-main h-full">
                         <div className="flex items-center gap-2 mb-4 pb-2 border-b border-border-subtle">
                             <RefreshCw size={16} className="text-accent-primary" />
-                            <h4 className="text-xs font-[700]  text-text-primary tracking-widest">Manual Override</h4>
+                            <h4 className="text-xs font-medium  text-text-primary tracking-wide">Manual Override</h4>
                         </div>
                         <div className="space-y-2">
                             <button onClick={() => handleUpdate('Label Created')} className="w-full flex items-center justify-between p-3 rounded-xl hover:bg-surface-alt border border-transparent hover:border-border-subtle transition-all group">
@@ -143,9 +143,9 @@ export const LogisticsModal: React.FC<LogisticsModalProps> = ({ isOpen, onClose,
                         <div className="flex items-center justify-between mb-4 pb-2 border-b border-border-subtle relative z-10">
                             <div className="flex items-center gap-2">
                                 <Clock size={16} className="text-text-muted" />
-                                <h4 className="text-xs font-[700]  text-text-primary tracking-widest">Event Log</h4>
+                                <h4 className="text-xs font-medium  text-text-primary tracking-wide">Event Log</h4>
                             </div>
-                            <span className="text-sm font-[700]  text-status-warning bg-amber-500/10 px-2.5 py-1 rounded border border-amber-500/20 tracking-wider">Internal Projection</span>
+                            <span className="text-sm font-medium  text-status-warning bg-amber-500/10 px-2.5 py-1 rounded border border-amber-500/20 tracking-wider">Internal Projection</span>
                         </div>
                         <div className="flex-1 overflow-y-auto custom-scrollbar relative pl-2 z-10">
                             <div className="absolute left-[5px] top-2 bottom-2 w-px bg-border-subtle"></div>

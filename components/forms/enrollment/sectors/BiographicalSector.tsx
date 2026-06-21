@@ -32,7 +32,7 @@ export function BiographicalSector({ formData, handleIdentityChange, handleDobCh
                     onChange={handleIdentityChange}
                     onPaste={handleFirstNamePaste}
                     placeholder="e.g. Jane"
-                    className="w-full bg-surface-alt/50 border border-white/5 rounded-2xl px-5 py-4 text-lg font-medium text-white placeholder-text-muted outline-none transition-all focus:border-white focus:bg-surface-alt focus:ring-1 focus:ring-white shadow-sm"
+                    className="w-full bg-surface-alt/50 border border-white/5 rounded-xl px-5 py-4 text-lg font-medium text-white placeholder-text-muted outline-none transition-all focus:border-white focus:bg-surface-alt focus:ring-1 focus:ring-white shadow-sm"
                 />
             </div>
             <div className="space-y-2">
@@ -42,7 +42,7 @@ export function BiographicalSector({ formData, handleIdentityChange, handleDobCh
                     value={formData.lastName}
                     onChange={handleIdentityChange}
                     placeholder="e.g. Doe"
-                    className="w-full bg-surface-alt/50 border border-white/5 rounded-2xl px-5 py-4 text-lg font-medium text-white placeholder-text-muted outline-none transition-all focus:border-white focus:bg-surface-alt focus:ring-1 focus:ring-white shadow-sm"
+                    className="w-full bg-surface-alt/50 border border-white/5 rounded-xl px-5 py-4 text-lg font-medium text-white placeholder-text-muted outline-none transition-all focus:border-white focus:bg-surface-alt focus:ring-1 focus:ring-white shadow-sm"
                 />
             </div>
         </div>
@@ -59,7 +59,7 @@ export function BiographicalSector({ formData, handleIdentityChange, handleDobCh
                     value={formData.email}
                     onChange={handleIdentityChange}
                     placeholder="jane@example.com"
-                    className={`w-full bg-surface-alt/50 border ${!isEmailValid ? 'border-rose-500 focus:border-rose-500 focus:ring-rose-500' : 'border-white/5 focus:border-white focus:ring-white'} rounded-2xl px-5 py-4 text-lg font-medium text-white placeholder-text-muted outline-none transition-all focus:bg-surface-alt focus:ring-1 shadow-sm`}
+                    className={`w-full bg-surface-alt/50 border ${!isEmailValid ? 'border-rose-500 focus:border-rose-500 focus:ring-rose-500' : 'border-white/5 focus:border-white focus:ring-white'} rounded-xl px-5 py-4 text-lg font-medium text-white placeholder-text-muted outline-none transition-all focus:bg-surface-alt focus:ring-1 shadow-sm`}
                 />
             </div>
             <div className="space-y-2">
@@ -73,7 +73,7 @@ export function BiographicalSector({ formData, handleIdentityChange, handleDobCh
                         handleIdentityChange(e);
                     }}
                     placeholder="(555) 000-0000"
-                    className="w-full bg-surface-alt/50 border border-white/5 rounded-2xl px-5 py-4 text-lg font-medium text-white placeholder-text-muted outline-none transition-all focus:border-white focus:bg-surface-alt focus:ring-1 focus:ring-white shadow-sm"
+                    className="w-full bg-surface-alt/50 border border-white/5 rounded-xl px-5 py-4 text-lg font-medium text-white placeholder-text-muted outline-none transition-all focus:border-white focus:bg-surface-alt focus:ring-1 focus:ring-white shadow-sm"
                 />
             </div>
         </div>
@@ -86,7 +86,7 @@ export function BiographicalSector({ formData, handleIdentityChange, handleDobCh
                     value={formData.age}
                     onChange={(e) => handleAgeChange(e.target.value)}
                     placeholder="e.g. 34"
-                    className="w-full bg-surface-alt/50 border border-white/5 rounded-2xl px-5 py-4 text-lg font-medium text-white placeholder-text-muted outline-none transition-all focus:border-white focus:bg-surface-alt focus:ring-1 focus:ring-white shadow-sm"
+                    className="w-full bg-surface-alt/50 border border-white/5 rounded-xl px-5 py-4 text-lg font-medium text-white placeholder-text-muted outline-none transition-all focus:border-white focus:bg-surface-alt focus:ring-1 focus:ring-white shadow-sm"
                 />
             </div>
             <div className="space-y-2 relative">
@@ -108,7 +108,7 @@ export function BiographicalSector({ formData, handleIdentityChange, handleDobCh
                         showYearDropdown
                         dropdownMode="select"
                         placeholderText="MM/DD/YYYY"
-                        className="w-full bg-surface-alt/50 border border-white/5 rounded-2xl px-5 py-4 text-lg font-medium text-white placeholder-text-muted outline-none transition-all focus:border-white focus:bg-surface-alt focus:ring-1 focus:ring-white shadow-sm"
+                        className="w-full bg-surface-alt/50 border border-white/5 rounded-xl px-5 py-4 text-lg font-medium text-white placeholder-text-muted outline-none transition-all focus:border-white focus:bg-surface-alt focus:ring-1 focus:ring-white shadow-sm"
                     />
                 </div>
             </div>

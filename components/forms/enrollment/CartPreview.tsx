@@ -32,7 +32,7 @@ export function CartPreview({ cart, onRemove, calculatedTotal }: any) {
     });
 
   return (
-    <div className="flex flex-col overflow-hidden bg-surface-main rounded-2xl border border-white/5 shadow-inner">
+    <div className="flex flex-col overflow-hidden bg-surface-main rounded-xl border border-white/5 shadow-inner">
       <div className="p-4 flex flex-col gap-3">
         {cart.length === 0 ? (
           <div className="text-center py-6 px-4 bg-surface-alt/20 rounded-[16px] border border-dashed border-white/10">

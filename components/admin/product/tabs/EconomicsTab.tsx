@@ -14,7 +14,7 @@ export const EconomicsTab: React.FC<EconomicsTabProps> = ({ formData, setFormDat
     return (
         <div className="space-y-6 animate-in slide-in-from-right-4 duration-300">
             <div className="max-w-md p-4 bg-surface-alt/30 rounded-xl border border-border-subtle space-y-5">
-                <h4 className="text-sm font-[700] text-text-muted tracking-widest flex items-center gap-2 mb-2">
+                <h4 className="text-sm font-medium text-text-muted tracking-wide flex items-center gap-2 mb-2">
                     <DollarSign size={16} className="text-status-success"/> Pricing Model
                 </h4>
                 <Input 

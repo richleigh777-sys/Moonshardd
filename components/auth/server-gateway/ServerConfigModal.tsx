@@ -33,7 +33,7 @@ export const ServerConfigModal: React.FC<ServerConfigModalProps> = ({
         <Modal isOpen={isOpen} onClose={onClose} title={title}>
             <div className="space-y-8 p-2">
                 <div className="space-y-2">
-                    <label className="text-sm font-[700]  text-text-muted tracking-widest ml-1">Server Identifier</label>
+                    <label className="text-sm font-medium  text-text-muted tracking-wide ml-1">Server Identifier</label>
                     <input autoComplete="off" data-lpignore="true" data-prevent-autofill="true" spellCheck={false} 
                         value={name}
                         onChange={(e) => setName(e.target.value)}
@@ -43,7 +43,7 @@ export const ServerConfigModal: React.FC<ServerConfigModalProps> = ({
                     />
                 </div>
                 <div className="space-y-2">
-                    <label className="text-sm font-[700]  text-text-muted tracking-widest ml-1">Geo-Data Region</label>
+                    <label className="text-sm font-medium  text-text-muted tracking-wide ml-1">Geo-Data Region</label>
                     <div className="relative">
                         <select 
                             value={region}
@@ -62,7 +62,7 @@ export const ServerConfigModal: React.FC<ServerConfigModalProps> = ({
                     <Button 
                         variant="primary" 
                         onClick={() => onSave(name, region)} 
-                        className="h-12 px-8 bg-indigo-600 hover:bg-indigo-500 shadow-lg shadow-indigo-500/20  tracking-widest font-[700] text-sm"
+                        className="h-12 px-8 bg-indigo-600 hover:bg-indigo-500 shadow-lg shadow-indigo-500/20  tracking-wide font-medium text-sm"
                         disabled={!name}
                     >
                         {actionLabel}

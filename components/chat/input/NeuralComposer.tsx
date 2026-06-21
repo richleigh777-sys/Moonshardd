@@ -13,9 +13,9 @@ export const NeuralComposer: React.FC<NeuralComposerProps> = ({ show, isThinking
     if (!show) return null;
 
     return (
-        <div ref={menuRef} className="absolute bottom-full left-14 mb-4 w-64 bg-surface-main/95 backdrop-blur-xl border border-border-subtle rounded-xl shadow-xl overflow-hidden animate-in slide-in-from-bottom-2 zoom-in-95 z-50">
+        <div ref={menuRef} className="absolute bottom-full left-14 mb-4 w-64 bg-surface-main/95  border border-border-subtle rounded-xl shadow-xl overflow-hidden animate-in slide-in-from-bottom-2 zoom-in-95 z-50">
             <div className="p-3 border-b border-border-subtle bg-accent-primary/5 flex items-center justify-between">
-                <span className="text-sm font-[700]  text-accent-primary tracking-widest flex items-center gap-2">
+                <span className="text-sm font-medium  text-accent-primary tracking-wide flex items-center gap-2">
                     <Sparkles size={16}/> Neural Composer
                 </span>
                 {isThinking && <div className="w-3 h-3 rounded-full border-2 border-accent-primary border-t-transparent animate-spin"/>}

@@ -92,11 +92,11 @@ export const CustomerLookup: React.FC<CustomerLookupProps> = ({
                 >
                   <div className="flex justify-between items-center">
                     <div className="flex items-center gap-4 flex-1 min-w-0">
-                      <div className="w-12 h-12 rounded-xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center font-black text-lg text-indigo-500 flex-shrink-0 group-hover:scale-105 transition-transform shadow-sm">
+                      <div className="w-12 h-12 rounded-xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center font-bold text-lg text-indigo-500 flex-shrink-0 group-hover:scale-105 transition-transform shadow-sm">
                         {customer.customer.charAt(0).toUpperCase()}
                       </div>
                       <div className="min-w-0 flex-1">
-                        <p className="text-sm font-black text-text-primary group-hover:text-indigo-400 truncate flex items-center gap-2">
+                        <p className="text-sm font-bold text-text-primary group-hover:text-indigo-400 truncate flex items-center gap-2">
                            {customer.customer}
                            {customer.email && <span className="text-sm font-medium text-text-muted/70 bg-surface-alt px-1.5 py-0.5 rounded border border-border-subtle/50 hidden sm:inline-block truncate max-w-[120px]">{customer.email}</span>}
                         </p>
@@ -135,7 +135,7 @@ export const CustomerLookup: React.FC<CustomerLookupProps> = ({
                                       <span className="font-bold text-text-primary">{date.toLocaleDateString(undefined, {month: 'short', day: 'numeric', year: 'numeric'})}</span>
                                       <span className="text-sm font-medium text-text-muted italic">({timeAgo})</span>
                                     </div>
-                                    <span className={`font-black ml-auto px-2 py-0.5 rounded text-sm uppercase tracking-wider ${isDeclined ? 'bg-status-error/20 text-status-error' : isApproved ? 'bg-status-success/20 text-status-success' : 'bg-status-warning/20 text-status-warning'}`}>
+                                    <span className={`font-bold ml-auto px-2 py-0.5 rounded text-sm uppercase tracking-wider ${isDeclined ? 'bg-status-error/20 text-status-error' : isApproved ? 'bg-status-success/20 text-status-success' : 'bg-status-warning/20 text-status-warning'}`}>
                                       {sale.status || 'Pending'}
                                     </span>
                                  </div>
@@ -155,7 +155,7 @@ export const CustomerLookup: React.FC<CustomerLookupProps> = ({
                                     </div>
                                     <div>
                                       <span className="text-sm text-text-muted uppercase block">Total</span>
-                                      <span className="font-black text-status-success block">${(sale as any).revenue?.toFixed(2) || sale.amount?.toFixed(2) || '0.00'}</span>
+                                      <span className="font-bold text-status-success block">${(sale as any).revenue?.toFixed(2) || sale.amount?.toFixed(2) || '0.00'}</span>
                                     </div>
                                  </div>
                                  

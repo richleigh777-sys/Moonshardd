@@ -46,7 +46,7 @@ export const ShiftVisualizer: React.FC<ShiftVisualizerProps> = ({ start, end }) 
 
                 {/* Active Period */}
                 <div 
-                    className="absolute h-full top-0 bg-gradient-to-r from-blue-500 to-indigo-600 opacity-90 shadow-[0_0_10px_rgba(79,70,229,0.4)]"
+                    className="absolute h-full top-0 bg-gradient-to-r from-blue-500 to-indigo-600 opacity-90 shadow-sm"
                     style={{ 
                         left: `${left}%`, 
                         width: `${width}%`,
@@ -60,7 +60,7 @@ export const ShiftVisualizer: React.FC<ShiftVisualizerProps> = ({ start, end }) 
 
             {/* Summary */}
             <div className="flex justify-center mt-2">
-                <span className="px-3 py-1 rounded-full bg-accent-secondary/10 border border-accent-secondary/20 text-sm font-bold text-accent-secondary  tracking-widest">
+                <span className="px-3 py-1 rounded-full bg-accent-secondary/10 border border-accent-secondary/20 text-sm font-bold text-accent-secondary  tracking-wide">
                     {durationHrs} Hour Operation Cycle
                 </span>
             </div>

@@ -81,7 +81,7 @@ export const VisualAutomationBuilder = () => {
                     className={`relative w-72 rounded-xl border p-4 cursor-pointer transition-all duration-300 group ${isSelected ? 'bg-surface-main border-accent-primary shadow-lg shadow-accent-primary/20 ring-1 ring-accent-primary/50 z-10' : 'bg-surface-main/60 border-border-subtle hover:bg-surface-main hover:border-accent-primary/50 shadow-sm'}`}
                 >
                     {isRoot && (
-                        <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-0.5 bg-accent-primary text-white text-sm font-[700]  tracking-widest rounded-full shadow-md flex items-center gap-1">
+                        <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-0.5 bg-accent-primary text-white text-sm font-medium  tracking-wide rounded-full shadow-md flex items-center gap-1">
                             <Play size={16} /> Entry Trigger
                         </div>
                     )}
@@ -133,13 +133,13 @@ export const VisualAutomationBuilder = () => {
 
     return (
         <div className="h-full flex flex-col bg-surface-main relative overflow-hidden">
-            <div className="h-16 px-4 border-b border-border-subtle flex items-center justify-between shrink-0 bg-surface-main/80 backdrop-blur-md z-20 shadow-sm">
+            <div className="h-16 px-4 border-b border-border-subtle flex items-center justify-between shrink-0 bg-surface-main/80  z-20 shadow-sm">
                 <div className="flex items-center gap-4">
                     <div className="w-10 h-10 rounded-xl bg-accent-primary/20 border border-accent-primary/50 flex items-center justify-center text-accent-primary shadow-inner">
                         <GitMerge size={20} />
                     </div>
                     <div>
-                        <h2 className="text-lg font-[700] text-text-primary tracking-tight">Post-Sale Fulfillment Flow</h2>
+                        <h2 className="text-lg font-medium text-text-primary tracking-tight">Post-Sale Fulfillment Flow</h2>
                         <p className="text-sm font-medium text-text-muted flex items-center gap-2">
                             <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span> Active &mdash; 2,491 executions
                         </p>
@@ -151,7 +151,7 @@ export const VisualAutomationBuilder = () => {
                     </button>
                     <button 
                         onClick={handleSave}
-                        className="px-4 py-2 bg-text-primary hover:bg-text-secondary text-surface-main rounded-xl text-sm font-bold  tracking-widest shadow-lg transition-all flex items-center gap-2"
+                        className="px-4 py-2 bg-text-primary hover:bg-text-secondary text-surface-main rounded-xl text-sm font-bold  tracking-wide shadow-lg transition-all flex items-center gap-2"
                     >
                         {isSaving ? <><Check size={16} className="animate-pulse"/> Saved</> : <><Save size={16} /> Publish</>}
                     </button>
@@ -171,11 +171,11 @@ export const VisualAutomationBuilder = () => {
                 </div>
 
                 {selectedNode && activeNode && (
-                    <div className="w-80 border-l border-border-subtle bg-surface-main/95 backdrop-blur-xl shrink-0 flex flex-col shadow-2xl z-20 animate-in slide-in-from-right-4 duration-300">
+                    <div className="w-80 border-l border-border-subtle bg-surface-main/95  shrink-0 flex flex-col shadow-2xl z-20 animate-in slide-in-from-right-4 duration-300">
                         <div className="p-4 border-b border-border-subtle flex items-center justify-between">
                             <div className="flex items-center gap-2">
                                 <Settings2 size={16} className="text-text-muted" />
-                                <h3 className="text-sm font-[700]  tracking-widest text-text-secondary">Node Configuration</h3>
+                                <h3 className="text-sm font-medium  tracking-wide text-text-secondary">Node Configuration</h3>
                             </div>
                             <button onClick={() => setSelectedNode(null)} className="p-1 hover:bg-surface-alt rounded-md text-text-muted hover:text-text-primary">
                                 &times;

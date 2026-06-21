@@ -30,7 +30,7 @@ export const EnrollmentHeader: React.FC<EnrollmentHeaderProps> = ({
     };
 
     return (
-        <div className="bg-surface-main/80 backdrop-blur-xl text-text-primary px-8 py-5 flex justify-between items-center border-b border-border-subtle shrink-0 z-20 sticky top-0 shadow-sm">
+        <div className="bg-surface-main/80  text-text-primary px-8 py-5 flex justify-between items-center border-b border-border-subtle shrink-0 z-20 sticky top-0 shadow-sm">
             
             <div className="flex items-center gap-5">
                 <div className="flex items-center gap-4">
@@ -39,8 +39,8 @@ export const EnrollmentHeader: React.FC<EnrollmentHeaderProps> = ({
                     </div>
                     <div>
                         <div className="flex items-center gap-3">
-                            <h2 className="text-xl font-[800] tracking-tight">Deployment Console</h2>
-                            <div className="flex items-center gap-1.5 px-2 py-0.5 rounded bg-status-success/10 border border-status-success/20 text-sm font-bold text-status-success tracking-widest uppercase shadow-[0_0_10px_rgba(16,185,129,0.2)]">
+                            <h2 className="text-xl font-semibold tracking-tight">Deployment Console</h2>
+                            <div className="flex items-center gap-1.5 px-2 py-0.5 rounded bg-status-success/10 border border-status-success/20 text-sm font-bold text-status-success tracking-wide uppercase shadow-sm">
                                 <div className="w-1.5 h-1.5 rounded-full bg-[#10B981] animate-pulse"></div>
                                 SECURE LINK
                             </div>
@@ -62,13 +62,13 @@ export const EnrollmentHeader: React.FC<EnrollmentHeaderProps> = ({
                 <div className="bg-surface-hover p-1 rounded-xl flex gap-1 border border-border-strong hidden sm:flex shadow-inner">
                     <button 
                         onClick={() => { setMode('order'); sfx.playClick(); }}
-                        className={`px-5 py-1.5 rounded-lg text-sm tracking-widest uppercase font-[800] transition-all ${mode === 'order' ? 'bg-[#27272A] text-text-primary shadow border border-[#52525B]' : 'text-text-muted hover:text-text-primary'}`}
+                        className={`px-5 py-1.5 rounded-lg text-sm tracking-wide uppercase font-semibold transition-all ${mode === 'order' ? 'bg-[#27272A] text-text-primary shadow border border-[#52525B]' : 'text-text-muted hover:text-text-primary'}`}
                     >
                         Order
                     </button>
                     <button 
                         onClick={() => { setMode('callback'); sfx.playClick(); }}
-                        className={`px-5 py-1.5 rounded-lg text-sm tracking-widest uppercase font-[800] transition-all ${mode === 'callback' ? 'bg-[#27272A] text-text-primary shadow border border-[#52525B]' : 'text-text-muted hover:text-text-primary'}`}
+                        className={`px-5 py-1.5 rounded-lg text-sm tracking-wide uppercase font-semibold transition-all ${mode === 'callback' ? 'bg-[#27272A] text-text-primary shadow border border-[#52525B]' : 'text-text-muted hover:text-text-primary'}`}
                     >
                         Callback
                     </button>
@@ -78,11 +78,11 @@ export const EnrollmentHeader: React.FC<EnrollmentHeaderProps> = ({
             <div className="flex items-center gap-4">
                 {/* Session Timer */}
                 <div className="hidden xl:flex flex-col items-end">
-                    <span className="text-sm font-[800] text-text-secondary tracking-widest uppercase mb-1 flex items-center gap-1">
+                    <span className="text-sm font-semibold text-text-secondary tracking-wide uppercase mb-1 flex items-center gap-1">
                         Session Time
                     </span>
                     <div className="flex items-center gap-2">
-                        <span className={`text-sm font-mono tracking-wider font-[800] drop-shadow ${seconds > 300 ? 'text-status-error' : 'text-accent-primary'}`}>{formatTime(seconds)}</span>
+                        <span className={`text-sm font-mono tracking-wider font-semibold drop-shadow ${seconds > 300 ? 'text-status-error' : 'text-accent-primary'}`}>{formatTime(seconds)}</span>
                     </div>
                 </div>
 
@@ -90,10 +90,10 @@ export const EnrollmentHeader: React.FC<EnrollmentHeaderProps> = ({
 
                 {/* Total Display */}
                 <div className="flex flex-col items-end border-l border-border-strong pl-6">
-                    <span className="text-sm font-[800] text-text-secondary tracking-widest uppercase mb-1">Total Amount</span>
+                    <span className="text-sm font-semibold text-text-secondary tracking-wide uppercase mb-1">Total Amount</span>
                     <div className="flex items-baseline gap-1 relative group">
-                        <span className="text-sm font-black text-accent-primary absolute -left-3 top-1">$</span>
-                        <p className="text-xl font-black text-text-primary tracking-tighter tabular-nums leading-none drop-shadow">
+                        <span className="text-sm font-bold text-accent-primary absolute -left-3 top-1">$</span>
+                        <p className="text-xl font-bold text-text-primary tracking-tighter tabular-nums leading-none drop-shadow">
                             {grandTotal.toLocaleString(undefined, {minimumFractionDigits: 2})}
                         </p>
                     </div>
@@ -102,7 +102,7 @@ export const EnrollmentHeader: React.FC<EnrollmentHeaderProps> = ({
                 <div className="w-px h-10 bg-[#3F3F46] mx-1"></div>
 
                 <div className="flex items-center gap-2">
-                    <button onClick={onClear} className="h-10 px-3 flex items-center justify-center gap-1.5 bg-surface-hover hover:bg-[#27272A] border border-transparent hover:border-border-strong rounded-xl text-text-muted hover:text-text-primary transition-all text-sm font-[800] uppercase tracking-widest shadow-inner">
+                    <button onClick={onClear} className="h-10 px-3 flex items-center justify-center gap-1.5 bg-surface-hover hover:bg-[#27272A] border border-transparent hover:border-border-strong rounded-xl text-text-muted hover:text-text-primary transition-all text-sm font-semibold uppercase tracking-wide shadow-inner">
                         <Eraser size={16} />
                         <span className="hidden lg:inline">Clear</span>
                     </button>

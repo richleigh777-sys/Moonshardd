@@ -81,8 +81,8 @@ export const TransactionHistoryModal: React.FC<TransactionHistoryModalProps> = (
                 <div className="absolute -top-20 -right-20 w-64 h-64 bg-accent-primary/10 blur-[80px] rounded-full pointer-events-none" />
 
                 {/* Search Header - Refraction Glass Style */}
-                <div className="p-4 border-b border-border-subtle bg-surface-main/70 backdrop-blur-xl shrink-0 space-y-4 relative z-10">
-                    <div className="flex items-center gap-2 text-xs font-[700]  text-text-muted tracking-widest opacity-80">
+                <div className="p-4 border-b border-border-subtle bg-surface-main/70  shrink-0 space-y-4 relative z-10">
+                    <div className="flex items-center gap-2 text-xs font-medium  text-text-muted tracking-wide opacity-80">
                         <Shield size={16} className="text-status-success" />
                         <span>Search Protocol • Last 3 Transactions</span>
                     </div>
@@ -113,14 +113,14 @@ export const TransactionHistoryModal: React.FC<TransactionHistoryModalProps> = (
                             <div className="w-24 h-24 bg-surface-alt rounded-full flex items-center justify-center mb-6 border border-border-subtle">
                                 <History size={40} strokeWidth={1.5} />
                             </div>
-                            <p className="text-sm font-[700]  tracking-widest">
+                            <p className="text-sm font-medium  tracking-wide">
                                 {searchQuery ? 'No Matches Found' : 'Enter Identity to Search'}
                             </p>
                         </div>
                     ) : (
                         <div className="animate-in slide-in-from-bottom-4 duration-500 space-y-6">
                             {secureHistory.map((group, idx) => (
-                                <div key={idx} className="group/card relative overflow-hidden rounded-[2rem] border border-border-subtle bg-surface-main/40 hover:bg-surface-main/60 transition-all duration-500 hover:shadow-2xl hover:border-accent-primary/20">
+                                <div key={idx} className="group/card relative overflow-hidden rounded-xl border border-border-subtle bg-surface-main/40 hover:bg-surface-main/60 transition-all duration-500 hover:shadow-2xl hover:border-accent-primary/20">
                                     
                                     {/* Glossy sheen on hover */}
                                     <div className="absolute inset-0 bg-gradient-to-tr from-white/0 via-white/5 to-white/0 opacity-0 group-hover/card:opacity-100 transition-opacity pointer-events-none transform -translate-x-full group-hover/card:translate-x-full duration-1000 ease-in-out"></div>
@@ -128,11 +128,11 @@ export const TransactionHistoryModal: React.FC<TransactionHistoryModalProps> = (
                                     {/* Customer Header */}
                                     <div className="p-5 border-b border-border-subtle flex justify-between items-center bg-surface-alt/10 relative z-10">
                                         <div className="flex items-center gap-4">
-                                            <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-indigo-500/10 to-purple-500/10 border border-accent-secondary/20 flex items-center justify-center font-[700] text-lg text-accent-secondary">
+                                            <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-indigo-500/10 to-purple-500/10 border border-accent-secondary/20 flex items-center justify-center font-medium text-lg text-accent-secondary">
                                                 {group.identity.customer.charAt(0)}
                                             </div>
                                             <div>
-                                                <h4 className="text-lg font-[700] text-text-primary  tracking-tight">{group.identity.customer}</h4>
+                                                <h4 className="text-lg font-medium text-text-primary  tracking-tight">{group.identity.customer}</h4>
                                                 <div className="flex items-center gap-3 mt-1">
                                                     <span className="text-xs font-mono font-bold text-text-muted flex items-center gap-1 bg-surface-alt/50 px-2.5 py-1 rounded border border-border-subtle">
                                                         <EyeOff size={16} /> {maskPhone(group.identity.phone)}
@@ -149,7 +149,7 @@ export const TransactionHistoryModal: React.FC<TransactionHistoryModalProps> = (
                                             <Button 
                                                 onClick={() => { onSelect(group.identity); onClose(); }}
                                                 variant="secondary"
-                                                className="h-9 text-xs  font-[700] tracking-wider bg-surface-main/50 hover:bg-surface-alt border-border-subtle"
+                                                className="h-9 text-xs  font-medium tracking-wider bg-surface-main/50 hover:bg-surface-alt border-border-subtle"
                                             >
                                                 Select Profile
                                             </Button>
@@ -163,14 +163,14 @@ export const TransactionHistoryModal: React.FC<TransactionHistoryModalProps> = (
                                         <div className="space-y-4 relative z-10">
                                             {group.history.map((sale, _i) => (
                                                 <div key={sale.id} className="flex gap-4 group/row">
-                                                    <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center bg-surface-main shrink-0 mt-1 z-10 ${sale.status === 'Approved' ? 'border-emerald-500 text-status-success shadow-[0_0_10px_rgba(16,185,129,0.2)]' : 'border-amber-500 text-status-warning'}`}>
+                                                    <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center bg-surface-main shrink-0 mt-1 z-10 ${sale.status === 'Approved' ? 'border-emerald-500 text-status-success shadow-sm' : 'border-amber-500 text-status-warning'}`}>
                                                         <div className={`w-2 h-2 rounded-full ${sale.status === 'Approved' ? 'bg-emerald-500' : 'bg-amber-500'}`}></div>
                                                     </div>
                                                     
-                                                    <div className="flex-1 bg-surface-alt/20 hover:bg-surface-alt/50 border border-border-subtle rounded-xl p-3 transition-all flex justify-between items-center group-hover/row:border-accent-primary/20 backdrop-blur-sm">
+                                                    <div className="flex-1 bg-surface-alt/20 hover:bg-surface-alt/50 border border-border-subtle rounded-xl p-3 transition-all flex justify-between items-center group-hover/row:border-accent-primary/20 ">
                                                         <div className="flex flex-col">
                                                             <div className="flex items-center gap-2 mb-1">
-                                                                <span className="text-xs font-[700]  text-text-secondary">{formatRelativeTime(sale.timestamp)}</span>
+                                                                <span className="text-xs font-medium  text-text-secondary">{formatRelativeTime(sale.timestamp)}</span>
                                                                 <span className="text-xs text-text-muted opacity-50">•</span>
                                                                 <span className="text-xs text-text-muted font-mono">{new Date(sale.timestamp).toLocaleDateString()}</span>
                                                             </div>

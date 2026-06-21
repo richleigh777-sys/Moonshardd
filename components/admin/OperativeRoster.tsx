@@ -120,15 +120,15 @@ export const OperativeRoster: React.FC<OperativeRosterProps> = ({
                 />
 
                 {/* FOOTER */}
-                <div className="p-2.5 border-t border-border-subtle bg-surface-alt/30 shrink-0 backdrop-blur-md relative z-10 flex justify-between items-center px-4">
+                <div className="p-2.5 border-t border-border-subtle bg-surface-alt/30 shrink-0  relative z-10 flex justify-between items-center px-4">
                     <div className="flex items-center gap-4">
                         <div className="flex items-center gap-1.5">
                             <HeartHandshake size={16} className="text-status-success" />
-                            <span className="text-sm font-bold  text-text-muted tracking-widest">Community</span>
+                            <span className="text-sm font-bold  text-text-muted tracking-wide">Community</span>
                         </div>
                         <div className="flex items-center gap-1.5">
                             <Activity size={16} className="text-accent-primary" />
-                            <span className="text-sm font-bold  text-text-muted tracking-widest">Wellness: 98%</span>
+                            <span className="text-sm font-bold  text-text-muted tracking-wide">Wellness: 98%</span>
                         </div>
                     </div>
                     <span className="text-sm font-medium text-text-muted/60">Braveheart v6.0</span>

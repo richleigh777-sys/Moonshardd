@@ -328,7 +328,7 @@ export const ChatWindow: React.FC<Props> = ({
     <div className="flex h-full w-full relative overflow-hidden" 
          style={{ background: currentWallpaper ? `url(${currentWallpaper}) center/cover` : 'transparent' }}>
       
-      {currentWallpaper && <div className="absolute inset-0 bg-surface-main/30 backdrop-blur-sm -z-10"></div>}
+      {currentWallpaper && <div className="absolute inset-0 bg-surface-main/30  -z-10"></div>}
 
       <div 
         className="flex flex-col h-full flex-1 relative z-10"
@@ -358,7 +358,7 @@ export const ChatWindow: React.FC<Props> = ({
 
         {/* PINNED MESSAGES BAR */}
         {pinnedMessages.length > 0 && (
-            <div className="bg-surface-alt/80 backdrop-blur-md border-b border-border-subtle p-2 md:px-4 z-20 sticky top-0 flex items-center justify-between">
+            <div className="bg-surface-alt/80  border-b border-border-subtle p-2 md:px-4 z-20 sticky top-0 flex items-center justify-between">
                  <div className="flex items-center gap-3 w-full overflow-hidden">
                     <Pin size={16} className="text-accent-secondary shrink-0" />
                     <div 
@@ -472,7 +472,7 @@ export const ChatWindow: React.FC<Props> = ({
                 
                 {/* Pending Attachments Staging Area */}
                 {pendingAttachments.length > 0 && (
-                    <div className="flex gap-2 p-2 bg-surface-alt/90 backdrop-blur-md border border-border-subtle rounded-xl shadow-float overflow-x-auto max-w-full animate-in slide-in-from-bottom-3">
+                    <div className="flex gap-2 p-2 bg-surface-alt/90  border border-border-subtle rounded-xl shadow-float overflow-x-auto max-w-full animate-in slide-in-from-bottom-3">
                         {pendingAttachments.map((att, idx) => (
                             <div key={idx} className="relative group shrink-0">
                                 {att.type === 'image' ? (
@@ -627,7 +627,7 @@ export const ChatWindow: React.FC<Props> = ({
               </div>
 
               <div className="flex flex-col gap-2">
-                  <label className="text-sm font-[700] tracking-wider text-text-muted">CUSTOM ADDRESS OR DATA LINK</label>
+                  <label className="text-sm font-medium tracking-wider text-text-muted">CUSTOM ADDRESS OR DATA LINK</label>
                   <input
                       type="text"
                       placeholder="e.g. Clients Head Office, Tokyo, Japan"

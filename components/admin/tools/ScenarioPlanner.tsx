@@ -142,7 +142,7 @@ export const ScenarioPlanner: React.FC<ScenarioPlannerProps> = ({
               </div>
               <div className="flex justify-between items-center pt-2 border-t border-border-subtle">
                 <span className="text-sm text-text-secondary">Net Margin:</span>
-                <span className="font-black font-mono text-status-success">
+                <span className="font-bold font-mono text-status-success">
                   {analysis.currentMargin.toFixed(1)}%
                 </span>
               </div>
@@ -167,7 +167,7 @@ export const ScenarioPlanner: React.FC<ScenarioPlannerProps> = ({
               </div>
               <div className="flex justify-between items-center pt-2 border-t border-border-subtle">
                 <span className="text-sm text-text-secondary">Net Margin:</span>
-                <span className="font-black font-mono text-status-success">
+                <span className="font-bold font-mono text-status-success">
                   {analysis.newMargin.toFixed(1)}%
                 </span>
               </div>

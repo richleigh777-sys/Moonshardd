@@ -73,7 +73,7 @@ export const OperativeItem: React.FC<OperativeItemProps> = React.memo(({
     if (viewMode === 'grid') {
         return (
             <div style={style} className="p-2 h-full">
-                <div className="group relative bg-surface-main border border-border-subtle rounded-xl p-4 hover:shadow-[0_10px_40px_-10px_rgba(0,0,0,0.1)] transition-all duration-500 h-full flex flex-col hover:-translate-y-1">
+                <div className="group relative bg-surface-main border border-border-subtle rounded-xl p-4 hover:shadow-sm transition-all duration-500 h-full flex flex-col hover:-translate-y-1">
                     
                     {/* Header: Avatar & Status */}
                     <div className="flex justify-between items-start mb-2">

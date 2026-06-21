@@ -134,7 +134,7 @@ export function Stage1Profile({ formData, setFormData, handleIdentityChange, han
             <div className="w-full max-w-[1400px] grid grid-cols-1 lg:grid-cols-2 gap-12 pb-24">
                 
                 <div className="flex flex-col gap-12">
-                    <div className={`bg-[#141414] border rounded-[24px] p-8 shadow-2xl space-y-8 h-fit transition-all duration-1000 ${wasAutoFilled ? 'border-[#8BA888] shadow-[#8BA888]/20 bg-[#8BA888]/5' : 'border-white/5'}`}>
+                    <div className={`bg-[#141414] border rounded-xl p-8 shadow-2xl space-y-8 h-fit transition-all duration-1000 ${wasAutoFilled ? 'border-[#8BA888] shadow-sm/20 bg-[#8BA888]/5' : 'border-white/5'}`}>
                         <div className="flex items-center justify-between">
                             <h2 className="text-[#FDFDFD] font-medium text-2xl tracking-wide flex items-center gap-3">
                                <span className="text-[#C4A470]">01.</span> Customer Profile
@@ -173,7 +173,7 @@ export function Stage1Profile({ formData, setFormData, handleIdentityChange, han
                                     🪄 AutoFill Paste
                                 </button>
                                 {wasAutoFilled && (
-                                    <span className="px-3 py-1 bg-[#8BA888]/20 text-[#8BA888] rounded-full text-sm font-bold uppercase tracking-widest animate-pulse">
+                                    <span className="px-3 py-1 bg-[#8BA888]/20 text-[#8BA888] rounded-full text-sm font-bold uppercase tracking-wide animate-pulse">
                                         Match Found: Auto-filled
                                     </span>
                                 )}
@@ -247,7 +247,7 @@ export function Stage1Profile({ formData, setFormData, handleIdentityChange, han
                                                 const newSelection = isSelected ? current.filter((c: string) => c !== cond) : [...current, cond];
                                                 handleIdentityChange({ target: { name: 'medicalConditions', value: newSelection } } as any);
                                             }}
-                                            className={`px-4 py-2 font-medium tracking-wide border transition-all ${isSelected ? 'bg-[#C4A470] text-black border-[#C4A470] shadow-[0_0_15px_rgba(196,164,112,0.4)] rounded-full text-[13px]' : 'bg-[#1A1A1A] text-[#FDFDFD] border-white/20 hover:border-[#C4A470] hover:text-[#C4A470] hover:bg-[#C4A470]/10 rounded-full text-[13px] shadow-sm'}`}
+                                            className={`px-4 py-2 font-medium tracking-wide border transition-all ${isSelected ? 'bg-[#C4A470] text-black border-[#C4A470] shadow-sm rounded-full text-[13px]' : 'bg-[#1A1A1A] text-[#FDFDFD] border-white/20 hover:border-[#C4A470] hover:text-[#C4A470] hover:bg-[#C4A470]/10 rounded-full text-[13px] shadow-sm'}`}
                                         >
                                             {cond}
                                         </button>
@@ -313,7 +313,7 @@ export function Stage1Profile({ formData, setFormData, handleIdentityChange, han
                     </div>
 
                     {customerNotes && customerNotes.length > 0 && (
-                        <div className="bg-[#141414] border border-white/5 rounded-[24px] p-8 shadow-2xl h-fit max-h-[400px] overflow-y-auto custom-scrollbar">
+                        <div className="bg-[#141414] border border-white/5 rounded-xl p-8 shadow-2xl h-fit max-h-[400px] overflow-y-auto custom-scrollbar">
                             <h2 className="text-[#FDFDFD] font-medium text-xl mb-6">Profile History Notes</h2>
                             <div className="space-y-4">
                                 {customerNotes.map((note: any, i: number) => (
@@ -330,18 +330,18 @@ export function Stage1Profile({ formData, setFormData, handleIdentityChange, han
                     )}
                 </div>
 
-                <div className="bg-[#141414] border border-white/5 rounded-[24px] p-8 shadow-2xl flex flex-col h-fit">
+                <div className="bg-[#141414] border border-white/5 rounded-xl p-8 shadow-2xl flex flex-col h-fit">
                     <div className="flex items-center justify-between mb-8">
                         <h2 className="text-[#FDFDFD] font-medium text-2xl tracking-wide flex items-center gap-3">
                            <span className="text-[#C4A470]">02.</span> Shipping Destination
                         </h2>
                         {addressValidationStatus === 'validating' && (
-                            <span className="px-3 py-1 bg-blue-500/10 text-blue-400 rounded-full text-sm font-bold uppercase tracking-widest animate-pulse flex items-center gap-1">
+                            <span className="px-3 py-1 bg-blue-500/10 text-blue-400 rounded-full text-sm font-bold uppercase tracking-wide animate-pulse flex items-center gap-1">
                                 <Search size={12} className="animate-spin" /> Verifying...
                             </span>
                         )}
                         {addressValidationStatus === 'verified' && (
-                            <span className="px-3 py-1 bg-emerald-500/10 text-emerald-400 rounded-full text-sm font-bold uppercase tracking-widest flex items-center gap-1">
+                            <span className="px-3 py-1 bg-emerald-500/10 text-emerald-400 rounded-full text-sm font-bold uppercase tracking-wide flex items-center gap-1">
                                 <MapPin size={12} /> Verified
                             </span>
                         )}
@@ -422,7 +422,7 @@ export function Stage1Profile({ formData, setFormData, handleIdentityChange, han
                             type="button"
                             onClick={onNext} 
                             disabled={!isValid}
-                            className="w-2/3 py-4 bg-gradient-to-r from-[#E6C280] to-[#C4A470] text-black font-bold text-lg rounded-xl hover:shadow-[0_0_30px_rgba(196,164,112,0.3)] active:scale-[0.98] transition-all disabled:opacity-50 disabled:grayscale disabled:cursor-not-allowed uppercase tracking-wider"
+                            className="w-2/3 py-4 bg-gradient-to-r from-[#E6C280] to-[#C4A470] text-black font-bold text-lg rounded-xl hover:shadow-sm active:scale-[0.98] transition-all disabled:opacity-50 disabled:grayscale disabled:cursor-not-allowed uppercase tracking-wider"
                             tabIndex={15}
                         >
                             Proceed

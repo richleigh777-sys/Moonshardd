@@ -38,6 +38,7 @@ export type CRMContextType = {
     executeFullDataHealthReport: (reportId: string) => Promise<void>;
     undoDataHealthAction: (reportId: string, actionId: string) => Promise<void>;
     importSales: (data: Partial<Sale>[]) => Promise<number>;
+    bulkAddCustomers: (customers: Partial<Customer>[]) => Promise<void>;
     addCustomer: (customer: Partial<Customer>) => Promise<void>;
     updateCustomer: (id: string, updates: Partial<Customer>, expectedUpdatedAt?: number, originalData?: Customer) => Promise<void>;
     deleteCustomer: (id: string) => Promise<void>;

@@ -51,10 +51,10 @@ export const ScriptCard = React.memo<ScriptCardProps>(({ script, isActive, onCli
             `}
         >
             <div className="flex justify-between items-start w-full relative z-10">
-                <span className={`text-sm font-[700]  tracking-widest px-2.5 py-1 rounded border ${styles}`}>
+                <span className={`text-sm font-medium  tracking-wide px-2.5 py-1 rounded border ${styles}`}>
                     {script.type}
                 </span>
-                {isActive && <div className="w-1.5 h-1.5 bg-accent-primary rounded-full animate-pulse shadow-[0_0_8px_var(--color-accent-primary)]"></div>}
+                {isActive && <div className="w-1.5 h-1.5 bg-accent-primary rounded-full animate-pulse shadow-sm"></div>}
             </div>
 
             <h4 className={`text-sm font-bold truncate w-full relative z-10 ${isActive ? 'text-text-primary' : 'text-text-secondary group-hover:text-text-primary'}`}>

@@ -29,14 +29,14 @@ export const IdentityPanel: React.FC<IdentityPanelProps> = ({
                     <div className="p-2 bg-gradient-to-br from-indigo-500/10 to-indigo-500/5 border border-indigo-500/20 shadow-inner rounded-xl text-indigo-500">
                         <Fingerprint size={16} />
                     </div>
-                    <h4 className="text-sm font-[800] text-text-primary tracking-widest uppercase">Customer Information</h4>
+                    <h4 className="text-sm font-semibold text-text-primary tracking-wide uppercase">Customer Information</h4>
                 </div>
             </div>
 
             <div className="p-6 md:p-8 space-y-8 bg-surface-main/40">
                 {/* 1. Bio & Contact */}
                 <div>
-                    <h5 className="text-sm font-bold text-text-muted uppercase tracking-widest mb-4 flex items-center gap-2">
+                    <h5 className="text-sm font-bold text-text-muted uppercase tracking-wide mb-4 flex items-center gap-2">
                         <span className="w-1.5 h-1.5 rounded-full bg-indigo-500"></span>
                         Personal Details
                     </h5>

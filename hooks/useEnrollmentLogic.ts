@@ -749,7 +749,6 @@ export function useEnrollmentLogic(
       }
 
       sfx.playDecline();
-    }
   }, [productConfig]);
 
   const handleDisposition = useCallback(async (dispo: { outcome: string; notes: string; callbackTimestamp?: number }) => {

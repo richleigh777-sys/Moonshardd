@@ -212,14 +212,14 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ onLogin }) => {
                                 disabled={isProcessing}
                                 className="text-xs font-medium text-text-secondary hover:text-text-primary transition-colors disabled:opacity-50 border border-border-subtle hover:bg-surface-highlight py-2 px-3 rounded-lg"
                             >
-                                Log in as Manager
+                                Log in as Admin
                             </button>
                             <button 
                                 onClick={() => handleSimulateLogin('agent-srv-001-1', 'agent123', 'srv-001')}
                                 disabled={isProcessing}
                                 className="text-xs font-medium text-text-secondary hover:text-text-primary transition-colors disabled:opacity-50 border border-border-subtle hover:bg-surface-highlight py-2 px-3 rounded-lg"
                             >
-                                Log in as Team Member
+                                Log in as Agent
                             </button>
                         </div>
                     </div>

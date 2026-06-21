@@ -15,7 +15,7 @@ export const AgentSidebar: React.FC<AgentSidebarProps> = ({ isAllowed }) => {
       
       {/* CORE OPERATIONS */}
       <div className="px-3 py-2">
-        <p className="text-sm font-bold text-text-muted tracking-widest uppercase opacity-70">Workspace</p>
+        <p className="text-sm font-bold text-text-muted tracking-wide uppercase opacity-70">Workspace</p>
       </div>
       
       {isAllowed('dash') && (
@@ -42,7 +42,7 @@ export const AgentSidebar: React.FC<AgentSidebarProps> = ({ isAllowed }) => {
 
       {/* GROWTH & ANALYTICS */}
       <div className="px-3 py-2 mt-4 border-t border-border-subtle pt-4">
-        <p className="text-sm font-bold text-text-muted tracking-widest uppercase opacity-70">My Progress</p>
+        <p className="text-sm font-bold text-text-muted tracking-wide uppercase opacity-70">My Progress</p>
       </div>
 
       {isAllowed('ledger') && (

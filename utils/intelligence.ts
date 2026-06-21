@@ -20,6 +20,7 @@ export interface CustomerProfile {
   tags: string[];
   phones: Set<string>; // Track multiple contact points (Normalized)
   emails: Set<string>; // Track multiple emails (Normalized)
+  customFields?: Record<string, any>;
 }
 
 // --- 1. THE SENTINEL: DEDUPLICATION ENGINE ---

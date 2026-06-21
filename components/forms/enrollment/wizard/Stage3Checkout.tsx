@@ -42,7 +42,7 @@ export function Stage3Checkout({ cart, formData, handleIdentityChange, useShippi
                 <div className="space-y-8">
                      <button onClick={onBack} className="text-[#A0A0A0] hover:text-white transition-colors text-sm uppercase tracking-wide">← Back to Configuration</button>
                      
-                     <div className="bg-[#141414] border border-white/5 rounded-[24px] p-8 shadow-2xl">
+                     <div className="bg-[#141414] border border-white/5 rounded-xl p-8 shadow-2xl">
                          <h2 className="text-[#FDFDFD] font-medium text-2xl tracking-wide flex items-center gap-3 mb-8">
                             <span className="text-[#C4A470]">04.</span> Quality Check
                          </h2>
@@ -63,11 +63,11 @@ export function Stage3Checkout({ cart, formData, handleIdentityChange, useShippi
                          </div>
                      </div>
 
-                     <div className="bg-[#141414] border border-white/5 rounded-[24px] p-8 shadow-2xl">
+                     <div className="bg-[#141414] border border-white/5 rounded-xl p-8 shadow-2xl">
                           <div className="flex items-center justify-between mb-6">
                               <h3 className="text-[#FDFDFD] font-medium text-xl tracking-wide">Billing Details</h3>
                               <label className="flex items-center gap-3 cursor-pointer">
-                                  <span className="text-[#A0A0A0] text-sm uppercase tracking-widest font-semibold">Same as Shipping</span>
+                                  <span className="text-[#A0A0A0] text-sm uppercase tracking-wide font-semibold">Same as Shipping</span>
                                   <div className="relative inline-flex items-center">
                                       <input type="checkbox" className="sr-only peer" checked={useShippingForBilling} onChange={(e) => setUseShippingForBilling(e.target.checked)} />
                                       <div className="w-11 h-6 bg-[#1A1A1A] border border-white/10 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#C4A470] peer-checked:border-[#C4A470]"></div>
@@ -95,7 +95,7 @@ export function Stage3Checkout({ cart, formData, handleIdentityChange, useShippi
                      </div>
                 </div>
 
-                <div className="bg-[#141414] border border-white/5 rounded-[24px] p-8 shadow-2xl flex flex-col h-fit relative isolate overflow-hidden mt-12 lg:mt-0 lg:sticky lg:top-8">
+                <div className="bg-[#141414] border border-white/5 rounded-xl p-8 shadow-2xl flex flex-col h-fit relative isolate overflow-hidden mt-12 lg:mt-0 lg:sticky lg:top-8">
                     <div className="absolute top-0 right-0 w-64 h-64 bg-[#C4A470]/5 rounded-full blur-[100px] -z-10 pointer-events-none"></div>
                     
                     <h2 className="text-[#FDFDFD] font-medium text-2xl tracking-wide flex items-center gap-3 mb-8">
@@ -130,7 +130,7 @@ export function Stage3Checkout({ cart, formData, handleIdentityChange, useShippi
                                              className="absolute right-4 top-1/2 -translate-y-1/2 flex items-center gap-2 bg-[#141414] border border-[#C4A470]/30 px-3 py-1 rounded-full shadow-lg"
                                          >
                                              <div className={`w-2 h-2 rounded-full ${brand === 'VISA' ? 'bg-blue-500' : brand === 'MASTERCARD' ? 'bg-orange-500' : brand === 'AMEX' ? 'bg-cyan-500' : 'bg-[#C4A470]'} animate-pulse`} />
-                                             <span className="text-[#C4A470] font-bold tracking-widest text-sm uppercase">{brand}</span>
+                                             <span className="text-[#C4A470] font-bold tracking-wide text-sm uppercase">{brand}</span>
                                          </motion.div>
                                      )}
                                  </AnimatePresence>
@@ -172,7 +172,7 @@ export function Stage3Checkout({ cart, formData, handleIdentityChange, useShippi
                         <button 
                             onClick={() => setShowPreview(true)} 
                             disabled={!isReady || loading}
-                            className="w-full py-5 bg-gradient-to-r from-[#E6C280] to-[#C4A470] text-black font-bold text-xl rounded-xl hover:shadow-[0_0_40px_rgba(196,164,112,0.4)] active:scale-[0.98] transition-all flex items-center justify-center gap-3 disabled:opacity-50 disabled:grayscale disabled:cursor-not-allowed uppercase tracking-widest"
+                            className="w-full py-5 bg-gradient-to-r from-[#E6C280] to-[#C4A470] text-black font-bold text-xl rounded-xl hover:shadow-sm active:scale-[0.98] transition-all flex items-center justify-center gap-3 disabled:opacity-50 disabled:grayscale disabled:cursor-not-allowed uppercase tracking-wide"
                         >
                             {loading ? <Lock size={20} className="animate-pulse" /> : <Lock size={20} />}
                             {loading ? 'Processing...' : `Review Order ($${runningTotal.toFixed(2)})`}
@@ -188,13 +188,13 @@ export function Stage3Checkout({ cart, formData, handleIdentityChange, useShippi
                         initial={{ opacity: 0 }} 
                         animate={{ opacity: 1 }} 
                         exit={{ opacity: 0 }} 
-                        className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 font-sans"
+                        className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80  p-4 font-sans"
                     >
                         <motion.div 
                             initial={{ scale: 0.95, opacity: 0, y: 20 }} 
                             animate={{ scale: 1, opacity: 1, y: 0 }} 
                             exit={{ scale: 0.95, opacity: 0, y: 20 }} 
-                            className="bg-[#141414] border border-[#C4A470]/30 rounded-[24px] p-8 max-w-2xl w-full shadow-2xl space-y-6 max-h-[90vh] overflow-y-auto custom-scrollbar"
+                            className="bg-[#141414] border border-[#C4A470]/30 rounded-xl p-8 max-w-2xl w-full shadow-2xl space-y-6 max-h-[90vh] overflow-y-auto custom-scrollbar"
                         >
                             <div className="flex items-center justify-between border-b border-white/10 pb-4">
                                 <h2 className="text-[#FDFDFD] font-medium text-2xl tracking-wide flex items-center gap-3">
@@ -208,7 +208,7 @@ export function Stage3Checkout({ cart, formData, handleIdentityChange, useShippi
                             <div className="space-y-6">
                                 {/* Customer Info */}
                                 <div className="space-y-2">
-                                    <h3 className="text-[#C4A470] text-sm uppercase tracking-widest font-bold">Customer Details</h3>
+                                    <h3 className="text-[#C4A470] text-sm uppercase tracking-wide font-bold">Customer Details</h3>
                                     <div className="bg-[#1A1A1A] rounded-xl p-4 border border-white/5 space-y-2 text-sm text-[#FDFDFD]">
                                         <p><span className="text-[#A0A0A0]">Name:</span> {formData.firstName} {formData.lastName}</p>
                                         <p><span className="text-[#A0A0A0]">Email:</span> {formData.email}</p>
@@ -218,7 +218,7 @@ export function Stage3Checkout({ cart, formData, handleIdentityChange, useShippi
 
                                 {/* Addresses */}
                                 <div className="space-y-2">
-                                    <h3 className="text-[#C4A470] text-sm uppercase tracking-widest font-bold">Logistics & Billing</h3>
+                                    <h3 className="text-[#C4A470] text-sm uppercase tracking-wide font-bold">Logistics & Billing</h3>
                                     <div className="bg-[#1A1A1A] rounded-xl p-4 border border-white/5 space-y-3 text-sm text-[#FDFDFD]">
                                         <div>
                                             <span className="text-[#A0A0A0] block text-sm mb-1">Shipping Address:</span>
@@ -241,7 +241,7 @@ export function Stage3Checkout({ cart, formData, handleIdentityChange, useShippi
 
                                 {/* Order summary */}
                                 <div className="space-y-2">
-                                    <h3 className="text-[#C4A470] text-sm uppercase tracking-widest font-bold">Order Summary</h3>
+                                    <h3 className="text-[#C4A470] text-sm uppercase tracking-wide font-bold">Order Summary</h3>
                                     <div className="bg-[#1A1A1A] rounded-xl p-4 border border-white/5 space-y-3 text-sm text-[#FDFDFD]">
                                         {cart.map((item: any) => (
                                             <div key={item.id} className="flex justify-between items-center text-[#FDFDFD] pb-3 border-b border-white/5 last:border-0 last:pb-0">
@@ -254,7 +254,7 @@ export function Stage3Checkout({ cart, formData, handleIdentityChange, useShippi
 
                                 {/* Payment Method summary */}
                                 <div className="space-y-2">
-                                    <h3 className="text-[#C4A470] text-sm uppercase tracking-widest font-bold">Payment Method</h3>
+                                    <h3 className="text-[#C4A470] text-sm uppercase tracking-wide font-bold">Payment Method</h3>
                                     <div className="bg-[#1A1A1A] rounded-xl p-4 border border-white/5 flex items-center justify-between text-[#FDFDFD]">
                                         <div className="flex items-center gap-3">
                                             <CreditCard className={brand ? "text-[#C4A470]" : "text-[#A0A0A0]"} size={20} />
@@ -269,7 +269,7 @@ export function Stage3Checkout({ cart, formData, handleIdentityChange, useShippi
                                 <button 
                                     onClick={() => setShowPreview(false)}
                                     disabled={loading}
-                                    className="flex-1 py-4 bg-[#1A1A1A] text-[#FDFDFD] border border-white/10 font-bold uppercase tracking-widest rounded-xl hover:bg-white/5 transition-colors disabled:opacity-50"
+                                    className="flex-1 py-4 bg-[#1A1A1A] text-[#FDFDFD] border border-white/10 font-bold uppercase tracking-wide rounded-xl hover:bg-white/5 transition-colors disabled:opacity-50"
                                 >
                                     Edit Order
                                 </button>
@@ -279,7 +279,7 @@ export function Stage3Checkout({ cart, formData, handleIdentityChange, useShippi
                                         onSubmit();
                                     }} 
                                     disabled={loading}
-                                    className="flex-[2] py-4 bg-gradient-to-r from-[#8BA888] to-[#5C7D59] text-white font-bold rounded-xl hover:shadow-[0_0_30px_rgba(139,168,136,0.3)] transition-all flex items-center justify-center gap-2 disabled:opacity-50 uppercase tracking-widest"
+                                    className="flex-[2] py-4 bg-gradient-to-r from-[#8BA888] to-[#5C7D59] text-white font-bold rounded-xl hover:shadow-sm transition-all flex items-center justify-center gap-2 disabled:opacity-50 uppercase tracking-wide"
                                 >
                                     {loading ? <Lock size={20} className="animate-pulse" /> : <CheckCircle2 size={20} />}
                                     {loading ? 'Processing...' : 'Confirm & Process'}

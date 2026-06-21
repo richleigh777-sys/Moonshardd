@@ -44,7 +44,7 @@ export const TerminalsConfigTab: React.FC<TerminalsConfigTabProps> = ({ config, 
                 />
                 <button 
                     onClick={handleSave}
-                    className="shrink-0 flex items-center justify-center gap-2 px-5 py-2.5 bg-surface-main hover:bg-surface-alt border border-border-strong text-text-primary rounded-xl text-xs font-black uppercase tracking-widest transition-all shadow-inner"
+                    className="shrink-0 flex items-center justify-center gap-2 px-5 py-2.5 bg-surface-main hover:bg-surface-alt border border-border-strong text-text-primary rounded-xl text-xs font-bold uppercase tracking-wide transition-all shadow-inner"
                 >
                     {isSaving ? (
                         <><RefreshCw size={14} className="animate-spin text-[#3B82F6]" /> Syncing Metadata...</>
@@ -54,10 +54,10 @@ export const TerminalsConfigTab: React.FC<TerminalsConfigTabProps> = ({ config, 
                 </button>
             </div>
 
-            <div className="p-4 bg-[#10B981]/10 border border-[#10B981]/30 rounded-2xl flex items-start gap-4">
+            <div className="p-4 bg-[#10B981]/10 border border-[#10B981]/30 rounded-xl flex items-start gap-4">
                 <div className="p-2 bg-[#10B981]/20 rounded-xl shrink-0"><ShieldCheck className="text-[#34D399]" /></div>
                 <div>
-                    <h3 className="text-sm font-black text-text-primary uppercase tracking-widest">Super Admin Level 10 Custody</h3>
+                    <h3 className="text-sm font-bold text-text-primary uppercase tracking-wide">Super Admin Level 10 Custody</h3>
                     <p className="text-sm text-text-muted mt-1 font-medium leading-relaxed max-w-3xl">
                         Architect Directive: All terminal modifications, custom object workflows, and function executions are strictly controlled at the Level 10 Super Admin tier. Layouts, triggers, and WebSocket dispatch rules configured here will instantly hot-sync across all active Agent Terminals and Admin Modals in the cluster.
                     </p>
@@ -70,14 +70,14 @@ export const TerminalsConfigTab: React.FC<TerminalsConfigTabProps> = ({ config, 
                     <div className="flex items-center gap-3 mb-6 relative z-10">
                         <div className="p-2 bg-[#3B82F6]/10 rounded-xl text-[#60A5FA]"><RefreshCw size={18} /></div>
                         <div>
-                            <h3 className="text-sm font-black text-text-primary uppercase tracking-wider">Terminal Sync Engine</h3>
-                            <p className="text-sm text-text-muted tracking-widest uppercase mt-0.5">Global UI State Propagation</p>
+                            <h3 className="text-sm font-bold text-text-primary uppercase tracking-wider">Terminal Sync Engine</h3>
+                            <p className="text-sm text-text-muted tracking-wide uppercase mt-0.5">Global UI State Propagation</p>
                         </div>
                     </div>
 
                     <div className="space-y-5 relative z-10">
                         <div>
-                            <label className="text-xs font-black text-text-muted block mb-2 uppercase tracking-wide">Data Sync Protocol</label>
+                            <label className="text-xs font-bold text-text-muted block mb-2 uppercase tracking-wide">Data Sync Protocol</label>
                             <select 
                                 value={localTerminalConfig.terminalSyncSyncMode}
                                 onChange={e => setLocalTerminalConfig({...localTerminalConfig, terminalSyncSyncMode: e.target.value})}
@@ -90,7 +90,7 @@ export const TerminalsConfigTab: React.FC<TerminalsConfigTabProps> = ({ config, 
                         </div>
                         
                         <div>
-                            <label className="text-xs font-black text-text-muted block mb-2 uppercase tracking-wide">Terminal Base Layout (Agent Modal)</label>
+                            <label className="text-xs font-bold text-text-muted block mb-2 uppercase tracking-wide">Terminal Base Layout (Agent Modal)</label>
                             <select 
                                 value={localTerminalConfig.terminalViews.agentConsole}
                                 onChange={e => setLocalTerminalConfig({...localTerminalConfig, terminalViews: {...localTerminalConfig.terminalViews, agentConsole: e.target.value}})}
@@ -103,7 +103,7 @@ export const TerminalsConfigTab: React.FC<TerminalsConfigTabProps> = ({ config, 
                         </div>
 
                         <div>
-                            <label className="text-xs font-black text-text-muted block mb-2 uppercase tracking-wide">Omni-Channel Routing Strategy</label>
+                            <label className="text-xs font-bold text-text-muted block mb-2 uppercase tracking-wide">Omni-Channel Routing Strategy</label>
                             <select 
                                 value={localTerminalConfig.omniChannelRouting}
                                 onChange={e => setLocalTerminalConfig({...localTerminalConfig, omniChannelRouting: e.target.value})}
@@ -122,8 +122,8 @@ export const TerminalsConfigTab: React.FC<TerminalsConfigTabProps> = ({ config, 
                     <div className="flex items-center gap-3 mb-6 relative z-10">
                         <div className="p-2 bg-[#F59E0B]/10 rounded-xl text-[#FBBF24]"><Workflow size={18} /></div>
                         <div>
-                            <h3 className="text-sm font-black text-text-primary uppercase tracking-wider">Function Triggers & Logic</h3>
-                            <p className="text-sm text-text-muted tracking-widest uppercase mt-0.5">Execution & Validations</p>
+                            <h3 className="text-sm font-bold text-text-primary uppercase tracking-wider">Function Triggers & Logic</h3>
+                            <p className="text-sm text-text-muted tracking-wide uppercase mt-0.5">Execution & Validations</p>
                         </div>
                     </div>
 
@@ -134,9 +134,9 @@ export const TerminalsConfigTab: React.FC<TerminalsConfigTabProps> = ({ config, 
                             { id: 'headlessApiAccess', label: 'Headless API Dispatch', desc: 'Allow background jobs to execute functions without UI.' },
                             { id: 'level10Override', label: 'Level 10 Priority Override', desc: 'Super Admins bypass standard lock rules.' },
                         ].map(toggle => (
-                            <div key={toggle.id} className="flex items-start justify-between p-4 bg-surface-main/50 border border-border-subtle rounded-2xl hover:bg-surface-main transition-colors">
+                            <div key={toggle.id} className="flex items-start justify-between p-4 bg-surface-main/50 border border-border-subtle rounded-xl hover:bg-surface-main transition-colors">
                                 <div>
-                                    <h4 className="text-sm font-black text-text-primary">{toggle.label}</h4>
+                                    <h4 className="text-sm font-bold text-text-primary">{toggle.label}</h4>
                                     <p className="text-sm font-medium text-text-muted mt-1">{toggle.desc}</p>
                                 </div>
                                 <label className="relative inline-flex items-center cursor-pointer shrink-0 mt-1">
@@ -155,7 +155,7 @@ export const TerminalsConfigTab: React.FC<TerminalsConfigTabProps> = ({ config, 
             </div>
 
             <div className="mt-6">
-                <h3 className="text-sm font-black text-text-primary mb-4 uppercase tracking-widest flex items-center gap-3">
+                <h3 className="text-sm font-bold text-text-primary mb-4 uppercase tracking-wide flex items-center gap-3">
                     <Database size={16} className="text-[#A855F7]" />
                     <span className="text-text-muted">Object Model:</span> Active Sub-Routines
                 </h3>
@@ -166,13 +166,13 @@ export const TerminalsConfigTab: React.FC<TerminalsConfigTabProps> = ({ config, 
                         { name: 'Dedupe Validation', status: 'Strict', latency: '8ms', icon: CheckSquare },
                         { name: 'Oauth Sync (Level 10)', status: 'Hard-Locked', latency: '-', icon: Lock },
                     ].map((routine, i) => (
-                        <div key={i} className="p-4 bg-surface-main border border-border-subtle rounded-2xl flex flex-col gap-3 shadow-inner group hover:border-border-strong hover:bg-surface-main transition-colors">
+                        <div key={i} className="p-4 bg-surface-main border border-border-subtle rounded-xl flex flex-col gap-3 shadow-inner group hover:border-border-strong hover:bg-surface-main transition-colors">
                             <div className="flex items-center justify-between">
                                 <div className="p-1.5 bg-[#A855F7]/10 rounded-lg text-[#C084FC] group-hover:scale-110 transition-transform"><routine.icon size={14} /></div>
-                                <span className={`text-sm font-black uppercase tracking-widest px-2 py-0.5 rounded-full ${routine.status === 'Active' ? 'bg-[#10B981]/10 text-[#34D399]' : routine.status === 'Strict' ? 'bg-[#F59E0B]/10 text-[#FBBF24]' : 'bg-[#EF4444]/10 text-[#F87171]'}`}>{routine.status}</span>
+                                <span className={`text-sm font-bold uppercase tracking-wide px-2 py-0.5 rounded-full ${routine.status === 'Active' ? 'bg-[#10B981]/10 text-[#34D399]' : routine.status === 'Strict' ? 'bg-[#F59E0B]/10 text-[#FBBF24]' : 'bg-[#EF4444]/10 text-[#F87171]'}`}>{routine.status}</span>
                             </div>
                             <div>
-                                <p className="text-xs font-black text-text-primary">{routine.name}</p>
+                                <p className="text-xs font-bold text-text-primary">{routine.name}</p>
                                 <p className="text-sm font-mono text-text-muted mt-1">Avg Execution: <span className="text-[#E4E4E7] font-bold">{routine.latency}</span></p>
                             </div>
                         </div>

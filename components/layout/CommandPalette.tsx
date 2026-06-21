@@ -162,7 +162,7 @@ export const CommandPalette: React.FC = () => {
 
     return (
         <div className="fixed inset-0 z-[9999] flex items-start justify-center pt-[15vh] px-4 font-sans">
-            <div className="absolute inset-0 bg-surface-alt dark:bg-black/80 backdrop-blur-sm animate-in fade-in duration-200" onClick={() => setIsOpen(false)}></div>
+            <div className="absolute inset-0 bg-surface-alt dark:bg-black/80  animate-in fade-in duration-200" onClick={() => setIsOpen(false)}></div>
             
             <div 
                 className="w-full max-w-2xl bg-surface-main border border-border-subtle rounded-xl shadow-2xl overflow-hidden flex flex-col animate-in zoom-in-95 slide-in-from-top-4 duration-200 ring-1 ring-white/5"

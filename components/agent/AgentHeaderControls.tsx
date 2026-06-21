@@ -18,7 +18,7 @@ export const AgentHeaderControls: React.FC<AgentHeaderControlsProps> = ({
   isScratchpadOpen
 }) => {
   return (
-    <div className="flex items-center gap-1 bg-surface-main/60 backdrop-blur-xl p-1 rounded-xl shadow-sm border border-border-subtle">
+    <div className="flex items-center gap-1 bg-surface-main/60  p-1 rounded-xl shadow-sm border border-border-subtle">
       <button 
         onClick={() => { onToggleCalculator(); sfx.playClick(); }}
         className={`p-2 rounded-xl transition-all active:scale-95 ${isCalculatorOpen ? 'bg-indigo-500 text-white shadow-lg' : 'text-text-muted hover:text-text-primary hover:bg-surface-highlight'}`} 

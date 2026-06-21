@@ -346,7 +346,7 @@ export const IntegrationsTab: React.FC<IntegrationsTabProps> = ({ config, onChan
                     <div className="p-1 rounded-xl bg-gradient-to-br from-cyan-500/20 to-blue-500/20">
                         <div className="bg-[#09090b] text-white rounded-[1.4rem] p-4 space-y-6">
                             <div className="flex items-center justify-between pb-4 border-b border-border-subtle">
-                                <h5 className="text-sm font-bold  text-cyan-400 tracking-widest flex items-center gap-2">
+                                <h5 className="text-sm font-bold  text-cyan-400 tracking-wide flex items-center gap-2">
                                     <Key size={16} className="animate-pulse"/> Command Deck Identity
                                 </h5>
                             </div>
@@ -387,7 +387,7 @@ export const IntegrationsTab: React.FC<IntegrationsTabProps> = ({ config, onChan
                             <div className="bg-[#09090b] rounded-[1.4rem] p-4 space-y-6">
                                 {/* Header Status */}
                                 <div className="flex items-center justify-between pb-4 border-b border-border-subtle">
-                                    <h5 className="text-sm font-bold  text-accent-secondary tracking-widest flex items-center gap-2">
+                                    <h5 className="text-sm font-bold  text-accent-secondary tracking-wide flex items-center gap-2">
                                         <Radio size={16} className="animate-pulse"/> ViciDial Command Matrix
                                     </h5>
                                     <button 
@@ -446,7 +446,7 @@ export const IntegrationsTab: React.FC<IntegrationsTabProps> = ({ config, onChan
                                     <div className="p-3.5 bg-indigo-500/10 border border-indigo-500/20 rounded-xl space-y-1 text-left font-sans animate-in slide-in-from-top-1.5 duration-200">
                                         <div className="flex items-center gap-2 text-indigo-400">
                                             <Link size={14} className="animate-pulse" />
-                                            <span className="text-sm font-black uppercase tracking-wider font-mono">Agent Session Capture Enabled</span>
+                                            <span className="text-sm font-bold uppercase tracking-wider font-mono">Agent Session Capture Enabled</span>
                                         </div>
                                         <p className="text-sm text-text-muted leading-relaxed">
                                             <strong>No API credentials? No problem!</strong> Our CRM integrates an automated client-side browser cookie scraper. The moment agents connect their standard softphone to the server, the CRM automatically extracts the server list layout and synchronizes it directly to the local database, completely avoiding the need for administrative API configuration.
@@ -456,7 +456,7 @@ export const IntegrationsTab: React.FC<IntegrationsTabProps> = ({ config, onChan
 
                                 {/* Section 1b: Silent Roster Mapping Settings */}
                                 <div className="space-y-4 pt-4 border-t border-border-subtle/50">
-                                    <h6 className="text-sm font-black uppercase text-accent-secondary tracking-widest">
+                                    <h6 className="text-sm font-bold uppercase text-accent-secondary tracking-wide">
                                         Active List Mapping & Mirroring Parameters
                                     </h6>
                                     <div className="grid grid-cols-1 md:grid-cols-4 gap-4 text-left">
@@ -511,7 +511,7 @@ export const IntegrationsTab: React.FC<IntegrationsTabProps> = ({ config, onChan
                                     <div className="p-4 bg-surface-alt/75 border border-border-subtle rounded-xl space-y-4 text-left">
                                         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-left">
                                             <div className="text-left">
-                                                <span className="text-sm font-black text-text-primary block text-left">Silent Roster Sync Host Daemon</span>
+                                                <span className="text-sm font-bold text-text-primary block text-left">Silent Roster Sync Host Daemon</span>
                                                 <span className="text-sm text-text-muted block mt-0.5 leading-relaxed text-left">
                                                     Mirror the active ViciDial lead list in real-time. This saves the customer records silently into the CRM without agent interruption.
                                                 </span>
@@ -532,7 +532,7 @@ export const IntegrationsTab: React.FC<IntegrationsTabProps> = ({ config, onChan
                                             <div className="space-y-1.5 animate-in fade-in duration-300 text-left">
                                                 <div className="flex items-center justify-between text-sm font-mono text-left">
                                                     <span className="text-indigo-400 font-bold uppercase tracking-wider text-left">CRAWLING TELEPHONY CORE PROTOCOLS</span>
-                                                    <span className="text-white font-black">{syncProgress}%</span>
+                                                    <span className="text-white font-bold">{syncProgress}%</span>
                                                 </div>
                                                 <div className="w-full bg-surface-highlight/70 h-2.5 rounded-full overflow-hidden border border-border-subtle text-left">
                                                     <div 
@@ -557,12 +557,12 @@ export const IntegrationsTab: React.FC<IntegrationsTabProps> = ({ config, onChan
                                                 {syncStats && (
                                                     <div className="grid grid-cols-2 gap-3 text-center animate-in zoom-in-95 duration-350">
                                                         <div className="p-2.5 bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 rounded-xl">
-                                                            <span className="text-sm uppercase font-bold tracking-widest text-emerald-500/80 block font-sans">Leads Silently Unified</span>
-                                                            <span className="text-lg font-black block font-mono">+{syncStats.count}</span>
+                                                            <span className="text-sm uppercase font-bold tracking-wide text-emerald-500/80 block font-sans">Leads Silently Unified</span>
+                                                            <span className="text-lg font-bold block font-mono">+{syncStats.count}</span>
                                                         </div>
                                                         <div className="p-2.5 bg-amber-500/10 border border-amber-500/20 text-amber-400 rounded-xl">
-                                                            <span className="text-sm uppercase font-bold tracking-widest text-amber-500/80 block font-sans">Duplicates Filtered</span>
-                                                            <span className="text-lg font-black block font-mono">{syncStats.duplicates}</span>
+                                                            <span className="text-sm uppercase font-bold tracking-wide text-amber-500/80 block font-sans">Duplicates Filtered</span>
+                                                            <span className="text-lg font-bold block font-mono">{syncStats.duplicates}</span>
                                                         </div>
                                                     </div>
                                                 )}
@@ -575,7 +575,7 @@ export const IntegrationsTab: React.FC<IntegrationsTabProps> = ({ config, onChan
                                 <div className="space-y-3 pt-4 border-t border-border-subtle/50 text-left">
                                     <div className="flex items-center gap-2">
                                         <Terminal size={14} className="text-accent-secondary" />
-                                        <h6 className="text-sm font-black uppercase text-text-primary tracking-wider font-mono">
+                                        <h6 className="text-sm font-bold uppercase text-text-primary tracking-wider font-mono">
                                             Interactive ViciDial SIP Command Console
                                         </h6>
                                     </div>
@@ -658,7 +658,7 @@ export const IntegrationsTab: React.FC<IntegrationsTabProps> = ({ config, onChan
                         <div className="p-1 rounded-xl bg-gradient-to-br from-cyan-500/20 to-indigo-500/20">
                             <div className="bg-[#09090b] text-white rounded-[1.4rem] p-4 space-y-6 font-sans">
                                 <div className="flex items-center justify-between pb-4 border-b border-border-subtle">
-                                    <h5 className="text-sm font-bold text-cyan-400 tracking-widest flex items-center gap-2">
+                                    <h5 className="text-sm font-bold text-cyan-400 tracking-wide flex items-center gap-2">
                                         <Activity size={16} className="animate-pulse"/> Dialer Bridge Engine Configuration
                                     </h5>
                                 </div>
@@ -684,7 +684,7 @@ export const IntegrationsTab: React.FC<IntegrationsTabProps> = ({ config, onChan
                                                         : 'bg-surface-alt/55 border-border-subtle text-text-muted hover:text-text-primary hover:bg-surface-highlight/40'
                                                 }`}
                                             >
-                                                <span className="text-sm font-black block">{item.name}</span>
+                                                <span className="text-sm font-bold block">{item.name}</span>
                                                 <span className="text-sm opacity-70 leading-tight block mt-1">{item.desc}</span>
                                             </button>
                                         ))}
@@ -718,7 +718,7 @@ export const IntegrationsTab: React.FC<IntegrationsTabProps> = ({ config, onChan
 
                                             {/* Live compiler compilation preview */}
                                             <div className="mt-3 pt-3 border-t border-border-subtle">
-                                                <span className="text-sm font-black uppercase text-cyan-400 tracking-wider animate-pulse">
+                                                <span className="text-sm font-bold uppercase text-cyan-400 tracking-wider animate-pulse">
                                                     Real-time Compilation Preview
                                                 </span>
                                                 <div className="p-2.5 bg-black/40 rounded border border-border-strong font-mono text-sm text-emerald-400 select-all overflow-x-auto mt-1 truncate">
@@ -754,7 +754,7 @@ export const IntegrationsTab: React.FC<IntegrationsTabProps> = ({ config, onChan
                     {config.teamsWebhookEnabled && (
                         <div className="p-4 bg-surface-alt/30 rounded-xl border border-border-subtle space-y-6">
                             <div className="flex items-center justify-between">
-                                <h5 className="text-sm font-bold  text-text-primary tracking-widest flex items-center gap-2">
+                                <h5 className="text-sm font-bold  text-text-primary tracking-wide flex items-center gap-2">
                                     <Link size={16} className="text-blue-500"/> Teams Configuration
                                 </h5>
                                 <button 
@@ -798,7 +798,7 @@ export const IntegrationsTab: React.FC<IntegrationsTabProps> = ({ config, onChan
                     {config.webhookEnabled && (
                         <div className="p-4 bg-surface-alt/30 rounded-xl border border-border-subtle space-y-6">
                             <div className="flex items-center justify-between">
-                                <h5 className="text-sm font-bold  text-text-primary tracking-widest flex items-center gap-2">
+                                <h5 className="text-sm font-bold  text-text-primary tracking-wide flex items-center gap-2">
                                     <Link size={16} className="text-purple-500"/> Payload Configuration
                                 </h5>
                                 <button 
@@ -846,7 +846,7 @@ export const IntegrationsTab: React.FC<IntegrationsTabProps> = ({ config, onChan
                                             const current = config.webhookHeaders || [];
                                             onChange('webhookHeaders', [...current, { key: '', value: '' }]);
                                         }}
-                                        className="px-3 py-1 bg-surface-main hover:bg-surface-alt border border-border-subtle rounded-xl text-sm font-black uppercase tracking-wider text-purple-400 hover:text-purple-300 flex items-center gap-1 transition-all"
+                                        className="px-3 py-1 bg-surface-main hover:bg-surface-alt border border-border-subtle rounded-xl text-sm font-bold uppercase tracking-wider text-purple-400 hover:text-purple-300 flex items-center gap-1 transition-all"
                                     >
                                         <Plus size={12} /> Add Custom Header
                                     </button>

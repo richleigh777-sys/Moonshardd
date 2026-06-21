@@ -53,7 +53,7 @@ export const useAgentStats = (sales: Sale[], user: User | null, config: SystemCo
         
         // Calculate Streak: Consecutive approved sales sorted by time, stopping at the first non-approved active action (skip pending/rescue)
         let streak = 0;
-        for (let s of mySales) {
+        for (const s of mySales) {
             if (s.status === 'Approved') streak++;
             else if (s.status === 'Declined') break;
         }

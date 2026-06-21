@@ -186,18 +186,18 @@ export const ProductManager: React.FC<Props> = ({ configForm, setConfigForm, onS
                             </div>
                         </div>
 
-                        <div className="p-2.5 border-t border-border-subtle bg-surface-alt/50 shrink-0 backdrop-blur-md flex justify-between items-center px-4">
+                        <div className="p-2.5 border-t border-border-subtle bg-surface-alt/50 shrink-0  flex justify-between items-center px-4">
                             <div className="flex items-center gap-4">
                                 <div className="flex items-center gap-1.5">
                                     <ShieldCheck size={16} className="text-status-success" />
-                                    <span className="text-sm font-[700]  text-text-muted tracking-widest leading-none">Security: Verified</span>
+                                    <span className="text-sm font-medium  text-text-muted tracking-wide leading-none">Security: Verified</span>
                                 </div>
                                 <div className="flex items-center gap-1.5">
                                     <Activity size={16} className="text-accent-secondary" />
-                                    <span className="text-sm font-[700]  text-text-muted tracking-widest leading-none">Load: Optimal</span>
+                                    <span className="text-sm font-medium  text-text-muted tracking-wide leading-none">Load: Optimal</span>
                                 </div>
                             </div>
-                            <span className="text-sm font-mono text-text-muted opacity-40  tracking-[0.2em]">Product Module v4.1</span>
+                            <span className="text-sm font-mono text-text-muted opacity-40  tracking-wide">Product Module v4.1</span>
                         </div>
 
                         <ProductConfigModal 

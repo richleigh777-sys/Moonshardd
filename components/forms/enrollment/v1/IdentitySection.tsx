@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { User, Clipboard, CheckCircle, AlertTriangle, Clock, MapPin, Smartphone, Phone, Plus } from 'lucide-react';
+import { User, Clipboard, CheckCircle, AlertTriangle, Clock, MapPin, Smartphone, Phone, Plus, ListFilter } from 'lucide-react';
 import { Card } from '../../../ui/Base';
 import { ModernDatePicker } from '../../../ui/ModernDatePicker';
 import { areaCodeData } from '../../../../utils/areaCodeData';
+import { useCRM } from '../../../../hooks/useCRM';
 
 interface IdentityProps {
   formData: any;
@@ -12,6 +13,7 @@ interface IdentityProps {
   useShippingForBilling: boolean;
   setUseShippingForBilling: (value: boolean) => void;
   onPasteParse?: () => Promise<void>;
+  handleCustomFieldChange?: (fieldId: string, value: any) => void;
 }
 
 export const IdentitySection: React.FC<IdentityProps> = ({
@@ -22,7 +24,9 @@ export const IdentitySection: React.FC<IdentityProps> = ({
   useShippingForBilling,
   setUseShippingForBilling,
   onPasteParse,
+  handleCustomFieldChange
 }) => {
+  const { systemConfig } = useCRM();
   const [localTimeStr, setLocalTimeStr] = useState<string>('');
   const [locationStr, setLocationStr] = useState<string>('');
   const [showAlternatePhone, setShowAlternatePhone] = useState<boolean>(false);
@@ -150,7 +154,7 @@ export const IdentitySection: React.FC<IdentityProps> = ({
             <User size={18} />
           </div>
           <div>
-            <h3 className="text-sm font-black text-text-primary tracking-wide">CUSTOMER IDENTITY</h3>
+            <h3 className="text-sm font-bold text-text-primary tracking-wide">CUSTOMER IDENTITY</h3>
             <p className="text-sm text-text-muted uppercase tracking-wider font-semibold">Primary Profile Information</p>
           </div>
         </div>
@@ -182,7 +186,7 @@ export const IdentitySection: React.FC<IdentityProps> = ({
                   ? 'border-status-error focus:border-status-error/50 focus:ring-status-error/10 bg-status-error/5' 
                   : 'border-status-success focus:border-status-success/50 focus:ring-status-success/10 bg-status-success/5'
               }`}
-              autoComplete="new-password"
+              autoComplete="none" data-lpignore="true" data-1p-ignore="true" data-form-type="other"
             />
             {formData.fullName.length > 0 && (
               <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none">
@@ -216,7 +220,7 @@ export const IdentitySection: React.FC<IdentityProps> = ({
                     ? 'border-status-error focus:border-status-error/50 focus:ring-status-error/10 bg-status-error/5' 
                     : 'border-status-success focus:border-status-success/50 focus:ring-status-success/10 bg-status-success/5'
                 }`}
-                autoComplete="new-password"
+                autoComplete="none" data-lpignore="true" data-1p-ignore="true" data-form-type="other"
               />
               {formData.phone.length > 0 && (
                 <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none">
@@ -239,7 +243,7 @@ export const IdentitySection: React.FC<IdentityProps> = ({
                  <Smartphone size={12} /> Looking up device type...
                </div>
             ) : phoneTypeStr ? (
-              <div className="flex items-center gap-1.5 mt-1 px-1 animate-in fade-in slide-in-from-top-1 text-sm font-bold text-text-muted tracking-widest uppercase">
+              <div className="flex items-center gap-1.5 mt-1 px-1 animate-in fade-in slide-in-from-top-1 text-sm font-bold text-text-muted tracking-wide uppercase">
                  {formData.isMobile ? <Smartphone size={12} className="text-indigo-400" /> : <Phone size={12} className="text-emerald-400" />}
                  <span className={formData.isMobile ? 'text-indigo-400' : 'text-emerald-400'}>{phoneTypeStr}</span>
               </div>
@@ -278,7 +282,7 @@ export const IdentitySection: React.FC<IdentityProps> = ({
                        ? 'border-status-warning focus:border-status-warning/50 focus:ring-status-warning/10 bg-status-warning/5' 
                        : 'border-status-success focus:border-status-success/50 focus:ring-status-success/10 bg-status-success/5'
                    }`}
-                   autoComplete="new-password"
+                   autoComplete="none" data-lpignore="true" data-1p-ignore="true" data-form-type="other"
                  />
               </div>
             )}
@@ -291,7 +295,7 @@ export const IdentitySection: React.FC<IdentityProps> = ({
               onChange={handleIdentityChange}
               placeholder="Email Address"
               className="w-full bg-surface-alt/70 border border-border-subtle rounded-xl px-4 py-3 text-sm font-bold text-text-primary outline-none focus:border-indigo-500/50 focus:ring-4 focus:ring-indigo-500/10 focus:bg-surface-main transition-all"
-              autoComplete="new-password"
+              autoComplete="none" data-lpignore="true" data-1p-ignore="true" data-form-type="other"
             />
           </div>
         </div>
@@ -307,7 +311,7 @@ export const IdentitySection: React.FC<IdentityProps> = ({
               min="18"
               max="120"
               className="w-full bg-surface-alt/70 border border-border-subtle rounded-xl px-4 py-3 text-sm font-bold text-text-primary outline-none focus:border-indigo-500/50 focus:ring-4 focus:ring-indigo-500/10 focus:bg-surface-main transition-all"
-              autoComplete="new-password"
+              autoComplete="none" data-lpignore="true" data-1p-ignore="true" data-form-type="other"
             />
           </div>
           <div>
@@ -348,7 +352,7 @@ export const IdentitySection: React.FC<IdentityProps> = ({
                 onChange={handleIdentityChange}
                 placeholder="Shipping Street Address"
                 className="w-full bg-surface-alt/70 border border-border-subtle rounded-xl px-4 py-3 text-sm font-bold text-text-primary outline-none focus:border-indigo-500/50 focus:ring-4 focus:ring-indigo-500/10 focus:bg-surface-main transition-all"
-                autoComplete="new-password"
+                autoComplete="none" data-lpignore="true" data-1p-ignore="true" data-form-type="other"
               />
             </div>
             <div className="col-span-1">
@@ -359,7 +363,7 @@ export const IdentitySection: React.FC<IdentityProps> = ({
                 onChange={handleIdentityChange}
                 placeholder="Apt/Unit"
                 className="w-full bg-surface-alt/70 border border-border-subtle rounded-xl px-4 py-3 text-sm font-bold text-text-primary outline-none focus:border-indigo-500/50 focus:ring-4 focus:ring-indigo-500/10 focus:bg-surface-main transition-all"
-                autoComplete="new-password"
+                autoComplete="none" data-lpignore="true" data-1p-ignore="true" data-form-type="other"
               />
             </div>
           </div>
@@ -372,7 +376,7 @@ export const IdentitySection: React.FC<IdentityProps> = ({
                 onChange={handleIdentityChange}
                 placeholder="City"
                 className="w-full bg-surface-alt/70 border border-border-subtle rounded-xl px-4 py-3 text-sm font-bold text-text-primary outline-none focus:border-indigo-500/50 focus:ring-4 focus:ring-indigo-500/10 focus:bg-surface-main transition-all"
-                autoComplete="off"
+                autoComplete="none" data-lpignore="true" data-1p-ignore="true" data-form-type="other"
               />
             </div>
             <div className="col-span-1">
@@ -394,7 +398,7 @@ export const IdentitySection: React.FC<IdentityProps> = ({
                 onChange={handleIdentityChange}
                 placeholder="ZIP Code"
                 className="w-full bg-surface-alt/70 border border-border-subtle rounded-xl px-4 py-3 text-sm font-bold text-text-primary outline-none focus:border-indigo-500/50 focus:ring-4 focus:ring-indigo-500/10 focus:bg-surface-main transition-all"
-                autoComplete="off"
+                autoComplete="none" data-lpignore="true" data-1p-ignore="true" data-form-type="other"
               />
             </div>
           </div>
@@ -426,7 +430,7 @@ export const IdentitySection: React.FC<IdentityProps> = ({
                   onChange={handleIdentityChange}
                   placeholder="Billing Street Address"
                   className="w-full bg-surface-alt/70 border border-border-subtle rounded-xl px-4 py-3 text-sm font-bold text-text-primary outline-none focus:border-indigo-500/50 focus:ring-4 focus:ring-indigo-500/10 focus:bg-surface-main transition-all"
-                  autoComplete="new-password"
+                  autoComplete="none" data-lpignore="true" data-1p-ignore="true" data-form-type="other"
                 />
               </div>
               <div className="col-span-1">
@@ -437,7 +441,7 @@ export const IdentitySection: React.FC<IdentityProps> = ({
                   onChange={handleIdentityChange}
                   placeholder="Apt/Unit"
                   className="w-full bg-surface-alt/70 border border-border-subtle rounded-xl px-4 py-3 text-sm font-bold text-text-primary outline-none focus:border-indigo-500/50 focus:ring-4 focus:ring-indigo-500/10 focus:bg-surface-main transition-all"
-                  autoComplete="new-password"
+                  autoComplete="none" data-lpignore="true" data-1p-ignore="true" data-form-type="other"
                 />
               </div>
             </div>
@@ -450,7 +454,7 @@ export const IdentitySection: React.FC<IdentityProps> = ({
                   onChange={handleIdentityChange}
                   placeholder="City"
                   className="w-full bg-surface-alt/70 border border-border-subtle rounded-xl px-4 py-3 text-sm font-bold text-text-primary outline-none focus:border-indigo-500/50 focus:ring-4 focus:ring-indigo-500/10 focus:bg-surface-main transition-all"
-                  autoComplete="off"
+                  autoComplete="none" data-lpignore="true" data-1p-ignore="true" data-form-type="other"
                 />
               </div>
               <div className="col-span-1">
@@ -472,7 +476,7 @@ export const IdentitySection: React.FC<IdentityProps> = ({
                   onChange={handleIdentityChange}
                   placeholder="ZIP Code"
                   className="w-full bg-surface-alt/70 border border-border-subtle rounded-xl px-4 py-3 text-sm font-bold text-text-primary outline-none focus:border-indigo-500/50 focus:ring-4 focus:ring-indigo-500/10 focus:bg-surface-main transition-all"
-                  autoComplete="off"
+                  autoComplete="none" data-lpignore="true" data-1p-ignore="true" data-form-type="other"
                 />
               </div>
             </div>
@@ -581,6 +585,50 @@ export const IdentitySection: React.FC<IdentityProps> = ({
             </div>
           </div>
         </div>
+
+        {/* Dynamic Custom Fields */}
+        {systemConfig?.customFieldsConfig && systemConfig.customFieldsConfig.length > 0 && (
+          <div className="pt-4 border-t border-border-subtle/50 mt-4">
+            <div className="flex items-center gap-2 text-sm font-bold text-text-primary mb-3 uppercase tracking-wider font-mono">
+              <ListFilter size={16} className="text-accent-primary" /> System Extension Data
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {systemConfig.customFieldsConfig.map((field) => (
+                <div key={field.id} className={field.type === 'text' && field.id.length > 20 ? 'col-span-1 md:col-span-2' : ''}>
+                   {field.type === 'select' ? (
+                     <select
+                       value={formData.customFields?.[field.id] || ''}
+                       onChange={(e) => handleCustomFieldChange && handleCustomFieldChange(field.id, e.target.value)}
+                       className="w-full bg-surface-alt/70 border border-border-subtle rounded-xl px-4 py-3 text-sm font-bold text-text-primary outline-none focus:border-indigo-500/50 focus:ring-4 focus:ring-indigo-500/10 focus:bg-surface-main transition-all appearance-none"
+                     >
+                       <option value="" disabled>{field.label}</option>
+                       {field.options?.map(opt => <option key={opt} value={opt}>{opt}</option>)}
+                     </select>
+                   ) : field.type === 'boolean' ? (
+                     <label className="flex items-center gap-3 p-3 border border-border-subtle rounded-xl bg-surface-alt/40 cursor-pointer h-full">
+                       <input 
+                         type="checkbox"
+                         checked={!!formData.customFields?.[field.id]}
+                         onChange={(e) => handleCustomFieldChange && handleCustomFieldChange(field.id, e.target.checked)}
+                         className="w-5 h-5 accent-accent-primary rounded bg-surface-main border-border-subtle"
+                       />
+                       <span className="text-sm font-bold text-text-primary">{field.label}</span>
+                     </label>
+                   ) : (
+                     <input
+                       type={field.type === 'number' ? 'number' : 'text'}
+                       placeholder={field.label}
+                       value={formData.customFields?.[field.id] || ''}
+                       onChange={(e) => handleCustomFieldChange && handleCustomFieldChange(field.id, field.type === 'number' ? parseFloat(e.target.value) || '' : e.target.value)}
+                       className="w-full bg-surface-alt/70 border border-border-subtle rounded-xl px-4 py-3 text-sm font-bold text-text-primary outline-none focus:border-indigo-500/50 focus:ring-4 focus:ring-indigo-500/10 focus:bg-surface-main transition-all"
+                     />
+                   )}
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
       </div>
     </Card>
   );

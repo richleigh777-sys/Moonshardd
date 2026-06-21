@@ -54,7 +54,7 @@ export function MedicalSector({ formData, handleIdentityChange }: any) {
                     <select
                         value={feet}
                         onChange={(e) => handleHeightChange(e, 'feet')}
-                        className="w-full bg-surface-alt/50 border border-white/5 rounded-2xl px-5 py-4 text-lg font-medium text-white outline-none transition-all focus:border-white focus:bg-surface-alt focus:ring-1 focus:ring-white shadow-sm appearance-none"
+                        className="w-full bg-surface-alt/50 border border-white/5 rounded-xl px-5 py-4 text-lg font-medium text-white outline-none transition-all focus:border-white focus:bg-surface-alt focus:ring-1 focus:ring-white shadow-sm appearance-none"
                     >
                         <option value={0} disabled>Feet</option>
                         {[3, 4, 5, 6, 7, 8].map(f => (
@@ -64,7 +64,7 @@ export function MedicalSector({ formData, handleIdentityChange }: any) {
                     <select
                         value={inches}
                         onChange={(e) => handleHeightChange(e, 'inches')}
-                        className="w-full bg-surface-alt/50 border border-white/5 rounded-2xl px-5 py-4 text-lg font-medium text-white outline-none transition-all focus:border-white focus:bg-surface-alt focus:ring-1 focus:ring-white shadow-sm appearance-none"
+                        className="w-full bg-surface-alt/50 border border-white/5 rounded-xl px-5 py-4 text-lg font-medium text-white outline-none transition-all focus:border-white focus:bg-surface-alt focus:ring-1 focus:ring-white shadow-sm appearance-none"
                     >
                         <option value={0} disabled>Inches</option>
                         {Array.from({ length: 12 }, (_, i) => (
@@ -81,7 +81,7 @@ export function MedicalSector({ formData, handleIdentityChange }: any) {
                     value={formData.weight}
                     onChange={handleIdentityChange}
                     placeholder="e.g. 180"
-                    className="w-full bg-surface-alt/50 border border-white/5 rounded-2xl px-5 py-4 text-lg font-medium text-white placeholder-text-muted outline-none transition-all focus:border-white focus:bg-surface-alt focus:ring-1 focus:ring-white shadow-sm"
+                    className="w-full bg-surface-alt/50 border border-white/5 rounded-xl px-5 py-4 text-lg font-medium text-white placeholder-text-muted outline-none transition-all focus:border-white focus:bg-surface-alt focus:ring-1 focus:ring-white shadow-sm"
                 />
             </div>
         </div>
@@ -95,7 +95,7 @@ export function MedicalSector({ formData, handleIdentityChange }: any) {
                         <button 
                             key={condition} 
                             onClick={(e) => { e.preventDefault(); toggleCondition(condition); }}
-                            className={`whitespace-nowrap px-6 py-3 rounded-2xl text-base font-medium border transition-all ${isSelected ? 'bg-rose-500 text-white border-rose-400 shadow-lg shadow-rose-500/20' : 'bg-surface-alt/50 text-text-secondary border-white/5 hover:border-white/20 hover:text-white'}`}
+                            className={`whitespace-nowrap px-6 py-3 rounded-xl text-base font-medium border transition-all ${isSelected ? 'bg-rose-500 text-white border-rose-400 shadow-lg shadow-rose-500/20' : 'bg-surface-alt/50 text-text-secondary border-white/5 hover:border-white/20 hover:text-white'}`}
                         >
                             {condition}
                         </button>
@@ -108,7 +108,7 @@ export function MedicalSector({ formData, handleIdentityChange }: any) {
                     value={customCondition}
                     onChange={e => setCustomCondition(e.target.value)}
                     placeholder="Add unlisted condition..."
-                    className="w-full bg-surface-alt/50 border border-white/5 rounded-2xl pl-5 pr-14 py-4 text-lg font-medium text-white placeholder-text-muted outline-none transition-all focus:border-white focus:bg-surface-alt focus:ring-1 focus:ring-white shadow-sm"
+                    className="w-full bg-surface-alt/50 border border-white/5 rounded-xl pl-5 pr-14 py-4 text-lg font-medium text-white placeholder-text-muted outline-none transition-all focus:border-white focus:bg-surface-alt focus:ring-1 focus:ring-white shadow-sm"
                 />
                 <button type="submit" disabled={!customCondition.trim()} className="absolute right-2 top-1/2 -translate-y-1/2 p-2.5 bg-white text-black hover:bg-gray-100 rounded-xl transition-all disabled:opacity-50">
                     Add

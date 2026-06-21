@@ -18,13 +18,13 @@ export const BasketLineItems: React.FC<Props> = ({ cart, updateLineItem, removeL
                 return (
                     <div key={item.id || index} className="space-y-4">
                         <div className="flex items-center justify-between">
-                            <h5 className="text-sm font-bold text-text-primary tracking-widest uppercase flex items-center gap-2">
+                            <h5 className="text-sm font-bold text-text-primary tracking-wide uppercase flex items-center gap-2">
                                 <Package size={14} className="text-accent-primary" /> Item {index + 1}
                             </h5>
                             {cart.length > 1 && (
                                 <button 
                                     onClick={() => removeLineItem(index)}
-                                    className="flex items-center gap-1 text-sm font-bold tracking-widest text-status-error hover:text-red-400 uppercase transition-colors"
+                                    className="flex items-center gap-1 text-sm font-bold tracking-wide text-status-error hover:text-red-400 uppercase transition-colors"
                                 >
                                     <Trash2 size={12}/> Remove
                                 </button>
@@ -39,7 +39,7 @@ export const BasketLineItems: React.FC<Props> = ({ cart, updateLineItem, removeL
                                     <button
                                         key={p.id}
                                         onClick={() => updateLineItem(index, 'product', p.name)}
-                                        className={`relative p-3 rounded-2xl flex flex-col items-center justify-center text-center gap-2 transition-all border ${isSelected ? 'bg-indigo-500/10 border-indigo-500 shadow-[0_0_20px_rgba(99,102,241,0.2)] scale-[1.02]' : 'bg-surface-alt/30 border-border-subtle hover:border-border-strong hover:bg-surface-alt/60'} group`}
+                                        className={`relative p-3 rounded-xl flex flex-col items-center justify-center text-center gap-2 transition-all border ${isSelected ? 'bg-indigo-500/10 border-indigo-500 shadow-sm scale-[1.02]' : 'bg-surface-alt/30 border-border-subtle hover:border-border-strong hover:bg-surface-alt/60'} group`}
                                     >
                                         <div className={`w-12 h-12 rounded-full flex items-center justify-center ${isSelected ? 'bg-indigo-500 text-white' : 'bg-surface-main border border-border-subtle text-text-muted'} shadow-inner`}>
                                             <Heart size={20} className={isSelected ? 'animate-pulse' : ''} />
@@ -62,7 +62,7 @@ export const BasketLineItems: React.FC<Props> = ({ cart, updateLineItem, removeL
                             <div className="flex-1 w-full grid grid-cols-2 md:grid-cols-3 gap-4">
                                 {/* Quantity */}
                                 <div className="flex flex-col gap-1.5">
-                                    <label className="text-sm font-bold text-text-muted uppercase tracking-widest text-center">Quantity</label>
+                                    <label className="text-sm font-bold text-text-muted uppercase tracking-wide text-center">Quantity</label>
                                     <div className="flex items-center justify-between bg-surface-main/60 border border-border-subtle rounded-xl p-1 overflow-hidden">
                                         <button 
                                             onClick={() => {
@@ -88,7 +88,7 @@ export const BasketLineItems: React.FC<Props> = ({ cart, updateLineItem, removeL
                                 
                                 {/* Dosage / Variant */}
                                 <div className="flex flex-col gap-1.5 md:col-span-2">
-                                    <label className="text-sm font-bold text-text-muted uppercase tracking-widest">Variant / Dosage</label>
+                                    <label className="text-sm font-bold text-text-muted uppercase tracking-wide">Variant / Dosage</label>
                                     <select 
                                         value={item.dosage} 
                                         onChange={(e) => updateLineItem(index, 'dosage', e.target.value)}
@@ -101,7 +101,7 @@ export const BasketLineItems: React.FC<Props> = ({ cart, updateLineItem, removeL
                             
                             {/* Yield */}
                             <div className="w-full md:w-32 flex flex-col items-center md:items-end gap-1.5">
-                                <label className="text-sm font-bold text-status-success/80 uppercase tracking-widest">Subtotal</label>
+                                <label className="text-sm font-bold text-status-success/80 uppercase tracking-wide">Subtotal</label>
                                 <div className="bg-emerald-500/10 border border-emerald-500/20 px-4 py-3 w-full rounded-xl text-center md:text-right">
                                     <span className="font-mono font-bold text-status-success text-base drop-shadow-sm">
                                         ${totalLine.toLocaleString(undefined, {minimumFractionDigits: 2})}

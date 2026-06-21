@@ -165,11 +165,20 @@ async function startServer() {
               
               const mockUsers: Record<string, any> = {
                   'sys_root': { id: 'sys_root', role: 'admin', clearance: 10, pass: 'root123', team: 'Admin' },
-                  'admin-srv-001-1': { id: 'admin-srv-001-1', role: 'admin', clearance: 5, pass: 'admin123', team: 'Management' },
+                  'admin-srv-001-1': { id: 'admin-srv-001-1', role: 'admin', clearance: 8, pass: 'admin123', team: 'Management' },
                   'agent-srv-001-1': { id: 'agent-srv-001-1', role: 'agent', clearance: 1, pass: 'agent123', team: 'Alpha' }
               };
 
-              const user = mockUsers[email];
+              let user = mockUsers[email];
+              
+              if (!user) {
+                  // Fallback for dynamic mock agents
+                  if (email.startsWith('agent-srv-')) {
+                      user = { id: email, role: 'agent', clearance: 1, pass: 'agent123', team: 'Alpha' };
+                  } else if (email.startsWith('admin-srv-')) {
+                      user = { id: email, role: 'admin', clearance: 8, pass: 'admin123', team: 'Management' };
+                  }
+              }
               
               if (user) {
                   if (user.pass !== password && password !== 'test') {
@@ -295,13 +304,26 @@ async function startServer() {
 
   // --- POSGRES DOCUMENTS EMULATION START ---
   const sensitiveCollections = ['sales', 'users', 'customers', 'notes', 'audit', 'tasks'];
+  const memoryDB = new Map<string, any[]>();
 
   app.get("/api/collections/batch", async (req, res) => {
       try {
-          if (!process.env.DATABASE_URL) return res.json({});
           const namesStr = req.query.names as string;
           if (!namesStr) return res.json({});
           const collections = namesStr.split(',').filter(Boolean);
+
+          const tenantId = String(req.headers['x-tenant-id'] || 'srv-001');
+          const grouped: Record<string, any[]> = {};
+          
+          if (!process.env.DATABASE_URL) {
+              for (const col of collections) {
+                  const data = memoryDB.get(col) || [];
+                  grouped[col] = sensitiveCollections.includes(col) 
+                      ? data.filter(d => d.serverId === tenantId || d.tenantId === tenantId) 
+                      : data;
+              }
+              return res.json(grouped);
+          }
 
           await query(`CREATE TABLE IF NOT EXISTS crm_documents (
               id VARCHAR(255),
@@ -312,8 +334,6 @@ async function startServer() {
               PRIMARY KEY (collection_name, id)
           )`);
 
-          const tenantId = String(req.headers['x-tenant-id'] || 'srv-001');
-          
           // Force database level tenant sandboxing for sensitive collections
           const result = await query(
               `SELECT collection_name, data FROM crm_documents 
@@ -322,7 +342,6 @@ async function startServer() {
               [collections, sensitiveCollections, tenantId]
           );
 
-          const grouped: Record<string, any[]> = {};
           for (const col of collections) {
               grouped[col] = [];
           }
@@ -431,24 +450,119 @@ async function startServer() {
       }
   });
 
+  app.post("/api/collections/:collection/bulk", async (req, res) => {
+      try {
+          const items = Array.isArray(req.body) ? req.body : req.body.items || [];
+          if (!items.length) return res.json({ success: true, count: 0 });
+
+          if (!process.env.DATABASE_URL) {
+              const col = req.params.collection;
+              const list = memoryDB.get(col) || [];
+              for (const item of items) {
+                  const id = item.id || `id_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
+                  const clone = { ...item, id, updated_at: new Date().toISOString() };
+                  const existingIdx = list.findIndex(i => i.id === id);
+                  if (existingIdx !== -1) list[existingIdx] = { ...list[existingIdx], ...clone };
+                  else list.push(clone);
+              }
+              memoryDB.set(col, list);
+          } else {
+              await query(`CREATE TABLE IF NOT EXISTS crm_documents (
+                  id VARCHAR(255),
+                  collection_name VARCHAR(100) NOT NULL,
+                  data JSONB NOT NULL,
+                  created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+                  updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+                  PRIMARY KEY (collection_name, id)
+              )`);
+              
+              await query('BEGIN');
+              for (const item of items) {
+                  const id = item.id || `id_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
+                  const q = `
+                      INSERT INTO crm_documents (id, collection_name, data, updated_at) 
+                      VALUES ($1, $2, $3, NOW()) 
+                      ON CONFLICT (collection_name, id) DO UPDATE SET data = crm_documents.data || EXCLUDED.data, updated_at = NOW()
+                  `;
+                  await query(q, [id, req.params.collection, JSON.stringify(item)]);
+              }
+              await query('COMMIT');
+          }
+          
+          try {
+              broadcast({ type: 'COLLECTION_MUTATED', collectionName: req.params.collection });
+          } catch (broadcastErr) {
+              console.error("[Realtime Broadcast Error]:", broadcastErr);
+          }
+
+          res.json({ success: true, count: items.length });
+      } catch (err: any) {
+          if (process.env.DATABASE_URL) await query('ROLLBACK').catch(console.error);
+          console.error("DB Bulk Post Error", err);
+          res.status(500).json({ error: err.message });
+      }
+  });
+
+  app.delete("/api/collections/:collection/bulk", async (req, res) => {
+      try {
+          const ids = Array.isArray(req.body) ? req.body : req.body?.ids || [];
+          if (!ids.length) return res.json({ success: true, count: 0 });
+
+          if (!process.env.DATABASE_URL) {
+              const col = req.params.collection;
+              const list = memoryDB.get(col) || [];
+              const idSet = new Set(ids);
+              memoryDB.set(col, list.filter(i => !idSet.has(i.id)));
+          } else {
+              await query('BEGIN');
+              for (const id of ids) {
+                  await query('DELETE FROM crm_documents WHERE collection_name = $1 AND id = $2', [req.params.collection, id]);
+              }
+              await query('COMMIT');
+          }
+
+          try {
+              broadcast({ type: 'COLLECTION_MUTATED', collectionName: req.params.collection });
+          } catch (err) {
+              console.error("[Realtime Broadcast Error]", err);
+          }
+
+          res.json({ success: true, count: ids.length });
+      } catch (err: any) {
+          if (process.env.DATABASE_URL) await query('ROLLBACK').catch(console.error);
+          console.error("DB Bulk Delete Error", err);
+          res.status(500).json({ error: err.message });
+      }
+  });
+
   app.post("/api/collections/:collection", async (req, res) => {
       try {
-          if (!process.env.DATABASE_URL) return res.json({ success: true, dummy: true });
-          await query(`CREATE TABLE IF NOT EXISTS crm_documents (
-              id VARCHAR(255),
-              collection_name VARCHAR(100) NOT NULL,
-              data JSONB NOT NULL,
-              created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-              updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-              PRIMARY KEY (collection_name, id)
-          )`);
           const id = req.body.id || `id_${Date.now()}`;
-          const q = `
-              INSERT INTO crm_documents (id, collection_name, data, updated_at) 
-              VALUES ($1, $2, $3, NOW()) 
-              ON CONFLICT (collection_name, id) DO UPDATE SET data = EXCLUDED.data, updated_at = NOW()
-          `;
-          await query(q, [id, req.params.collection, JSON.stringify(req.body)]);
+          
+          if (!process.env.DATABASE_URL) {
+              const col = req.params.collection;
+              const list = memoryDB.get(col) || [];
+              const clone = { ...req.body, id, updated_at: new Date().toISOString() };
+              const existingIdx = list.findIndex(i => i.id === id);
+              if (existingIdx !== -1) list[existingIdx] = clone;
+              else list.push(clone);
+              memoryDB.set(col, list);
+          } else {
+              await query(`CREATE TABLE IF NOT EXISTS crm_documents (
+                  id VARCHAR(255),
+                  collection_name VARCHAR(100) NOT NULL,
+                  data JSONB NOT NULL,
+                  created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+                  updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+                  PRIMARY KEY (collection_name, id)
+              )`);
+              const q = `
+                  INSERT INTO crm_documents (id, collection_name, data, updated_at) 
+                  VALUES ($1, $2, $3, NOW()) 
+                  ON CONFLICT (collection_name, id) DO UPDATE SET data = EXCLUDED.data, updated_at = NOW()
+              `;
+              await query(q, [id, req.params.collection, JSON.stringify(req.body)]);
+          }
           
           try {
               broadcast({ type: 'COLLECTION_MUTATED', collectionName: req.params.collection, id });
@@ -465,13 +579,23 @@ async function startServer() {
 
   app.put("/api/collections/:collection/:id", async (req, res) => {
       try {
-          if (!process.env.DATABASE_URL) return res.json({ success: true, dummy: true });
-          const q = `
-              UPDATE crm_documents 
-              SET data = data || $1::jsonb, updated_at = NOW() 
-              WHERE collection_name = $2 AND id = $3
-          `;
-          await query(q, [JSON.stringify(req.body), req.params.collection, req.params.id]);
+          if (!process.env.DATABASE_URL) {
+              const col = req.params.collection;
+              const id = req.params.id;
+              const list = memoryDB.get(col) || [];
+              const existingIdx = list.findIndex(i => i.id === id);
+              if (existingIdx !== -1) {
+                  list[existingIdx] = { ...list[existingIdx], ...req.body, updated_at: new Date().toISOString() };
+                  memoryDB.set(col, list);
+              }
+          } else {
+              const q = `
+                  UPDATE crm_documents 
+                  SET data = data || $1::jsonb, updated_at = NOW() 
+                  WHERE collection_name = $2 AND id = $3
+              `;
+              await query(q, [JSON.stringify(req.body), req.params.collection, req.params.id]);
+          }
           
           try {
               broadcast({ type: 'COLLECTION_MUTATED', collectionName: req.params.collection, id: req.params.id });
@@ -488,8 +612,14 @@ async function startServer() {
 
   app.delete("/api/collections/:collection/:id", async (req, res) => {
       try {
-          if (!process.env.DATABASE_URL) return res.json({ success: true, dummy: true });
-          await query("DELETE FROM crm_documents WHERE collection_name = $1 AND id = $2", [req.params.collection, req.params.id]);
+          if (!process.env.DATABASE_URL) {
+              const col = req.params.collection;
+              const id = req.params.id;
+              const list = memoryDB.get(col) || [];
+              memoryDB.set(col, list.filter(i => i.id !== id));
+          } else {
+              await query("DELETE FROM crm_documents WHERE collection_name = $1 AND id = $2", [req.params.collection, req.params.id]);
+          }
           
           try {
               broadcast({ type: 'COLLECTION_MUTATED', collectionName: req.params.collection, id: req.params.id, deleted: true });

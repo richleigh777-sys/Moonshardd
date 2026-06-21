@@ -52,11 +52,11 @@ export const PipelineCard = React.memo(({ sale, onOpen, onDragStart }: PipelineC
         <div className={`flex flex-col gap-2 ${isHighUrgency ? 'pl-2' : ''}`}>
             <div className="flex items-center justify-between mb-0.5">
                 <div className="flex items-center gap-2.5 min-w-0">
-                    <div className={`w-8 h-8 rounded-xl flex items-center justify-center text-xs font-[700] shadow-sm border ${isHighUrgency ? 'bg-amber-500 text-white border-amber-600' : 'bg-surface-alt text-text-secondary border-border-subtle'}`}>
+                    <div className={`w-8 h-8 rounded-xl flex items-center justify-center text-xs font-medium shadow-sm border ${isHighUrgency ? 'bg-amber-500 text-white border-amber-600' : 'bg-surface-alt text-text-secondary border-border-subtle'}`}>
                         {sale.customer.charAt(0)}
                     </div>
                     <div className="min-w-0 flex-1">
-                        <span className="font-[700] text-xs text-text-primary truncate block leading-tight tracking-tight">
+                        <span className="font-medium text-xs text-text-primary truncate block leading-tight tracking-tight">
                             {sale.customer}
                         </span>
                         <span className="text-xs text-text-muted font-bold truncate block mt-0.5 opacity-80">
@@ -73,8 +73,8 @@ export const PipelineCard = React.memo(({ sale, onOpen, onDragStart }: PipelineC
             
             <div className="flex justify-between items-center border-t border-border-subtle/50 pt-2.5 mt-1 relative">
                 <div className="flex flex-col">
-                    <span className="text-sm font-[700] text-text-muted  tracking-wider mb-0.5">Value</span>
-                    <span className="font-mono font-[700] text-sm tracking-tight text-text-primary group-hover:text-accent-primary transition-colors">
+                    <span className="text-sm font-medium text-text-muted  tracking-wider mb-0.5">Value</span>
+                    <span className="font-mono font-medium text-sm tracking-tight text-text-primary group-hover:text-accent-primary transition-colors">
                         ${Number(sale.amount).toLocaleString()}
                     </span>
                 </div>
@@ -83,7 +83,7 @@ export const PipelineCard = React.memo(({ sale, onOpen, onDragStart }: PipelineC
                     {isStagnant && (
                         <div className="flex items-center gap-1 px-3 py-1.5 bg-red-500/10 rounded border border-red-500/20" title={`${daysInStage} days inactive`}>
                             <Clock size={16} className="text-status-error"/>
-                            <span className="text-xs font-[700] text-status-error">{daysInStage}d</span>
+                            <span className="text-xs font-medium text-status-error">{daysInStage}d</span>
                         </div>
                     )}
                     

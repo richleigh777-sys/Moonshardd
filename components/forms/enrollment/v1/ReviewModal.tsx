@@ -84,7 +84,7 @@ export const ReviewModal: React.FC<ReviewModalProps> = ({
         <div className="bg-surface-alt rounded-lg p-4 border border-accent-primary">
           <div className="flex justify-between items-center">
             <span className="text-sm font-bold text-text-muted">TOTAL:</span>
-            <span className="text-lg font-black text-status-success num-font">
+            <span className="text-lg font-bold text-status-success num-font">
               ${parseFloat(manualAmount || '0').toLocaleString(undefined, { minimumFractionDigits: 2 })}
             </span>
           </div>

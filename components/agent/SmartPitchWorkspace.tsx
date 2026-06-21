@@ -104,7 +104,7 @@ export const SmartPitchWorkspace: React.FC<SmartPitchProps> = ({ context, curren
                         <div className="p-3 border-b border-border-subtle flex justify-between items-center bg-surface-highlight/50">
                             <div className="flex items-center gap-2">
                                 <FileText size={16} className="text-text-muted"/>
-                                <span className="text-sm font-bold uppercase tracking-widest text-text-primary">Live Playbook</span>
+                                <span className="text-sm font-bold uppercase tracking-wide text-text-primary">Live Playbook</span>
                             </div>
                             {bestScript && (
                                 <span className="text-sm text-text-muted max-w-[120px] truncate">{bestScript.title}</span>

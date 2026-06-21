@@ -28,7 +28,7 @@ export const MediaViewer: React.FC<MediaViewerProps> = ({ src, type, name, onClo
     };
 
     return (
-        <div className="fixed inset-0 z-[300] bg-black/95 backdrop-blur-xl flex flex-col animate-in fade-in duration-300">
+        <div className="fixed inset-0 z-[300] bg-black/95  flex flex-col animate-in fade-in duration-300">
             {/* Toolbar */}
             <div className="flex justify-between items-center p-4 bg-gradient-to-b from-black/50 to-transparent z-10">
                 <div className="text-text-primary text-sm font-mono opacity-80 truncate max-w-md">

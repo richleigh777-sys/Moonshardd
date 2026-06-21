@@ -529,14 +529,14 @@ export const CRMAuditDashboard: React.FC<CRMAuditDashboardProps> = ({ users, sal
                                                             <div key={note.id || noteIdx} className="relative pl-6">
                                                                 {/* Dot */}
                                                                 <div className={`absolute -left-[5px] top-1.5 w-2 h-2 rounded-full border ${
-                                                                    note.type === 'callback' ? 'bg-[#818cf8] border-[#4f46e5] shadow shadow-[#818cf8]/50' : 'bg-text-muted border-border-strong'
+                                                                    note.type === 'callback' ? 'bg-[#818cf8] border-[#4f46e5] shadow shadow-sm/50' : 'bg-text-muted border-border-strong'
                                                                 }`} />
                                                                 
                                                                 <div className="bg-surface-alt/70 border border-border-subtle/40 rounded-xl p-3 max-w-2xl text-sm">
                                                                     <div className="flex items-center justify-between flex-wrap gap-2 mb-1.5">
                                                                         <div className="flex items-center gap-2">
                                                                             <span className="font-extrabold text-[#818cf8]">{note.agentName}</span>
-                                                                            <span className="text-sm uppercase tracking-widest font-bold px-1.5 py-0.5 bg-surface-main text-text-muted rounded border border-border-subtle/30">
+                                                                            <span className="text-sm uppercase tracking-wide font-bold px-1.5 py-0.5 bg-surface-main text-text-muted rounded border border-border-subtle/30">
                                                                                 {note.type.toUpperCase()}
                                                                             </span>
                                                                         </div>

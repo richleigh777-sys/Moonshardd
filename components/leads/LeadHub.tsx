@@ -26,7 +26,7 @@ export const LeadHub: React.FC<LeadHubProps> = ({ notes = [], onMarkDone, onView
                  <div className="w-24 h-24 bg-surface-alt rounded-full flex items-center justify-center mb-6 animate-pulse">
                     <CheckCircle2 size={40} className="text-status-success" />
                  </div>
-                 <h3 className="text-xl font-[700]  tracking-widest text-text-primary">Pipeline Clear</h3>
+                 <h3 className="text-xl font-medium  tracking-wide text-text-primary">Pipeline Clear</h3>
                  <p className="text-xs font-bold text-text-muted mt-2  tracking-wide">No pending callbacks. Great work.</p>
             </Card>
          );

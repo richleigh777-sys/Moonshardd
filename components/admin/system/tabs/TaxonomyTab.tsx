@@ -120,7 +120,7 @@ export const TaxonomyTab: React.FC<TaxonomyTabProps> = ({ config, onChange }) =>
                 </div>
 
                 {/* Right display board */}
-                <div className="md:col-span-8 p-4 bg-surface-alt/30 border border-border-subtle rounded-[2rem] flex flex-col min-h-[300px]">
+                <div className="md:col-span-8 p-4 bg-surface-alt/30 border border-border-subtle rounded-xl flex flex-col min-h-[300px]">
                     <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center pb-4 border-b border-border-subtle mb-4 gap-3">
                         <div>
                             <h5 className="text-sm font-bold text-text-primary tracking-wide"> Roster Profiling Registry</h5>
@@ -158,7 +158,7 @@ export const TaxonomyTab: React.FC<TaxonomyTabProps> = ({ config, onChange }) =>
                                     <div className={`w-1.5 h-1.5 rounded-full ${tier.badge}`} />
                                     <div>
                                         <p className="text-sm font-extrabold text-text-primary">{cond}</p>
-                                        <p className="text-[8px] uppercase tracking-widest font-black opacity-60 mt-0.5">{tier.label}</p>
+                                        <p className="text-[8px] uppercase tracking-wide font-bold opacity-60 mt-0.5">{tier.label}</p>
                                     </div>
                                     <button 
                                         onClick={() => removeCondition(cond)} 
@@ -172,7 +172,7 @@ export const TaxonomyTab: React.FC<TaxonomyTabProps> = ({ config, onChange }) =>
                         {filteredConditions.length === 0 && (
                             <div className="w-full flex-1 flex flex-col items-center justify-center text-text-muted opacity-40 py-12">
                                 <HeartPulse size={40} className="mb-2" />
-                                <p className="text-sm font-bold tracking-widest uppercase">No Active Matches</p>
+                                <p className="text-sm font-bold tracking-wide uppercase">No Active Matches</p>
                             </div>
                         )}
                     </div>

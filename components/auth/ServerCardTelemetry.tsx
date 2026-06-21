@@ -79,7 +79,7 @@ export const ServerCardTelemetry: React.FC<ServerCardTelemetryProps> = React.mem
         <div 
             onClick={() => isActive && onEnter(server.id)}
             className={`
-                bg-surface-main border border-border-strong rounded-2xl p-6 group cursor-pointer 
+                bg-surface-main border border-border-strong rounded-xl p-6 group cursor-pointer 
                 transition-all duration-300 relative flex flex-col h-[280px] shadow-sm
                 ${isActive ? 'hover:border-accent-primary/50 hover:shadow-md' : 'opacity-60 grayscale cursor-not-allowed'}
             `}
@@ -89,7 +89,7 @@ export const ServerCardTelemetry: React.FC<ServerCardTelemetryProps> = React.mem
                     {isActive ? <Server size={24} strokeWidth={2}/> : <Lock size={24} strokeWidth={2}/>}
                 </div>
                 <div className="flex items-center gap-3">
-                    <span className={`text-[10px] uppercase tracking-widest font-bold px-2 py-1 rounded-md ${envColors[envType as keyof typeof envColors]}`}>
+                    <span className={`text-[10px] uppercase tracking-wide font-bold px-2 py-1 rounded-md ${envColors[envType as keyof typeof envColors]}`}>
                         {envType}
                     </span>
                     <div className="opacity-0 group-hover:opacity-100 transition-all flex gap-1">

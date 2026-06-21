@@ -34,16 +34,16 @@ export const CatalogToolbar: React.FC<CatalogToolbarProps> = ({
     onViewModeChange
 }) => {
     return (
-        <div className="flex flex-col border-b border-border-subtle bg-surface-alt/30 backdrop-blur-md sticky top-0 z-20">
+        <div className="flex flex-col border-b border-border-subtle bg-surface-alt/30  sticky top-0 z-20">
             <div className="p-5 flex flex-col xl:flex-row justify-between items-center gap-4">
                 <div className="flex items-center gap-5 w-full xl:w-auto">
                     <div className="p-3 bg-accent-primary/10 rounded-xl text-accent-primary border border-accent-primary/20 shadow-neon">
                         <Package size={24} strokeWidth={2.5}/>
                     </div>
                     <div>
-                        <h3 className="text-xl font-[700]  italic text-text-primary">Master <span className="text-accent-primary">Catalog</span></h3>
+                        <h3 className="text-xl font-medium  italic text-text-primary">Master <span className="text-accent-primary">Catalog</span></h3>
                         <div className="flex items-center gap-3 mt-1">
-                            <span className="text-sm font-[700] text-text-muted  tracking-[0.2em]">{totalItems} SKUs Active</span>
+                            <span className="text-sm font-medium text-text-muted  tracking-wide">{totalItems} SKUs Active</span>
                         </div>
                     </div>
                 </div>
@@ -79,7 +79,7 @@ export const CatalogToolbar: React.FC<CatalogToolbarProps> = ({
                     <select 
                         value={sortMode}
                         onChange={(e) => onSortChange(e.target.value as SortOption)}
-                        className="h-11 bg-surface-main border border-border-subtle rounded-xl px-3 text-sm font-[700]  outline-none focus:border-accent-primary cursor-pointer hover:bg-surface-alt transition-colors"
+                        className="h-11 bg-surface-main border border-border-subtle rounded-xl px-3 text-sm font-medium  outline-none focus:border-accent-primary cursor-pointer hover:bg-surface-alt transition-colors"
                     >
                         <option value="name">Name (A-Z)</option>
                         <option value="price-high">Price (High)</option>
@@ -89,7 +89,7 @@ export const CatalogToolbar: React.FC<CatalogToolbarProps> = ({
                     </select>
 
                     <Button onClick={onToggleBulk} variant="secondary" className="h-11 px-4" title="Bulk Actions"><SlidersHorizontal size={18}/></Button>
-                    <Button onClick={onAddProduct} variant="primary" className="h-11 px-4 text-sm font-[700]  tracking-[0.2em] shadow-lg shadow-accent-primary/20">
+                    <Button onClick={onAddProduct} variant="primary" className="h-11 px-4 text-sm font-medium  tracking-wide shadow-lg shadow-accent-primary/20">
                         <Plus size={16} className="mr-2"/> New SKU
                     </Button>
                 </div>
@@ -102,7 +102,7 @@ export const CatalogToolbar: React.FC<CatalogToolbarProps> = ({
                         key={cat}
                         onClick={() => onCategoryChange(cat)}
                         className={`
-                            px-4 py-1.5 rounded-lg text-sm font-[700]  tracking-wider border transition-all whitespace-nowrap
+                            px-4 py-1.5 rounded-lg text-sm font-medium  tracking-wider border transition-all whitespace-nowrap
                             ${activeCategory === cat 
                                 ? 'bg-accent-primary text-white border-accent-primary shadow-md' 
                                 : 'bg-surface-main text-text-muted border-border-subtle hover:text-text-primary hover:border-accent-primary/30'}

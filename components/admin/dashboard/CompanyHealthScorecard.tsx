@@ -124,7 +124,7 @@ export const CompanyHealthScorecard: React.FC<CompanyHealthScorecardProps> = ({
           <div>
             <p className="text-sm font-semibold text-slate-300 uppercase tracking-wider">Business Health</p>
             <div className="flex items-center gap-3 mt-2">
-              <span className="text-xl font-black text-white">{Math.round(metrics.healthScore)}</span>
+              <span className="text-xl font-bold text-white">{Math.round(metrics.healthScore)}</span>
               <div className="flex flex-col">
                 <span className={`text-xl font-bold ${status.textColor}`}>{status.label}</span>
                 <p className="text-sm text-slate-400">Overall Status</p>
@@ -169,14 +169,14 @@ export const CompanyHealthScorecard: React.FC<CompanyHealthScorecardProps> = ({
         {/* Revenue */}
         <div className="bg-emerald-900 bg-opacity-40 border border-emerald-700 rounded-lg p-3">
           <p className="text-sm font-semibold text-emerald-300 uppercase tracking-wider mb-1">Revenue Today</p>
-          <p className="text-xl font-black text-white">${(metrics.todayRevenue / 1000).toFixed(1)}k</p>
+          <p className="text-xl font-bold text-white">${(metrics.todayRevenue / 1000).toFixed(1)}k</p>
           <p className="text-sm text-slate-400 mt-1">Yesterday: ${(metrics.yesterdayRevenue / 1000).toFixed(1)}k</p>
         </div>
 
         {/* Agent Efficiency */}
         <div className="bg-indigo-900 bg-opacity-40 border border-indigo-700 rounded-lg p-3">
           <p className="text-sm font-semibold text-indigo-300 uppercase tracking-wider mb-1">Agent Efficiency</p>
-          <p className="text-xl font-black text-white">{Math.round(metrics.agentEfficiency)}%</p>
+          <p className="text-xl font-bold text-white">{Math.round(metrics.agentEfficiency)}%</p>
           <p className="text-sm text-slate-400 mt-1">
             {metrics.onlineAgents}/{metrics.totalAgents} online
           </p>
@@ -185,14 +185,14 @@ export const CompanyHealthScorecard: React.FC<CompanyHealthScorecardProps> = ({
         {/* Win Rate */}
         <div className="bg-amber-900 bg-opacity-40 border border-amber-700 rounded-lg p-3">
           <p className="text-sm font-semibold text-amber-300 uppercase tracking-wider mb-1">Win Rate (7d)</p>
-          <p className="text-xl font-black text-white">{Math.round(metrics.winRate)}%</p>
+          <p className="text-xl font-bold text-white">{Math.round(metrics.winRate)}%</p>
           <p className="text-sm text-slate-400 mt-1">Approval efficiency</p>
         </div>
 
         {/* Satisfaction */}
         <div className="bg-purple-900 bg-opacity-40 border border-purple-700 rounded-lg p-3">
           <p className="text-sm font-semibold text-purple-300 uppercase tracking-wider mb-1">Satisfaction</p>
-          <p className="text-xl font-black text-white">{Math.round(metrics.satisfactionScore)}%</p>
+          <p className="text-xl font-bold text-white">{Math.round(metrics.satisfactionScore)}%</p>
           <p className="text-sm text-slate-400 mt-1">Reorder rate</p>
         </div>
       </div>

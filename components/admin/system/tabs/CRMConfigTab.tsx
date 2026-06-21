@@ -90,7 +90,7 @@ export const CRMConfigTab: React.FC<CRMConfigTabProps> = ({ config, onChange }) 
                 </div>
 
                 {crm.funnelAnalytics && (
-                    <div className="p-4 bg-surface-alt/40 border border-border-subtle rounded-[2rem] space-y-6 animate-in fade-in slide-in-from-bottom-2">
+                    <div className="p-4 bg-surface-alt/40 border border-border-subtle rounded-xl space-y-6 animate-in fade-in slide-in-from-bottom-2">
                         <div className="flex items-center gap-3 pb-4 border-b border-border-subtle">
                             <div className="p-2 bg-emerald-500/10 text-status-success rounded-xl">
                                 <Sliders size={18} />
@@ -126,7 +126,7 @@ export const CRMConfigTab: React.FC<CRMConfigTabProps> = ({ config, onChange }) 
 
                         {/* Enhanced Visual Formula Tracker */}
                         <div className="p-4 rounded-xl bg-surface-main/80 border border-border-subtle text-sm space-y-2.5">
-                            <span className="text-sm uppercase font-mono font-black text-status-success tracking-widest block">
+                            <span className="text-sm uppercase font-mono font-bold text-status-success tracking-wide block">
                                 Core Intelligence Matrix Formula
                             </span>
                             <div className="flex flex-col sm:flex-row items-baseline gap-2 text-text-secondary leading-normal font-mono text-sm">
@@ -145,7 +145,7 @@ export const CRMConfigTab: React.FC<CRMConfigTabProps> = ({ config, onChange }) 
                     </div>
                 )}
 
-                <div className="p-4 bg-surface-alt/40 border border-border-subtle rounded-[2rem] space-y-6">
+                <div className="p-4 bg-surface-alt/40 border border-border-subtle rounded-xl space-y-6">
                     <div className="flex items-center gap-3 pb-4 border-b border-border-subtle">
                         <div className="p-2 bg-text-primary text-surface-main rounded-xl shadow-lg">
                             <Share2 size={18} />
@@ -201,7 +201,7 @@ export const CRMConfigTab: React.FC<CRMConfigTabProps> = ({ config, onChange }) 
 
                                 {/* Custom Live Sync Payload Preview */}
                                 <div className="p-3.5 rounded-xl bg-surface-alt border border-border-subtle text-sm space-y-2">
-                                    <span className="text-sm uppercase font-mono font-black text-accent-secondary tracking-widest block">
+                                    <span className="text-sm uppercase font-mono font-bold text-accent-secondary tracking-wide block">
                                         Active Sync Payload Model (JSON)
                                     </span>
                                     <div className="p-3 bg-black/40 rounded border border-border-strong font-mono text-sm text-cyan-400 select-all overflow-x-auto truncate text-left max-h-[140px] overflow-y-auto custom-scrollbar">
@@ -240,7 +240,7 @@ export const CRMConfigTab: React.FC<CRMConfigTabProps> = ({ config, onChange }) 
                                     </button>
 
                                     {testResult && (
-                                        <span className="text-sm text-status-success font-black tracking-wide flex items-center gap-1">
+                                        <span className="text-sm text-status-success font-bold tracking-wide flex items-center gap-1">
                                             <CheckCircle size={14} />
                                             {testResult}
                                         </span>

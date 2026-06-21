@@ -108,6 +108,7 @@ export interface Customer {
     pipelineStages?: string[];
     assignedTo?: string; // ID of the agent who currently owns this lead
     team?: string;
+    customFields?: Record<string, any>;
     nextActionDate?: number;
     nextActionType?: string;
     lastProductsPurchased?: string[];
@@ -321,9 +322,29 @@ export interface SpiffRule {
  * Global Configuration Object.
  * Controls the operational parameters of a specific Server Node.
  */
+export interface PermissionSet {
+    viewLeads: boolean;
+    editLeads: boolean;
+    deleteLeads: boolean;
+    exportLeads: boolean;
+    processSales: boolean;
+    viewReports: boolean;
+}
+
+export interface CustomFieldConfig {
+    id: string;
+    label: string;
+    type: 'text' | 'number' | 'date' | 'boolean' | 'select' | 'multiselect';
+    options?: string[]; // For select type
+    required?: boolean;
+    order?: number;
+}
+
 export interface SystemConfig {
     companyName?: string;
     serverId?: string;
+    rbacMatrix?: Record<string, PermissionSet>;
+    customFieldsConfig?: CustomFieldConfig[];
     shiftStart: string;
     shiftEnd: string;
     cutoffDay1: number;

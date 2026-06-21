@@ -80,14 +80,14 @@ export const OmniSearch = () => {
             <button 
                 onClick={() => setIsOpen(!isOpen)}
                 style={{ width: '300px', height: '35px' }}
-                className={`flex items-center gap-2 px-3 py-1.5 rounded-lg border transition-all ${isOpen ? 'bg-[#0A0A0C] border-[#3B82F6] text-[#FAFAFA] shadow-[0_0_15px_rgba(59,130,246,0.3)]' : 'bg-[#18181B] border-[#27272A] text-[#A1A1AA] hover:text-[#FAFAFA] hover:border-[#3F3F46]'}`}
+                className={`flex items-center gap-2 px-3 py-1.5 rounded-lg border transition-all ${isOpen ? 'bg-[#0A0A0C] border-[#3B82F6] text-[#FAFAFA] shadow-sm' : 'bg-[#18181B] border-[#27272A] text-[#A1A1AA] hover:text-[#FAFAFA] hover:border-[#3F3F46]'}`}
             >
                 <Search size={16} />
-                <span className="text-sm font-[800] uppercase tracking-widest hidden md:block">Omni Search</span>
+                <span className="text-sm font-semibold uppercase tracking-wide hidden md:block">Omni Search</span>
             </button>
 
             {isOpen && (
-                <div className="absolute top-full right-0 mt-2 w-80 md:w-96 bg-[#0F0F11] border border-[#27272A] shadow-2xl rounded-[20px] overflow-hidden flex flex-col max-h-[500px]">
+                <div className="absolute top-full right-0 mt-2 w-80 md:w-96 bg-[#0F0F11] border border-[#27272A] shadow-2xl rounded-lg overflow-hidden flex flex-col max-h-[500px]">
                     <div className="p-3 border-b border-[#2A2A2E] bg-[#0A0A0C]/50 shrink-0">
                         <div className="relative">
                             <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#71717A]" />
@@ -105,8 +105,8 @@ export const OmniSearch = () => {
                     <div className="flex-1 overflow-y-auto custom-scrollbar p-0">
                         {isSearching ? (
                             <div className="p-6 text-center flex flex-col items-center gap-3 text-[#A1A1AA]">
-                                <div className="w-6 h-6 border-2 border-[#3B82F6] border-t-transparent rounded-full animate-spin shadow-[0_0_10px_rgba(59,130,246,0.3)]"></div>
-                                <span className="text-sm font-[800] uppercase tracking-[0.2em]">Querying Silos...</span>
+                                <div className="w-6 h-6 border-2 border-[#3B82F6] border-t-transparent rounded-full animate-spin shadow-sm"></div>
+                                <span className="text-sm font-semibold uppercase tracking-wide">Querying Silos...</span>
                             </div>
                         ) : query.length < 3 ? (
                             <div className="p-6 text-center text-[#A1A1AA] text-[12px] font-[500] leading-relaxed">
@@ -122,7 +122,7 @@ export const OmniSearch = () => {
                                     <div key={i} className="p-0">
                                         <div className="bg-[#0A0A0C]/80 px-4 py-2 border-b border-[#2A2A2E] flex items-center gap-3">
                                             <div className="p-1 rounded bg-[#3B82F6]/10 text-[#60A5FA]"><Server size={14} /></div>
-                                            <span className="text-sm font-[800] uppercase tracking-[0.1em] text-[#A1A1AA]">{server.serverName}</span>
+                                            <span className="text-sm font-semibold uppercase tracking-[0.1em] text-[#A1A1AA]">{server.serverName}</span>
                                         </div>
                                     <div className="divide-y divide-[#27272A]/50">
                                             {server.sales.map((sale) => {
@@ -132,14 +132,14 @@ export const OmniSearch = () => {
                                                 <div key={sale.id} className="p-4 hover:bg-[#18181B] transition-colors flex flex-col gap-2 group">
                                                     <div className="flex justify-between items-start">
                                                         <div className="flex flex-col">
-                                                            <span className="text-[14px] font-[700] text-[#FAFAFA] flex items-center gap-3">
+                                                            <span className="text-[14px] font-medium text-[#FAFAFA] flex items-center gap-3">
                                                                 {sale.customer}
-                                                                <span className={`text-sm font-[800] px-2 py-0.5 rounded-full uppercase tracking-widest bg-[#27272A] ${statusColor}`}>{sale.status}</span>
+                                                                <span className={`text-sm font-semibold px-2 py-0.5 rounded-full uppercase tracking-wide bg-[#27272A] ${statusColor}`}>{sale.status}</span>
                                                             </span>
                                                         </div>
                                                         <div className="flex items-center gap-3">
                                                             <button 
-                                                                className="opacity-0 group-hover:opacity-100 transition-opacity bg-[#3B82F6] hover:bg-[#2563EB] text-white text-sm font-[800] uppercase tracking-widest px-3 py-1.5 rounded-lg shadow-[0_0_15px_rgba(59,130,246,0.2)] hover:scale-105 active:scale-95"
+                                                                className="opacity-0 group-hover:opacity-100 transition-opacity bg-[#3B82F6] hover:bg-[#2563EB] text-white text-sm font-semibold uppercase tracking-wide px-3 py-1.5 rounded-lg shadow-sm hover:scale-105 active:scale-95"
                                                                 onClick={() => {
                                                                     // if (window.confirm("Engage this customer and load them into a new order form?")) {
                                                                         setIsOpen(false);
@@ -168,17 +168,17 @@ export const OmniSearch = () => {
                                                     </div>
                                                     
                                                     <div className="flex items-center justify-between mt-2 pt-2 border-t border-[#2A2A2E]/50">
-                                                        <div className="text-[#818CF8] py-0.5 font-[700] text-[13px]">
+                                                        <div className="text-[#818CF8] py-0.5 font-medium text-[13px]">
                                                             {sale.product} <span className="text-[#71717A] font-[600] text-sm ml-1">x{sale.quantity}</span>
                                                         </div>
-                                                        <span className={`font-mono text-[14px] tracking-tight font-[800] ${sale.status === 'Declined' ? 'text-[#F87171]' : 'text-[#34D399]'}`}>
+                                                        <span className={`font-mono text-[14px] tracking-tight font-semibold ${sale.status === 'Declined' ? 'text-[#F87171]' : 'text-[#34D399]'}`}>
                                                             ${Number(sale.amount).toFixed(2)}
                                                         </span>
                                                     </div>
 
                                                     {sale.status === 'Declined' && sale.declineReason && (
                                                         <div className="text-sm text-[#FCA5A5] mt-2 bg-[#7F1D1D]/20 p-2.5 rounded-lg leading-relaxed border border-[#DC2626]/30 shadow-inner">
-                                                            <strong className="font-[800] text-[#F87171]">Decline Reason:</strong> {sale.declineReason}
+                                                            <strong className="font-semibold text-[#F87171]">Decline Reason:</strong> {sale.declineReason}
                                                         </div>
                                                     )}
                                                 </div>

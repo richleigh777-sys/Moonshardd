@@ -154,7 +154,7 @@ export const PortalShell: React.FC<PortalShellProps> = ({
                             animate={{ opacity: 1 }}
                             exit={{ opacity: 0 }}
                             onClick={() => setIsMobileMenuOpen(false)}
-                            className="fixed inset-0 z-[150] bg-surface-alt backdrop-blur-sm lg:hidden"
+                            className="fixed inset-0 z-[150] bg-surface-alt  lg:hidden"
                         />
                         <motion.aside 
                             initial={{ x: '-100%' }}
@@ -169,7 +169,7 @@ export const PortalShell: React.FC<PortalShellProps> = ({
                                     <div className="w-8 h-8 rounded-lg bg-accent-primary flex items-center justify-center text-surface-alt">
                                         <LayoutGrid size={16} fill="currentColor" />
                                     </div>
-                                    <span className="font-[700]  tracking-tighter">Workspace</span>
+                                    <span className="font-medium  tracking-tighter">Workspace</span>
                                 </div>
                                 <button onClick={() => setIsMobileMenuOpen(false)} className="p-2 text-text-muted">
                                     <CloseIcon size={20} />
@@ -189,40 +189,36 @@ export const PortalShell: React.FC<PortalShellProps> = ({
                 )}
             </AnimatePresence>
 
-            {/* DESKTOP SIDEBAR - FLOATING PANEL DESIGN */}
-            {/* Spacer to hold the space for the sidebar */}
-            <div className="hidden lg:block shrink-0 lg:my-2 lg:ml-2 relative w-[72px]" />
-            
-            {/* Actual sidebar, absolutely positioned so it overflows the content on hover */}
+            {/* DESKTOP SIDEBAR - SAAS DESIGN */}
             <aside 
                 onMouseEnter={() => setIsSidebarCollapsed(false)}
                 onMouseLeave={() => setIsSidebarCollapsed(true)}
                 className={`
                     hidden lg:flex z-50 transition-all duration-300 ease-out flex-col
-                    bg-surface-widget border border-border-subtle rounded-xl shadow-[10px_0_30px_-15px_rgba(0,0,0,0.5)] absolute top-2 bottom-2 left-2
-                    ${isSidebarCollapsed ? 'w-[72px]' : 'w-[200px]'}
+                    bg-surface-main border-r border-border-subtle
+                    ${isSidebarCollapsed ? 'w-[72px]' : 'w-[240px]'}
                 `}
                 style={currentThemeStyle}
             >
-                <div className="h-[60px] flex items-center justify-center shrink-0 border-b border-border-subtle relative bg-surface-main rounded-t-xl overflow-hidden">
-                    <div className="w-10 h-10 flex items-center justify-center rounded-lg bg-accent-primary text-white cursor-pointer hover:scale-[1.05] transition-transform shadow-sm relative z-10" onClick={() => setIsTimeSheetOpen(true)}>
-                        <LayoutGrid size={20} strokeWidth={2} />
+                <div className="h-[60px] flex items-center justify-center shrink-0 border-b border-border-subtle relative bg-surface-main overflow-hidden">
+                    <div className="w-8 h-8 flex items-center justify-center rounded-md bg-accent-primary text-white cursor-pointer hover:bg-accent-primary/90 transition-colors shadow-sm relative z-10" onClick={() => setIsTimeSheetOpen(true)}>
+                        <LayoutGrid size={18} strokeWidth={2} />
                     </div>
                     {!isSidebarCollapsed && (
-                        <div className="absolute inset-0 flex items-center justify-end pr-4 pointer-events-none fade-in">
-                            <span className="font-bold text-sm tracking-widest text-text-muted">MENU</span>
+                        <div className="absolute inset-0 left-16 flex items-center justify-start pointer-events-none fade-in">
+                            <span className="font-semibold text-sm tracking-wide text-text-primary">CRM Workspace</span>
                         </div>
                     )}
                 </div>
 
-                <nav className="flex-1 px-4 py-4 space-y-1 overflow-y-auto custom-scrollbar relative z-10 bg-surface-widget">
+                <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto custom-scrollbar relative z-10 bg-surface-main">
                     {sidebarContent}
                 </nav>
 
-                <div className="p-3 border-t border-border-subtle bg-surface-main rounded-b-xl">
-                    <button onClick={handleLogout} className="w-full p-3 flex items-center justify-center gap-3 text-text-muted hover:text-text-primary transition-all rounded-lg hover:bg-surface-highlight border border-transparent hover:border-border-strong group">
+                <div className="p-3 border-t border-border-subtle bg-surface-main">
+                    <button onClick={handleLogout} className="w-full p-2 flex items-center justify-center gap-3 text-text-secondary hover:text-text-primary transition-all rounded-md hover:bg-surface-highlight group">
                         <LogOut size={18} className="group-hover:text-status-error transition-colors shrink-0" />
-                        {!isSidebarCollapsed && <span className="text-sm font-semibold truncate">Log Out</span>}
+                        {!isSidebarCollapsed && <span className="text-sm font-medium truncate">Log Out</span>}
                     </button>
                 </div>
             </aside>
@@ -257,7 +253,7 @@ export const PortalShell: React.FC<PortalShellProps> = ({
                                     <Server size={14} className="text-accent-primary" />
                                     <span className="text-sm font-bold text-text-primary font-mono tracking-wider hidden sm:inline">{activeServer.name}</span>
                                     {user.accessLevel >= 10 && <ChevronDown size={14} className={`text-text-muted transition-transform duration-200 ${isServerSwitcherOpen ? 'rotate-180' : ''}`} />}
-                                    <div className="w-1.5 h-1.5 rounded-full bg-status-success shadow-[0_0_8px_var(--color-status-success)] animate-pulse"></div>
+                                    <div className="w-1.5 h-1.5 rounded-full bg-status-success shadow-sm animate-pulse"></div>
                                 </button>
 
                                 <AnimatePresence>
@@ -356,7 +352,7 @@ export const PortalShell: React.FC<PortalShellProps> = ({
                                         <div className="fixed inset-0 z-40" onClick={() => setIsThemeSelectorOpen(false)} />
                                         <div className="absolute top-full right-0 mt-3 w-56 bg-surface-main border border-border-strong shadow-float rounded-xl z-50 overflow-hidden isolate">
                                             <div className="p-3 border-b border-border-subtle bg-surface-alt flex flex-col gap-1">
-                                                <span className="text-sm font-bold text-text-primary uppercase tracking-widest">Workspace Properties</span>
+                                                <span className="text-sm font-bold text-text-primary uppercase tracking-wide">Workspace Properties</span>
                                                 <span className="text-sm text-text-muted">Personalize your panel layout</span>
                                             </div>
                                             <div className="p-3 border-b border-border-subtle bg-surface-main">

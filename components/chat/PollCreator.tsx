@@ -30,7 +30,7 @@ export const PollCreator: React.FC<PollCreatorProps> = ({ onSubmit, onCancel }) 
                 className="text-lg font-bold"
             />
             <div className="space-y-3">
-                <label className="text-sm font-[700]  text-text-muted tracking-[0.2em]">Options</label>
+                <label className="text-sm font-medium  text-text-muted tracking-wide">Options</label>
                 {options.map((opt, i) => (
                     <Input 
                         key={i} 

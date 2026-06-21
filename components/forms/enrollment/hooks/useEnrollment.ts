@@ -12,7 +12,7 @@ import { CartItem, Sale } from '../../../../types';
 import { formatUSAPhone } from '../../../../views/utils/formatters';
 
 export const useEnrollment = (onSuccess: () => void, customerData?: any) => {
-    const { addSale, sales, notes: allNotes, productConfig, systemConfig, drafts, updateDraft, clearDraft, customers, updateCustomer, addCustomer, updateSaleStatus } = useCRM();
+    const { addSale, sales, notes: allNotes, productConfig, systemConfig, drafts, updateDraft, clearDraft, customers, updateCustomer, addCustomer, updateSaleStatus, deleteCustomer } = useCRM();
     const { currentUser } = useAuth();
     
     const [loading, setLoading] = useState(false);
@@ -240,6 +240,16 @@ export const useEnrollment = (onSuccess: () => void, customerData?: any) => {
         setFormData(prev => ({ ...prev, [name]: finalValue }));
     }, []);
 
+    const handleCustomFieldChange = useCallback((fieldId: string, value: any) => {
+        setFormData(prev => ({
+            ...prev,
+            customFields: {
+                ...(prev.customFields || {}),
+                [fieldId]: value
+            }
+        }));
+    }, []);
+
     // Auto-fill trigger for existing customers (debounced via dependencies)
     useEffect(() => {
         const cleanPhone = normalizePhone(formData.phone || '');
@@ -425,13 +435,32 @@ export const useEnrollment = (onSuccess: () => void, customerData?: any) => {
                 }
             }
             const cleanEmailSale = formData.email ? formData.email.trim().toLowerCase() : '';
-            let existingCustomer = null;
             
-            if (cleanPhoneSale.length >= 10) {
-                existingCustomer = customers.find(c => normalizePhone(c.phone) === cleanPhoneSale);
-            }
-            if (!existingCustomer && cleanEmailSale.length > 4) {
-                existingCustomer = customers.find(c => c.email?.trim().toLowerCase() === cleanEmailSale);
+            // Deduplication Engine: Gather ALL duplicates from DB to consolidate
+            let allMatches = customers.filter(c => 
+                (cleanPhoneSale.length >= 10 && normalizePhone(c.phone) === cleanPhoneSale) ||
+                (cleanEmailSale.length > 4 && c.email?.trim().toLowerCase() === cleanEmailSale)
+            );
+            
+            // Sort by most recently updated so the "master" record is the freshest one
+            allMatches.sort((a, b) => (b.updatedAt || b.createdAt || 0) - (a.updatedAt || a.createdAt || 0));
+            
+            let existingCustomer = allMatches.length > 0 ? allMatches[0] : null;
+            
+            // Aggregate all custom fields and medical conditions from all duplicates before purging them
+            let aggregatedCustomFields = existingCustomer?.customFields || {};
+            let aggregatedMedicalConditions = new Set<string>(existingCustomer?.medicalConditions || []);
+            
+            if (allMatches.length > 1) {
+                for (let i = 1; i < allMatches.length; i++) {
+                    const dup = allMatches[i];
+                    aggregatedCustomFields = { ...(dup.customFields || {}), ...aggregatedCustomFields };
+                    if (dup.medicalConditions) {
+                        dup.medicalConditions.forEach(mc => aggregatedMedicalConditions.add(mc));
+                    }
+                    // Terminate the duplicated record to uphold strictly one identity profile
+                    await deleteCustomer(dup.id);
+                }
             }
             
             const ONE_DAY = 24 * 60 * 60 * 1000;
@@ -444,11 +473,11 @@ export const useEnrollment = (onSuccess: () => void, customerData?: any) => {
                 const exFirst = (existingCustomer.firstName || '').trim();
                 const exLast = (existingCustomer.lastName || '').trim();
                 
-                // Preserve richer first name (handles case where middle name or initial was historically provided in first name)
+                // Preserve richer first name
                 if (exFirst.length > mergedFirstName.length && exFirst.toLowerCase().includes(mergedFirstName.toLowerCase())) {
                     mergedFirstName = exFirst;
                 }
-                // Preserve richer last name (handles Sr, Jr, or multi-part last names / middle names historically provided in last name)
+                // Preserve richer last name
                 if (exLast.length > mergedLastName.length && exLast.toLowerCase().includes(mergedLastName.toLowerCase())) {
                     mergedLastName = exLast;
                 }
@@ -474,9 +503,9 @@ export const useEnrollment = (onSuccess: () => void, customerData?: any) => {
                 fullBillingAddress: fullBillingAddress,
                 dob: formData.dob,
                 age: parseInt(formData.age) || undefined,
-                height: formData.height,
-                weight: formData.weight,
-                medicalConditions: formData.medicalConditions,
+                height: formData.height || (existingCustomer?.height || ''),
+                weight: formData.weight || (existingCustomer?.weight || ''),
+                medicalConditions: existingCustomer ? Array.from(new Set([...Array.from(aggregatedMedicalConditions), ...(formData.medicalConditions || [])])) : formData.medicalConditions,
                 useShippingForBilling,
                 agentId: currentUser?.id,
                 agentName: currentUser?.name,
@@ -485,7 +514,8 @@ export const useEnrollment = (onSuccess: () => void, customerData?: any) => {
                 lastOrderDate: Date.now(),
                 lastProductsPurchased: !isDeclined ? cart.map((c: any) => c.productName || c.product || combinedProductString) : undefined,
                 nextActionDate: !isDeclined ? Date.now() + ONE_DAY : Date.now() + ONE_DAY, // Action next day (Upsell for Approved, Recover for Declined)
-                nextActionType: !isDeclined ? 'Upsell' : 'Initial'
+                nextActionType: !isDeclined ? 'Upsell' : 'Initial',
+                customFields: existingCustomer ? { ...aggregatedCustomFields, ...(formData.customFields || {}) } : formData.customFields
             };
 
             if (existingCustomer) {
@@ -581,7 +611,7 @@ export const useEnrollment = (onSuccess: () => void, customerData?: any) => {
 
     return {
         mode, setMode, loading, error, collision,
-        formData, setFormData, handleIdentityChange, handleDobChange, handleAgeChange, autoFillFromCustomer, wasAutoFilled,
+        formData, setFormData, handleIdentityChange, handleCustomFieldChange, handleDobChange, handleAgeChange, autoFillFromCustomer, wasAutoFilled,
         cart, setCart, notes, setNotes, customerNotes,
         useShippingForBilling, setUseShippingForBilling,
         customerTime, grandTotal, productConfig, handleSubmit, handleClear,

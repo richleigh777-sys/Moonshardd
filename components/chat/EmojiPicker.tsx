@@ -27,7 +27,7 @@ export const EmojiPicker: React.FC<EmojiPickerProps> = ({ onSelect, onClose, cla
   const currentEmojis = EMOJI_LIST[activeCategory] || [];
 
   return (
-    <div className={`bg-surface-main border border-border-subtle rounded-xl shadow-xl overflow-hidden z-[150] animate-in slide-in-from-bottom-2 duration-300 backdrop-blur-xl flex flex-col ${className}`}>
+    <div className={`bg-surface-main border border-border-subtle rounded-xl shadow-xl overflow-hidden z-[150] animate-in slide-in-from-bottom-2 duration-300  flex flex-col ${className}`}>
       {/* Header */}
       <div className="flex items-center justify-between p-3 bg-surface-alt/80 border-b border-border-subtle shrink-0">
         <div className="flex items-center gap-2">

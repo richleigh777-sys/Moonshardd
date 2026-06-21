@@ -111,13 +111,13 @@ export const CustomerDossier: React.FC<CustomerDossierProps> = ({ profile, onClo
   if (!profile) return null;
 
   return (
-    <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-300">
+    <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-black/80  animate-in fade-in duration-300">
       <div className="absolute inset-0" onClick={onClose}></div>
 
       <div className="bg-surface-main w-full max-w-5xl max-h-[90vh] overflow-hidden rounded-xl shadow-2xl border border-border-subtle flex flex-col relative z-10 animate-in zoom-in-95 duration-300">
         
         {/* HERO HEADER */}
-        <div className="p-5 border-b border-border-subtle flex justify-between items-start bg-surface-alt/50 backdrop-blur-md relative overflow-hidden shrink-0">
+        <div className="p-5 border-b border-border-subtle flex justify-between items-start bg-surface-alt/50  relative overflow-hidden shrink-0">
             <div className={`absolute top-0 right-0 w-96 h-96 blur-[100px] rounded-full opacity-20 pointer-events-none ${
                 profile.status === 'VIP' ? 'bg-indigo-500' : 
                 profile.status === 'At Risk' ? 'bg-red-500' : 'bg-emerald-500'
@@ -125,12 +125,12 @@ export const CustomerDossier: React.FC<CustomerDossierProps> = ({ profile, onClo
 
             <div className="relative z-10 flex items-center gap-4">
                 <div className="w-20 h-20 rounded-xl bg-gradient-to-br from-surface-highlight to-surface-alt flex items-center justify-center border border-border-subtle shadow-lg">
-                    <span className="text-lg font-[700] text-text-primary">{profile.name.charAt(0)}</span>
+                    <span className="text-lg font-medium text-text-primary">{profile.name.charAt(0)}</span>
                 </div>
                 <div>
-                    <h2 className="text-xl font-[700]  italic text-text-primary tracking-tighter flex items-center gap-3">
+                    <h2 className="text-xl font-medium  italic text-text-primary tracking-tighter flex items-center gap-3">
                         {profile.name}
-                        <span className={`px-3 py-1 rounded-lg text-xs font-[700]  tracking-widest border ${
+                        <span className={`px-3 py-1 rounded-lg text-xs font-medium  tracking-wide border ${
                             profile.status === 'VIP' ? 'bg-accent-secondary/10 text-accent-secondary border-indigo-500/30' :
                             profile.status === 'At Risk' ? 'bg-red-500/10 text-status-error border-status-error/30' : 
                             'bg-emerald-500/10 text-status-success border-status-success/30'
@@ -139,7 +139,7 @@ export const CustomerDossier: React.FC<CustomerDossierProps> = ({ profile, onClo
                         </span>
                     </h2>
                     
-                    <div className="flex flex-wrap gap-4 text-xs font-bold text-text-secondary  tracking-widest mt-2">
+                    <div className="flex flex-wrap gap-4 text-xs font-bold text-text-secondary  tracking-wide mt-2">
                         {profile.email && <span className="flex items-center gap-2 hover:text-accent-primary cursor-pointer"><Mail size={16}/> {profile.email}</span>}
                         {profile.phone && <span className="flex items-center gap-2 hover:text-accent-primary cursor-pointer"><Phone size={16}/> {profile.phone}</span>}
                         <span className="flex items-center gap-2 text-text-muted"><Briefcase size={16}/> {profile.orderCount} Orders</span>
@@ -149,13 +149,13 @@ export const CustomerDossier: React.FC<CustomerDossierProps> = ({ profile, onClo
             
             <div className="relative z-20 flex items-center gap-3">
                 <div className="flex bg-surface-main rounded-xl p-1 border border-border-subtle shadow-sm mr-4">
-                    <button onClick={() => setCommsMode('call')} className={`px-4 py-2 rounded-lg text-xs font-[700] tracking-widest flex items-center gap-2 transition-all ${commsMode === 'call' ? 'bg-accent-primary text-white' : 'text-text-secondary hover:text-text-primary hover:bg-surface-alt'}`}>
+                    <button onClick={() => setCommsMode('call')} className={`px-4 py-2 rounded-lg text-xs font-medium tracking-wide flex items-center gap-2 transition-all ${commsMode === 'call' ? 'bg-accent-primary text-white' : 'text-text-secondary hover:text-text-primary hover:bg-surface-alt'}`}>
                         <Phone size={14} /> Call
                     </button>
-                    <button onClick={() => setCommsMode('sms')} className={`px-4 py-2 rounded-lg text-xs font-[700] tracking-widest flex items-center gap-2 transition-all ${commsMode === 'sms' ? 'bg-accent-primary text-white' : 'text-text-secondary hover:text-text-primary hover:bg-surface-alt'}`}>
+                    <button onClick={() => setCommsMode('sms')} className={`px-4 py-2 rounded-lg text-xs font-medium tracking-wide flex items-center gap-2 transition-all ${commsMode === 'sms' ? 'bg-accent-primary text-white' : 'text-text-secondary hover:text-text-primary hover:bg-surface-alt'}`}>
                         <MessageSquare size={14} /> Text
                     </button>
-                    <button onClick={() => setCommsMode('email')} className={`px-4 py-2 rounded-lg text-xs font-[700] tracking-widest flex items-center gap-2 transition-all ${commsMode === 'email' ? 'bg-accent-primary text-white' : 'text-text-secondary hover:text-text-primary hover:bg-surface-alt'}`}>
+                    <button onClick={() => setCommsMode('email')} className={`px-4 py-2 rounded-lg text-xs font-medium tracking-wide flex items-center gap-2 transition-all ${commsMode === 'email' ? 'bg-accent-primary text-white' : 'text-text-secondary hover:text-text-primary hover:bg-surface-alt'}`}>
                         <Mail size={14} /> Email
                     </button>
                 </div>
@@ -171,7 +171,7 @@ export const CustomerDossier: React.FC<CustomerDossierProps> = ({ profile, onClo
                 <button
                     key={tab}
                     onClick={() => setActiveTab(tab as TabMode)}
-                    className={`py-4 text-xs font-[700]  tracking-widest border-b-2 transition-all ${
+                    className={`py-4 text-xs font-medium  tracking-wide border-b-2 transition-all ${
                         activeTab === tab ? 'border-accent-primary text-accent-primary' : 'border-transparent text-text-muted hover:text-text-primary'
                     }`}
                 >
@@ -191,15 +191,15 @@ export const CustomerDossier: React.FC<CustomerDossierProps> = ({ profile, onClo
                                     <Phone size={24} />
                                 </div>
                                 <div>
-                                    <p className="text-sm font-[700] text-text-primary tracking-widest">Ongoing Call with {profile.name}</p>
+                                    <p className="text-sm font-medium text-text-primary tracking-wide">Ongoing Call with {profile.name}</p>
                                     <p className="text-xs text-text-secondary mt-1">{profile.phone || 'No phone number available'}</p>
                                 </div>
                             </div>
                             <div className="flex items-center gap-4">
-                                <span className="text-lg font-mono text-text-primary bg-surface-main px-4 py-2 rounded-lg border border-border-subtle tracking-widest">
+                                <span className="text-lg font-mono text-text-primary bg-surface-main px-4 py-2 rounded-lg border border-border-subtle tracking-wide">
                                     {Math.floor(callDuration / 60).toString().padStart(2, '0')}:{(callDuration % 60).toString().padStart(2, '0')}
                                 </span>
-                                <button onClick={handleSendComms} className="bg-status-error hover:bg-red-600 text-white px-4 py-3 rounded-lg text-xs font-[700] tracking-widest flex items-center gap-2 transition-all">
+                                <button onClick={handleSendComms} className="bg-status-error hover:bg-red-600 text-white px-4 py-3 rounded-lg text-xs font-medium tracking-wide flex items-center gap-2 transition-all">
                                     <PhoneOff size={16} /> End & Log Call
                                 </button>
                             </div>
@@ -215,7 +215,7 @@ export const CustomerDossier: React.FC<CustomerDossierProps> = ({ profile, onClo
                                 className="flex-1 bg-surface-alt border border-border-subtle rounded-xl p-4 text-sm resize-none h-24 focus:border-accent-primary outline-none transition-colors"
                             />
                             <div className="flex flex-col gap-2">
-                                <button onClick={handleSendComms} disabled={!commsText.trim()} className="bg-accent-primary hover:bg-accent-secondary disabled:opacity-50 text-white px-4 h-full rounded-xl text-xs font-[700] tracking-widest flex flex-col items-center justify-center gap-2 transition-all">
+                                <button onClick={handleSendComms} disabled={!commsText.trim()} className="bg-accent-primary hover:bg-accent-secondary disabled:opacity-50 text-white px-4 h-full rounded-xl text-xs font-medium tracking-wide flex flex-col items-center justify-center gap-2 transition-all">
                                     <Send size={18} />
                                     <span>Send SMS</span>
                                 </button>
@@ -232,7 +232,7 @@ export const CustomerDossier: React.FC<CustomerDossierProps> = ({ profile, onClo
                                 className="flex-1 bg-surface-alt border border-border-subtle rounded-xl p-4 text-sm resize-none h-32 focus:border-accent-primary outline-none transition-colors"
                             />
                             <div className="flex flex-col gap-2">
-                                <button onClick={handleSendComms} disabled={!commsText.trim()} className="bg-accent-primary hover:bg-accent-secondary disabled:opacity-50 text-white px-4 h-full rounded-xl text-xs font-[700] tracking-widest flex flex-col items-center justify-center gap-2 transition-all">
+                                <button onClick={handleSendComms} disabled={!commsText.trim()} className="bg-accent-primary hover:bg-accent-secondary disabled:opacity-50 text-white px-4 h-full rounded-xl text-xs font-medium tracking-wide flex flex-col items-center justify-center gap-2 transition-all">
                                     <Send size={18} />
                                     <span>Send Email</span>
                                 </button>
@@ -249,33 +249,33 @@ export const CustomerDossier: React.FC<CustomerDossierProps> = ({ profile, onClo
                      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                         <Card className="p-5 flex flex-col justify-between group hover:border-status-success/30 border border-border-subtle">
                             <div className="flex justify-between mb-2 text-status-success"><DollarSign size={24} strokeWidth={2.5} /></div>
-                            <p className="text-xs font-[700]  text-text-muted tracking-widest">Lifetime Value</p>
-                            <p className="text-lg font-[700] text-text-primary num-font group-hover:text-status-success transition-colors">${profile.totalSpent.toLocaleString()}</p>
+                            <p className="text-xs font-medium  text-text-muted tracking-wide">Lifetime Value</p>
+                            <p className="text-lg font-medium text-text-primary num-font group-hover:text-status-success transition-colors">${profile.totalSpent.toLocaleString()}</p>
                         </Card>
                         <Card className="p-5 flex flex-col justify-between group hover:border-indigo-500/30 border border-border-subtle">
                             <div className="flex justify-between mb-2 text-accent-secondary"><Package size={24} strokeWidth={2.5} /></div>
-                            <p className="text-xs font-[700]  text-text-muted tracking-widest">Orders</p>
-                            <p className="text-lg font-[700] text-text-primary num-font group-hover:text-accent-secondary transition-colors">{profile.orderCount}</p>
+                            <p className="text-xs font-medium  text-text-muted tracking-wide">Orders</p>
+                            <p className="text-lg font-medium text-text-primary num-font group-hover:text-accent-secondary transition-colors">{profile.orderCount}</p>
                         </Card>
                         <Card className="p-5 flex flex-col justify-between group hover:border-status-warning/30 border border-border-subtle">
                             <div className="flex justify-between mb-2 text-status-warning"><Trophy size={24} strokeWidth={2.5} /></div>
-                            <p className="text-xs font-[700]  text-text-muted tracking-widest">Top SKU</p>
-                            <p className="text-lg font-[700] text-text-primary leading-tight truncate group-hover:text-status-warning transition-colors">{profile.favoriteProduct || 'N/A'}</p>
+                            <p className="text-xs font-medium  text-text-muted tracking-wide">Top SKU</p>
+                            <p className="text-lg font-medium text-text-primary leading-tight truncate group-hover:text-status-warning transition-colors">{profile.favoriteProduct || 'N/A'}</p>
                         </Card>
                         <Card className="p-5 flex flex-col justify-between group hover:border-purple-500/30 border border-border-subtle">
                             <div className="flex justify-between mb-2 text-purple-500"><Calendar size={24} strokeWidth={2.5} /></div>
-                            <p className="text-xs font-[700]  text-text-muted tracking-widest">Last Active</p>
-                            <p className="text-xl font-[700] text-text-primary num-font group-hover:text-purple-400 transition-colors">{new Date(profile.lastPurchaseDate).toLocaleDateString()}</p>
+                            <p className="text-xs font-medium  text-text-muted tracking-wide">Last Active</p>
+                            <p className="text-xl font-medium text-text-primary num-font group-hover:text-purple-400 transition-colors">{new Date(profile.lastPurchaseDate).toLocaleDateString()}</p>
                         </Card>
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div className="bg-surface-main p-4 rounded-xl border border-border-subtle">
-                             <h4 className="text-xs font-[700]  text-text-primary tracking-widest mb-4 flex items-center gap-2"><MapPin size={16} className="text-accent-primary"/> Location Intel</h4>
+                             <h4 className="text-xs font-medium  text-text-primary tracking-wide mb-4 flex items-center gap-2"><MapPin size={16} className="text-accent-primary"/> Location Intel</h4>
                              <p className="text-sm font-medium text-text-secondary">{profile.address || 'No Address on File'}</p>
                         </div>
                         <div className="bg-surface-main p-4 rounded-xl border border-border-subtle">
-                             <h4 className="text-xs font-[700]  text-text-primary tracking-widest mb-4 flex items-center gap-2"><ShieldCheck size={16} className="text-status-success"/> Behavioral Tags</h4>
+                             <h4 className="text-xs font-medium  text-text-primary tracking-wide mb-4 flex items-center gap-2"><ShieldCheck size={16} className="text-status-success"/> Behavioral Tags</h4>
                              <div className="flex flex-wrap gap-2">
                                 {profile.tags.length > 0 ? profile.tags.map(t => (
                                     <span key={t} className="px-3 py-1 bg-surface-alt border border-border-subtle rounded-lg text-xs font-bold  text-text-secondary">{t}</span>
@@ -283,14 +283,28 @@ export const CustomerDossier: React.FC<CustomerDossierProps> = ({ profile, onClo
                              </div>
                         </div>
                     </div>
+
+                    {profile.customFields && Object.keys(profile.customFields).length > 0 && (
+                        <div className="bg-surface-main p-4 rounded-xl border border-border-subtle">
+                            <h4 className="text-xs font-medium  text-text-primary tracking-wide mb-4 flex items-center gap-2"><FileText size={16} className="text-accent-secondary"/> Custom Data Fields</h4>
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                {Object.entries(profile.customFields).map(([key, val]) => (
+                                    <div key={key} className="bg-surface-alt p-3 rounded-lg border border-border-subtle/50">
+                                        <p className="text-[10px] uppercase font-bold text-text-muted mb-1 tracking-wider">{key.replace('supp_', '').replace(/([A-Z])/g, ' $1').trim()}</p>
+                                        <p className="text-sm font-semibold text-text-primary">{val?.toString() || 'N/A'}</p>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    )}
                 </div>
             )}
 
             {activeTab === 'timeline' && (
                 <div className="space-y-6 animate-in slide-in-from-right-4 duration-300">
                     <div className="flex items-center justify-between mb-2">
-                        <h4 className="text-xs font-[700]  text-text-primary tracking-widest">Unified Activity Feed</h4>
-                        <span className="text-xs font-bold text-text-muted  tracking-widest bg-surface-main px-3 py-1 rounded border border-border-subtle">All Sources</span>
+                        <h4 className="text-xs font-medium  text-text-primary tracking-wide">Unified Activity Feed</h4>
+                        <span className="text-xs font-bold text-text-muted  tracking-wide bg-surface-main px-3 py-1 rounded border border-border-subtle">All Sources</span>
                     </div>
 
                     <div className="relative pl-4 border-l-2 border-border-subtle space-y-8">
@@ -319,14 +333,14 @@ export const CustomerDossier: React.FC<CustomerDossierProps> = ({ profile, onClo
             {activeTab === 'financials' && (
                 <div className="flex flex-col items-center justify-center h-64 opacity-40 text-text-muted gap-3 animate-in slide-in-from-right-4 duration-300">
                     <ShieldCheck size={48} strokeWidth={1} />
-                    <p className="text-xs font-[700]  tracking-widest">Secure Ledger Access Required</p>
+                    <p className="text-xs font-medium  tracking-wide">Secure Ledger Access Required</p>
                 </div>
             )}
         </div>
         
         {/* FOOTER */}
         <div className="p-4 border-t border-border-subtle bg-surface-main text-center shrink-0">
-             <div className="flex justify-center items-center gap-2 text-xs font-[700]  text-text-muted tracking-[0.2em] opacity-60">
+             <div className="flex justify-center items-center gap-2 text-xs font-medium  text-text-muted tracking-wide opacity-60">
                 <CheckCircle2 size={16}/> Verified Truth Source
              </div>
         </div>

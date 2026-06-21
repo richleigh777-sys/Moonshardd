@@ -34,15 +34,15 @@ export const PersonalMetricTerminal: React.FC<Props> = ({
             {/* Header */}
             <div className="flex justify-between items-start mb-5 shrink-0 relative z-10 border-b border-border-subtle pb-4">
                 <div>
-                    <h3 className="text-xs font-[800] uppercase tracking-wider text-text-muted flex items-center gap-1.5 leading-none">
-                        <span className="w-1.5 h-1.5 rounded-full bg-accent-primary shadow-[0_0_8px_var(--color-accent-primary)] animate-pulse"></span>
-                        Visual Telemetry Hub
+                    <h3 className="text-sm font-semibold text-text-primary flex items-center gap-2">
+                        <Target size={16} className="text-accent-primary" />
+                        Performance Dashboard
                     </h3>
-                    <h2 className="text-base font-black text-text-primary tracking-tight mt-1">Efficacy Performance</h2>
+                    <p className="text-xs text-text-muted mt-1 leading-relaxed">Today's earnings trajectory</p>
                 </div>
                 <div className="text-right">
-                    <p className="text-[9px] uppercase font-bold tracking-widest text-text-muted mb-1 font-mono">Pacing Rate</p>
-                    <p className="text-xs font-black text-accent-primary bg-accent-primary/10 border border-accent-primary/20 px-2 py-0.5 rounded-md font-mono">${hourlyRate.toFixed(2)} / hr</p>
+                    <p className="text-[10px] uppercase font-semibold tracking-wider text-text-muted mb-1">Effective Rate</p>
+                    <p className="text-sm font-semibold text-accent-primary">${hourlyRate.toFixed(2)} / hr</p>
                 </div>
             </div>
 
@@ -52,45 +52,42 @@ export const PersonalMetricTerminal: React.FC<Props> = ({
                 {/* Verified vs Pending Grid Row */}
                 <div className="grid grid-cols-12 gap-4 items-center">
                     <div className="col-span-7">
-                        <p className="text-[10px] uppercase font-bold tracking-wider text-text-muted mb-1.5 flex items-center gap-1.5">
-                            <ShieldCheck size={14} className="text-status-success" /> Cycle Realized
-                        </p>
-                        <h2 className="text-xl font-black text-text-primary flex items-baseline tracking-tighter num-font">
-                            <span className="text-sm text-text-muted font-black mr-1">$</span>
+                        <p className="text-[11px] font-medium text-text-muted mb-1">Realized Earnings</p>
+                        <h2 className="text-2xl font-bold text-text-primary flex items-baseline">
+                            <span className="text-base text-text-muted font-semibold mr-1">$</span>
                             {totalEarnings.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}
                         </h2>
                     </div>
                     
-                    <div className="col-span-5 text-right bg-surface-alt/45 border border-border-subtle p-2.5 rounded-xl">
-                        <p className="text-[9px] uppercase font-bold tracking-wider text-text-muted mb-0.5 block">Pipeline Est.</p>
-                        <p className="text-sm font-black text-amber-500 flex items-center justify-end gap-1 font-mono">
-                            <Zap size={12} className="text-amber-500 animate-pulse fill-current" />
+                    <div className="col-span-5 text-right bg-surface-alt/50 border border-border-subtle p-3 rounded-lg">
+                        <p className="text-[11px] font-medium text-text-muted mb-1 block">Expected Pipeline</p>
+                        <p className="text-base font-bold text-amber-500 flex items-center justify-end gap-1">
                             +${pending.toLocaleString(undefined, {maximumFractionDigits: 0})}
                         </p>
-                        <span className="text-[8px] font-bold text-text-muted uppercase tracking-tight block">Awaiting QA</span>
+                        <span className="text-[10px] text-text-muted block mt-0.5">Awaiting Review</span>
                     </div>
                 </div>
 
                 {/* Micro hourly performance stream visualization */}
-                <div className="my-3 bg-surface-alt/25 border border-border-subtle p-3 rounded-xl">
-                    <div className="flex justify-between items-center mb-2">
-                        <span className="text-[9px] font-black uppercase text-text-muted tracking-wider">Hourly Pacing Grid</span>
-                        <span className="text-[9px] font-mono font-bold text-status-success bg-emerald-500/10 border border-emerald-500/20 px-1.5 rounded">AUTO-VIGIL ON</span>
+                <div className="my-4 bg-surface-main border border-border-subtle p-3.5 rounded-lg shadow-sm">
+                    <div className="flex justify-between items-center mb-3">
+                        <span className="text-xs font-semibold text-text-secondary">Hourly Activity</span>
+                        <span className="text-[10px] font-semibold text-status-success bg-status-success/10 px-2 py-0.5 rounded-md">Live</span>
                     </div>
                     {/* Circle indicators that show performance trends mock style but dynamic based on win rate/rev */}
-                    <div className="flex items-center justify-between gap-1.5 pt-1">
+                    <div className="flex items-center justify-between gap-1.5">
                         {[0, 1, 2, 3, 4, 5].map((idx) => {
                             // First 3 always active, others dynamic based on hours
                             const isActive = hours > idx;
-                            const levelColor = _winRate > 60 ? 'bg-emerald-500 shadow-emerald-500/40' : _winRate > 40 ? 'bg-violet-500 shadow-violet-500/40' : 'bg-amber-500 shadow-amber-500/40';
+                            const levelColor = _winRate > 60 ? 'bg-status-success' : _winRate > 40 ? 'bg-accent-secondary' : 'bg-status-warning';
                             return (
-                                <div key={idx} className="flex-1 flex flex-col items-center gap-1">
+                                <div key={idx} className="flex-1 flex flex-col items-center gap-1.5">
                                     <div className={`w-full h-1.5 rounded-full transition-all duration-500 ${
                                         isActive 
-                                        ? `${levelColor} shadow-[0_0_6px_currentColor]`
-                                        : 'bg-border-subtle/40'
+                                        ? levelColor
+                                        : 'bg-border-subtle'
                                     }`} />
-                                    <span className="text-[7px] font-bold font-mono text-text-muted">{idx + 1}H</span>
+                                    <span className="text-[10px] text-text-muted">{idx + 1}h</span>
                                 </div>
                             );
                         })}
@@ -98,35 +95,35 @@ export const PersonalMetricTerminal: React.FC<Props> = ({
                 </div>
 
                 {/* Sub breakdown details with progress indicators */}
-                <div className="space-y-2 pt-1 border-t border-border-subtle/50">
+                <div className="space-y-2.5 pt-2 border-t border-border-subtle">
                     <div className="flex justify-between items-center">
-                        <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-2.5">
                             <span className="w-2 h-2 rounded bg-accent-primary"></span>
-                            <span className="text-[11px] font-bold text-text-secondary">Base Commission</span>
+                            <span className="text-xs font-medium text-text-secondary">Base Commission</span>
                         </div>
-                        <span className="text-xs font-extrabold text-text-primary font-mono">${commission.toLocaleString()}</span>
+                        <span className="text-sm font-semibold text-text-primary">${commission.toLocaleString()}</span>
                     </div>
 
                     <div className="flex justify-between items-center">
-                        <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-2.5">
                             <span className="w-2 h-2 rounded bg-accent-secondary"></span>
-                            <span className="text-[11px] font-bold text-text-secondary flex items-center gap-1">
-                                Performance Spiffs
+                            <span className="text-xs font-medium text-text-secondary flex items-center">
+                                Performance Details
                             </span>
                         </div>
-                        <span className="text-xs font-extrabold text-text-primary font-mono">${spiffs.toLocaleString()}</span>
+                        <span className="text-sm font-semibold text-text-primary">${spiffs.toLocaleString()}</span>
                     </div>
                 </div>
 
                 {/* Next Milestone target indicator */}
-                <div className="pt-3">
-                    <div className="flex justify-between items-end text-[9px] uppercase font-bold tracking-wider mb-1.5 text-text-muted">
-                        <span className="flex items-center gap-1 font-bold text-text-secondary"><Target size={12} className="text-accent-primary" /> Goal Progress ({Math.min(100, Math.round(progressToMilestone))}% completed)</span>
-                        <span className="text-text-primary font-mono font-black">${nextMilestone} target</span>
+                <div className="pt-4 mt-2">
+                    <div className="flex justify-between items-end mb-2">
+                        <span className="text-xs font-medium text-text-secondary">Goal Progress ({Math.min(100, Math.round(progressToMilestone))}%)</span>
+                        <span className="text-xs font-semibold text-text-primary">${nextMilestone} Target</span>
                     </div>
-                    <div className="h-2 w-full bg-surface-alt border border-border-subtle rounded-full overflow-hidden p-0.5 relative">
+                    <div className="h-1.5 w-full bg-surface-alt rounded-full overflow-hidden">
                         <div 
-                            className="h-full bg-gradient-to-r from-accent-primary to-accent-secondary rounded-full transition-all duration-1000 ease-out shadow-[0_0_8px_var(--color-accent-primary)]" 
+                            className="h-full bg-accent-primary transition-all duration-1000 ease-out" 
                             style={{ width: `${Math.min(100, progressToMilestone)}%` }}
                         />
                     </div>

@@ -29,7 +29,7 @@ export const SmartLeadQueue: React.FC = () => {
         <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-8 gap-4">
            <div>
              <h1 className="text-xl font-extrabold text-text-primary tracking-tight">Customers</h1>
-             <p className="text-sm font-medium text-text-muted mt-1 uppercase tracking-widest">Active Relationships</p>
+             <p className="text-sm font-medium text-text-muted mt-1 uppercase tracking-wide">Active Relationships</p>
            </div>
            <button 
              onClick={handleInjectMockLeads} 
@@ -57,7 +57,7 @@ export const SmartLeadQueue: React.FC = () => {
                    <h3 className="font-bold text-text-primary text-lg truncate">{lead.name}</h3>
                    <div className="mt-4 flex items-center gap-2">
                      <span className={`w-2 h-2 rounded-full ${lead.priority === 'urgent' ? 'bg-status-error animate-pulse' : lead.priority === 'high' ? 'bg-status-warning' : 'bg-status-success'}`}></span>
-                     <span className="text-sm font-semibold uppercase tracking-widest text-text-muted">{lead.status}</span>
+                     <span className="text-sm font-semibold uppercase tracking-wide text-text-muted">{lead.status}</span>
                    </div>
                  </div>
                  <div className="mt-6 text-sm font-medium text-text-muted">
@@ -72,7 +72,7 @@ export const SmartLeadQueue: React.FC = () => {
       {/* The "Everything Card" Modal */}
       {selectedLead && (
          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
-            <div className="absolute inset-0 bg-surface-alt/80 backdrop-blur-sm" onClick={() => setSelectedLead(null)}></div>
+            <div className="absolute inset-0 bg-surface-alt/80 " onClick={() => setSelectedLead(null)}></div>
             <div className="relative w-full max-w-md bg-surface-main rounded-xl shadow-float border border-border-strong p-5 animate-in zoom-in-95 duration-200">
                <button onClick={() => setSelectedLead(null)} className="absolute top-4 right-6 text-text-muted hover:text-text-primary transition-colors">
                   <X size={24} />
@@ -107,7 +107,7 @@ export const SmartLeadQueue: React.FC = () => {
 
                {/* Thread / Notes */}
                <div>
-                  <h3 className="text-sm font-bold text-text-muted uppercase tracking-widest mb-4">Activity Log</h3>
+                  <h3 className="text-sm font-bold text-text-muted uppercase tracking-wide mb-4">Activity Log</h3>
                   <div className="space-y-4 max-h-[250px] overflow-y-auto custom-scrollbar pr-2">
                      <div className="bg-surface-alt p-4 rounded-xl border border-border-subtle">
                         <p className="text-sm font-semibold text-text-primary">System Note</p>

@@ -47,15 +47,15 @@ export const LeadHealthWidget: React.FC<LeadHealthWidgetProps> = ({ notes, now }
                         <ShieldCheck size={24} strokeWidth={2.5} />
                     </div>
                     <div>
-                        <h3 className="text-sm font-[700]  text-text-primary tracking-[0.2em] leading-none drop-shadow-sm">CRM Hygiene</h3>
-                        <p className="text-sm font-[700] text-text-muted  mt-1 tracking-widest">Data Structure Integrity</p>
+                        <h3 className="text-sm font-medium  text-text-primary tracking-wide leading-none drop-shadow-sm">CRM Hygiene</h3>
+                        <p className="text-sm font-medium text-text-muted  mt-1 tracking-wide">Data Structure Integrity</p>
                     </div>
                 </div>
-                <div className="text-right bg-surface-alt/80 backdrop-blur-md px-3 py-1.5 rounded-xl border border-border-strong shadow-inner ring-1 ring-white/5">
-                    <span className={`text-lg md:text-xl font-[700] font-display tracking-tighter drop-shadow-sm ${stats.health > 80 ? 'text-status-success shadow-emerald-500/20' : 'text-status-warning shadow-amber-500/20'}`}>
+                <div className="text-right bg-surface-alt/80  px-3 py-1.5 rounded-xl border border-border-strong shadow-inner ring-1 ring-white/5">
+                    <span className={`text-lg md:text-xl font-medium font-display tracking-tighter drop-shadow-sm ${stats.health > 80 ? 'text-status-success shadow-emerald-500/20' : 'text-status-warning shadow-amber-500/20'}`}>
                         {stats.health}%
                     </span>
-                    <p className="text-sm font-[700] text-text-muted  tracking-[0.2em] mt-0.5">System Health</p>
+                    <p className="text-sm font-medium text-text-muted  tracking-wide mt-0.5">System Health</p>
                 </div>
             </div>
 
@@ -66,7 +66,7 @@ export const LeadHealthWidget: React.FC<LeadHealthWidgetProps> = ({ notes, now }
                     sub="Coverage"
                     icon={Activity}
                     color="text-blue-500"
-                    glow="shadow-[0_0_10px_rgba(59,130,246,0.3)]"
+                    glow="shadow-sm"
                     progress={stats.reminderRate}
                     labelStyle={{ height: '15px' }}
                 />
@@ -76,7 +76,7 @@ export const LeadHealthWidget: React.FC<LeadHealthWidgetProps> = ({ notes, now }
                     sub="> 24h Idle"
                     icon={AlertTriangle}
                     color="text-status-warning"
-                    glow="shadow-[0_0_10px_rgba(245,158,11,0.3)]"
+                    glow="shadow-sm"
                     progress={stats.stale}
                     inverse
                     labelStyle={{ fontSize: '12px' }}
@@ -87,7 +87,7 @@ export const LeadHealthWidget: React.FC<LeadHealthWidgetProps> = ({ notes, now }
                     sub="Missing Profile Keys"
                     icon={Database}
                     color="text-accent-secondary"
-                    glow="shadow-[0_0_10px_rgba(99,102,241,0.3)]"
+                    glow="shadow-sm"
                     progress={stats.missingFields}
                     inverse
                     containerStyle={{ height: '125px' }}
@@ -95,9 +95,9 @@ export const LeadHealthWidget: React.FC<LeadHealthWidgetProps> = ({ notes, now }
             </div>
 
             <div className="mt-8 pt-4 border-t border-border-strong relative z-10">
-                <div className="flex items-start gap-3 bg-surface-main/60 backdrop-blur-sm p-4 rounded-xl border border-border-strong italic shadow-inner group-hover:border-accent-primary/30 transition-colors">
+                <div className="flex items-start gap-3 bg-surface-main/60  p-4 rounded-xl border border-border-strong italic shadow-inner group-hover:border-accent-primary/30 transition-colors">
                     <Activity size={18} className="text-accent-primary animate-pulse shrink-0 mt-0.5" />
-                    <p className="text-sm font-[700] text-text-primary  tracking-widest leading-relaxed opacity-90 font-mono">
+                    <p className="text-sm font-medium text-text-primary  tracking-wide leading-relaxed opacity-90 font-mono">
                         {stats.health > 85 
                             ? "Organizational protocols are stable. Lead leaks minimized." 
                             : "Quiet leaks detected in follow-up loops. Enforce directive: No lead left idle."}
@@ -116,19 +116,19 @@ const MetricRow = ({ label, value, icon: Icon, color, glow, progress, inverse = 
                     <Icon size={14} className={glow} strokeWidth={2.5}/>
                 </div>
                 <div>
-                    <p style={labelStyle} className="text-sm font-[700] text-text-primary  tracking-[0.2em] leading-none drop-shadow-sm">{label}</p>
+                    <p style={labelStyle} className="text-sm font-medium text-text-primary  tracking-wide leading-none drop-shadow-sm">{label}</p>
                 </div>
             </div>
             <div className={`bg-surface-main px-2 py-1 rounded-[4px] border border-border-strong shadow-inner ring-1 ring-white/5`}>
-                <span className={`text-sm font-[700] font-display tracking-widest ${color}`}>{value}</span>
+                <span className={`text-sm font-medium font-display tracking-wide ${color}`}>{value}</span>
             </div>
         </div>
         <div className="h-1.5 bg-surface-alt/80 rounded-full overflow-hidden border border-border-strong shadow-inner">
             <div 
                 className={`h-full transition-all duration-1000 ${
                     inverse 
-                    ? (progress > 50 ? 'bg-status-error shadow-[0_0_8px_var(--color-status-error)]' : progress > 20 ? 'bg-amber-500 shadow-[0_0_8px_rgba(245,158,11,0.5)]' : 'bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]')
-                    : (progress > 80 ? 'bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]' : progress > 40 ? 'bg-blue-500 shadow-[0_0_8px_rgba(59,130,246,0.5)]' : 'bg-amber-500 shadow-[0_0_8px_rgba(245,158,11,0.5)]')
+                    ? (progress > 50 ? 'bg-status-error shadow-sm' : progress > 20 ? 'bg-amber-500 shadow-sm' : 'bg-emerald-500 shadow-sm')
+                    : (progress > 80 ? 'bg-emerald-500 shadow-sm' : progress > 40 ? 'bg-blue-500 shadow-sm' : 'bg-amber-500 shadow-sm')
                 }`}
                 style={{ width: `${progress}%` }}
             />

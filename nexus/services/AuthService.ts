@@ -44,17 +44,17 @@ export class AuthService {
 
     public async authenticate(userId: string, userPass: string, companyId: string, _companyPass: string) {
         // --- Simulated Login for Dev Mode ---
-        if (userId === 'admin-srv-001-1' && userPass === 'admin123') {
+        if (userId.startsWith('admin-srv-') && userPass === 'admin123') {
             const sig = btoa(`${userId}:${companyId}:${Date.now()}`);
             const authUser = {
                id: userId,
                serverId: companyId,
                role: 'admin',
-               level: 5,
-               name: 'Manager (Simulated)',
+               level: 8,
+               name: `${userId.split('-').slice(-1)[0] === '1' ? 'Admin 1' : 'Admin 2'} (Simulated)`,
                passwordHash: '',
                status: 'active',
-               accessLevel: 5,
+               accessLevel: 8,
                commissionRate: 0,
                active: true,
                team: 'Management',
@@ -63,14 +63,14 @@ export class AuthService {
             this.repository.setActiveServer(companyId);
             return { user: authUser, sig };
         }
-        if (userId === 'agent-srv-001-1' && userPass === 'agent123') {
+        if (userId.startsWith('agent-srv-') && userPass === 'agent123') {
             const sig = btoa(`${userId}:${companyId}:${Date.now()}`);
             const authUser = {
                id: userId,
                serverId: companyId,
                role: 'agent',
                level: 1,
-               name: 'Team Member (Simulated)',
+               name: `Agent ${userId.split('-').slice(-1)[0]} (Simulated)`,
                passwordHash: '',
                status: 'active',
                accessLevel: 1,

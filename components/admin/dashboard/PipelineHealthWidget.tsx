@@ -39,9 +39,9 @@ export const PipelineHealthWidget: React.FC<PipelineHealthWidgetProps> = ({ sale
         <Card variant="panel" className="p-0 flex flex-col relative overflow-hidden h-full rounded-xl group border border-border-subtle hover:border-border-subtle transition-all shadow-panel bg-surface-main/30 backdrop-blur-3xl">
             <div className="absolute top-0 right-0 bottom-0 w-[2px] bg-gradient-to-b from-accent-primary/50 via-accent-secondary/50 to-transparent opacity-30 z-0"></div>
             <div className="flex items-center justify-between p-4 border-b border-border-subtle bg-transparent relative z-10">
-                <h3 className="text-sm font-[700] text-text-primary  tracking-[0.2em] flex items-center gap-4">
+                <h3 className="text-sm font-medium text-text-primary  tracking-wide flex items-center gap-4">
                     <div className="p-2 bg-gradient-to-br from-surface-highlight to-surface-main border border-border-subtle rounded-xl group-hover:scale-110 transition-transform shadow-lg">
-                        <Layers size={16} className="text-accent-secondary drop-shadow-[0_0_8px_rgba(157,78,221,0.5)]"/>
+                        <Layers size={16} className="text-accent-secondary shadow-sm"/>
                     </div>
                     Pipeline Health
                 </h3>
@@ -88,7 +88,7 @@ export const PipelineHealthWidget: React.FC<PipelineHealthWidgetProps> = ({ sale
                     ) : (
                         <div className="flex flex-col items-center justify-center h-full text-text-muted opacity-30">
                             <Layers size={32} className="mb-2" />
-                            <p className="text-sm font-[700]  tracking-[0.2em]">Pipeline Empty</p>
+                            <p className="text-sm font-medium  tracking-wide">Pipeline Empty</p>
                         </div>
                     )
                 )} />

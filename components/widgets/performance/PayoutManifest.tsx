@@ -42,22 +42,22 @@ export const PayoutManifest: React.FC<PayoutManifestProps> = ({ manifest }) => {
 
     return (
         <div className="animate-in slide-in-from-top-4 duration-500">
-            <Card variant="panel" className="p-0 overflow-hidden border-border-subtle bg-surface-main shadow-2xl rounded-[2.5rem]">
+            <Card variant="panel" className="p-0 overflow-hidden border-border-subtle bg-surface-main shadow-2xl rounded-xl">
                 {/* Header */}
-                <div className="p-6 border-b border-border-subtle bg-surface-alt/40 flex items-center justify-between backdrop-blur-xl sticky top-0 z-20">
+                <div className="p-6 border-b border-border-subtle bg-surface-alt/40 flex items-center justify-between  sticky top-0 z-20">
                     <div className="flex items-center gap-4">
-                        <div className="p-3 bg-emerald-500/10 rounded-2xl text-status-success border border-emerald-500/20 shadow-neon">
+                        <div className="p-3 bg-emerald-500/10 rounded-xl text-status-success border border-emerald-500/20 shadow-neon">
                             <DollarSign size={24} strokeWidth={2.5}/>
                         </div>
                         <div>
-                            <h3 className="text-xl font-[700]  italic text-text-primary tracking-tighter">Financial Ledger</h3>
-                            <p className="text-xs font-bold text-text-muted  tracking-[0.2em] mt-0.5">Authorized Payouts</p>
+                            <h3 className="text-xl font-medium  italic text-text-primary tracking-tighter">Financial Ledger</h3>
+                            <p className="text-xs font-bold text-text-muted  tracking-wide mt-0.5">Authorized Payouts</p>
                         </div>
                     </div>
                     {isSuperAdmin && (
                         <button 
                             onClick={handleExport}
-                            className="flex items-center gap-2 px-4 py-2 bg-surface-main hover:bg-surface-highlight border border-border-subtle rounded-xl text-xs font-[700]  tracking-widest text-text-secondary hover:text-text-primary transition-all shadow-sm group"
+                            className="flex items-center gap-2 px-4 py-2 bg-surface-main hover:bg-surface-highlight border border-border-subtle rounded-xl text-xs font-medium  tracking-wide text-text-secondary hover:text-text-primary transition-all shadow-sm group"
                         >
                             <Download size={16} className="group-hover:translate-y-0.5 transition-transform"/> Export
                         </button>
@@ -67,7 +67,7 @@ export const PayoutManifest: React.FC<PayoutManifestProps> = ({ manifest }) => {
                 {/* Ledger Body */}
                 <div className="max-h-[600px] overflow-y-auto custom-scrollbar relative">
                     <table className="w-full text-left border-collapse">
-                        <thead className="bg-surface-main sticky top-0 z-10 text-xs font-[700]  text-text-muted tracking-[0.15em] border-b border-border-subtle shadow-sm">
+                        <thead className="bg-surface-main sticky top-0 z-10 text-xs font-medium  text-text-muted tracking-wide border-b border-border-subtle shadow-sm">
                             <tr>
                                 <th className="p-5 pl-8">Transaction ID</th>
                                 <th className="p-5">Client Identity</th>
@@ -98,7 +98,7 @@ export const PayoutManifest: React.FC<PayoutManifestProps> = ({ manifest }) => {
                                                     {item.sale.customer.charAt(0)}
                                                 </div>
                                                 <div>
-                                                    <div className="font-[700] text-text-primary  tracking-tight">{item.sale.customer}</div>
+                                                    <div className="font-medium text-text-primary  tracking-tight">{item.sale.customer}</div>
                                                     <div className="text-xs text-text-muted font-bold  mt-0.5 opacity-70">
                                                         {item.sale.product}
                                                     </div>
@@ -121,7 +121,7 @@ export const PayoutManifest: React.FC<PayoutManifestProps> = ({ manifest }) => {
                                         <td className="p-5 text-right">
                                             <div className="flex flex-col items-end gap-1">
                                                 {hasSpiff ? (
-                                                    <span className="text-status-warning font-[700] flex items-center justify-end gap-1 bg-amber-500/5 px-3 py-1.5 rounded-lg border border-amber-500/20 w-fit">
+                                                    <span className="text-status-warning font-medium flex items-center justify-end gap-1 bg-amber-500/5 px-3 py-1.5 rounded-lg border border-amber-500/20 w-fit">
                                                         <Star size={16} fill="currentColor"/> +${item.payout.spiff}
                                                     </span>
                                                 ) : missedSpiff ? (
@@ -138,7 +138,7 @@ export const PayoutManifest: React.FC<PayoutManifestProps> = ({ manifest }) => {
                                             </div>
                                         </td>
                                         <td className="p-5 text-right pr-8">
-                                            <span className="font-[700] num-font text-status-success text-sm tracking-tight drop-shadow-sm">
+                                            <span className="font-medium num-font text-status-success text-sm tracking-tight drop-shadow-sm">
                                                 ${item.payout.net.toLocaleString(undefined, { minimumFractionDigits: 2 })}
                                             </span>
                                         </td>
@@ -152,13 +152,13 @@ export const PayoutManifest: React.FC<PayoutManifestProps> = ({ manifest }) => {
                         
                         {/* Footer Totals */}
                         {manifest.length > 0 && (
-                            <tfoot className="sticky bottom-0 z-10 bg-surface-main border-t border-border-subtle shadow-[0_-10px_40px_rgba(0,0,0,0.2)]">
+                            <tfoot className="sticky bottom-0 z-10 bg-surface-main border-t border-border-subtle shadow-sm">
                                 <tr className="text-xs">
-                                    <td colSpan={3} className="p-6 pl-8 text-right text-xs font-[700]  tracking-widest text-text-muted">Cycle Aggregates</td>
+                                    <td colSpan={3} className="p-6 pl-8 text-right text-xs font-medium  tracking-wide text-text-muted">Cycle Aggregates</td>
                                     <td className="p-6 text-right font-bold text-text-primary">${totals.commission.toLocaleString()}</td>
                                     <td className="p-6 text-right font-bold text-status-warning">+${totals.spiff.toLocaleString()}</td>
                                     <td className="p-6 pr-8 text-right">
-                                        <span className="text-xl font-[700] text-status-success tracking-tighter">${totals.net.toLocaleString()}</span>
+                                        <span className="text-xl font-medium text-status-success tracking-tighter">${totals.net.toLocaleString()}</span>
                                     </td>
                                 </tr>
                             </tfoot>

@@ -81,7 +81,7 @@ export const ForwardMessageModal: React.FC<ForwardMessageModalProps> = ({ isOpen
     ].filter(t => t.name.toLowerCase().includes(searchQuery.toLowerCase()));
 
     return (
-        <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-200">
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/80  animate-in fade-in duration-200">
             {/* Backdrop click to close */}
             <div className="absolute inset-0" onClick={onClose}></div>
             
@@ -89,7 +89,7 @@ export const ForwardMessageModal: React.FC<ForwardMessageModalProps> = ({ isOpen
                 
                 {/* Header */}
                 <div className="p-4 border-b border-border-subtle flex justify-between items-center bg-surface-alt/50">
-                    <h3 className="text-sm font-[700]  tracking-widest text-text-primary flex items-center gap-2">
+                    <h3 className="text-sm font-medium  tracking-wide text-text-primary flex items-center gap-2">
                         <CornerUpRight size={16} className="text-accent-primary"/> Forward Message
                     </h3>
                     <button onClick={onClose} className="p-1.5 hover:bg-surface-highlight rounded-lg text-text-muted hover:text-text-primary transition-colors">
@@ -103,7 +103,7 @@ export const ForwardMessageModal: React.FC<ForwardMessageModalProps> = ({ isOpen
                     <div className="p-4 bg-surface-main border-b border-border-subtle shrink-0">
                         <div className="bg-surface-alt/40 p-3 rounded-xl border-l-4 border-accent-primary relative overflow-hidden">
                             <div className="flex items-center gap-2 mb-1.5">
-                                <div className="text-xs font-bold text-accent-primary  tracking-widest opacity-90 flex items-center gap-1">
+                                <div className="text-xs font-bold text-accent-primary  tracking-wide opacity-90 flex items-center gap-1">
                                     <MessageSquare size={16} />
                                     {messageToForward.senderName}
                                 </div>
@@ -151,7 +151,7 @@ export const ForwardMessageModal: React.FC<ForwardMessageModalProps> = ({ isOpen
 
                     {/* List */}
                     <div className="flex-1 overflow-y-auto custom-scrollbar p-3 space-y-1">
-                        <p className="text-xs font-bold text-text-muted  tracking-widest px-2 mb-2">Suggested Targets</p>
+                        <p className="text-xs font-bold text-text-muted  tracking-wide px-2 mb-2">Suggested Targets</p>
                         {targets.map(target => {
                             const isSent = sentIds.includes(target.id);
                             return (
@@ -172,7 +172,7 @@ export const ForwardMessageModal: React.FC<ForwardMessageModalProps> = ({ isOpen
                                             {target.type === 'channel' ? (
                                                 target.subType === 'private' ? <ShieldAlert size={16}/> : <Hash size={16}/>
                                             ) : (
-                                                target.avatar ? <img src={target.avatar} className="w-full h-full rounded-xl object-cover"/> : <span className="font-[700] text-xs">{target.name.charAt(0)}</span>
+                                                target.avatar ? <img src={target.avatar} className="w-full h-full rounded-xl object-cover"/> : <span className="font-medium text-xs">{target.name.charAt(0)}</span>
                                             )}
                                         </div>
                                         <div className="text-left min-w-0">

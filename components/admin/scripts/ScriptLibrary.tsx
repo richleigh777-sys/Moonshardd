@@ -34,7 +34,7 @@ export const ScriptLibrary: React.FC<ScriptLibraryProps> = ({
 
     return (
         <Card variant="panel" className="w-1/3 flex flex-col p-0 border-border-subtle bg-surface-main relative overflow-hidden min-w-[320px]">
-            <div className="p-4 border-b border-border-subtle bg-surface-alt/30 backdrop-blur-md flex flex-col gap-4 z-10">
+            <div className="p-4 border-b border-border-subtle bg-surface-alt/30  flex flex-col gap-4 z-10">
                 <div className="relative group">
                     <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted group-focus-within:text-accent-primary transition-colors"/>
                     <input autoComplete="off" data-lpignore="true" data-prevent-autofill="true" spellCheck={false} 
@@ -49,7 +49,7 @@ export const ScriptLibrary: React.FC<ScriptLibraryProps> = ({
                         <button
                             key={t}
                             onClick={() => { setFilterType(t as any); sfx.playClick(); }}
-                            className={`px-3 py-1.5 rounded-lg text-sm font-[700]  tracking-wider border transition-all whitespace-nowrap ${
+                            className={`px-3 py-1.5 rounded-lg text-sm font-medium  tracking-wider border transition-all whitespace-nowrap ${
                                 filterType === t 
                                 ? 'bg-accent-primary text-white border-accent-primary shadow-sm' 
                                 : 'text-text-muted border-transparent hover:text-text-primary hover:bg-surface-alt'
@@ -75,7 +75,7 @@ export const ScriptLibrary: React.FC<ScriptLibraryProps> = ({
                 {filteredScripts.length === 0 && (
                     <div className="flex flex-col items-center justify-center h-64 opacity-40 text-text-muted gap-3">
                         <FileText size={32} strokeWidth={1}/>
-                        <p className="text-sm font-[700]  tracking-widest">No Scripts Found</p>
+                        <p className="text-sm font-medium  tracking-wide">No Scripts Found</p>
                     </div>
                 )}
             </div>

@@ -51,7 +51,7 @@ export const LeadTimeline: React.FC<LeadTimelineProps> = ({ notes, callLogs, pho
         return (
             <div className="py-12 text-center opacity-30">
                 <Clock size={32} className="mx-auto mb-3" />
-                <p className="text-xs font-[700]  tracking-widest text-text-muted">No interactions logged</p>
+                <p className="text-xs font-medium  tracking-wide text-text-muted">No interactions logged</p>
             </div>
         );
     }
@@ -70,7 +70,7 @@ export const LeadTimeline: React.FC<LeadTimelineProps> = ({ notes, callLogs, pho
                     <div className="space-y-2">
                         <div className="flex items-center justify-between">
                             <div className="flex items-center gap-2">
-                                <span className="text-xs font-[700] text-text-primary  tracking-tight">{event.title}</span>
+                                <span className="text-xs font-medium text-text-primary  tracking-tight">{event.title}</span>
                                 {event.status && (
                                     <span className={`text-sm font-bold px-3 py-1.5 rounded ${
                                         event.status === 'Connected' ? 'bg-emerald-500/10 text-status-success border border-emerald-500/20' :

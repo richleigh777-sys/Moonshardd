@@ -39,7 +39,7 @@ export const ExperienceTab: React.FC<ExperienceTabProps> = ({ config, onChange }
                 
                 {/* 1. Core Psychological Elements */}
                 <div className="bg-surface-main border border-border-subtle rounded-xl p-4 space-y-4 shadow-sm">
-                    <h4 className="text-sm font-black uppercase text-text-muted tracking-wider font-mono mb-2">Primary Cognitive Systems</h4>
+                    <h4 className="text-sm font-bold uppercase text-text-muted tracking-wider font-mono mb-2">Primary Cognitive Systems</h4>
                     
                     <ConfigToggle 
                         label="Celebration Particle Physics" 
@@ -60,7 +60,7 @@ export const ExperienceTab: React.FC<ExperienceTabProps> = ({ config, onChange }
 
                 {/* 2. Visual Doctrine Selector */}
                 <div className="bg-surface-main border border-border-subtle rounded-xl p-4 space-y-4 shadow-sm">
-                    <h4 className="text-sm font-black uppercase text-text-muted tracking-wider font-mono mb-2 font-bold">Aesthetic Doctrine & Styling</h4>
+                    <h4 className="text-sm font-bold uppercase text-text-muted tracking-wider font-mono mb-2 font-bold">Aesthetic Doctrine & Styling</h4>
                     
                     <div className="flex flex-col md:flex-row md:items-center justify-between p-4 border rounded-xl bg-surface-alt/30 border-border-subtle gap-4">
                         <div className="flex items-center gap-3">
@@ -83,7 +83,7 @@ export const ExperienceTab: React.FC<ExperienceTabProps> = ({ config, onChange }
                                 <button 
                                     key={t.key}
                                     onClick={() => handleSelect('enforceTheme', t.key)}
-                                    className={`px-4 py-2 rounded-lg text-sm font-black uppercase tracking-wider transition-all ${config.enforceTheme === t.key ? 'bg-accent-primary text-white shadow-md' : 'text-text-muted hover:text-text-primary hover:bg-surface-alt/50'}`}
+                                    className={`px-4 py-2 rounded-lg text-sm font-bold uppercase tracking-wider transition-all ${config.enforceTheme === t.key ? 'bg-accent-primary text-white shadow-md' : 'text-text-muted hover:text-text-primary hover:bg-surface-alt/50'}`}
                                 >
                                     {t.label}
                                 </button>
@@ -113,7 +113,7 @@ export const ExperienceTab: React.FC<ExperienceTabProps> = ({ config, onChange }
                                 <button 
                                     key={v.key}
                                     onClick={() => handleSelect('transitionSpeed', v.key)}
-                                    className={`px-4 py-2 rounded-lg text-sm font-black uppercase tracking-wider transition-all ${ config.transitionSpeed === v.key || (!config.transitionSpeed && v.key === 'gentle') ? 'bg-accent-primary text-white shadow-md' : 'text-text-muted hover:text-text-primary hover:bg-surface-alt/50'}`}
+                                    className={`px-4 py-2 rounded-lg text-sm font-bold uppercase tracking-wider transition-all ${ config.transitionSpeed === v.key || (!config.transitionSpeed && v.key === 'gentle') ? 'bg-accent-primary text-white shadow-md' : 'text-text-muted hover:text-text-primary hover:bg-surface-alt/50'}`}
                                 >
                                     {v.label}
                                 </button>
@@ -142,7 +142,7 @@ export const ExperienceTab: React.FC<ExperienceTabProps> = ({ config, onChange }
                                 <button 
                                     key={filter.key}
                                     onClick={() => handleSelect('eyeCareFilter', filter.key)}
-                                    className={`px-4 py-2 rounded-lg text-sm font-black uppercase tracking-wider transition-all ${ config.eyeCareFilter === filter.key || (!config.eyeCareFilter && filter.key === 'cozy') ? 'bg-accent-primary text-white shadow-md' : 'text-text-muted hover:text-text-primary hover:bg-surface-alt/50'}`}
+                                    className={`px-4 py-2 rounded-lg text-sm font-bold uppercase tracking-wider transition-all ${ config.eyeCareFilter === filter.key || (!config.eyeCareFilter && filter.key === 'cozy') ? 'bg-accent-primary text-white shadow-md' : 'text-text-muted hover:text-text-primary hover:bg-surface-alt/50'}`}
                                 >
                                     {filter.label}
                                 </button>
@@ -154,7 +154,7 @@ export const ExperienceTab: React.FC<ExperienceTabProps> = ({ config, onChange }
 
                 {/* 5. Gamification progression details */}
                 <div className="bg-surface-main border border-border-subtle rounded-xl p-4 space-y-4 shadow-sm">
-                    <h4 className="text-sm font-black uppercase text-text-muted tracking-wider font-mono mb-2">Progression Systems</h4>
+                    <h4 className="text-sm font-bold uppercase text-text-muted tracking-wider font-mono mb-2">Progression Systems</h4>
 
                     <ConfigToggle 
                         label="Motivational Streak Tickers" 

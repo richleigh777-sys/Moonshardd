@@ -137,7 +137,7 @@ export const DashboardLiveOpsBoard: React.FC<DashboardLiveOpsBoardProps> = ({
             <Users className="text-blue-500" size={16} />
           </div>
           <div className="flex items-end gap-2">
-            <span className="text-xl font-black text-text-primary">{liveMetrics.onlineAgentsCount}</span>
+            <span className="text-xl font-bold text-text-primary">{liveMetrics.onlineAgentsCount}</span>
             <span className="text-sm text-text-muted mb-1">/ {liveMetrics.totalAgents}</span>
           </div>
           <div className="w-full bg-surface-alt rounded-full h-1 mt-3 overflow-hidden">
@@ -151,7 +151,7 @@ export const DashboardLiveOpsBoard: React.FC<DashboardLiveOpsBoardProps> = ({
             <Workflow className="text-orange-500" size={16} />
           </div>
           <div className="flex items-end gap-2">
-            <span className="text-xl font-black text-text-primary">{liveMetrics.activeLeadsInQueue}</span>
+            <span className="text-xl font-bold text-text-primary">{liveMetrics.activeLeadsInQueue}</span>
             <span className="text-sm text-text-muted mb-1">pending router</span>
           </div>
           <div className="flex items-center gap-1 mt-3">
@@ -166,7 +166,7 @@ export const DashboardLiveOpsBoard: React.FC<DashboardLiveOpsBoardProps> = ({
             <Target className="text-emerald-500" size={16} />
           </div>
           <div className="flex items-end gap-2">
-            <span className="text-xl font-black text-text-primary">{liveMetrics.recentSalesCount}</span>
+            <span className="text-xl font-bold text-text-primary">{liveMetrics.recentSalesCount}</span>
             <span className="text-sm text-text-muted mb-1">last 60m</span>
           </div>
           <p className="text-sm text-emerald-400 font-medium mt-3">+ Fresh Deal Injections</p>
@@ -179,7 +179,7 @@ export const DashboardLiveOpsBoard: React.FC<DashboardLiveOpsBoardProps> = ({
             <Zap className="text-purple-500" size={16} />
           </div>
           <div className="flex items-end gap-2 relative z-10">
-            <span className="text-xl font-black text-text-primary">${(liveMetrics.todayRevenue / 1000).toFixed(1)}k</span>
+            <span className="text-xl font-bold text-text-primary">${(liveMetrics.todayRevenue / 1000).toFixed(1)}k</span>
           </div>
           <p className="text-sm text-text-muted mt-3 relative z-10">{liveMetrics.todayApprovedCount} hard closures</p>
         </Card>
@@ -215,7 +215,7 @@ export const DashboardLiveOpsBoard: React.FC<DashboardLiveOpsBoardProps> = ({
                     liveMetrics.topAgents.map((agent, idx) => (
                       <tr key={agent.agentId} className="hover:bg-surface-hover/50 transition-colors group">
                         <td className="p-4 text-sm font-bold text-text-muted">
-                           {idx === 0 ? <span className="text-amber-500 drop-shadow-[0_0_8px_rgba(245,158,11,0.5)]">#1</span> : `#${idx + 1}`}
+                           {idx === 0 ? <span className="text-amber-500 shadow-sm">#1</span> : `#${idx + 1}`}
                         </td>
                         <td className="p-4 relative">
                           <div className="flex items-center gap-3">
@@ -298,7 +298,7 @@ export const DashboardLiveOpsBoard: React.FC<DashboardLiveOpsBoardProps> = ({
             
             <div className="mt-4 pt-3 border-t border-border-subtle flex flex-col gap-3">
                 <div className="flex items-center justify-between">
-                    <span className="text-sm font-bold text-text-muted tracking-widest uppercase">System Mapping</span>
+                    <span className="text-sm font-bold text-text-muted tracking-wide uppercase">System Mapping</span>
                     <span className="text-sm font-bold text-status-success uppercase bg-status-success/10 px-2 py-0.5 rounded">Active & Healthy</span>
                 </div>
                 <div className="h-16 w-full rounded-lg bg-surface-alt/50 border border-border-subtle relative overflow-hidden flex items-center justify-center">
@@ -306,9 +306,9 @@ export const DashboardLiveOpsBoard: React.FC<DashboardLiveOpsBoardProps> = ({
                     <div className="flex items-center justify-center w-full max-w-[200px] gap-2 opacity-50 relative z-10">
                         <div className="w-1.5 h-1.5 bg-text-primary rounded-full animate-ping"></div>
                         <div className="flex-1 border-t border-dashed border-text-muted"></div>
-                        <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse shadow-[0_0_10px_rgba(59,130,246,0.5)]"></div>
+                        <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse shadow-sm"></div>
                         <div className="flex-1 border-t border-dashed border-text-muted"></div>
-                        <div className="w-2 h-2 bg-red-500 rounded-full animate-ping shadow-[0_0_10px_rgba(239,68,68,0.5)]"></div>
+                        <div className="w-2 h-2 bg-red-500 rounded-full animate-ping shadow-sm"></div>
                     </div>
                 </div>
             </div>

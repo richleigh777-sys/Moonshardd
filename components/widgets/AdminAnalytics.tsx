@@ -21,7 +21,7 @@ export const AdminAnalytics: React.FC<AdminAnalyticsProps> = ({ sales = [] }) =>
     <div className="flex flex-col gap-4 animate-in fade-in duration-700 w-full overflow-visible pb-4">
         
         {/* Header Toolbar */}
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center bg-surface-main/80 backdrop-blur-xl p-3 pr-4 rounded-[2.5rem] border border-border-subtle shadow-lg gap-4 shrink-0 relative overflow-hidden">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center bg-surface-main/80  p-3 pr-4 rounded-xl border border-border-subtle shadow-lg gap-4 shrink-0 relative overflow-hidden">
             <div className="absolute inset-0 bg-gradient-to-r from-indigo-500/5 to-transparent pointer-events-none"></div>
             
             <div className="flex items-center gap-4 px-4 py-2 relative z-10">
@@ -29,8 +29,8 @@ export const AdminAnalytics: React.FC<AdminAnalyticsProps> = ({ sales = [] }) =>
                     <BarChart3 size={24} strokeWidth={2.5} />
                 </div>
                 <div>
-                    <h3 className="text-lg font-[700]  tracking-tighter text-text-primary italic">Admin Intelligence</h3>
-                    <p className="text-xs font-bold text-text-muted  tracking-widest flex items-center gap-1.5">
+                    <h3 className="text-lg font-medium  tracking-tighter text-text-primary italic">Admin Intelligence</h3>
+                    <p className="text-xs font-bold text-text-muted  tracking-wide flex items-center gap-1.5">
                         <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
                         Live Metrics • {timeRange} View
                     </p>
@@ -42,7 +42,7 @@ export const AdminAnalytics: React.FC<AdminAnalyticsProps> = ({ sales = [] }) =>
                     <button
                         key={range}
                         onClick={() => setTimeRange(range)}
-                        className={`px-4 py-2.5 rounded-xl text-xs font-[700]  tracking-widest transition-all ${
+                        className={`px-4 py-2.5 rounded-xl text-xs font-medium  tracking-wide transition-all ${
                             timeRange === range 
                             ? 'bg-surface-main text-text-primary shadow-md ring-1 ring-border-subtle' 
                             : 'text-text-muted hover:text-text-secondary hover:bg-surface-main/50'

@@ -16,8 +16,8 @@ export const SupplyChainHUD: React.FC<SupplyChainHUDProps> = ({ stats }) => {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 shrink-0">
             <Card variant="panel" className="p-4 flex items-center justify-between bg-surface-main border-border-subtle hover:border-status-success/30 transition-colors group">
                 <div>
-                    <p className="text-sm font-[700]  text-text-muted tracking-widest mb-1">Asset Valuation</p>
-                    <p className="text-lg font-[700] text-text-primary num-font tracking-tight group-hover:text-status-success transition-colors">
+                    <p className="text-sm font-medium  text-text-muted tracking-wide mb-1">Asset Valuation</p>
+                    <p className="text-lg font-medium text-text-primary num-font tracking-tight group-hover:text-status-success transition-colors">
                         ${stats.totalValue.toLocaleString()}
                     </p>
                 </div>
@@ -28,8 +28,8 @@ export const SupplyChainHUD: React.FC<SupplyChainHUDProps> = ({ stats }) => {
             
             <Card variant="panel" className="p-4 flex items-center justify-between bg-surface-main border-border-subtle hover:border-status-warning/30 transition-colors group">
                 <div>
-                    <p className="text-sm font-[700]  text-text-muted tracking-widest mb-1">Portfolio Health</p>
-                    <p className="text-lg font-[700] text-text-primary num-font tracking-tight group-hover:text-status-warning transition-colors">
+                    <p className="text-sm font-medium  text-text-muted tracking-wide mb-1">Portfolio Health</p>
+                    <p className="text-lg font-medium text-text-primary num-font tracking-tight group-hover:text-status-warning transition-colors">
                         {stats.avgMargin}% <span className="text-sm text-text-muted font-bold">AVG MARGIN</span>
                     </p>
                 </div>

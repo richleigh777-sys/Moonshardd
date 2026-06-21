@@ -49,7 +49,7 @@ export const SecureVaultField: React.FC<{
                     onFocus={() => setIsFocused(true)}
                     onBlur={() => setIsFocused(false)}
                     onChange={handleSimulatedTokenization}
-                    className="w-full bg-transparent p-3 outline-none text-text-primary text-sm font-mono tracking-widest"
+                    className="w-full bg-transparent p-3 outline-none text-text-primary text-sm font-mono tracking-wide"
                 />
             </div>
             <p className="text-sm text-text-muted mt-1 opacity-70">

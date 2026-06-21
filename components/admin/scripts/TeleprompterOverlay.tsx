@@ -18,7 +18,7 @@ export const TeleprompterOverlay: React.FC<TeleprompterOverlayProps> = ({ conten
     // Highlight variables in content
     const processedContent = content.split(/(\{\{.*?\}\})|(\[.*?\])/g).filter(Boolean).map((part, i) => {
         if (part.match(/^\{\{.*?\}\}$/) || part.match(/^\[.*?\]$/)) {
-            return <span key={i} className="text-accent-primary font-[700] bg-accent-primary/10 px-1 rounded mx-1">{part}</span>;
+            return <span key={i} className="text-accent-primary font-medium bg-accent-primary/10 px-1 rounded mx-1">{part}</span>;
         }
         return part;
     });
@@ -28,10 +28,10 @@ export const TeleprompterOverlay: React.FC<TeleprompterOverlayProps> = ({ conten
             {/* Header Controls */}
             <div className="h-20 border-b border-border-subtle flex justify-between items-center px-8 shrink-0 bg-[#09090b] text-white">
                 <div className="flex flex-col">
-                    <h2 className="text-xl font-[700] text-white  tracking-tight flex items-center gap-2">
+                    <h2 className="text-xl font-medium text-white  tracking-tight flex items-center gap-2">
                         {title} <span className="text-sm bg-red-500 text-white px-2.5 py-1 rounded-full animate-pulse">LIVE</span>
                     </h2>
-                    <p className="text-sm font-bold text-text-muted  tracking-[0.2em]">Teleprompter Mode</p>
+                    <p className="text-sm font-bold text-text-muted  tracking-wide">Teleprompter Mode</p>
                 </div>
                 
                 <div className="flex items-center gap-4">

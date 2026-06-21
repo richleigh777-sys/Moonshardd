@@ -66,7 +66,7 @@ export const SecurityLayout: React.FC<SecurityLayoutProps> = ({ children }) => {
       
       {/* Violation Overlay */}
       <div 
-        className={`fixed inset-0 z-[9999] bg-black/80 flex flex-col items-center justify-center text-status-error transition-all duration-200 pointer-events-none backdrop-blur-sm ${
+        className={`fixed inset-0 z-[9999] bg-black/80 flex flex-col items-center justify-center text-status-error transition-all duration-200 pointer-events-none  ${
           violationAttempt ? 'opacity-100 scale-100' : 'opacity-0 scale-110'
         }`}
       >

@@ -440,24 +440,113 @@ export class BaseRepository {
     }
 
     public async deleteBulk(collectionName: string, ids: string[]) {
-        for (const id of ids) {
-            await this.delete(collectionName, id);
+        if (!ids || ids.length === 0) return;
+        try {
+            const headers = {
+                ...this.getRequestHeaders(),
+                'Content-Type': 'application/json'
+            };
+
+            const BATCH_LIMIT = 500;
+            for (let i = 0; i < ids.length; i += BATCH_LIMIT) {
+                const chunk = ids.slice(i, i + BATCH_LIMIT);
+                await fetch(`/api/collections/${collectionName}/bulk`, {
+                    method: 'DELETE',
+                    headers,
+                    body: JSON.stringify(chunk)
+                }).then(async r => {
+                    if (!r.ok) {
+                        const text = await r.text();
+                        if (!text.includes('Failed to fetch')) throw new Error(text);
+                    }
+                });
+            }
+
+            // Local resilience clear
+            const cacheKey = `crm_cache_${collectionName}`;
+            const localList = (JSON.parse(localStorage.getItem(cacheKey) || '[]')).filter((item: any) => !ids.includes(item.id));
+            localStorage.setItem(cacheKey, JSON.stringify(localList));
+            
+            if (this.fetchers[collectionName]) this.fetchers[collectionName]();
+        } catch (error: any) {
+            console.error('deleteBulk Error:', error);
+            if (error.message?.includes('Failed to fetch')) return;
+            handleFirestoreError(error, OperationType.DELETE, collectionName);
         }
     }
 
     public async addBulk(collectionName: string, items: any[]): Promise<number> {
-        let count = 0;
-        for (const item of items) {
-            await this.add(collectionName, item);
-            count++;
+        if (!items || items.length === 0) return 0;
+        
+        const payloadItems = items.map(data => {
+            const id = data.id || `${collectionName}-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+            return removeUndefinedFields({
+                ...(data || {}),
+                id,
+                serverId: this.activeServerId,
+                updatedAt: Date.now(),
+                createdAt: data?.createdAt || Date.now()
+            });
+        });
+
+        try {
+            const headers = {
+                ...this.getRequestHeaders(),
+                'Content-Type': 'application/json'
+            };
+            
+            const BATCH_LIMIT = 500;
+            let successCount = 0;
+            
+            for (let i = 0; i < payloadItems.length; i += BATCH_LIMIT) {
+                const chunk = payloadItems.slice(i, i + BATCH_LIMIT);
+                await fetch(`/api/collections/${collectionName}/bulk`, {
+                    method: 'POST', 
+                    headers,
+                    body: JSON.stringify(chunk)
+                }).then(async r => {
+                    const text = await r.text();
+                    if (!r.ok) {
+                       if (text.includes('Failed to fetch')) {
+                          console.warn(`[Nexus] Offline bulk mode chunk ${i}`);
+                       } else {
+                           throw new Error(text);
+                       }
+                    }
+                });
+                successCount += chunk.length;
+            }
+
+            // Local cache
+            const cacheKey = `crm_cache_${collectionName}`;
+            const localList: any[] = JSON.parse(localStorage.getItem(cacheKey) || '[]');
+            
+            payloadItems.forEach(item => {
+                const index = localList.findIndex((i: any) => i.id === item.id);
+                if (index > -1) {
+                    localList[index] = { ...localList[index], ...item };
+                } else {
+                    localList.push(item);
+                }
+            });
+            
+            localStorage.setItem(cacheKey, JSON.stringify(localList));
+
+            if (this.fetchers[collectionName]) this.fetchers[collectionName]();
+
+            return successCount;
+        } catch (error: any) {
+            console.error('addBulk Error:', error);
+            if (error.message?.includes('Failed to fetch')) return payloadItems.length;
+            handleFirestoreError(error, OperationType.CREATE, collectionName);
+            return 0;
         }
-        return count;
     }
 
     public async updateBulk(collectionName: string, ids: string[], updates: any) {
-        for (const id of ids) {
-            await this.update(collectionName, id, updates);
-        }
+        if (!ids.length) return;
+        const items = ids.map(id => ({ id, ...updates }));
+        await this.addBulk(collectionName, items);
     }
 
     public async updatePresence(presence: Partial<Presence>) {

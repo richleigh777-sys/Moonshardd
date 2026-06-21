@@ -64,7 +64,7 @@ export const AudioPlayerModal: React.FC<AudioPlayerModalProps> = ({ src, saleNam
 
     return (
         <div className="fixed inset-0 z-[150] flex items-center justify-center p-4">
-            <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose} />
+            <div className="absolute inset-0 bg-black/60 " onClick={onClose} />
             
             <div className="relative w-full max-w-md bg-surface-main border border-border-subtle rounded-xl shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
                 {/* Header */}
@@ -75,7 +75,7 @@ export const AudioPlayerModal: React.FC<AudioPlayerModalProps> = ({ src, saleNam
                         </div>
                         <div>
                             <h3 className="text-sm font-bold text-text-primary tracking-wide">Audio Log</h3>
-                            <p className="text-[10px] text-text-muted uppercase tracking-widest">{saleName || 'Unknown Contact'}</p>
+                            <p className="text-[10px] text-text-muted uppercase tracking-wide">{saleName || 'Unknown Contact'}</p>
                         </div>
                     </div>
                     <button onClick={onClose} className="p-1.5 text-text-muted hover:text-text-primary hover:bg-surface-highlight rounded-lg transition-colors">

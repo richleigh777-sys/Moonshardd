@@ -209,10 +209,10 @@ export const AuditTab: React.FC = () => {
             {/* Page Header */}
             <div className="flex flex-col gap-2 shrink-0">
                 <div className="flex items-center gap-2">
-                    <div className="w-2 h-2 rounded-full bg-accent-primary animate-pulse shadow-[0_0_8px_var(--color-accent-primary)]"></div>
-                    <span className="text-sm font-black tracking-widest uppercase text-accent-primary font-mono">Operations Vigil Protocol</span>
+                    <div className="w-2 h-2 rounded-full bg-accent-primary animate-pulse shadow-sm"></div>
+                    <span className="text-sm font-bold tracking-wide uppercase text-accent-primary font-mono">Operations Vigil Protocol</span>
                 </div>
-                <h3 className="text-lg font-black italic text-text-primary tracking-tight">
+                <h3 className="text-lg font-bold italic text-text-primary tracking-tight">
                     Primary CRM <span className="text-accent-primary">Visual Telemetry</span> & Audit
                 </h3>
                 <p className="text-sm text-text-muted leading-relaxed max-w-4xl">
@@ -224,19 +224,19 @@ export const AuditTab: React.FC = () => {
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 <Card variant="refraction" className="p-4 border border-border-subtle hover:border-accent-primary/20 transition-all">
                     <p className="text-sm uppercase font-bold text-text-muted tracking-wider mb-1">Total Monitored</p>
-                    <p className="text-xl font-black text-text-primary font-mono">{summaryStats.total} <span className="text-sm text-text-muted font-bold">Agents</span></p>
+                    <p className="text-xl font-bold text-text-primary font-mono">{summaryStats.total} <span className="text-sm text-text-muted font-bold">Agents</span></p>
                 </Card>
                 
                 <Card variant="refraction" className="p-4 border border-border-subtle hover:border-accent-primary/20 transition-all">
                     <p className="text-sm uppercase font-bold text-status-error tracking-wider mb-1">Urgent Interventions</p>
-                    <p className={`text-xl font-black font-mono ${summaryStats.highRisk > 0 ? "text-status-error animate-pulse" : "text-text-primary"}`}>
+                    <p className={`text-xl font-bold font-mono ${summaryStats.highRisk > 0 ? "text-status-error animate-pulse" : "text-text-primary"}`}>
                         {summaryStats.highRisk} <span className="text-sm text-text-muted font-bold">High Risk</span>
                     </p>
                 </Card>
 
                 <Card variant="refraction" className="p-4 border border-border-subtle hover:border-accent-primary/20 transition-all">
                     <p className="text-sm uppercase font-bold text-text-muted tracking-wider mb-1">Mean Yield Pace</p>
-                    <p className="text-xl font-black text-status-success font-mono">
+                    <p className="text-xl font-bold text-status-success font-mono">
                         ${summaryStats.avgEfficiency.toFixed(0)} <span className="text-sm text-text-muted font-bold">/ hr</span>
                     </p>
                 </Card>
@@ -244,7 +244,7 @@ export const AuditTab: React.FC = () => {
                 <Card variant="refraction" className="p-4 border border-border-subtle hover:border-accent-primary/20 transition-all flex justify-between items-center bg-surface-alt/10">
                     <div>
                         <p className="text-sm uppercase font-bold text-text-muted tracking-wider mb-1 font-mono">SYSTEM AUDIT STATUS</p>
-                        <p className="text-sm font-black text-status-success flex items-center gap-1">
+                        <p className="text-sm font-bold text-status-success flex items-center gap-1">
                             <span className="w-1.5 h-1.5 bg-status-success rounded-full animate-ping"></span>
                             DIALER MATCH ACTIVE
                         </p>
@@ -269,7 +269,7 @@ export const AuditTab: React.FC = () => {
                         <button
                             key={level}
                             onClick={() => setFilterLevel(level as any)}
-                            className={`px-4 py-1.5 rounded-lg text-sm uppercase font-black tracking-wider transition-all ${
+                            className={`px-4 py-1.5 rounded-lg text-sm uppercase font-bold tracking-wider transition-all ${
                                 filterLevel === level 
                                 ? level === 'high' ? 'bg-status-error text-white shadow-md shadow-status-error/15' 
                                 : level === 'medium' ? 'bg-status-warning text-white shadow-md shadow-status-warning/15'
@@ -302,7 +302,7 @@ export const AuditTab: React.FC = () => {
                                 <Sparkles size={18} />
                             </div>
                             <div>
-                                <h4 className="text-base font-black text-text-primary">Coaching Control Desk ↔ {selectedAgent.name}</h4>
+                                <h4 className="text-base font-bold text-text-primary">Coaching Control Desk ↔ {selectedAgent.name}</h4>
                                 <p className="text-sm text-text-muted font-bold font-mono uppercase tracking-tight">Active Room Session | ID: {selectedAgent.id}</p>
                             </div>
                         </div>
@@ -311,7 +311,7 @@ export const AuditTab: React.FC = () => {
                             
                             {/* Choose Preset Type */}
                             <div>
-                                <label className="block text-sm uppercase font-black text-text-muted tracking-wider mb-2">Select High-Empathy Incentive Trigger</label>
+                                <label className="block text-sm uppercase font-bold text-text-muted tracking-wider mb-2">Select High-Empathy Incentive Trigger</label>
                                 <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
                                     <button 
                                         type="button"
@@ -320,7 +320,7 @@ export const AuditTab: React.FC = () => {
                                     >
                                         <Gift size={16} />
                                         <div>
-                                            <p className="leading-tight font-black">Commission Spiff</p>
+                                            <p className="leading-tight font-bold">Commission Spiff</p>
                                             <p className="text-[8px] opacity-75">Boost pipeline drive</p>
                                         </div>
                                     </button>
@@ -332,7 +332,7 @@ export const AuditTab: React.FC = () => {
                                     >
                                         <Award size={16} />
                                         <div>
-                                            <p className="leading-tight font-black">Underwriting Expedite</p>
+                                            <p className="leading-tight font-bold">Underwriting Expedite</p>
                                             <p className="text-[8px] opacity-75">Pushed validation sync</p>
                                         </div>
                                     </button>
@@ -344,7 +344,7 @@ export const AuditTab: React.FC = () => {
                                     >
                                         <PhoneCall size={16} />
                                         <div>
-                                            <p className="leading-tight font-black">Coaching Support</p>
+                                            <p className="leading-tight font-bold">Coaching Support</p>
                                             <p className="text-[8px] opacity-75">Whisper-audio assistance</p>
                                         </div>
                                     </button>
@@ -356,7 +356,7 @@ export const AuditTab: React.FC = () => {
                                     >
                                         <X size={16} />
                                         <div>
-                                            <p className="leading-tight font-black">SIP Core Assist</p>
+                                            <p className="leading-tight font-bold">SIP Core Assist</p>
                                             <p className="text-[8px] opacity-75">Clear dialer disconnects</p>
                                         </div>
                                     </button>
@@ -365,7 +365,7 @@ export const AuditTab: React.FC = () => {
 
                             {/* Raw text input */}
                             <div>
-                                <label className="block text-sm uppercase font-black text-text-muted tracking-wider mb-2">Composed Support Message</label>
+                                <label className="block text-sm uppercase font-bold text-text-muted tracking-wider mb-2">Composed Support Message</label>
                                 <textarea
                                     className="w-full bg-surface-alt border border-border-strong rounded-xl p-3 text-sm font-bold text-text-primary outline-none focus:border-accent-primary transition-all font-mono"
                                     rows={3}
@@ -378,14 +378,14 @@ export const AuditTab: React.FC = () => {
 
                             <div className="flex flex-wrap items-center justify-between gap-4 pt-1">
                                 <div className="flex items-center gap-2">
-                                    <span className="text-sm font-black text-text-muted uppercase font-mono tracking-wider">Directive Urgency:</span>
+                                    <span className="text-sm font-bold text-text-muted uppercase font-mono tracking-wider">Directive Urgency:</span>
                                     <div className="flex bg-surface-alt p-0.5 rounded-lg border border-border-subtle">
                                         {(['Routine', 'Immediate', 'Flash'] as const).map(mode => (
                                             <button
                                                 type="button"
                                                 key={mode}
                                                 onClick={() => { setUrgencyMode(mode); sfx.playClick(); }}
-                                                className={`px-3 py-1 rounded text-sm font-black uppercase tracking-tight transition-all ${
+                                                className={`px-3 py-1 rounded text-sm font-bold uppercase tracking-tight transition-all ${
                                                     urgencyMode === mode 
                                                     ? 'bg-accent-primary text-white shadow-sm' 
                                                     : 'text-text-muted hover:text-text-primary'
@@ -400,7 +400,7 @@ export const AuditTab: React.FC = () => {
                                 <button
                                     type="submit"
                                     disabled={isSubmitting}
-                                    className="px-4 py-2 bg-gradient-to-r from-accent-primary to-accent-secondary border border-accent-primary text-white rounded-xl text-sm font-black shadow-lg shadow-accent-primary/25 hover:brightness-105 active:scale-95 transition-all flex items-center justify-center gap-2"
+                                    className="px-4 py-2 bg-gradient-to-r from-accent-primary to-accent-secondary border border-accent-primary text-white rounded-xl text-sm font-bold shadow-lg shadow-accent-primary/25 hover:brightness-105 active:scale-95 transition-all flex items-center justify-center gap-2"
                                 >
                                     <Send size={14} />
                                     <span>{isSubmitting ? "Dispatching..." : `Deploy Directive to ${selectedAgent.name}`}</span>
@@ -418,12 +418,12 @@ export const AuditTab: React.FC = () => {
                     <table className="w-full text-left border-collapse">
                         <thead className="bg-surface-alt/75 sticky top-0 z-10 border-b border-border-subtle">
                             <tr>
-                                <th className="px-4 py-4 text-sm font-black text-text-muted tracking-widest uppercase hidden sm:table-cell">Health Status</th>
-                                <th className="px-4 py-4 text-sm font-black text-text-muted tracking-widest uppercase">Operative Name</th>
-                                <th className="px-4 py-4 text-sm font-black text-text-muted tracking-widest uppercase font-mono">Time Online</th>
-                                <th className="px-4 py-4 text-sm font-black text-text-muted tracking-widest uppercase text-right">Revenue Yield</th>
-                                <th className="px-4 py-4 text-sm font-black text-text-muted tracking-widest uppercase">Dynamic Deficit Flags</th>
-                                <th className="px-4 py-4 text-sm font-black text-text-muted tracking-widest uppercase text-right">Intervention Console</th>
+                                <th className="px-4 py-4 text-sm font-bold text-text-muted tracking-wide uppercase hidden sm:table-cell">Health Status</th>
+                                <th className="px-4 py-4 text-sm font-bold text-text-muted tracking-wide uppercase">Operative Name</th>
+                                <th className="px-4 py-4 text-sm font-bold text-text-muted tracking-wide uppercase font-mono">Time Online</th>
+                                <th className="px-4 py-4 text-sm font-bold text-text-muted tracking-wide uppercase text-right">Revenue Yield</th>
+                                <th className="px-4 py-4 text-sm font-bold text-text-muted tracking-wide uppercase">Dynamic Deficit Flags</th>
+                                <th className="px-4 py-4 text-sm font-bold text-text-muted tracking-wide uppercase text-right">Intervention Console</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-border-subtle/40">
@@ -441,8 +441,8 @@ export const AuditTab: React.FC = () => {
                                         </div>
                                     </td>
                                     <td className="px-4 py-4 align-top">
-                                        <div className="text-sm font-black font-mono text-text-primary">{row.effectiveHours.toFixed(1)} hours logged</div>
-                                        <div className={`text-sm font-mono font-black uppercase tracking-wider mt-1 flex items-center gap-1`}>
+                                        <div className="text-sm font-bold font-mono text-text-primary">{row.effectiveHours.toFixed(1)} hours logged</div>
+                                        <div className={`text-sm font-mono font-bold uppercase tracking-wider mt-1 flex items-center gap-1`}>
                                             <span className={`w-1.5 h-1.5 rounded-full ${row.agent.currentStatus === 'online' ? 'bg-status-success animate-pulse' : row.agent.currentStatus === 'break' ? 'bg-status-warning' : 'bg-text-muted'}`}></span>
                                             <span className={row.agent.currentStatus === 'online' ? 'text-status-success' : row.agent.currentStatus === 'break' ? 'text-status-warning' : 'text-text-muted'}>
                                                 {row.agent.currentStatus}
@@ -450,7 +450,7 @@ export const AuditTab: React.FC = () => {
                                         </div>
                                     </td>
                                     <td className="px-4 py-4 text-right align-top">
-                                        <div className={`text-sm font-black font-mono ${row.efficiency < 20 ? 'text-status-error' : 'text-status-success'}`}>
+                                        <div className={`text-sm font-bold font-mono ${row.efficiency < 20 ? 'text-status-error' : 'text-status-success'}`}>
                                             ${row.efficiency.toFixed(2)} <span className="text-sm text-text-muted">/ hr</span>
                                         </div>
                                         <div className="text-sm text-text-muted/70 font-mono mt-0.5">${row.dailyRevenue.toLocaleString()} volume realized</div>
@@ -460,17 +460,17 @@ export const AuditTab: React.FC = () => {
                                             <ul className="space-y-1">
                                                 {row.riskReasons.map((reason, idx) => (
                                                     <li key={idx} className="text-sm text-text-secondary flex items-start gap-1.5 leading-tight font-mono font-bold">
-                                                        <span className="text-status-error font-black">•</span> {reason}
+                                                        <span className="text-status-error font-bold">•</span> {reason}
                                                     </li>
                                                 ))}
                                             </ul>
                                         ) : (
-                                            <span className="text-sm text-status-success font-black uppercase tracking-wider bg-status-success/10 border border-status-success/20 px-2 py-0.5 rounded-md">Fully Optimized</span>
+                                            <span className="text-sm text-status-success font-bold uppercase tracking-wider bg-status-success/10 border border-status-success/20 px-2 py-0.5 rounded-md">Fully Optimized</span>
                                         )}
                                     </td>
                                     <td className="px-4 py-4 align-middle text-right">
                                         <button 
-                                            className="px-4 py-1.5 bg-surface-main hover:bg-accent-primary hover:text-white hover:border-accent-primary text-text-primary rounded-xl text-sm font-black uppercase tracking-tight transition-all duration-300 border border-border-subtle shadow-sm flex items-center gap-1.5 ml-auto group-hover:scale-105"
+                                            className="px-4 py-1.5 bg-surface-main hover:bg-accent-primary hover:text-white hover:border-accent-primary text-text-primary rounded-xl text-sm font-bold uppercase tracking-tight transition-all duration-300 border border-border-subtle shadow-sm flex items-center gap-1.5 ml-auto group-hover:scale-105"
                                             onClick={() => { setSelectedAgent(row.agent); sfx.playClick(); }}
                                         >
                                             <Sparkles size={12} className="text-accent-primary group-hover:text-white transition-colors" />
@@ -482,7 +482,7 @@ export const AuditTab: React.FC = () => {
                                 <tr>
                                     <td colSpan={6} className="px-4 py-12 text-center text-text-muted">
                                         <ShieldAlert size={32} className="mx-auto mb-3 opacity-20 text-accent-primary animate-pulse" />
-                                        <p className="text-sm font-black uppercase tracking-widest text-text-muted">No monitored operatives active.</p>
+                                        <p className="text-sm font-bold uppercase tracking-wide text-text-muted">No monitored operatives active.</p>
                                     </td>
                                 </tr>
                             )}
@@ -496,7 +496,7 @@ export const AuditTab: React.FC = () => {
                 <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
                         <ShieldAlert size={18} className="text-rose-500" />
-                        <h3 className="text-lg font-black italic text-text-primary tracking-tight">
+                        <h3 className="text-lg font-bold italic text-text-primary tracking-tight">
                             Global <span className="text-rose-500">System Ledger</span> & Logs
                         </h3>
                     </div>
@@ -504,7 +504,7 @@ export const AuditTab: React.FC = () => {
                         <button 
                             type="button"
                             onClick={async () => { /* if(window.confirm('Are you sure you want to permanently clear all global audit logs?')) */ { await clearAuditLogs(); setToast({title:'Ledger Cleared', message:'Global audit records have been purged.', type:'success'}); } }}
-                            className="px-4 py-1.5 bg-rose-500/10 hover:bg-rose-500 hover:text-white text-rose-500 border border-rose-500/20 rounded-lg text-xs font-black uppercase tracking-wider transition-all"
+                            className="px-4 py-1.5 bg-rose-500/10 hover:bg-rose-500 hover:text-white text-rose-500 border border-rose-500/20 rounded-lg text-xs font-bold uppercase tracking-wider transition-all"
                         >
                             Purge Global Ledger
                         </button>

@@ -41,7 +41,9 @@ export const useCrmSales = (
                  _piiEncrypted: true,
                  _encryptionVersion: 1,
                  timestamp: saleData.timestamp || Date.now(),
-                 team: currentUser?.team || 'Alpha'
+                 team: saleData.team || currentUser?.team || 'Alpha',
+                 agentId: saleData.agentId || currentUser?.id,
+                 agentName: saleData.agentName || currentUser?.name,
             };
             
             if (matchedCustomer) {
@@ -440,13 +442,23 @@ export const useCrmSales = (
         }
         if (customerUpdates.size > 0) {
             const batchCustomers = Array.from(customerUpdates.values());
-            await Promise.all(batchCustomers.map(c => nexusGateway.update('customers', c.id, c)));
+            const BATCH_SIZE = 500;
+            for (let i = 0; i < batchCustomers.length; i += BATCH_SIZE) {
+                const batch = batchCustomers.slice(i, i + BATCH_SIZE);
+                await nexusGateway.addBulk('customers', batch);
+            }
             customersRef.current = customersRef.current.map(c => 
                 customerUpdates.has(c.id) ? { ...c, ...customerUpdates.get(c.id) } : c
             );
         }
 
-        return await nexusGateway.addBulk('sales', finalSales);
+        const BATCH_SIZE_SALES = 500;
+        let totalSalesAdded = 0;
+        for (let i = 0; i < finalSales.length; i += BATCH_SIZE_SALES) {
+            const batch = finalSales.slice(i, i + BATCH_SIZE_SALES);
+            totalSalesAdded += await nexusGateway.addBulk('sales', batch);
+        }
+        return totalSalesAdded;
     }, [currentUser, customersRef]);
 
     return {

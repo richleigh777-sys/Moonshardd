@@ -76,7 +76,7 @@ export const DialerDataListManager: React.FC = () => {
                         <div className="w-full text-left overflow-auto max-h-[500px]">
                             <table className="w-full border-collapse text-sm">
                                 <thead>
-                                    <tr className="border-b border-border-subtle  tracking-widest text-[#8a8a93] bg-[#0a0a0f]/80 backdrop-blur-sm sticky top-0 z-10">
+                                    <tr className="border-b border-border-subtle  tracking-wide text-[#8a8a93] bg-[#0a0a0f]/80  sticky top-0 z-10">
                                         <th className="p-4 text-left font-bold">List Name / Content</th>
                                         <th className="p-4 text-left font-bold">Rows</th>
                                         <th className="p-4 text-center font-bold">Status</th>

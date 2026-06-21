@@ -272,15 +272,15 @@ export const DashboardStrategicAnalytics: React.FC<DashboardStrategicAnalyticsPr
             </h3>
             <div className="grid grid-cols-3 gap-3 mb-4">
               <div className="bg-red-900 bg-opacity-40 border border-red-700 rounded p-4 text-center">
-                <p className="text-lg font-black text-red-400">{churnData.highRisk}</p>
+                <p className="text-lg font-bold text-red-400">{churnData.highRisk}</p>
                 <p className="text-sm text-red-300 mt-2">High Risk (30+ days)</p>
               </div>
               <div className="bg-yellow-900 bg-opacity-40 border border-yellow-700 rounded p-4 text-center">
-                <p className="text-lg font-black text-yellow-400">{churnData.mediumRisk}</p>
+                <p className="text-lg font-bold text-yellow-400">{churnData.mediumRisk}</p>
                 <p className="text-sm text-yellow-300 mt-2">Medium Risk (30-60 days)</p>
               </div>
               <div className="bg-green-900 bg-opacity-40 border border-green-700 rounded p-4 text-center">
-                <p className="text-lg font-black text-green-400">{churnData.safe}</p>
+                <p className="text-lg font-bold text-green-400">{churnData.safe}</p>
                 <p className="text-sm text-green-300 mt-2">Safe (Recent)</p>
               </div>
             </div>
@@ -382,26 +382,26 @@ export const DashboardStrategicAnalytics: React.FC<DashboardStrategicAnalyticsPr
                 {/* Visual scorecards */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                   <div className="bg-slate-900/60 border border-slate-700 p-4 rounded-xl">
-                    <span className="text-sm text-slate-400 uppercase font-black tracking-wider block mb-1">Global Approved Volume</span>
-                    <div className="text-lg font-black text-emerald-400 font-mono">
+                    <span className="text-sm text-slate-400 uppercase font-bold tracking-wider block mb-1">Global Approved Volume</span>
+                    <div className="text-lg font-bold text-emerald-400 font-mono">
                       ${globalMetrics.totalSalesVolume.toLocaleString()}
                     </div>
                   </div>
                   <div className="bg-slate-900/60 border border-slate-700 p-4 rounded-xl">
-                    <span className="text-sm text-slate-400 uppercase font-black tracking-wider block mb-1">Total Transaction Records</span>
-                    <div className="text-lg font-black text-white font-mono">
+                    <span className="text-sm text-slate-400 uppercase font-bold tracking-wider block mb-1">Total Transaction Records</span>
+                    <div className="text-lg font-bold text-white font-mono">
                       {globalMetrics.totalSalesCount}
                     </div>
                   </div>
                   <div className="bg-slate-900/60 border border-slate-700 p-4 rounded-xl">
-                    <span className="text-sm text-slate-400 uppercase font-black tracking-wider block mb-1">Global Customer Pool</span>
-                    <div className="text-lg font-black text-cyan-400 font-mono">
+                    <span className="text-sm text-slate-400 uppercase font-bold tracking-wider block mb-1">Global Customer Pool</span>
+                    <div className="text-lg font-bold text-cyan-400 font-mono">
                       {globalMetrics.totalCustomersCount}
                     </div>
                   </div>
                   <div className="bg-slate-900/60 border border-slate-700 p-4 rounded-xl">
-                    <span className="text-sm text-slate-400 uppercase font-black tracking-wider block mb-1">Registered Operators</span>
-                    <div className="text-lg font-black text-indigo-400 font-mono">
+                    <span className="text-sm text-slate-400 uppercase font-bold tracking-wider block mb-1">Registered Operators</span>
+                    <div className="text-lg font-bold text-indigo-400 font-mono">
                       {globalMetrics.totalUsersCount}
                     </div>
                   </div>
@@ -451,7 +451,7 @@ export const DashboardStrategicAnalytics: React.FC<DashboardStrategicAnalyticsPr
                 <div className="p-4 bg-gradient-to-r from-blue-950/20 to-teal-950/25 border border-teal-500/20 rounded-xl flex items-start gap-3">
                   <Database size={24} className="text-teal-400 shrink-0 mt-0.5" />
                   <div>
-                    <span className="text-sm font-bold text-white uppercase tracking-widest block">Strict Client-Server Bridge Security Shield</span>
+                    <span className="text-sm font-bold text-white uppercase tracking-wide block">Strict Client-Server Bridge Security Shield</span>
                     <p className="text-sm text-slate-300 leading-relaxed mt-1">
                       Postgres Documents emulation enforces server-level multi-tenant sandboxing checks based on dynamic payload <code className="bg-black/30 text-emerald-300 px-1 rounded">serverId</code> schemas. Agents can only access data tied strictly to their provisioned tenant scopes. Cross-tenant leakage detection algorithms return <strong className="text-emerald-400">0 critical violations</strong>.
                     </p>

@@ -9,7 +9,7 @@ interface AuditExplorerProps {
 
 export const AuditExplorer: React.FC<AuditExplorerProps> = ({ auditLogs }) => {
   const [searchTerm, setSearchTerm] = useState('');
-  const [selectedModule, setSelectedModule] = useState<'all' | 'AUTH' | 'SALE' | 'SYSTEM' | 'COMM'>('all');
+  const [selectedModule, setSelectedModule] = useState<'all' | 'AUTH' | 'SALE' | 'SYSTEM' | 'COMM' | 'CONTACTS'>('all');
   const [timeFilter, setTimeFilter] = useState<number>(24); // hours
 
   const filteredLogs = useMemo(() => {
@@ -44,6 +44,8 @@ export const AuditExplorer: React.FC<AuditExplorerProps> = ({ auditLogs }) => {
         return 'bg-accent-primary/10 text-accent-primary';
       case 'COMM':
         return 'bg-purple-500/10 text-purple-400';
+      case 'CONTACTS':
+        return 'bg-emerald-500/10 text-emerald-400';
       default:
         return 'bg-surface-alt text-text-secondary';
     }
@@ -79,6 +81,7 @@ export const AuditExplorer: React.FC<AuditExplorerProps> = ({ auditLogs }) => {
               <option value="all">All Modules</option>
               <option value="AUTH">Authentication / Login</option>
               <option value="SALE">Sales / CRM Engine</option>
+              <option value="CONTACTS">Contacts / Customers</option>
               <option value="SYSTEM">System Settings / Deck</option>
               <option value="COMM">Commissions / Economics</option>
             </select>

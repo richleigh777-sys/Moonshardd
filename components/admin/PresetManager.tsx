@@ -289,10 +289,10 @@ export function PresetManager({ productConfig, onUpdateConfig }: Props) {
              {items.length > 0 && (
                <div className="bg-emerald-500/10 border border-emerald-500/20 rounded-lg p-3 flex justify-between items-center shadow-inner">
                   <div className="flex flex-col">
-                     <span className="text-sm font-bold text-emerald-600/80 uppercase tracking-widest">Live Total Preview</span>
+                     <span className="text-sm font-bold text-emerald-600/80 uppercase tracking-wide">Live Total Preview</span>
                      <span className="text-sm text-text-muted mt-0.5">{items.length} items bundled</span>
                   </div>
-                  <span className="text-lg font-black text-emerald-500">${liveTotal.toFixed(2)}</span>
+                  <span className="text-lg font-bold text-emerald-500">${liveTotal.toFixed(2)}</span>
                </div>
              )}
            </div>

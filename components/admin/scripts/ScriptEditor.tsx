@@ -52,7 +52,7 @@ export const ScriptEditor: React.FC<ScriptEditorProps> = ({
     };
 
     return (
-        <Card variant="panel" className="flex-1 flex flex-col p-0 border-border-strong rounded-2xl bg-surface-main relative overflow-hidden shadow-lg group">
+        <Card variant="panel" className="flex-1 flex flex-col p-0 border-border-strong rounded-xl bg-surface-main relative overflow-hidden shadow-lg group">
             {/* Background Grid */}
             <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:32px_32px] pointer-events-none opacity-40"></div>
             <div className="absolute inset-0 bg-gradient-to-br from-accent-primary/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-1000 pointer-events-none"></div>
@@ -62,7 +62,7 @@ export const ScriptEditor: React.FC<ScriptEditorProps> = ({
                 <div className="flex-1 mr-4 space-y-3">
                     <div className="flex items-center gap-4">
                         <div className="relative group w-full">
-                            <label className="text-xs font-bold text-text-muted tracking-widest uppercase mb-1.5 block">Dialogue Identifier</label>
+                            <label className="text-xs font-bold text-text-muted tracking-wide uppercase mb-1.5 block">Dialogue Identifier</label>
                             <input autoComplete="off" spellCheck={false} 
                                 value={form.title || ''}
                                 onChange={e => onChange({ title: e.target.value })}
@@ -118,14 +118,14 @@ export const ScriptEditor: React.FC<ScriptEditorProps> = ({
                     charCount={form.content?.length || 0}
                 />
 
-                <div className="flex-1 bg-surface-alt border border-border-subtle rounded-2xl p-6 relative group focus-within:border-accent-primary/50 transition-colors shadow-sm flex flex-col">
+                <div className="flex-1 bg-surface-alt border border-border-subtle rounded-xl p-6 relative group focus-within:border-accent-primary/50 transition-colors shadow-sm flex flex-col">
                     <div className="flex justify-between items-center mb-4 pb-3 border-b border-border-subtle">
-                        <span className="text-sm font-bold text-text-muted flex items-center gap-2 tracking-widest uppercase">
+                        <span className="text-sm font-bold text-text-muted flex items-center gap-2 tracking-wide uppercase">
                             <Terminal size={16}/> Dialogue Source
                         </span>
                         <button 
                             onClick={handleCopyAll} 
-                            className={`text-sm font-bold flex items-center gap-1.5 transition-colors uppercase tracking-widest ${copied ? 'text-status-success' : 'text-text-muted hover:text-text-primary'}`}
+                            className={`text-sm font-bold flex items-center gap-1.5 transition-colors uppercase tracking-wide ${copied ? 'text-status-success' : 'text-text-muted hover:text-text-primary'}`}
                         >
                             {copied ? <Check size={16}/> : <Copy size={16}/>} Copy Script
                         </button>
@@ -146,7 +146,7 @@ export const ScriptEditor: React.FC<ScriptEditorProps> = ({
                 <Button variant="secondary" onClick={onClose} className="h-11 text-sm font-bold px-6 rounded-xl">
                     Cancel
                 </Button>
-                <Button variant="primary" onClick={onSave} className="h-11 text-sm font-bold tracking-widest rounded-xl bg-accent-primary hover:bg-accent-primary/90 text-white shadow-sm px-8">
+                <Button variant="primary" onClick={onSave} className="h-11 text-sm font-bold tracking-wide rounded-xl bg-accent-primary hover:bg-accent-primary/90 text-white shadow-sm px-8">
                     <Save size={16} className="mr-2"/> Commit Sequence
                 </Button>
             </div>

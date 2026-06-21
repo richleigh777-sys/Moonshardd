@@ -85,11 +85,11 @@ export default function EnrollmentForm({
                     <Search size={20} strokeWidth={2.5} />
                   </div>
                   <div className="min-w-0 flex-1">
-                    <h3 className="text-sm sm:text-base font-black text-text-primary tracking-wide group-hover:text-indigo-300 transition-colors line-clamp-1">Find Existing Customer</h3>
+                    <h3 className="text-sm sm:text-base font-bold text-text-primary tracking-wide group-hover:text-indigo-300 transition-colors line-clamp-1">Find Existing Customer</h3>
                     <p className="text-sm sm:text-sm text-text-muted mt-1 font-medium line-clamp-1">Search history to auto-fill identity & medical info</p>
                   </div>
                 </div>
-                <div className="hidden sm:flex text-sm font-bold text-text-muted bg-surface-main/60 px-3 py-2 rounded-lg border border-border-subtle uppercase tracking-widest group-hover:border-indigo-500/50 flex-shrink-0">
+                <div className="hidden sm:flex text-sm font-bold text-text-muted bg-surface-main/60 px-3 py-2 rounded-lg border border-border-subtle uppercase tracking-wide group-hover:border-indigo-500/50 flex-shrink-0">
                   Quick Lookup
                 </div>
               </div>
@@ -106,11 +106,11 @@ export default function EnrollmentForm({
                     <div className="flex-grow min-w-0">
                       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 sm:gap-3">
                         <div className="flex-1">
-                          <span className="inline-block bg-rose-500/30 text-rose-300 font-extrabold text-sm sm:text-sm tracking-widest px-2.5 py-1.5 rounded-md uppercase border border-rose-500/40 mb-2">
+                          <span className="inline-block bg-rose-500/30 text-rose-300 font-extrabold text-sm sm:text-sm tracking-wide px-2.5 py-1.5 rounded-md uppercase border border-rose-500/40 mb-2">
                             🔴 HOT RECOVERY LEAD
                           </span>
-                          <h4 className="text-sm sm:text-sm font-black text-text-primary tracking-wide mt-1.5 flex items-center gap-1.5 flex-wrap">
-                            Prior Decline: <span className="text-rose-400 font-black">{logic.lastDecline.declineReason || 'Unknown Bank Decline'}</span>
+                          <h4 className="text-sm sm:text-sm font-bold text-text-primary tracking-wide mt-1.5 flex items-center gap-1.5 flex-wrap">
+                            Prior Decline: <span className="text-rose-400 font-bold">{logic.lastDecline.declineReason || 'Unknown Bank Decline'}</span>
                           </h4>
                         </div>
                         
@@ -142,11 +142,11 @@ export default function EnrollmentForm({
                       <AlertTriangle size={20} strokeWidth={2.5} />
                     </div>
                     <div className="flex-grow min-w-0">
-                      <span className="inline-block bg-amber-500/30 text-status-warning font-extrabold text-sm sm:text-sm tracking-widest px-2.5 py-1.5 rounded-md uppercase border border-amber-500/40 mb-2">
+                      <span className="inline-block bg-amber-500/30 text-status-warning font-extrabold text-sm sm:text-sm tracking-wide px-2.5 py-1.5 rounded-md uppercase border border-amber-500/40 mb-2">
                         ⚠️ UNDELIVERED TRANSACTION
                       </span>
-                      <h4 className="text-sm sm:text-sm font-black text-text-primary tracking-wide mt-1.5 flex items-center gap-1.5 flex-wrap">
-                        Previous: <span className="text-status-warning font-black">{logic.lastActiveDelivery.product}</span>
+                      <h4 className="text-sm sm:text-sm font-bold text-text-primary tracking-wide mt-1.5 flex items-center gap-1.5 flex-wrap">
+                        Previous: <span className="text-status-warning font-bold">{logic.lastActiveDelivery.product}</span>
                       </h4>
                       <p className="text-sm text-text-muted mt-2 font-medium line-clamp-2">
                         Order submitted {new Date(logic.lastActiveDelivery.timestamp).toLocaleDateString()} - awaiting delivery
@@ -166,6 +166,7 @@ export default function EnrollmentForm({
                   useShippingForBilling={logic.useShippingForBilling}
                   setUseShippingForBilling={logic.setUseShippingForBilling}
                   onPasteParse={logic.handlePasteParse}
+                  handleCustomFieldChange={logic.handleCustomFieldChange}
                 />
               </div>
 
@@ -203,7 +204,7 @@ export default function EnrollmentForm({
                 <div className="mb-5 relative z-10 w-full">
                   <div className="flex items-center gap-2 mb-3">
                     <ShoppingCart size={16} className="text-emerald-500 flex-shrink-0" />
-                    <label className="text-sm sm:text-sm font-bold text-emerald-500 tracking-widest block uppercase">
+                    <label className="text-sm sm:text-sm font-bold text-emerald-500 tracking-wide block uppercase">
                       Order Summary
                     </label>
                   </div>
@@ -222,7 +223,7 @@ export default function EnrollmentForm({
 
                 {/* Amount Section */}
                 <div className="mb-5 relative z-10 w-full pt-5 border-t border-border-subtle">
-                  <label className="text-sm sm:text-sm font-bold text-text-muted tracking-widest mb-2 block">
+                  <label className="text-sm sm:text-sm font-bold text-text-muted tracking-wide mb-2 block">
                     Final Amount
                   </label>
                   
@@ -230,15 +231,15 @@ export default function EnrollmentForm({
                   <div className="mb-3 p-3 sm:p-4 bg-indigo-500/10 border border-indigo-500/25 rounded-xl">
                     <div className="flex justify-between items-center">
                       <span className="text-sm sm:text-sm font-bold text-text-muted">Calculated:</span>
-                      <span className="text-sm sm:text-base font-black text-indigo-400">${logic.calculatedTotal.toFixed(2)}</span>
+                      <span className="text-sm sm:text-base font-bold text-indigo-400">${logic.calculatedTotal.toFixed(2)}</span>
                     </div>
                   </div>
 
                   {/* Manual Override */}
                   <div className="relative group mb-3">
-                    <label className="text-sm sm:text-sm text-text-muted font-bold uppercase tracking-widest mb-2 block">Custom Amount (Optional)</label>
+                    <label className="text-sm sm:text-sm text-text-muted font-bold uppercase tracking-wide mb-2 block">Custom Amount (Optional)</label>
                     <div className="relative">
-                      <div className="absolute left-4 top-1/2 -translate-y-1/2 font-black text-lg text-status-success/70 pointer-events-none">$</div>
+                      <div className="absolute left-4 top-1/2 -translate-y-1/2 font-bold text-lg text-status-success/70 pointer-events-none">$</div>
                       <input
                         type="number"
                         value={logic.manualAmount}
@@ -251,7 +252,7 @@ export default function EnrollmentForm({
                         }}
                         placeholder="0.00"
                         step="0.01"
-                        className="w-full bg-surface-alt/70 border border-border-subtle rounded-xl py-3 sm:py-4 pl-9 pr-4 sm:pr-5 text-lg sm:text-xl font-black num-font text-right outline-none ring-offset-surface-main focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all"
+                        className="w-full bg-surface-alt/70 border border-border-subtle rounded-xl py-3 sm:py-4 pl-9 pr-4 sm:pr-5 text-lg sm:text-xl font-bold num-font text-right outline-none ring-offset-surface-main focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all"
                       />
                     </div>
                   </div>
@@ -294,7 +295,7 @@ export default function EnrollmentForm({
                   </button>
                   <button
                     onClick={handleProceedToPayment}
-                    className="flex-1 sm:flex-none rounded-xl bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 text-white text-sm sm:text-sm font-black shadow-lg shadow-emerald-500/30 hover:shadow-emerald-500/50 transition-all flex items-center justify-center gap-2 border border-emerald-500/30 py-2.5 sm:py-3 px-4 sm:px-5 active:scale-95"
+                    className="flex-1 sm:flex-none rounded-xl bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 text-white text-sm sm:text-sm font-bold shadow-lg shadow-emerald-500/30 hover:shadow-emerald-500/50 transition-all flex items-center justify-center gap-2 border border-emerald-500/30 py-2.5 sm:py-3 px-4 sm:px-5 active:scale-95"
                   >
                     <Check size={16} strokeWidth={3} className="flex-shrink-0" />
                     <span className="hidden sm:inline">Proceed to</span> Payment
@@ -319,7 +320,7 @@ export default function EnrollmentForm({
       
       {/* Payment Modal - Improved Responsive */}
       {showPaymentModal && (
-        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-[60] p-3 sm:p-4 overflow-y-auto">
+        <div className="fixed inset-0 bg-black/70  flex items-center justify-center z-[60] p-3 sm:p-4 overflow-y-auto">
           <div className="bg-surface-main w-full max-w-lg rounded-xl border border-border-subtle shadow-2xl flex flex-col max-h-[90vh] my-auto">
             {/* Modal Header */}
             <div className="flex items-center justify-between p-4 sm:p-4 border-b border-border-subtle flex-shrink-0">
@@ -365,7 +366,7 @@ export default function EnrollmentForm({
                     logic.setShowReview(true);
                   }
                 }}
-                className={`w-full rounded-xl bg-emerald-600 text-white text-sm sm:text-base font-black shadow-lg shadow-emerald-500/30 transition-all flex items-center justify-center gap-2 border border-emerald-500/30 py-3 sm:py-4 ${
+                className={`w-full rounded-xl bg-emerald-600 text-white text-sm sm:text-base font-bold shadow-lg shadow-emerald-500/30 transition-all flex items-center justify-center gap-2 border border-emerald-500/30 py-3 sm:py-4 ${
                   logic.loading ? 'opacity-50 cursor-not-allowed' : 'hover:bg-emerald-500 active:scale-95'
                 }`}
               >
@@ -398,7 +399,7 @@ export default function EnrollmentForm({
 
       {/* Clear Confirmation */}
       {showClearConfirm && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-[60] p-4">
+        <div className="fixed inset-0 bg-black/50  flex items-center justify-center z-[60] p-4">
           <div className="bg-surface-main rounded-xl p-5 sm:p-4 max-w-sm shadow-xl border border-border-subtle animate-in fade-in zoom-in-95">
             <h3 className="text-base sm:text-lg font-bold text-text-primary mb-2">Clear All Data?</h3>
             <p className="text-sm sm:text-sm text-text-muted mb-6">
@@ -443,17 +444,17 @@ export default function EnrollmentForm({
 
       {/* Success State */}
       {logic.showSuccess && (
-        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4 overflow-y-auto">
+        <div className="fixed inset-0 bg-black/70  flex items-center justify-center z-50 p-4 overflow-y-auto">
           <div className="bg-surface-main w-full max-w-lg rounded-xl border border-border-subtle shadow-2xl flex flex-col overflow-hidden animate-in fade-in zoom-in-95 my-auto">
             {/* Success Header */}
             <div className="bg-gradient-to-br from-emerald-600 to-emerald-800 p-4 sm:p-5 text-center relative overflow-hidden flex flex-col items-center justify-center">
               <div className="absolute inset-0 opacity-10 mix-blend-overlay"></div>
               
-              <div className="w-16 sm:w-20 h-16 sm:h-20 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center mb-4 shadow-[0_0_40px_rgba(255,255,255,0.2)] animate-bounce relative z-10">
+              <div className="w-16 sm:w-20 h-16 sm:h-20 bg-white/20  rounded-full flex items-center justify-center mb-4 shadow-sm animate-bounce relative z-10">
                 <Check size={32} className="text-white" strokeWidth={3} />
               </div>
               
-              <h2 className="text-lg sm:text-xl font-black text-white tracking-tight relative z-10">
+              <h2 className="text-lg sm:text-xl font-bold text-white tracking-tight relative z-10">
                 Order Submitted!
               </h2>
               <p className="text-emerald-100 font-medium text-sm sm:text-sm mt-2 relative z-10">
@@ -465,8 +466,8 @@ export default function EnrollmentForm({
             <div className="p-4 sm:p-5 text-center bg-surface-main">
               {/* Amount Card */}
               <div className="bg-surface-alt/50 border border-border-subtle rounded-xl p-5 sm:p-4 mb-6">
-                <p className="text-text-muted text-sm sm:text-sm font-bold uppercase tracking-widest mb-2">Total Transaction</p>
-                <p className="text-xl sm:text-lg font-black text-emerald-500 tracking-tighter mb-4">${Number(logic.manualAmount || logic.calculatedTotal).toFixed(2)}</p>
+                <p className="text-text-muted text-sm sm:text-sm font-bold uppercase tracking-wide mb-2">Total Transaction</p>
+                <p className="text-xl sm:text-lg font-bold text-emerald-500 tracking-tighter mb-4">${Number(logic.manualAmount || logic.calculatedTotal).toFixed(2)}</p>
                 
                 <div className="h-px w-full bg-border-subtle my-5"></div>
                 
@@ -485,7 +486,7 @@ export default function EnrollmentForm({
 
               {/* Congratulations */}
               <div className="mb-8">
-                <h3 className="text-lg sm:text-xl font-black text-emerald-400">Excellent Work! 🎉</h3>
+                <h3 className="text-lg sm:text-xl font-bold text-emerald-400">Excellent Work! 🎉</h3>
                 <p className="text-text-secondary text-sm sm:text-sm mt-2 font-medium">You're on fire today. Keep the momentum going!</p>
               </div>
 
@@ -496,7 +497,7 @@ export default function EnrollmentForm({
                   logic.handleClear();
                   onSuccess();
                 }}
-                className="w-full h-12 sm:h-14 rounded-xl bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 text-white font-black text-sm sm:text-base transition-all active:scale-95 shadow-lg shadow-emerald-600/30 border border-emerald-500/30"
+                className="w-full h-12 sm:h-14 rounded-xl bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 text-white font-bold text-sm sm:text-base transition-all active:scale-95 shadow-lg shadow-emerald-600/30 border border-emerald-500/30"
               >
                 Close & Next Lead
               </button>

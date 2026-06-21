@@ -83,7 +83,7 @@ export const ClientProfileSection: React.FC<ClientProfileSectionProps> = ({
                         <div className="p-1 bg-accent-primary/10 rounded-md text-accent-primary">
                             <User size={16} />
                         </div>
-                        <h3 className="text-sm font-[700]  text-text-primary tracking-widest">Client Identity</h3>
+                        <h3 className="text-sm font-medium  text-text-primary tracking-wide">Client Identity</h3>
                     </div>
                     {onPasteParse && (
                         <button onClick={onPasteParse} className="text-sm font-bold text-accent-primary hover:bg-accent-primary/10 px-3 py-1.5 rounded transition-all flex items-center gap-1 border border-transparent hover:border-accent-primary/20">
@@ -130,7 +130,7 @@ export const ClientProfileSection: React.FC<ClientProfileSectionProps> = ({
                         <div className="p-1 bg-accent-secondary/10 rounded-md text-accent-secondary">
                             <MapPin size={16} />
                         </div>
-                        <h3 className="text-sm font-[700]  text-text-primary tracking-widest">Logistics</h3>
+                        <h3 className="text-sm font-medium  text-text-primary tracking-wide">Logistics</h3>
                     </div>
                     {customerTime && (
                         <span className="text-sm font-mono text-text-muted bg-surface-alt px-3 py-1.5 rounded border border-border-subtle flex items-center gap-1">
@@ -157,7 +157,7 @@ export const ClientProfileSection: React.FC<ClientProfileSectionProps> = ({
                             onClick={() => setUseShippingForBilling(!useShippingForBilling)} 
                             className={`w-full py-1.5 px-2 rounded-lg border flex items-center justify-between transition-all ${useShippingForBilling ? 'bg-emerald-500/5 border-emerald-500/20 text-emerald-600' : 'bg-surface-alt border-border-subtle text-text-muted hover:border-text-muted'}`}
                         >
-                            <span className="text-sm font-[700]  tracking-widest flex items-center gap-2">
+                            <span className="text-sm font-medium  tracking-wide flex items-center gap-2">
                                 {useShippingForBilling ? <CheckCircle size={16}/> : <div className="w-2.5 h-2.5 rounded-full border border-current"></div>}
                                 Billing Matches Shipping
                             </span>

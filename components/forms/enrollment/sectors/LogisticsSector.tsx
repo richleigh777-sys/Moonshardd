@@ -1,6 +1,19 @@
 import React from 'react';
 import { Home, Package, MapPin, Check } from 'lucide-react';
 
+const InputBlock = ({ label, name, value, placeholder, isShort, handleIdentityChange }: any) => (
+    <div className={`space-y-2 ${isShort ? 'col-span-1' : 'col-span-2 md:col-span-1'}`}>
+        <label className="text-sm font-medium text-text-secondary ml-1">{label}</label>
+        <input 
+            name={name}
+            value={value}
+            onChange={handleIdentityChange}
+            placeholder={placeholder}
+            className="w-full bg-surface-alt/50 border border-white/5 rounded-xl px-5 py-4 text-lg font-medium text-white placeholder-text-muted outline-none transition-all focus:border-white focus:bg-surface-alt focus:ring-1 focus:ring-white shadow-sm"
+        />
+    </div>
+);
+
 export function LogisticsSector({ formData, handleIdentityChange, useShippingForBilling, setUseShippingForBilling }: any) {
     const {
         shippingAddress = '',
@@ -15,29 +28,16 @@ export function LogisticsSector({ formData, handleIdentityChange, useShippingFor
         billingZip = '',
     } = formData;
 
-    const InputBlock = ({ label, name, value, placeholder, isShort }: any) => (
-        <div className={`space-y-2 ${isShort ? 'col-span-1' : 'col-span-2 md:col-span-1'}`}>
-            <label className="text-sm font-medium text-text-secondary ml-1">{label}</label>
-            <input 
-                name={name}
-                value={value}
-                onChange={handleIdentityChange}
-                placeholder={placeholder}
-                className="w-full bg-surface-alt/50 border border-white/5 rounded-2xl px-5 py-4 text-lg font-medium text-white placeholder-text-muted outline-none transition-all focus:border-white focus:bg-surface-alt focus:ring-1 focus:ring-white shadow-sm"
-            />
-        </div>
-    );
-
   return (
     <div className="space-y-8">
         <div>
             <h5 className="text-base font-semibold text-white mb-4 flex items-center gap-2"><MapPin size={18} className="text-indigo-400"/> Shipping Address</h5>
             <div className="grid grid-cols-2 gap-6">
                 <div className="col-span-2">
-                    <InputBlock label="Street Address" name="shippingAddress" value={shippingAddress} placeholder="123 Main St" isShort={false} />
+                    <InputBlock handleIdentityChange={handleIdentityChange} label="Street Address" name="shippingAddress" value={shippingAddress} placeholder="123 Main St" isShort={false} />
                 </div>
-                <InputBlock label="Apt / Suite / Unit (Optional)" name="shippingApt" value={shippingApt} placeholder="Apt 4B" isShort={false} />
-                <InputBlock label="City" name="shippingCity" value={shippingCity} placeholder="New York" isShort={false} />
+                <InputBlock handleIdentityChange={handleIdentityChange} label="Apt / Suite / Unit (Optional)" name="shippingApt" value={shippingApt} placeholder="Apt 4B" isShort={false} />
+                <InputBlock handleIdentityChange={handleIdentityChange} label="City" name="shippingCity" value={shippingCity} placeholder="New York" isShort={false} />
                 
                 <div className="space-y-2 col-span-1">
                     <label className="text-sm font-medium text-text-secondary ml-1">State</label>
@@ -45,13 +45,13 @@ export function LogisticsSector({ formData, handleIdentityChange, useShippingFor
                         name="shippingState" 
                         value={shippingState} 
                         onChange={handleIdentityChange}
-                        className="w-full bg-surface-alt/50 border border-white/5 rounded-2xl px-5 py-4 text-lg font-medium text-white placeholder-text-muted outline-none transition-all focus:border-white focus:bg-surface-alt focus:ring-1 focus:ring-white shadow-sm appearance-none"
+                        className="w-full bg-surface-alt/50 border border-white/5 rounded-xl px-5 py-4 text-lg font-medium text-white placeholder-text-muted outline-none transition-all focus:border-white focus:bg-surface-alt focus:ring-1 focus:ring-white shadow-sm appearance-none"
                     >
                         <option value="">Select State</option>
                         {['CA','NY','TX','FL','IL','PA','OH','GA','NC','MI'].map(s => <option key={s} value={s}>{s}</option>)}
                     </select>
                 </div>
-                <InputBlock label="ZIP Code" name="shippingZip" value={shippingZip} placeholder="10001" isShort={true} />
+                <InputBlock handleIdentityChange={handleIdentityChange} label="ZIP Code" name="shippingZip" value={shippingZip} placeholder="10001" isShort={true} />
             </div>
         </div>
 
@@ -70,10 +70,10 @@ export function LogisticsSector({ formData, handleIdentityChange, useShippingFor
             {!useShippingForBilling && (
                 <div className="grid grid-cols-2 gap-6 animate-in fade-in slide-in-from-top-4">
                     <div className="col-span-2">
-                        <InputBlock label="Street Address" name="billingAddress" value={billingAddress} placeholder="123 Main St" isShort={false} />
+                        <InputBlock handleIdentityChange={handleIdentityChange} label="Street Address" name="billingAddress" value={billingAddress} placeholder="123 Main St" isShort={false} />
                     </div>
-                    <InputBlock label="Apt / Suite / Unit (Optional)" name="billingApt" value={billingApt} placeholder="Apt 4B" isShort={false} />
-                    <InputBlock label="City" name="billingCity" value={billingCity} placeholder="New York" isShort={false} />
+                    <InputBlock handleIdentityChange={handleIdentityChange} label="Apt / Suite / Unit (Optional)" name="billingApt" value={billingApt} placeholder="Apt 4B" isShort={false} />
+                    <InputBlock handleIdentityChange={handleIdentityChange} label="City" name="billingCity" value={billingCity} placeholder="New York" isShort={false} />
                     
                     <div className="space-y-2 col-span-1">
                         <label className="text-sm font-medium text-text-secondary ml-1">State</label>
@@ -81,13 +81,13 @@ export function LogisticsSector({ formData, handleIdentityChange, useShippingFor
                             name="billingState" 
                             value={billingState} 
                             onChange={handleIdentityChange}
-                            className="w-full bg-surface-alt/50 border border-white/5 rounded-2xl px-5 py-4 text-lg font-medium text-white placeholder-text-muted outline-none transition-all focus:border-white focus:bg-surface-alt focus:ring-1 focus:ring-white shadow-sm appearance-none"
+                            className="w-full bg-surface-alt/50 border border-white/5 rounded-xl px-5 py-4 text-lg font-medium text-white placeholder-text-muted outline-none transition-all focus:border-white focus:bg-surface-alt focus:ring-1 focus:ring-white shadow-sm appearance-none"
                         >
                             <option value="">Select State</option>
                             {['CA','NY','TX','FL','IL','PA','OH','GA','NC','MI'].map(s => <option key={s} value={s}>{s}</option>)}
                         </select>
                     </div>
-                    <InputBlock label="ZIP Code" name="billingZip" value={billingZip} placeholder="10001" isShort={true} />
+                    <InputBlock handleIdentityChange={handleIdentityChange} label="ZIP Code" name="billingZip" value={billingZip} placeholder="10001" isShort={true} />
                 </div>
             )}
         </div>

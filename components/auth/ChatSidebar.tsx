@@ -31,7 +31,7 @@ export const ChatSidebar: React.FC<ChatSidebarProps> = ({
     return (
         <div className={`flex-col bg-surface-alt border-r border-border-subtle shrink-0 transition-all ${mobileView === 'list' ? 'flex w-full' : 'hidden md:flex w-80'}`}>
             <div className="p-5 pb-4 flex items-center justify-between">
-                <h2 className="text-lg font-[700] tracking-tighter  italic text-text-primary">Messages</h2>
+                <h2 className="text-lg font-medium tracking-tighter  italic text-text-primary">Messages</h2>
             </div>
             <div className="px-4 pb-4">
                 <div className="relative group">
@@ -58,8 +58,8 @@ export const ChatSidebar: React.FC<ChatSidebarProps> = ({
                             {c.type === 'group' ? <Users size={20}/> : c.type === 'private' ? <ShieldAlert size={20}/> : <Hash size={20}/>}
                         </div>
                         <div className="text-left flex-1 truncate">
-                            <p className={`text-sm font-[700]  tracking-tight transition-colors ${activeChannelId === c.id ? 'text-text-primary' : 'text-text-secondary group-hover:text-text-primary'}`}>{c.name}</p>
-                            <p className="text-sm font-bold text-text-muted  tracking-widest mt-0.5">Active</p>
+                            <p className={`text-sm font-medium  tracking-tight transition-colors ${activeChannelId === c.id ? 'text-text-primary' : 'text-text-secondary group-hover:text-text-primary'}`}>{c.name}</p>
+                            <p className="text-sm font-bold text-text-muted  tracking-wide mt-0.5">Active</p>
                         </div>
                         {/* Added unreadCount check which is now supported by updated ChatChannel interface */}
                         {c.unreadCount ? <div className="w-2 h-2 rounded-full bg-accent-primary shadow-sm animate-pulse"></div> : null}
@@ -78,7 +78,7 @@ export const ChatSidebar: React.FC<ChatSidebarProps> = ({
                             className={`w-full flex items-center gap-3 p-4 rounded-xl transition-all group ${activeChannelId === dmId ? 'bg-surface-main border border-border-subtle shadow-md' : 'hover:bg-surface-main/40 border border-transparent'}`}
                         >
                             <div className="w-10 h-10 rounded-xl overflow-hidden bg-surface-main border border-border-subtle relative group-hover:scale-105 transition-transform shadow-sm">
-                                {u.avatar ? <img src={u.avatar} className="w-full h-full object-cover" /> : <div className="w-full h-full flex items-center justify-center font-[700] text-sm bg-surface-alt text-accent-primary">{u.name.charAt(0)}</div>}
+                                {u.avatar ? <img src={u.avatar} className="w-full h-full object-cover" /> : <div className="w-full h-full flex items-center justify-center font-medium text-sm bg-surface-alt text-accent-primary">{u.name.charAt(0)}</div>}
                                 <div className={`absolute bottom-0 right-0 w-3 h-3 rounded-full border-2 border-surface-main ${ 
                                     u.currentStatus === 'online' ? 'bg-status-success' : 
                                     u.currentStatus === 'break' ? 'bg-status-warning' : 
@@ -86,8 +86,8 @@ export const ChatSidebar: React.FC<ChatSidebarProps> = ({
                                 }`}></div>
                             </div>
                             <div className="text-left flex-1 truncate">
-                                <p className={`text-sm font-[700] tracking-tight transition-colors ${activeChannelId === dmId ? 'text-text-primary' : 'text-text-secondary group-hover:text-text-primary'}`}>{u.name}</p>
-                                <p className="text-sm font-bold text-text-muted  tracking-widest mt-0.5">Status: {u.currentStatus || 'Offline'}</p>
+                                <p className={`text-sm font-medium tracking-tight transition-colors ${activeChannelId === dmId ? 'text-text-primary' : 'text-text-secondary group-hover:text-text-primary'}`}>{u.name}</p>
+                                <p className="text-sm font-bold text-text-muted  tracking-wide mt-0.5">Status: {u.currentStatus || 'Offline'}</p>
                             </div>
                         </button>
                     );
@@ -99,8 +99,8 @@ export const ChatSidebar: React.FC<ChatSidebarProps> = ({
                         <img src={currentUser.avatar} className="w-full h-full object-cover" />
                     </div>
                     <div className="flex-1 min-w-0">
-                        <p className="text-sm font-[700] text-text-primary  tracking-tight truncate">{currentUser.name}</p>
-                        <p className="text-sm font-bold text-accent-primary  tracking-[0.2em] animate-pulse">Updating...</p>
+                        <p className="text-sm font-medium text-text-primary  tracking-tight truncate">{currentUser.name}</p>
+                        <p className="text-sm font-bold text-accent-primary  tracking-wide animate-pulse">Updating...</p>
                     </div>
                  </div>
             </div>

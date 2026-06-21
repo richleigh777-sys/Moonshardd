@@ -83,7 +83,6 @@ export const HygieneTab: React.FC<HygieneTabProps> = ({ sales, notes, now }) => 
             const masterName = (masterItem as Sale).customer || (masterItem as Note).customerName || (masterItem as Customer).fullName || 'Unknown';
             const masterEmail = (masterItem as Sale).email || (masterItem as Customer).email || '';
             
-            let createdCustomerId = null;
             if (!masterCustomer) {
                 const [firstName, ...rest] = masterName.split(' ');
                 /* We don't await returned customer id here since addCustomer may not return it. Let's see. */
@@ -202,14 +201,14 @@ export const HygieneTab: React.FC<HygieneTabProps> = ({ sales, notes, now }) => 
     return (
         <div className="space-y-6 lg:space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
             {/* Global Hygiene score shield banner */}
-            <div className="p-4 bg-surface-alt/40 border border-border-subtle rounded-xl flex flex-col md:flex-row gap-4 justify-between items-center relative overflow-hidden backdrop-blur-md">
+            <div className="p-4 bg-surface-alt/40 border border-border-subtle rounded-xl flex flex-col md:flex-row gap-4 justify-between items-center relative overflow-hidden ">
                 <div className="absolute top-0 right-0 p-5 opacity-5 pointer-events-none">
                     <ShieldCheck size={180} />
                 </div>
                 <div className="flex items-center gap-5 relative z-10 text-left">
                     <div className="relative flex items-center justify-center shrink-0">
                         {/* Percentage circular visual marker */}
-                        <div className="w-16 h-16 rounded-full border-4 border-surface-main flex items-center justify-center text-lg font-black text-white relative font-mono shadow-[0_0_15px_rgba(16,185,129,0.2)] bg-surface-highlight">
+                        <div className="w-16 h-16 rounded-full border-4 border-surface-main flex items-center justify-center text-lg font-bold text-white relative font-mono shadow-sm bg-surface-highlight">
                             {hygieneScore}%
                             <div className="absolute inset-0 rounded-full border-2 border-emerald-500/50 animate-ping opacity-25"></div>
                         </div>
@@ -233,7 +232,7 @@ export const HygieneTab: React.FC<HygieneTabProps> = ({ sales, notes, now }) => 
                             type="button"
                             onClick={handleBulkNormalize}
                             disabled={isBulkCleaning}
-                            className="bg-emerald-500 hover:bg-emerald-600 disabled:opacity-50 text-surface-main text-sm font-bold uppercase tracking-wider h-10 px-5 rounded-xl transition-all shadow-[0_0_15px_rgba(16,185,129,0.3)] flex items-center gap-2 justify-center w-full md:w-auto"
+                            className="bg-emerald-500 hover:bg-emerald-600 disabled:opacity-50 text-surface-main text-sm font-bold uppercase tracking-wider h-10 px-5 rounded-xl transition-all shadow-sm flex items-center gap-2 justify-center w-full md:w-auto"
                         >
                             {isBulkCleaning ? (
                                 <RefreshCw size={14} className="animate-spin" />
@@ -284,7 +283,7 @@ export const HygieneTab: React.FC<HygieneTabProps> = ({ sales, notes, now }) => 
 
             {/* Main Audit Display */}
             <Card variant="panel" className="bg-surface-alt/40 border border-border-subtle p-0 overflow-hidden min-h-[300px] flex flex-col rounded-xl shadow-float">
-                <div className="p-5 lg:p-4 border-b border-border-subtle bg-surface-main/60 flex justify-between items-center relative overflow-hidden backdrop-blur-xl">
+                <div className="p-5 lg:p-4 border-b border-border-subtle bg-surface-main/60 flex justify-between items-center relative overflow-hidden ">
                     <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-accent-primary via-accent-secondary to-accent-primary opacity-30"></div>
                      <div className="flex items-center gap-4 relative z-10">
                          <div className="p-2.5 rounded-xl bg-surface-alt">
@@ -294,13 +293,13 @@ export const HygieneTab: React.FC<HygieneTabProps> = ({ sales, notes, now }) => 
                              {auditType === 'stale' && <Clock size={20} className="text-status-error" />}
                          </div>
                          <div>
-                             <h3 className="text-sm font-bold  tracking-widest text-text-primary">
+                             <h3 className="text-sm font-bold  tracking-wide text-text-primary">
                                  {auditType === 'duplicates' ? 'Duplicate Collisions Detected' : 
                                  auditType === 'fragmentation' ? 'Missing Identity Keys' : 
                                  auditType === 'normalization' ? 'Structural Irregularities' :
                                  'Inactive Lead Protocols'}
                              </h3>
-                             <p className="text-sm font-bold text-text-muted  tracking-widest mt-1">Resolution Queue</p>
+                             <p className="text-sm font-bold text-text-muted  tracking-wide mt-1">Resolution Queue</p>
                          </div>
                      </div>
                 </div>
@@ -411,7 +410,7 @@ export const HygieneTab: React.FC<HygieneTabProps> = ({ sales, notes, now }) => 
                                         </div>
                                         <div>
                                             <p className="text-sm font-bold text-text-primary">{lead.customerName || 'Unnamed Lead'}</p>
-                                            <p className="text-sm font-medium text-text-muted  tracking-widest mt-1">
+                                            <p className="text-sm font-medium text-text-muted  tracking-wide mt-1">
                                                 IDLE FOR {Math.floor((now - lead.timestamp) / (3600000))} HOURS
                                             </p>
                                         </div>
@@ -437,7 +436,7 @@ export const HygieneTab: React.FC<HygieneTabProps> = ({ sales, notes, now }) => 
                 </div>
                 <div className="flex items-center gap-3 mb-2">
                     <Activity size={18} className="text-accent-secondary animate-pulse" />
-                    <h4 className="text-sm font-bold  tracking-widest text-text-primary">Auditor Recommendation</h4>
+                    <h4 className="text-sm font-bold  tracking-wide text-text-primary">Auditor Recommendation</h4>
                 </div>
                 <p className="text-sm font-medium text-text-secondary leading-relaxed max-w-2xl">
                     Our sensors indicate {duplicates.length} synchronization collisions and {normalization.length} unnormalized strings. This fragmentation typically occurs when 
@@ -454,8 +453,8 @@ const AuditStatCard = ({ label, count, icon: Icon, isActive, onClick }: any) => 
         onClick={onClick}
         className={`p-5 lg:p-4 rounded-xl border transition-all duration-300 text-left group overflow-hidden relative ${
             isActive 
-            ? 'bg-surface-main/80 border-accent-primary shadow-[0_0_30px_rgba(0,255,255,0.15)] ring-1 ring-accent-primary/20 backdrop-blur-xl scale-[1.02]' 
-            : 'bg-surface-alt/20 border-border-subtle hover:bg-surface-main/50 hover:border-border-strong hover:shadow-lg backdrop-blur-sm'
+            ? 'bg-surface-main/80 border-accent-primary shadow-sm ring-1 ring-accent-primary/20  scale-[1.02]' 
+            : 'bg-surface-alt/20 border-border-subtle hover:bg-surface-main/50 hover:border-border-strong hover:shadow-lg '
         }`}
     >
         {isActive && <div className="absolute inset-0 bg-gradient-to-br from-accent-primary/5 to-transparent z-0"></div>}
@@ -464,10 +463,10 @@ const AuditStatCard = ({ label, count, icon: Icon, isActive, onClick }: any) => 
                 <div className={`p-3 lg:p-4 rounded-xl transition-all duration-500 ${isActive ? 'bg-accent-primary text-surface-alt shadow-lg shadow-accent-primary/30' : 'bg-surface-alt text-text-muted group-hover:text-text-primary group-hover:bg-surface-highlight'}`}>
                     <Icon size={24} strokeWidth={2} />
                 </div>
-                <span className={`text-lg lg:text-5xl font-display font-bold tracking-tighter ${isActive ? 'text-accent-primary drop-shadow-[0_0_15px_rgba(0,255,255,0.3)]' : 'text-text-primary'}`}>{count}</span>
+                <span className={`text-lg lg:text-5xl font-display font-bold tracking-tighter ${isActive ? 'text-accent-primary shadow-sm' : 'text-text-primary'}`}>{count}</span>
             </div>
-            <p className="text-sm lg:text-sm font-bold  text-text-primary tracking-widest leading-tight mb-1 text-left">{label}</p>
-            <p className="text-sm font-bold text-text-muted  tracking-widest text-left opacity-60">Detections</p>
+            <p className="text-sm lg:text-sm font-bold  text-text-primary tracking-wide leading-tight mb-1 text-left">{label}</p>
+            <p className="text-sm font-bold text-text-muted  tracking-wide text-left opacity-60">Detections</p>
         </div>
     </button>
 );

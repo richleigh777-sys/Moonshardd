@@ -14,7 +14,7 @@ export const ProfitSimulator: React.FC<ProfitSimulatorProps> = ({ price, cost })
 
     return (
         <div className="pt-4 border-t border-border-subtle/50">
-            <div className="flex justify-between text-sm font-bold text-text-muted  tracking-widest mb-2">
+            <div className="flex justify-between text-sm font-bold text-text-muted  tracking-wide mb-2">
                 <span>Profit Margin</span>
                 <span className={currentMargin < 20 ? 'text-status-error' : 'text-status-success'}>{currentMargin}%</span>
             </div>
@@ -24,7 +24,7 @@ export const ProfitSimulator: React.FC<ProfitSimulatorProps> = ({ price, cost })
                     style={{ width: `${Math.min(100, Math.max(0, currentMargin))}%` }}
                 ></div>
             </div>
-            <p className="text-sm font-[700] text-text-primary text-right flex items-center justify-end gap-1">
+            <p className="text-sm font-medium text-text-primary text-right flex items-center justify-end gap-1">
                 <TrendingUp size={16} className="text-accent-primary"/> +${profitPerUnit.toFixed(2)} / unit
             </p>
         </div>

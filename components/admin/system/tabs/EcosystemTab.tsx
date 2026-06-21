@@ -285,14 +285,14 @@ export const EcosystemTab: React.FC = () => {
                     <button 
                         key={mode.id}
                         onClick={() => setViewMode(mode.id as any)}
-                        className={`px-4 py-2 rounded-xl text-sm font-black uppercase tracking-widest transition-all duration-300 ${viewMode === mode.id ? `${mode.color} text-white shadow-lg border border-white/20` : 'bg-surface-main text-text-muted hover:text-text-primary border border-border-subtle hover:border-border-strong'}`}
+                        className={`px-4 py-2 rounded-xl text-sm font-bold uppercase tracking-wide transition-all duration-300 ${viewMode === mode.id ? `${mode.color} text-white shadow-lg border border-white/20` : 'bg-surface-main text-text-muted hover:text-text-primary border border-border-subtle hover:border-border-strong'}`}
                     >
                         {mode.label}
                     </button>
                 ))}
             </div>
 
-            <div className="min-h-[550px] bg-surface-main overflow-hidden relative border border-border-subtle rounded-3xl group shadow-inner">
+            <div className="min-h-[550px] bg-surface-main overflow-hidden relative border border-border-subtle rounded-xl group shadow-inner">
                 {/* Background Grid Pattern */}
                 <div className="absolute inset-0 max-w-full h-full pointer-events-none opacity-30" style={{ backgroundImage: 'radial-gradient(var(--border-strong) 1px, transparent 1px)', backgroundSize: '40px 40px' }}></div>
 
@@ -315,7 +315,7 @@ export const EcosystemTab: React.FC = () => {
                                     className="drop-shadow-md opacity-50"
                                 />
                                 {edge.pulse && isActive && (
-                                    <circle r="0.6" fill="#3B82F6" className="animate-[dash_3s_linear_infinite] drop-shadow-[0_0_5px_rgba(59,130,246,0.8)]">
+                                    <circle r="0.6" fill="#3B82F6" className="animate-[dash_3s_linear_infinite] shadow-sm">
                                         <animateMotion dur="3s" repeatCount="indefinite" path={`M ${sourceNode.x} ${sourceNode.y} Q ${(sourceNode.x + targetNode.x) / 2 + 10} ${(sourceNode.y + targetNode.y) / 2 - 10} ${targetNode.x} ${targetNode.y}`} />
                                     </circle>
                                 )}
@@ -337,13 +337,13 @@ export const EcosystemTab: React.FC = () => {
                                 onMouseEnter={() => setActiveNode(node.id)}
                                 onMouseLeave={() => setActiveNode(null)}
                             >
-                                <div className={`p-4 rounded-[20px] border border-white/5 ${node.bg} shadow-[0_10px_30px_rgba(0,0,0,0.5)] backdrop-blur-xl relative transition-all group-hover:scale-105`}>
+                                <div className={`p-4 rounded-lg border border-white/5 ${node.bg} shadow-sm  relative transition-all group-hover:scale-105`}>
                                     <node.icon className={`w-8 h-8 ${node.color}`} strokeWidth={1.5} />
-                                    <div className={`absolute -inset-2 rounded-3xl border border-dashed ${node.border} animate-[spin_10s_linear_infinite] opacity-50`} />
+                                    <div className={`absolute -inset-2 rounded-xl border border-dashed ${node.border} animate-[spin_10s_linear_infinite] opacity-50`} />
                                 </div>
                                 <div className="text-center bg-surface-main/90 backdrop-blur-2xl px-4 py-2 rounded-xl border border-border-subtle shadow-xl">
-                                    <p className={`text-xs font-black whitespace-nowrap ${node.color} tracking-wide`}>{node.label}</p>
-                                    <p className="text-[10px] uppercase font-black text-text-muted tracking-widest mt-0.5">{node.type}</p>
+                                    <p className={`text-xs font-bold whitespace-nowrap ${node.color} tracking-wide`}>{node.label}</p>
+                                    <p className="text-[10px] uppercase font-bold text-text-muted tracking-wide mt-0.5">{node.type}</p>
                                 </div>
                             </motion.div>
                         ))}
@@ -357,7 +357,7 @@ export const EcosystemTab: React.FC = () => {
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
                             exit={{ opacity: 0, y: 10 }}
-                            className="absolute bottom-6 left-6 right-6 bg-surface-main/95 backdrop-blur-2xl border border-border-subtle p-5 rounded-3xl shadow-2xl flex gap-6 overflow-x-auto custom-scrollbar pointer-events-auto z-30"
+                            className="absolute bottom-6 left-6 right-6 bg-surface-main/95 backdrop-blur-2xl border border-border-subtle p-5 rounded-xl shadow-2xl flex gap-6 overflow-x-auto custom-scrollbar pointer-events-auto z-30"
                         >
                             <div className="shrink-0 flex items-center gap-4 pr-6 border-r border-border-subtle">
                                 {(() => {
@@ -366,8 +366,8 @@ export const EcosystemTab: React.FC = () => {
                                         <>
                                             <div className={`p-3 rounded-xl border border-white/5 ${activeData.bg} shadow-inner`}><activeData.icon className={`w-6 h-6 ${activeData.color}`} /></div>
                                             <div>
-                                                <p className="text-sm font-black text-text-primary tracking-wide">{activeData.label}</p>
-                                                <p className="text-xs font-bold text-text-muted uppercase tracking-widest mt-1">{activeData.type} Node</p>
+                                                <p className="text-sm font-bold text-text-primary tracking-wide">{activeData.label}</p>
+                                                <p className="text-xs font-bold text-text-muted uppercase tracking-wide mt-1">{activeData.type} Node</p>
                                             </div>
                                         </>
                                     ) : null;
@@ -378,7 +378,7 @@ export const EcosystemTab: React.FC = () => {
                                     const target = nodes.find(n => n.id === e.target);
                                     return (
                                         <div key={e.target} className="flex flex-col text-sm space-y-1.5 font-medium">
-                                            <span className="text-text-muted uppercase tracking-widest text-xs font-black">Outbound: <span className="font-black text-text-primary ml-1">{e.type}</span></span>
+                                            <span className="text-text-muted uppercase tracking-wide text-xs font-bold">Outbound: <span className="font-bold text-text-primary ml-1">{e.type}</span></span>
                                             <span className="font-bold border border-border-strong px-3 py-1.5 rounded-lg bg-surface-alt text-text-primary shadow-inner">{target?.label}</span>
                                         </div>
                                     )
@@ -387,7 +387,7 @@ export const EcosystemTab: React.FC = () => {
                                     const source = nodes.find(n => n.id === e.source);
                                     return (
                                         <div key={e.source} className="flex flex-col text-sm space-y-1.5 font-medium">
-                                            <span className="text-text-muted uppercase tracking-widest text-xs font-black">Inbound: <span className="font-black text-text-primary ml-1">{e.type}</span></span>
+                                            <span className="text-text-muted uppercase tracking-wide text-xs font-bold">Inbound: <span className="font-bold text-text-primary ml-1">{e.type}</span></span>
                                             <span className="font-bold border border-border-strong px-3 py-1.5 rounded-lg bg-surface-alt text-text-primary shadow-inner">{source?.label}</span>
                                         </div>
                                     )
@@ -400,27 +400,27 @@ export const EcosystemTab: React.FC = () => {
 
             <div className={`grid gap-5 mt-8 grid-cols-2 lg:grid-cols-4`}>
                 {(viewMode === 'core' || viewMode === 'sustainability' || viewMode === 'actor') && (
-                    <div className="p-6 bg-surface-main/50 border border-border-subtle rounded-3xl shadow-inner">
+                    <div className="p-6 bg-surface-main/50 border border-border-subtle rounded-xl shadow-inner">
                         <div className="flex items-center gap-3 mb-3">
                             <div className="p-2 bg-[#3B82F6]/10 rounded-lg"><Users className="text-[#60A5FA] w-4 h-4" /></div>
-                            <h4 className="font-black text-sm text-text-primary tracking-wide">Actors</h4>
+                            <h4 className="font-bold text-sm text-text-primary tracking-wide">Actors</h4>
                         </div>
                         <p className="text-sm text-text-muted font-medium leading-relaxed">Participants triggering events (Admins, Agents, Leads).</p>
                     </div>
                 )}
                 {(viewMode === 'core' || viewMode === 'sustainability') && (
                     <>
-                        <div className="p-6 bg-surface-main/50 border border-border-subtle rounded-3xl shadow-inner">
+                        <div className="p-6 bg-surface-main/50 border border-border-subtle rounded-xl shadow-inner">
                             <div className="flex items-center gap-3 mb-3">
                                 <div className="p-2 bg-[#F97316]/10 rounded-lg"><Workflow className="text-[#FB923C] w-4 h-4" /></div>
-                                <h4 className="font-black text-sm text-text-primary tracking-wide">Processes</h4>
+                                <h4 className="font-bold text-sm text-text-primary tracking-wide">Processes</h4>
                             </div>
                             <p className="text-sm text-text-muted font-medium leading-relaxed">Orchestrated sequences (Enrollment, Automation, Telemetry).</p>
                         </div>
-                        <div className="p-6 bg-surface-main/50 border border-border-subtle rounded-3xl shadow-inner">
+                        <div className="p-6 bg-surface-main/50 border border-border-subtle rounded-xl shadow-inner">
                             <div className="flex items-center gap-3 mb-3">
                                 <div className="p-2 bg-[#06B6D4]/10 rounded-lg"><Database className="text-[#22D3EE] w-4 h-4" /></div>
-                                <h4 className="font-black text-sm text-text-primary tracking-wide">Resources</h4>
+                                <h4 className="font-bold text-sm text-text-primary tracking-wide">Resources</h4>
                             </div>
                             <p className="text-sm text-text-muted font-medium leading-relaxed">Infrastructure, data stores, API gateways.</p>
                         </div>
@@ -428,17 +428,17 @@ export const EcosystemTab: React.FC = () => {
                 )}
                 {viewMode === 'sustainability' && (
                     <>
-                        <div className="p-6 bg-surface-main/50 border border-border-subtle rounded-3xl shadow-inner">
+                        <div className="p-6 bg-surface-main/50 border border-border-subtle rounded-xl shadow-inner">
                             <div className="flex items-center gap-3 mb-3">
                                 <div className="p-2 bg-[#EF4444]/10 rounded-lg"><TrendingDown className="text-[#EF4444] w-4 h-4" /></div>
-                                <h4 className="font-black text-sm text-text-primary tracking-wide">Pressures</h4>
+                                <h4 className="font-bold text-sm text-text-primary tracking-wide">Pressures</h4>
                             </div>
                             <p className="text-sm text-text-muted font-medium leading-relaxed">External or systemic forces that degrade ecosystem health over time.</p>
                         </div>
-                        <div className="p-6 bg-surface-main/50 border border-border-subtle rounded-3xl shadow-inner">
+                        <div className="p-6 bg-surface-main/50 border border-border-subtle rounded-xl shadow-inner">
                             <div className="flex items-center gap-3 mb-3">
                                 <div className="p-2 bg-[#06B6D4]/10 rounded-lg"><Target className="text-[#67E8F9] w-4 h-4" /></div>
-                                <h4 className="font-black text-sm text-text-primary tracking-wide">Interventions</h4>
+                                <h4 className="font-bold text-sm text-text-primary tracking-wide">Interventions</h4>
                             </div>
                             <p className="text-sm text-text-muted font-medium leading-relaxed">Strategic leverage points designed to mitigate pressures and restore balance.</p>
                         </div>
@@ -446,24 +446,24 @@ export const EcosystemTab: React.FC = () => {
                 )}
                 {viewMode === 'cld' && (
                     <>
-                        <div className="p-6 bg-surface-main/50 border border-border-subtle rounded-3xl shadow-inner">
+                        <div className="p-6 bg-surface-main/50 border border-border-subtle rounded-xl shadow-inner">
                             <div className="flex items-center gap-3 mb-3">
                                 <div className="p-2 bg-[#3B82F6]/10 rounded-lg"><Activity className="text-[#60A5FA] w-4 h-4" /></div>
-                                <h4 className="font-black text-sm text-text-primary tracking-wide">Variables</h4>
+                                <h4 className="font-bold text-sm text-text-primary tracking-wide">Variables</h4>
                             </div>
                             <p className="text-sm text-text-muted font-medium leading-relaxed">Measurable factors within the system that interact.</p>
                         </div>
-                        <div className="p-6 bg-surface-main/50 border border-border-subtle rounded-3xl shadow-inner">
+                        <div className="p-6 bg-surface-main/50 border border-border-subtle rounded-xl shadow-inner">
                             <div className="flex items-center gap-3 mb-3">
                                 <div className="p-2 bg-[#EF4444]/10 rounded-lg"><Repeat className="text-[#F87171] w-4 h-4" /></div>
-                                <h4 className="font-black text-sm text-text-primary tracking-wide">Reinforcing Loop</h4>
+                                <h4 className="font-bold text-sm text-text-primary tracking-wide">Reinforcing Loop</h4>
                             </div>
                             <p className="text-sm text-text-muted font-medium leading-relaxed">A loop that amplifies change (e.g., Burnout → Attrition → More Burnout).</p>
                         </div>
-                        <div className="p-6 bg-surface-main/50 border border-border-subtle rounded-3xl shadow-inner">
+                        <div className="p-6 bg-surface-main/50 border border-border-subtle rounded-xl shadow-inner">
                             <div className="flex items-center gap-3 mb-3">
                                 <div className="p-2 bg-[#10B981]/10 rounded-lg"><RefreshCw className="text-[#34D399] w-4 h-4" /></div>
-                                <h4 className="font-black text-sm text-text-primary tracking-wide">Balancing Loop</h4>
+                                <h4 className="font-bold text-sm text-text-primary tracking-wide">Balancing Loop</h4>
                             </div>
                             <p className="text-sm text-text-muted font-medium leading-relaxed">A loop that counters change and creates stability in the system.</p>
                         </div>
@@ -471,24 +471,24 @@ export const EcosystemTab: React.FC = () => {
                 )}
                 {viewMode === 'sna' && (
                     <>
-                        <div className="p-6 bg-surface-main/50 border border-border-subtle rounded-3xl shadow-inner">
+                        <div className="p-6 bg-surface-main/50 border border-border-subtle rounded-xl shadow-inner">
                             <div className="flex items-center gap-3 mb-3">
                                 <div className="p-2 bg-[#A855F7]/10 rounded-lg"><ShieldCheck className="text-[#C084FC] w-4 h-4" /></div>
-                                <h4 className="font-black text-sm text-text-primary tracking-wide">Central Nodes</h4>
+                                <h4 className="font-bold text-sm text-text-primary tracking-wide">Central Nodes</h4>
                             </div>
                             <p className="text-sm text-text-muted font-medium leading-relaxed">Highly connected individuals with significant influence over the network.</p>
                         </div>
-                        <div className="p-6 bg-surface-main/50 border border-border-subtle rounded-3xl shadow-inner">
+                        <div className="p-6 bg-surface-main/50 border border-border-subtle rounded-xl shadow-inner">
                             <div className="flex items-center gap-3 mb-3">
                                 <div className="p-2 bg-[#3B82F6]/10 rounded-lg"><Users className="text-[#60A5FA] w-4 h-4" /></div>
-                                <h4 className="font-black text-sm text-text-primary tracking-wide">Clusters</h4>
+                                <h4 className="font-bold text-sm text-text-primary tracking-wide">Clusters</h4>
                             </div>
                             <p className="text-sm text-text-muted font-medium leading-relaxed">Tightly knit groups or sub-teams that operate with overlapping ties.</p>
                         </div>
-                        <div className="p-6 bg-surface-main/50 border border-border-subtle rounded-3xl shadow-inner">
+                        <div className="p-6 bg-surface-main/50 border border-border-subtle rounded-xl shadow-inner">
                             <div className="flex items-center gap-3 mb-3">
                                 <div className="p-2 bg-[#10B981]/10 rounded-lg"><Share2 className="text-[#34D399] w-4 h-4" /></div>
-                                <h4 className="font-black text-sm text-text-primary tracking-wide">Bridges</h4>
+                                <h4 className="font-bold text-sm text-text-primary tracking-wide">Bridges</h4>
                             </div>
                             <p className="text-sm text-text-muted font-medium leading-relaxed">Entities facilitating communication between disconnected clusters.</p>
                         </div>
@@ -496,24 +496,24 @@ export const EcosystemTab: React.FC = () => {
                 )}
                 {viewMode === 'terminals' && (
                     <>
-                        <div className="p-6 bg-surface-main/50 border border-border-subtle rounded-3xl shadow-inner">
+                        <div className="p-6 bg-surface-main/50 border border-border-subtle rounded-xl shadow-inner">
                             <div className="flex items-center gap-3 mb-3">
                                 <div className="p-2 bg-[#3B82F6]/10 rounded-lg"><MonitorSmartphone className="text-[#60A5FA] w-4 h-4" /></div>
-                                <h4 className="font-black text-sm text-text-primary tracking-wide">Interfaces</h4>
+                                <h4 className="font-bold text-sm text-text-primary tracking-wide">Interfaces</h4>
                             </div>
                             <p className="text-sm text-text-muted font-medium leading-relaxed">The core root interfaces for each type of system actor.</p>
                         </div>
-                        <div className="p-6 bg-surface-main/50 border border-border-subtle rounded-3xl shadow-inner">
+                        <div className="p-6 bg-surface-main/50 border border-border-subtle rounded-xl shadow-inner">
                             <div className="flex items-center gap-3 mb-3">
                                 <div className="p-2 bg-[#F97316]/10 rounded-lg"><GitCommit className="text-[#FB923C] w-4 h-4" /></div>
-                                <h4 className="font-black text-sm text-text-primary tracking-wide">Input/Output</h4>
+                                <h4 className="font-bold text-sm text-text-primary tracking-wide">Input/Output</h4>
                             </div>
                             <p className="text-sm text-text-muted font-medium leading-relaxed">Components reacting to and gathering explicit data inputs from users.</p>
                         </div>
-                        <div className="p-6 bg-surface-main/50 border border-border-subtle rounded-3xl shadow-inner">
+                        <div className="p-6 bg-surface-main/50 border border-border-subtle rounded-xl shadow-inner">
                             <div className="flex items-center gap-3 mb-3">
                                 <div className="p-2 bg-[#10B981]/10 rounded-lg"><Server className="text-[#34D399] w-4 h-4" /></div>
-                                <h4 className="font-black text-sm text-text-primary tracking-wide">State Engine</h4>
+                                <h4 className="font-bold text-sm text-text-primary tracking-wide">State Engine</h4>
                             </div>
                             <p className="text-sm text-text-muted font-medium leading-relaxed">The central sync engine adjusting UI based on live Admin toggles.</p>
                         </div>

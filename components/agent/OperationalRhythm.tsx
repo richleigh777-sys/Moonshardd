@@ -107,11 +107,11 @@ export const OperationalRhythm: React.FC<OperationalRhythmProps> = ({ notes, sal
             {/* Rhythm Header */}
             <div className="flex items-center justify-between">
                 <div>
-                    <h2 className="text-xl font-[700] text-text-primary tracking-tighter flex items-center gap-2">
+                    <h2 className="text-xl font-medium text-text-primary tracking-tighter flex items-center gap-2">
                         <Activity className="text-accent-primary animate-pulse" size={20} />
                         Personal Operational Rhythm
                     </h2>
-                    <p className="text-sm text-text-muted font-medium  tracking-widest mt-1 opacity-70">
+                    <p className="text-sm text-text-muted font-medium  tracking-wide mt-1 opacity-70">
                         Intelligent Priority Vectoring
                     </p>
                 </div>
@@ -126,7 +126,7 @@ export const OperationalRhythm: React.FC<OperationalRhythmProps> = ({ notes, sal
                         className={`px-4 py-1.5 bg-indigo-500 hover:bg-indigo-600 border-none text-white rounded-xl flex items-center gap-2 transition-all ${isRouting ? 'opacity-50 cursor-not-allowed' : 'shadow-lg shadow-indigo-500/30'}`}
                      >
                         <RotateCcw size={16} className={isRouting ? 'animate-spin' : ''} />
-                        <span className="text-sm font-[700]  tracking-widest">{isRouting ? 'Routing...' : 'Pull Next Lead'}</span>
+                        <span className="text-sm font-medium  tracking-wide">{isRouting ? 'Routing...' : 'Pull Next Lead'}</span>
                      </Button>
 
                      <Button 
@@ -135,18 +135,18 @@ export const OperationalRhythm: React.FC<OperationalRhythmProps> = ({ notes, sal
                         className="px-4 py-1.5 bg-accent-primary/10 hover:bg-accent-primary/20 border-accent-primary/20 text-accent-primary rounded-xl flex items-center gap-2 group transition-all"
                      >
                         <Plus size={16} className="group-hover:rotate-90 transition-transform" />
-                        <span className="text-sm font-[700]  tracking-widest">Manual Intake</span>
+                        <span className="text-sm font-medium  tracking-wide">Manual Intake</span>
                      </Button>
 
                      <div className="px-3 py-1.5 bg-surface-main border border-border-subtle rounded-xl flex items-center gap-3">
                          <div className="flex items-center gap-1.5">
                              <div className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
-                             <span className="text-sm font-[700]  text-text-primary">{stats.urgent} Urgent</span>
+                             <span className="text-sm font-medium  text-text-primary">{stats.urgent} Urgent</span>
                          </div>
                          <div className="w-px h-3 bg-border-subtle" />
                          <div className="flex items-center gap-1.5">
                              <div className="w-2 h-2 rounded-full bg-indigo-500" />
-                             <span className="text-sm font-[700]  text-text-primary text-opacity-60">{stats.reorders} Reorders</span>
+                             <span className="text-sm font-medium  text-text-primary text-opacity-60">{stats.reorders} Reorders</span>
                          </div>
                      </div>
                 </div>
@@ -155,16 +155,16 @@ export const OperationalRhythm: React.FC<OperationalRhythmProps> = ({ notes, sal
             {/* Quick Intake Modal */}
             {showIntake && (
                 <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
-                    <div className="absolute inset-0 bg-surface-alt backdrop-blur-sm" onClick={() => setShowIntake(false)}></div>
+                    <div className="absolute inset-0 bg-surface-alt " onClick={() => setShowIntake(false)}></div>
                     <Card variant="panel" className="relative w-full max-w-md bg-surface-main border-accent-primary/30 shadow-2xl p-5 space-y-6">
                         <div>
-                            <h3 className="text-xl font-[700] text-text-primary tracking-tight">Lead Infiltration</h3>
-                            <p className="text-sm text-text-muted font-[700]  tracking-widest mt-1 italic">Assigning new target to your personal sector</p>
+                            <h3 className="text-xl font-medium text-text-primary tracking-tight">Lead Infiltration</h3>
+                            <p className="text-sm text-text-muted font-medium  tracking-wide mt-1 italic">Assigning new target to your personal sector</p>
                         </div>
 
                         <form onSubmit={handleSubmitIntake} className="space-y-4">
                             <div className="space-y-1.5">
-                                <label className="text-sm font-[700] text-text-muted  tracking-[0.2em] ml-1">Full Name</label>
+                                <label className="text-sm font-medium text-text-muted  tracking-wide ml-1">Full Name</label>
                                 <Input 
                                     className="h-12 bg-surface-alt/50 border-border-subtle rounded-xl font-bold" 
                                     placeholder="Enter Customer Name"
@@ -174,7 +174,7 @@ export const OperationalRhythm: React.FC<OperationalRhythmProps> = ({ notes, sal
                                 />
                             </div>
                             <div className="space-y-1.5">
-                                <label className="text-sm font-[700] text-text-muted  tracking-[0.2em] ml-1">Phone Vector</label>
+                                <label className="text-sm font-medium text-text-muted  tracking-wide ml-1">Phone Vector</label>
                                 <Input 
                                     className="h-12 bg-surface-alt/50 border-border-subtle rounded-xl font-bold num-font" 
                                     placeholder="Enter Phone Number"
@@ -184,7 +184,7 @@ export const OperationalRhythm: React.FC<OperationalRhythmProps> = ({ notes, sal
                                 />
                             </div>
                             <div className="space-y-1.5">
-                                <label className="text-sm font-[700] text-text-muted  tracking-[0.2em] ml-1">Engagement Reason</label>
+                                <label className="text-sm font-medium text-text-muted  tracking-wide ml-1">Engagement Reason</label>
                                 <textarea 
                                     className="w-full h-24 bg-surface-alt/50 border border-border-subtle rounded-xl p-4 text-sm font-bold text-text-primary placeholder:text-text-muted/30 focus:outline-none focus:ring-1 ring-accent-primary/40" 
                                     placeholder="Why are you contacting them?"
@@ -198,13 +198,13 @@ export const OperationalRhythm: React.FC<OperationalRhythmProps> = ({ notes, sal
                                     type="button"
                                     onClick={() => setShowIntake(false)}
                                     variant="secondary"
-                                    className="flex-1 py-4 rounded-xl text-sm font-[700]  tracking-widest border-border-subtle"
+                                    className="flex-1 py-4 rounded-xl text-sm font-medium  tracking-wide border-border-subtle"
                                 >
                                     Cancel
                                 </Button>
                                 <Button 
                                     type="submit"
-                                    className="flex-1 bg-accent-primary text-white py-4 rounded-xl text-sm font-[700]  tracking-widest shadow-lg shadow-accent-primary/20"
+                                    className="flex-1 bg-accent-primary text-white py-4 rounded-xl text-sm font-medium  tracking-wide shadow-lg shadow-accent-primary/20"
                                 >
                                     Deploy Lead
                                 </Button>
@@ -239,16 +239,16 @@ export const OperationalRhythm: React.FC<OperationalRhythmProps> = ({ notes, sal
 
                         <div className="flex-1 text-center md:text-left z-10">
                             <div className="flex flex-wrap items-center justify-center md:justify-start gap-2 mb-2">
-                                <span className={`px-2 py-0.5 rounded text-sm uppercase font-[800] tracking-widest ${
+                                <span className={`px-2 py-0.5 rounded text-sm uppercase font-semibold tracking-wide ${
                                     topPredictedLead.urgency === 'high' ? 'bg-status-error/10 border border-status-error/20 text-status-error' : 'bg-status-success/10 border border-status-success/20 text-status-success'
                                 }`}>
                                     Score: {topPredictedLead.score}
                                 </span>
-                                <span className="px-2 py-0.5 rounded bg-surface-alt/50 text-text-secondary text-sm uppercase font-[800] tracking-widest border border-border-subtle">
+                                <span className="px-2 py-0.5 rounded bg-surface-alt/50 text-text-secondary text-sm uppercase font-semibold tracking-wide border border-border-subtle">
                                     {topPredictedLead.pipelineStatus || 'New Lead'}
                                 </span>
                             </div>
-                            <h3 className="text-xl font-[700] text-text-primary tracking-tight mb-1">
+                            <h3 className="text-xl font-medium text-text-primary tracking-tight mb-1">
                                 {topPredictedLead.customer}
                             </h3>
                             <p className="text-sm text-text-muted">
@@ -261,7 +261,7 @@ export const OperationalRhythm: React.FC<OperationalRhythmProps> = ({ notes, sal
                                 onClick={() => { onLoadLead(topPredictedLead); sfx.playSubmit(); }}
                                 className="w-full bg-emerald-500 hover:bg-emerald-600 text-white border-none py-4 rounded-xl flex items-center justify-center gap-2 group/btn shadow-lg shadow-emerald-500/20"
                             >
-                                <span className="font-[700] tracking-widest text-sm uppercase">Claim Recommended Deal</span>
+                                <span className="font-medium tracking-wide text-sm uppercase">Claim Recommended Deal</span>
                                 <ChevronRight size={14} className="group-hover/btn:translate-x-1 transition-transform" />
                             </Button>
                         </div>
@@ -290,16 +290,16 @@ export const OperationalRhythm: React.FC<OperationalRhythmProps> = ({ notes, sal
 
                         <div className="flex-1 text-center md:text-left">
                             <div className="flex flex-wrap items-center justify-center md:justify-start gap-2 mb-2">
-                                <span className={`px-2.5 py-1 rounded text-sm font-[700]  tracking-widest ${
+                                <span className={`px-2.5 py-1 rounded text-sm font-medium  tracking-wide ${
                                     myProtocols[0].priority === 'High' ? 'bg-red-500 text-white' : 'bg-accent-secondary/10 text-accent-secondary'
                                 }`}>
                                     {myProtocols[0].priority} Priority
                                 </span>
-                                <span className="px-2.5 py-1 rounded bg-surface-alt text-text-muted text-sm font-[700]  tracking-widest border border-border-subtle">
+                                <span className="px-2.5 py-1 rounded bg-surface-alt text-text-muted text-sm font-medium  tracking-wide border border-border-subtle">
                                     {myProtocols[0].subtype || 'Manual'} Protocol
                                 </span>
                             </div>
-                            <h3 className="text-lg font-[700] text-text-primary tracking-tight mb-2">
+                            <h3 className="text-lg font-medium text-text-primary tracking-tight mb-2">
                                 {myProtocols[0].customerName}
                             </h3>
                             <p className="text-sm text-text-secondary leading-relaxed max-w-xl">
@@ -312,12 +312,12 @@ export const OperationalRhythm: React.FC<OperationalRhythmProps> = ({ notes, sal
                                 onClick={() => { onLoadLead(myProtocols[0]); sfx.playSubmit(); }}
                                 className="w-full bg-accent-primary hover:bg-accent-secondary text-white border-none py-4 rounded-xl flex items-center justify-center gap-2 group/btn shadow-lg shadow-accent-primary/20"
                             >
-                                <span className="font-[700]  tracking-widest text-sm">Initiate Intake</span>
+                                <span className="font-medium  tracking-wide text-sm">Initiate Intake</span>
                                 <ChevronRight size={16} className="group-hover/btn:translate-x-1 transition-transform" />
                             </Button>
                             <Button 
                                 variant="secondary" 
-                                className="w-full bg-surface-alt border-border-subtle text-text-muted hover:text-text-primary py-3 rounded-xl text-sm font-[700]  tracking-widest"
+                                className="w-full bg-surface-alt border-border-subtle text-text-muted hover:text-text-primary py-3 rounded-xl text-sm font-medium  tracking-wide"
                                 onClick={() => sfx.playClick()}
                             >
                                 Snoop Record
@@ -352,7 +352,7 @@ export const OperationalRhythm: React.FC<OperationalRhythmProps> = ({ notes, sal
                     <div className="p-4 border-b border-border-subtle bg-surface-alt/20 flex justify-between items-center">
                         <div className="flex items-center gap-2">
                             <ShoppingCart size={16} className="text-accent-secondary" />
-                            <h3 className="text-sm font-[700]  tracking-[0.2em] text-text-primary">Engagement Pipeline</h3>
+                            <h3 className="text-sm font-medium  tracking-wide text-text-primary">Engagement Pipeline</h3>
                         </div>
                         <span className="text-sm font-bold text-text-muted">{myProtocols.slice(1).length} Upcoming</span>
                     </div>
@@ -377,7 +377,7 @@ export const OperationalRhythm: React.FC<OperationalRhythmProps> = ({ notes, sal
                                     </div>
                                     <div className="flex items-center gap-4">
                                         <div className="text-right">
-                                            <p className="text-sm font-[700] text-text-primary opacity-40  tracking-tighter">Due</p>
+                                            <p className="text-sm font-medium text-text-primary opacity-40  tracking-tighter">Due</p>
                                             <p className="text-sm font-bold text-text-primary">
                                                 {new Date(p.reminderAt || p.timestamp).toLocaleDateString()}
                                             </p>
@@ -394,7 +394,7 @@ export const OperationalRhythm: React.FC<OperationalRhythmProps> = ({ notes, sal
                             {myProtocols.length <= 1 && (
                                 <div className="py-20 flex flex-col items-center justify-center text-center opacity-40 grayscale">
                                     <Info size={32} className="mb-2" />
-                                    <p className="text-sm font-[700]  tracking-widest text-text-muted">Queue Empty</p>
+                                    <p className="text-sm font-medium  tracking-wide text-text-muted">Queue Empty</p>
                                 </div>
                             )}
                         </div>
@@ -413,15 +413,15 @@ export const OperationalRhythm: React.FC<OperationalRhythmProps> = ({ notes, sal
                                     <DollarSign size={18} />
                                 </div>
                                 <div>
-                                    <h3 className="text-sm font-[700]  tracking-widest text-text-primary flex items-center gap-2">
-                                        Real-Time Commission <span className="flex h-2 w-2 relative rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.8)]"><span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span></span>
+                                    <h3 className="text-sm font-medium  tracking-wide text-text-primary flex items-center gap-2">
+                                        Real-Time Commission <span className="flex h-2 w-2 relative rounded-full bg-emerald-500 shadow-sm"><span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span></span>
                                     </h3>
                                     <p className="text-sm  font-bold text-text-muted mt-0.5">Calculated from closed won & approved status</p>
                                 </div>
                             </div>
                             
                             <div className="flex items-baseline gap-2 py-2">
-                                <span className="text-lg font-[700] text-text-primary tracking-tight">
+                                <span className="text-lg font-medium text-text-primary tracking-tight">
                                     ${statsInfo?.estCommission?.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) || '0.00'}
                                 </span>
                                 <span className="text-sm font-bold text-status-success">+{statsInfo?.dailyCount || 0} Deals Today</span>
@@ -429,12 +429,12 @@ export const OperationalRhythm: React.FC<OperationalRhythmProps> = ({ notes, sal
 
                             <div className="grid grid-cols-2 gap-3 mt-2">
                                 <div className="p-3 bg-surface-alt/50 rounded-xl border border-border-subtle">
-                                    <p className="text-sm font-[700]  text-text-muted text-center tracking-widest mb-1">Win Rate</p>
-                                    <p className="text-base font-[700] text-text-primary text-center">{statsInfo?.winRate || 0}%</p>
+                                    <p className="text-sm font-medium  text-text-muted text-center tracking-wide mb-1">Win Rate</p>
+                                    <p className="text-base font-medium text-text-primary text-center">{statsInfo?.winRate || 0}%</p>
                                 </div>
                                 <div className="p-3 bg-surface-alt/50 rounded-xl border border-border-subtle">
-                                    <p className="text-sm font-[700]  text-text-muted text-center tracking-widest mb-1">Total Revenue</p>
-                                    <p className="text-base font-[700] text-text-primary text-center">${statsInfo?.totalRevenue?.toLocaleString() || '0'}</p>
+                                    <p className="text-sm font-medium  text-text-muted text-center tracking-wide mb-1">Total Revenue</p>
+                                    <p className="text-base font-medium text-text-primary text-center">${statsInfo?.totalRevenue?.toLocaleString() || '0'}</p>
                                 </div>
                             </div>
                         </div>
@@ -445,7 +445,7 @@ export const OperationalRhythm: React.FC<OperationalRhythmProps> = ({ notes, sal
                             <div className="p-2 bg-indigo-500 text-white rounded-xl shadow-lg shadow-indigo-500/20">
                                 <Sparkles size={18} />
                             </div>
-                            <h3 className="text-sm font-[700]  tracking-widest text-text-primary">Conversion Catalyst</h3>
+                            <h3 className="text-sm font-medium  tracking-wide text-text-primary">Conversion Catalyst</h3>
                         </div>
                         <div className="space-y-4">
                             <p className="text-sm font-medium text-text-secondary leading-relaxed">
@@ -462,12 +462,12 @@ export const OperationalRhythm: React.FC<OperationalRhythmProps> = ({ notes, sal
                     <Card variant="panel" className="border-border-subtle bg-surface-main/30 p-4">
                         <div className="flex items-center gap-3 mb-4">
                             <AlertCircle size={18} className="text-status-warning" />
-                            <h3 className="text-sm font-[700]  tracking-widest text-text-primary">System Integrity</h3>
+                            <h3 className="text-sm font-medium  tracking-wide text-text-primary">System Integrity</h3>
                         </div>
                         <div className="space-y-3">
                             <div className="flex justify-between items-center text-sm">
                                 <span className="text-text-muted font-bold ">Protocols Active</span>
-                                <span className="text-text-primary font-[700]">OPERATIONAL</span>
+                                <span className="text-text-primary font-medium">OPERATIONAL</span>
                             </div>
                             <div className="w-full h-1 bg-surface-alt rounded-full overflow-hidden">
                                 <div className="w-full h-full bg-indigo-500 transition-all duration-1000" />

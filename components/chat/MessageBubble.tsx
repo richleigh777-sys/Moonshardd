@@ -79,7 +79,7 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
     if (isSystem) {
         return (
             <div className="flex justify-center my-4 w-full px-4 duration-500">
-                <div className="bg-surface-alt/70 border border-border-subtle backdrop-blur-sm rounded-full px-4 py-1.5 flex items-center justify-center gap-2 max-w-[85%] shadow-sm">
+                <div className="bg-surface-alt/70 border border-border-subtle  rounded-full px-4 py-1.5 flex items-center justify-center gap-2 max-w-[85%] shadow-sm">
                     {msg.text.includes('encrypted') ? <Lock size={12} className="text-status-success"/> : null}
                     <span className="text-sm font-bold text-text-muted tracking-wide">
                         {msg.text}
@@ -129,7 +129,7 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
             id={`msg-${msg.id}`}
         >
             {isHighlighted && (
-                <div className="absolute inset-0 bg-accent-secondary/10 -m-2 rounded-[20px] animate-pulse -z-10 blur-xl"></div>
+                <div className="absolute inset-0 bg-accent-secondary/10 -m-2 rounded-lg animate-pulse -z-10 blur-xl"></div>
             )}
 
             {contextMenu && (
@@ -188,7 +188,7 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({
                     
                     {msg.replyToId && !msg.isDeleted && !isEmojiOnly && (
                         <div 
-                            className={`mb-2.5 p-2 rounded-lg text-[13px] border-l-[3px] flex flex-col gap-0.5 cursor-pointer opacity-90 hover:opacity-100 transition-all ${isMe ? 'bg-black/10 border-white/50 text-white' : 'bg-surface-main/80 border-accent-secondary text-text-primary backdrop-blur-sm'}`}
+                            className={`mb-2.5 p-2 rounded-lg text-[13px] border-l-[3px] flex flex-col gap-0.5 cursor-pointer opacity-90 hover:opacity-100 transition-all ${isMe ? 'bg-black/10 border-white/50 text-white' : 'bg-surface-main/80 border-accent-secondary text-text-primary '}`}
                             onClick={(e) => { e.stopPropagation(); onJumpTo?.(msg.replyToId!); }}
                         >
                             <div className="flex items-center gap-1 font-bold text-sm opacity-90">

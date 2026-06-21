@@ -42,6 +42,12 @@ export const AgentViewManager: React.FC<AgentTerminalManagerProps> = ({
     const [activeLeadPhone, setActiveLeadPhone] = useState<string | null>(null);
     const [smartPitchContext, setSmartPitchContext] = useState<any>(null);
 
+    const handleEngageLead = (lead: any) => {
+        setActiveLeadPhone(lead.phone || null);
+        setView('enrollment');
+        setToast({ title: 'Lead Engagement', message: `Initiating sequence for: ${lead.customerName || lead.customer || 'Unknown'}`, type: 'info' });
+    };
+
     useEffect(() => {
         const handleSmartPitch = (e: Event) => {
             const customEvent = e as CustomEvent;
@@ -59,13 +65,7 @@ export const AgentViewManager: React.FC<AgentTerminalManagerProps> = ({
             window.removeEventListener('SMART_PITCH', handleSmartPitch);
             window.removeEventListener('ENGAGE_LEAD', handleEngageLeadEvent);
         };
-    }, [setView]);
-
-    const handleEngageLead = (lead: any) => {
-        setActiveLeadPhone(lead.phone || null);
-        setView('enrollment');
-        setToast({ title: 'Lead Engagement', message: `Initiating sequence for: ${lead.customerName || lead.customer || 'Unknown'}`, type: 'info' });
-    };
+    }, [setView, setToast]);
 
     const recoverySales = useMemo(() => {
         const TWO_DAYS_MS = 2 * 24 * 60 * 60 * 1000;

@@ -158,7 +158,7 @@ export const AgentTimeSheet: React.FC<Props> = ({ isOpen, onClose, currentUser, 
                     <div className="w-px h-6 bg-border-subtle mx-2 hidden sm:block"></div>
                     <button onClick={() => handleMonthChange(-1)} className="p-2 hover:bg-surface-main rounded-xl text-text-muted hover:text-text-primary transition-colors">←</button>
                     <div className="px-4 text-center min-w-[140px]">
-                        <span className="text-sm font-[700]  tracking-widest text-text-primary block">{monthName}</span>
+                        <span className="text-sm font-medium  tracking-wide text-text-primary block">{monthName}</span>
                         <span className="text-xs font-mono text-text-muted">{year}</span>
                     </div>
                     <button onClick={() => handleMonthChange(1)} className="p-2 hover:bg-surface-main rounded-xl text-text-muted hover:text-text-primary transition-colors">→</button>
@@ -169,7 +169,7 @@ export const AgentTimeSheet: React.FC<Props> = ({ isOpen, onClose, currentUser, 
                         <button
                             key={mode}
                             onClick={() => { setViewMode(mode); sfx.playClick(); }}
-                            className={`flex-1 sm:flex-none px-4 py-1.5 rounded-lg text-xs font-[700]  tracking-wider transition-all ${
+                            className={`flex-1 sm:flex-none px-4 py-1.5 rounded-lg text-xs font-medium  tracking-wider transition-all ${
                                 viewMode === mode 
                                 ? 'bg-accent-primary text-white shadow-md' 
                                 : 'text-text-muted hover:text-text-primary hover:bg-surface-alt'
@@ -185,45 +185,45 @@ export const AgentTimeSheet: React.FC<Props> = ({ isOpen, onClose, currentUser, 
             {showProfile && (
                 <div className="bg-surface-alt/40 border border-border-subtle rounded-xl p-4 animate-in slide-in-from-top-4 shrink-0 flex flex-col md:flex-row gap-6">
                     <div className="flex-1 space-y-3">
-                        <h4 className="text-xs font-[700] text-text-muted tracking-widest uppercase flex items-center gap-2">
+                        <h4 className="text-xs font-medium text-text-muted tracking-wide uppercase flex items-center gap-2">
                             <UserIcon size={14} className="text-accent-secondary" /> Contact Details
                         </h4>
                         <div className="grid grid-cols-2 gap-3 text-sm">
                             <div>
-                                <span className="text-[10px] text-text-muted uppercase tracking-widest block font-[700]">Email</span>
+                                <span className="text-[10px] text-text-muted uppercase tracking-wide block font-medium">Email</span>
                                 <span className="text-text-primary font-mono">{currentUser.email || '—'}</span>
                             </div>
                             <div>
-                                <span className="text-[10px] text-text-muted uppercase tracking-widest block font-[700]">Phone</span>
+                                <span className="text-[10px] text-text-muted uppercase tracking-wide block font-medium">Phone</span>
                                 <span className="text-text-primary font-mono">{currentUser.phone || '—'}</span>
                             </div>
                             <div className="col-span-2">
-                                <span className="text-[10px] text-text-muted uppercase tracking-widest block font-[700]">Address</span>
+                                <span className="text-[10px] text-text-muted uppercase tracking-wide block font-medium">Address</span>
                                 <span className="text-text-primary">{currentUser.address || '—'}</span>
                             </div>
                         </div>
                     </div>
                     <div className="w-px bg-border-subtle hidden md:block"></div>
                     <div className="flex-1 space-y-3">
-                        <h4 className="text-xs font-[700] text-text-muted tracking-widest uppercase flex items-center gap-2">
+                        <h4 className="text-xs font-medium text-text-muted tracking-wide uppercase flex items-center gap-2">
                             <Wallet size={14} className="text-status-success" /> Payout Configuration
                         </h4>
                         <div className="grid grid-cols-2 gap-3 text-sm">
                             <div>
-                                <span className="text-[10px] text-text-muted uppercase tracking-widest block font-[700]">Bank Name</span>
+                                <span className="text-[10px] text-text-muted uppercase tracking-wide block font-medium">Bank Name</span>
                                 <span className="text-text-primary font-bold">{currentUser.bankName || '—'}</span>
                             </div>
                             <div>
-                                <span className="text-[10px] text-text-muted uppercase tracking-widest block font-[700]">Commission Rate</span>
+                                <span className="text-[10px] text-text-muted uppercase tracking-wide block font-medium">Commission Rate</span>
                                 <span className="text-status-success font-bold font-mono">{currentUser.commissionRate || 15}%</span>
                             </div>
                             <div className="col-span-2 pt-2 grid grid-cols-2 gap-3">
                                 <div>
-                                    <span className="text-[10px] text-text-muted uppercase tracking-widest block font-[700]">Account No.</span>
+                                    <span className="text-[10px] text-text-muted uppercase tracking-wide block font-medium">Account No.</span>
                                     <span className="text-text-primary font-mono">{currentUser.bankAccount ? '*'.repeat(Math.max(0, currentUser.bankAccount.length - 4)) + currentUser.bankAccount.slice(-4) : '—'}</span>
                                 </div>
                                 <div>
-                                    <span className="text-[10px] text-text-muted uppercase tracking-widest block font-[700]">Mobile Wallet</span>
+                                    <span className="text-[10px] text-text-muted uppercase tracking-wide block font-medium">Mobile Wallet</span>
                                     <span className="text-text-primary font-mono">{currentUser.gcash || '—'}</span>
                                 </div>
                             </div>
@@ -236,31 +236,31 @@ export const AgentTimeSheet: React.FC<Props> = ({ isOpen, onClose, currentUser, 
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3 shrink-0">
                 <Card className="p-4 bg-surface-main border border-border-subtle rounded-xl shadow-sm relative overflow-hidden group">
                     <div className="absolute top-0 right-0 p-3 opacity-10 text-blue-500"><Clock size={40}/></div>
-                    <p className="text-xs font-[700] text-text-muted  tracking-widest relative z-10">Logged Time</p>
-                    <p className="text-lg font-[700] text-text-primary mt-1 num-font relative z-10">{formatDuration(totals.hours)}</p>
+                    <p className="text-xs font-medium text-text-muted  tracking-wide relative z-10">Logged Time</p>
+                    <p className="text-lg font-medium text-text-primary mt-1 num-font relative z-10">{formatDuration(totals.hours)}</p>
                 </Card>
                 <Card className="p-4 bg-surface-main border border-border-subtle rounded-xl shadow-sm relative overflow-hidden group">
                     <div className="absolute top-0 right-0 p-3 opacity-10 text-status-success"><DollarSign size={40}/></div>
-                    <p className="text-xs font-[700] text-text-muted  tracking-widest relative z-10">Gross Revenue</p>
-                    <p className="text-lg font-[700] text-text-primary mt-1 num-font relative z-10">${totals.revenue.toLocaleString()}</p>
+                    <p className="text-xs font-medium text-text-muted  tracking-wide relative z-10">Gross Revenue</p>
+                    <p className="text-lg font-medium text-text-primary mt-1 num-font relative z-10">${totals.revenue.toLocaleString()}</p>
                     <div className="mt-1 text-xs font-bold text-status-success">{totals.approvedCount} Wins</div>
                 </Card>
                 <Card className="p-4 bg-surface-main border border-border-subtle rounded-xl shadow-sm relative overflow-hidden group">
                     <div className="absolute top-0 right-0 p-3 opacity-10 text-status-error"><AlertCircle size={40}/></div>
-                    <p className="text-xs font-[700] text-text-muted  tracking-widest relative z-10">Lost Opportunity</p>
-                    <p className="text-lg font-[700] text-text-secondary mt-1 num-font relative z-10 group-hover:text-status-error transition-colors">${totals.declined.toLocaleString()}</p>
+                    <p className="text-xs font-medium text-text-muted  tracking-wide relative z-10">Lost Opportunity</p>
+                    <p className="text-lg font-medium text-text-secondary mt-1 num-font relative z-10 group-hover:text-status-error transition-colors">${totals.declined.toLocaleString()}</p>
                     <div className="mt-1 text-xs font-bold text-status-error">{totals.declinedCount} Declines</div>
                 </Card>
                 <Card className="p-4 bg-emerald-50 border border-status-success/30 rounded-xl shadow-sm dark:bg-emerald-950/20 relative overflow-hidden">
                     <div className="absolute top-0 right-0 p-3 opacity-10 text-emerald-300"><Wallet size={40}/></div>
-                    <p className="text-xs font-[700] text-emerald-600  tracking-widest relative z-10">Net Payout</p>
-                    <p className="text-lg font-[700] text-emerald-600 mt-1 num-font relative z-10">${totals.earnings.toLocaleString(undefined, {minimumFractionDigits: 2})}</p>
+                    <p className="text-xs font-medium text-emerald-600  tracking-wide relative z-10">Net Payout</p>
+                    <p className="text-lg font-medium text-emerald-600 mt-1 num-font relative z-10">${totals.earnings.toLocaleString(undefined, {minimumFractionDigits: 2})}</p>
                 </Card>
             </div>
 
             {/* 3. DAILY BREAKDOWN LIST */}
             <div className="bg-surface-main border border-border-subtle rounded-xl overflow-hidden shadow-sm flex-1 flex flex-col min-h-0">
-                <div className="px-4 py-3 border-b border-border-subtle bg-surface-alt/40 flex justify-between items-center text-xs font-[700]  text-text-muted tracking-widest sticky top-0 z-10 shrink-0">
+                <div className="px-4 py-3 border-b border-border-subtle bg-surface-alt/40 flex justify-between items-center text-xs font-medium  text-text-muted tracking-wide sticky top-0 z-10 shrink-0">
                     <span className="w-24">Date</span>
                     <span className="w-20 text-center">Hours</span>
                     <span className="w-24 text-right">Commission</span>
@@ -292,7 +292,7 @@ export const AgentTimeSheet: React.FC<Props> = ({ isOpen, onClose, currentUser, 
                                     {day.spiffs > 0 && <span className="block text-[10px] font-bold text-status-success mt-0.5">+${day.spiffs} Spiff</span>}
                                 </div>
                                 <div className="w-24 text-right">
-                                    <span className="text-xs font-[700] text-text-primary num-font">${day.revenue.toLocaleString()}</span>
+                                    <span className="text-xs font-medium text-text-primary num-font">${day.revenue.toLocaleString()}</span>
                                     {day.declinedRevenue > 0 && <span className="block text-[10px] font-bold text-status-error leading-tight mt-0.5">-${day.declinedRevenue.toLocaleString()} Ref</span>}
                                 </div>
                                 <div className="w-8 flex justify-end">
@@ -306,7 +306,7 @@ export const AgentTimeSheet: React.FC<Props> = ({ isOpen, onClose, currentUser, 
                                     
                                     {/* Left: Session Timeline */}
                                     <div className="space-y-3">
-                                        <h5 className="text-xs font-[700]  text-text-muted tracking-widest flex items-center gap-2">
+                                        <h5 className="text-xs font-medium  text-text-muted tracking-wide flex items-center gap-2">
                                             <Activity size={16} /> Session Log
                                         </h5>
                                         <div className="space-y-2">
@@ -324,7 +324,7 @@ export const AgentTimeSheet: React.FC<Props> = ({ isOpen, onClose, currentUser, 
 
                                     {/* Right: Sales Manifest */}
                                     <div className="space-y-3">
-                                        <h5 className="text-xs font-[700]  text-text-muted tracking-widest flex items-center gap-2">
+                                        <h5 className="text-xs font-medium  text-text-muted tracking-wide flex items-center gap-2">
                                             <DollarSign size={16} /> Production Manifest
                                         </h5>
                                         <div className="space-y-1.5">

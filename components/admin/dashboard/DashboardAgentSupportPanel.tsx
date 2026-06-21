@@ -123,8 +123,8 @@ export const DashboardAgentSupportPanel: React.FC<DashboardAgentSupportPanelProp
                 </p>
               </div>
               <div className="text-right">
-                <div className="text-lg font-black text-orange-400 leading-none">{deficit}</div>
-                <p className="text-sm text-slate-400 uppercase tracking-widest mt-1">gap</p>
+                <div className="text-lg font-bold text-orange-400 leading-none">{deficit}</div>
+                <p className="text-sm text-slate-400 uppercase tracking-wide mt-1">gap</p>
               </div>
             </div>
 

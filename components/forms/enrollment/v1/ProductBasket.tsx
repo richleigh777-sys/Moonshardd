@@ -64,13 +64,13 @@ export const ProductBasket: React.FC<ProductBasketProps> = ({
             <ShoppingCart size={18} />
           </div>
           <div>
-            <h3 className="text-sm font-black text-text-primary tracking-wide">ORDER BASKET</h3>
+            <h3 className="text-sm font-bold text-text-primary tracking-wide">ORDER BASKET</h3>
             <p className="text-sm text-text-muted uppercase tracking-wider font-semibold">Active Cart Items</p>
           </div>
         </div>
         <div className="text-right">
           <span className="text-sm font-bold text-text-muted tracking-wider block mb-0.5">SUBTOTAL</span>
-          <span className="text-xl font-black text-status-success num-font leading-none flex items-center justify-end gap-1">
+          <span className="text-xl font-bold text-status-success num-font leading-none flex items-center justify-end gap-1">
              <span className="text-sm text-status-success/70">$</span>
              {calculatedTotal.toLocaleString(undefined, { minimumFractionDigits: 2 })}
           </span>
@@ -180,7 +180,7 @@ export const ProductBasket: React.FC<ProductBasketProps> = ({
 
       {/* Notes */}
       <div className="relative z-10">
-        <label className="text-sm font-bold text-text-muted tracking-widest mb-1.5 block">CALL NOTES & INSTRUCTIONS</label>
+        <label className="text-sm font-bold text-text-muted tracking-wide mb-1.5 block">CALL NOTES & INSTRUCTIONS</label>
         <textarea
           value={notes}
           onChange={(e) => setNotes(e.target.value)}

@@ -1,6 +1,6 @@
 
 import React, { useMemo, useState, useEffect } from 'react';
-import { User, ShoppingBag, Clock, Shield, Mail, Phone, MapPin, TrendingUp, Award, Calendar, Activity, AlertTriangle, ArrowUpRight, Zap, Link, Eye, EyeOff, UserIcon, FileText, ChevronDown, ChevronRight, CheckCircle2, Ticket, MessageSquare, PhoneOff } from 'lucide-react';
+import { User, ShoppingBag, Clock, Shield, Mail, Phone, MapPin, TrendingUp, Award, Calendar, Activity, AlertTriangle, ArrowUpRight, Zap, Link, Eye, EyeOff, UserIcon, FileText, ChevronDown, ChevronRight, CheckCircle2, Ticket, MessageSquare, PhoneOff, Tag, Copy } from 'lucide-react';
 import { Modal } from '../ui/Modal';
 import { Sale } from '../../types';
 import { Badge, Button } from '../ui/Base';
@@ -163,13 +163,13 @@ export const CustomerProfileModal: React.FC<CustomerProfileModalProps> = ({
         
         if (totalSpent > 10000 || orderCount >= 10) { 
             tier = 'Diamond'; 
-            tierColor = 'text-cyan-400 border-cyan-400 shadow-[0_0_15px_rgba(34,211,238,0.3)] bg-cyan-950/30'; 
+            tierColor = 'text-cyan-400 border-cyan-400 shadow-sm bg-cyan-950/30'; 
         } else if (totalSpent > 5000 || orderCount >= 5) { 
             tier = 'Platinum'; 
-            tierColor = 'text-accent-secondary border-indigo-400 shadow-[0_0_15px_rgba(129,140,248,0.3)] bg-indigo-950/30'; 
+            tierColor = 'text-accent-secondary border-indigo-400 shadow-sm bg-indigo-950/30'; 
         } else if (totalSpent > 1000 || orderCount >= 2) { 
             tier = 'Gold'; 
-            tierColor = 'text-status-warning border-amber-400 shadow-[0_0_15px_rgba(251,191,36,0.3)] bg-amber-950/30'; 
+            tierColor = 'text-status-warning border-amber-400 shadow-sm bg-amber-950/30'; 
         }
 
         const declineRate = customerHistory.length > 0 ? declined.length / customerHistory.length : 0;
@@ -215,30 +215,30 @@ export const CustomerProfileModal: React.FC<CustomerProfileModalProps> = ({
                         <div className="flex items-center gap-4">
                             <div className="w-20 h-20 rounded-xl bg-surface-main flex items-center justify-center border border-border-subtle shadow-2xl relative overflow-hidden shrink-0">
                                 <div className="absolute inset-0 bg-gradient-to-br from-accent-primary/20 to-transparent"></div>
-                                <span className="text-xl font-[700] text-accent-primary drop-shadow-lg">
+                                <span className="text-xl font-medium text-accent-primary drop-shadow-lg">
                                     {displayName.charAt(0)}
                                 </span>
                             </div>
                             
                             <div className="min-w-0">
                                 <div className="flex items-center gap-3 mb-1 flex-wrap">
-                                    <h2 className="text-lg font-[700] text-text-primary tracking-tight truncate">
+                                    <h2 className="text-lg font-medium text-text-primary tracking-tight truncate">
                                         {isRevealed ? displayName : maskPII(displayName, 'text')}
                                     </h2>
                                     {isSuperAdmin && (
                                         <button 
                                             onClick={() => setIsRevealed(!isRevealed)}
-                                            className="p-1 px-2 flex items-center gap-1.5 rounded-lg bg-surface-alt/50 hover:bg-surface-alt text-xs font-[700] tracking-widest text-text-muted hover:text-accent-primary transition-all border border-border-subtle"
+                                            className="p-1 px-2 flex items-center gap-1.5 rounded-lg bg-surface-alt/50 hover:bg-surface-alt text-xs font-medium tracking-wide text-text-muted hover:text-accent-primary transition-all border border-border-subtle"
                                         >
                                             {isRevealed ? <EyeOff size={16} /> : <Eye size={16} />}
                                             {isRevealed ? 'Hide PII' : 'Reveal PII'}
                                         </button>
                                     )}
-                                    <span className={`px-2.5 py-1 rounded text-xs font-[700]  tracking-widest border ${metrics.tierColor}`}>
+                                    <span className={`px-2.5 py-1 rounded text-xs font-medium  tracking-wide border ${metrics.tierColor}`}>
                                         {metrics.tier} Member
                                     </span>
                                     {customerProfile && (
-                                        <span className="px-2.5 py-1 rounded text-xs font-[700]  tracking-widest border border-status-success/30 text-status-success bg-status-success/10 flex items-center gap-1">
+                                        <span className="px-2.5 py-1 rounded text-xs font-medium  tracking-wide border border-status-success/30 text-status-success bg-status-success/10 flex items-center gap-1">
                                             <Shield size={16} /> Verified
                                         </span>
                                     )}
@@ -249,6 +249,13 @@ export const CustomerProfileModal: React.FC<CustomerProfileModalProps> = ({
                                          <div className="flex items-center gap-2 text-text-secondary group/link cursor-pointer hover:text-accent-primary transition-colors">
                                             <Phone size={16} className="text-text-muted group-hover/link:text-accent-primary"/> 
                                             <span className="font-mono">{isRevealed ? phone : maskPII(phone, 'phone')}</span>
+                                            <button 
+                                                onClick={(e) => { e.stopPropagation(); navigator.clipboard.writeText(phone); }}
+                                                className="opacity-0 group-hover/link:opacity-100 transition-opacity p-1 hover:bg-surface-highlight rounded"
+                                                title="Copy to clipboard"
+                                            >
+                                                <Copy size={14} />
+                                            </button>
                                             {customerProfile && customerProfile.phones && customerProfile.phones.length > 1 && (
                                                 <span className="text-xs bg-surface-alt px-1.5 rounded text-text-muted border border-border-subtle">
                                                     +{customerProfile.phones.length - 1} Alt
@@ -281,7 +288,7 @@ export const CustomerProfileModal: React.FC<CustomerProfileModalProps> = ({
                         {role === 'agent' && onLoadToWorkspace && (
                             <Button 
                                 onClick={handleEngage}
-                                className="h-12 bg-emerald-600 hover:bg-emerald-500 text-white font-[700]  tracking-widest shadow-lg shadow-emerald-500/30 border border-emerald-400/50 animate-in slide-in-from-right-4"
+                                className="h-12 bg-emerald-600 hover:bg-emerald-500 text-white font-medium  tracking-wide shadow-lg shadow-emerald-500/30 border border-emerald-400/50 animate-in slide-in-from-right-4"
                             >
                                 <Zap size={18} className="mr-2 fill-current" />
                                 Initialize Reorder
@@ -293,42 +300,42 @@ export const CustomerProfileModal: React.FC<CustomerProfileModalProps> = ({
                 {/* METRICS GRID */}
                 <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
                     <div className="p-4 glass-panel rounded-xl hover:bg-surface-highlight/10 transition-colors group">
-                        <p className="text-[10px] uppercase font-bold text-text-muted flex items-center gap-2 mb-2 tracking-widest">
+                        <p className="text-[10px] uppercase font-bold text-text-muted flex items-center gap-2 mb-2 tracking-wide">
                             <Award size={14} /> Liftetime Value
                         </p>
-                        <p className="text-lg font-[700] text-text-primary num-font group-hover:text-status-success transition-colors">
+                        <p className="text-lg font-medium text-text-primary num-font group-hover:text-status-success transition-colors">
                             ${metrics.totalSpent.toLocaleString()}
                         </p>
                     </div>
                     <div className="p-4 glass-panel rounded-xl hover:bg-surface-highlight/10 transition-colors group">
-                        <p className="text-[10px] uppercase font-bold text-text-muted flex items-center gap-2 mb-2 tracking-widest">
+                        <p className="text-[10px] uppercase font-bold text-text-muted flex items-center gap-2 mb-2 tracking-wide">
                             <TrendingUp size={14} /> Avg Order
                         </p>
-                        <p className="text-lg font-[700] text-text-primary num-font">
+                        <p className="text-lg font-medium text-text-primary num-font">
                             ${metrics.avgOrderValue.toFixed(0)}
                         </p>
                     </div>
                     <div className="p-4 glass-panel rounded-xl hover:bg-surface-highlight/10 transition-colors group">
-                        <p className="text-[10px] uppercase font-bold text-text-muted flex items-center gap-2 mb-2 tracking-widest">
+                        <p className="text-[10px] uppercase font-bold text-text-muted flex items-center gap-2 mb-2 tracking-wide">
                             <ShoppingBag size={14} /> Approved
                         </p>
-                        <p className="text-lg font-[700] text-text-primary num-font focus-expand">
+                        <p className="text-lg font-medium text-text-primary num-font focus-expand">
                             {metrics.orderCount} <span className="text-xs text-text-muted font-bold font-sans tracking-tight">Orders</span>
                         </p>
                     </div>
                     <div className="p-4 glass-panel rounded-xl hover:bg-surface-highlight/10 transition-colors group">
-                        <p className="text-[10px] uppercase font-bold text-status-error flex items-center gap-2 mb-2 tracking-widest">
+                        <p className="text-[10px] uppercase font-bold text-status-error flex items-center gap-2 mb-2 tracking-wide">
                             <AlertTriangle size={14} /> Declined
                         </p>
-                        <p className="text-lg font-[700] text-status-error num-font focus-expand">
+                        <p className="text-lg font-medium text-status-error num-font focus-expand">
                             {customerHistory.filter(s => s.status === 'Declined' || s.status === 'Cancelled').length} <span className="text-xs text-text-muted font-bold font-sans tracking-tight">Orders</span>
                         </p>
                     </div>
                     <div className="p-4 glass-panel rounded-xl hover:bg-surface-highlight/10 transition-colors group col-span-2 md:col-span-1">
-                        <p className="text-[10px] uppercase font-bold text-text-muted flex items-center gap-2 mb-2 tracking-widest">
+                        <p className="text-[10px] uppercase font-bold text-text-muted flex items-center gap-2 mb-2 tracking-wide">
                             <Clock size={14} /> Since Last Order
                         </p>
-                        <p className={`text-lg font-[700] num-font focus-expand ${metrics.daysSinceLastActive > 60 ? 'text-status-warning' : 'text-text-primary'}`}>
+                        <p className={`text-lg font-medium num-font focus-expand ${metrics.daysSinceLastActive > 60 ? 'text-status-warning' : 'text-text-primary'}`}>
                             {metrics.daysSinceLastActive} <span className="text-xs text-text-muted font-bold font-sans tracking-tight">Days Ago</span>
                         </p>
                     </div>
@@ -337,7 +344,7 @@ export const CustomerProfileModal: React.FC<CustomerProfileModalProps> = ({
                 {/* INTELLIGENCE & TAGS */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-3">
-                         <h4 className="text-[10px] uppercase font-[700] text-text-primary flex items-center gap-2 tracking-widest">
+                         <h4 className="text-[10px] uppercase font-medium text-text-primary flex items-center gap-2 tracking-wide">
                             <Activity size={12} className="text-accent-primary"/> Behavioral Signals
                          </h4>
                          <div className="p-4 glass-panel rounded-xl space-y-3 shadow-inner">
@@ -357,13 +364,13 @@ export const CustomerProfileModal: React.FC<CustomerProfileModalProps> = ({
                     </div>
 
                     <div className="space-y-3">
-                        <h4 className="text-[10px] uppercase font-[700] text-text-primary flex items-center gap-2 tracking-widest">
+                        <h4 className="text-[10px] uppercase font-medium text-text-primary flex items-center gap-2 tracking-wide">
                             <Shield size={12} className="text-accent-primary"/> Medical Context
                         </h4>
                         <div className="p-4 glass-panel rounded-xl min-h-[88px] flex flex-wrap content-start gap-2 shadow-inner">
                             {customerHistory.length > 0 && customerHistory[0].medicalConditions && customerHistory[0].medicalConditions.length > 0 ? (
                                 customerHistory[0].medicalConditions.map((c, i) => (
-                                    <span key={i} className="px-3 py-1 bg-rose-500/10 rounded border border-rose-500/20 text-[11px] font-[700] tracking-wide text-rose-500 flex items-center gap-1.5">
+                                    <span key={i} className="px-3 py-1 bg-rose-500/10 rounded border border-rose-500/20 text-[11px] font-medium tracking-wide text-rose-500 flex items-center gap-1.5">
                                         <div className="w-1 h-1 rounded-full bg-rose-500"></div>
                                         {c}
                                     </span>
@@ -377,13 +384,13 @@ export const CustomerProfileModal: React.FC<CustomerProfileModalProps> = ({
                     </div>
                     
                     <div className="space-y-3 md:col-span-2">
-                        <h4 className="text-[10px] uppercase font-[700] text-text-primary flex items-center gap-2 tracking-widest">
+                        <h4 className="text-[10px] uppercase font-medium text-text-primary flex items-center gap-2 tracking-wide">
                             <Tag size={12} className="text-purple-500"/> Global CRM Tags & Pipeline Data
                         </h4>
                         <div className="p-4 glass-panel rounded-xl min-h-[88px] flex flex-wrap content-start gap-2 shadow-inner">
                             {customerHistory.length > 0 && customerHistory[0].crmTags && customerHistory[0].crmTags.length > 0 ? (
                                 customerHistory[0].crmTags.map((c, i) => (
-                                    <span key={i} className="px-3 py-1 bg-purple-500/10 rounded border border-purple-500/20 text-[11px] font-[700] tracking-wide text-purple-400 flex items-center gap-1.5">
+                                    <span key={i} className="px-3 py-1 bg-purple-500/10 rounded border border-purple-500/20 text-[11px] font-medium tracking-wide text-purple-400 flex items-center gap-1.5">
                                         <Tag size={10}/>
                                         {c}
                                     </span>
@@ -392,7 +399,7 @@ export const CustomerProfileModal: React.FC<CustomerProfileModalProps> = ({
                             
                             {customerHistory.length > 0 && customerHistory[0].leadSources && customerHistory[0].leadSources.length > 0 ? (
                                 customerHistory[0].leadSources.map((c, i) => (
-                                    <span key={i} className="px-3 py-1 bg-blue-500/10 rounded border border-blue-500/20 text-[11px] font-[700] tracking-wide text-blue-400 flex items-center gap-1.5">
+                                    <span key={i} className="px-3 py-1 bg-blue-500/10 rounded border border-blue-500/20 text-[11px] font-medium tracking-wide text-blue-400 flex items-center gap-1.5">
                                         <Network size={10}/>
                                         {c}
                                     </span>
@@ -401,7 +408,7 @@ export const CustomerProfileModal: React.FC<CustomerProfileModalProps> = ({
                             
                             {customerHistory.length > 0 && customerHistory[0].pipelineStages && customerHistory[0].pipelineStages.length > 0 ? (
                                 customerHistory[0].pipelineStages.map((c, i) => (
-                                    <span key={i} className="px-3 py-1 bg-amber-500/10 rounded border border-amber-500/20 text-[11px] font-[700] tracking-wide text-amber-400 flex items-center gap-1.5">
+                                    <span key={i} className="px-3 py-1 bg-amber-500/10 rounded border border-amber-500/20 text-[11px] font-medium tracking-wide text-amber-400 flex items-center gap-1.5">
                                         <Layers size={10}/>
                                         {c}
                                     </span>
@@ -420,7 +427,7 @@ export const CustomerProfileModal: React.FC<CustomerProfileModalProps> = ({
                 {/* STITCHED LOCATION HISTORY */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-3">
-                        <h4 className="text-[10px] uppercase font-[700] text-text-primary flex items-center gap-2 tracking-widest">
+                        <h4 className="text-[10px] uppercase font-medium text-text-primary flex items-center gap-2 tracking-wide">
                             <MapPin size={12} className="text-accent-primary"/> Billing & Shipping Profile
                         </h4>
                         <div className="p-4 glass-panel rounded-xl space-y-4 shadow-inner text-xs">
@@ -458,7 +465,7 @@ export const CustomerProfileModal: React.FC<CustomerProfileModalProps> = ({
                     </div>
 
                     <div className="space-y-3">
-                        <h4 className="text-[10px] uppercase font-[700] text-status-success flex items-center gap-2 tracking-widest">
+                        <h4 className="text-[10px] uppercase font-medium text-status-success flex items-center gap-2 tracking-wide">
                             <Link size={12} className="text-status-success"/> Auto-Stitched Address Registry
                         </h4>
                         <div className="p-4 glass-panel rounded-xl space-y-3 shadow-inner text-xs min-h-[114px] max-h-[170px] overflow-y-auto custom-scrollbar">
@@ -503,7 +510,7 @@ export const CustomerProfileModal: React.FC<CustomerProfileModalProps> = ({
 
                 {/* CUSTOMER NOTES & ACTIVITY */}
                 <div className="space-y-3">
-                    <h4 className="text-[10px] uppercase font-[700] text-text-primary flex items-center gap-2 tracking-widest">
+                    <h4 className="text-[10px] uppercase font-medium text-text-primary flex items-center gap-2 tracking-wide">
                         <FileText size={12} className="text-accent-primary"/> CRM Activity Log
                     </h4>
                     <div className="glass-panel rounded-xl overflow-hidden shadow-inner flex flex-col h-[280px]">
@@ -533,16 +540,16 @@ export const CustomerProfileModal: React.FC<CustomerProfileModalProps> = ({
                         {/* UNIFIED COMMS CENTER */}
                         <div className="bg-surface-alt border-t border-border-subtle p-3 flex flex-col gap-2 relative transition-all">
                             <div className="flex gap-2 mb-1">
-                                <button onClick={() => setCommsMode('note')} className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[10px] uppercase font-[800] tracking-widest transition-colors ${commsMode === 'note' ? 'bg-surface-main border border-border-subtle text-text-primary shadow-sm' : 'text-text-muted hover:text-text-primary'}`}>
+                                <button onClick={() => setCommsMode('note')} className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[10px] uppercase font-semibold tracking-wide transition-colors ${commsMode === 'note' ? 'bg-surface-main border border-border-subtle text-text-primary shadow-sm' : 'text-text-muted hover:text-text-primary'}`}>
                                     <FileText size={14} /> Note
                                 </button>
-                                <button onClick={() => setCommsMode('call')} className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[10px] uppercase font-[800] tracking-widest transition-colors ${commsMode === 'call' ? 'bg-indigo-500/20 border border-indigo-500/50 text-indigo-400 shadow-sm' : 'text-text-muted hover:text-text-primary'}`}>
+                                <button onClick={() => setCommsMode('call')} className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[10px] uppercase font-semibold tracking-wide transition-colors ${commsMode === 'call' ? 'bg-indigo-500/20 border border-indigo-500/50 text-indigo-400 shadow-sm' : 'text-text-muted hover:text-text-primary'}`}>
                                     <Phone size={14} /> Call
                                 </button>
-                                <button onClick={() => setCommsMode('sms')} className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[10px] uppercase font-[800] tracking-widest transition-colors ${commsMode === 'sms' ? 'bg-accent-primary/20 border border-accent-primary/50 text-accent-primary shadow-sm' : 'text-text-muted hover:text-text-primary'}`}>
+                                <button onClick={() => setCommsMode('sms')} className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[10px] uppercase font-semibold tracking-wide transition-colors ${commsMode === 'sms' ? 'bg-accent-primary/20 border border-accent-primary/50 text-accent-primary shadow-sm' : 'text-text-muted hover:text-text-primary'}`}>
                                     <MessageSquare size={14} /> SMS
                                 </button>
-                                <button onClick={() => setCommsMode('email')} className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[10px] uppercase font-[800] tracking-widest transition-colors ${commsMode === 'email' ? 'bg-emerald-500/20 border border-emerald-500/50 text-emerald-400 shadow-sm' : 'text-text-muted hover:text-text-primary'}`}>
+                                <button onClick={() => setCommsMode('email')} className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[10px] uppercase font-semibold tracking-wide transition-colors ${commsMode === 'email' ? 'bg-emerald-500/20 border border-emerald-500/50 text-emerald-400 shadow-sm' : 'text-text-muted hover:text-text-primary'}`}>
                                     <Mail size={14} /> Email
                                 </button>
                             </div>
@@ -554,15 +561,15 @@ export const CustomerProfileModal: React.FC<CustomerProfileModalProps> = ({
                                             <Phone size={18} />
                                         </div>
                                         <div>
-                                            <p className="text-xs font-[700] tracking-widest text-indigo-300">Call In Progress</p>
+                                            <p className="text-xs font-medium tracking-wide text-indigo-300">Call In Progress</p>
                                             <p className="text-[10px] text-text-muted mt-0.5">{isRevealed ? phone : maskPII(phone, 'phone')}</p>
                                         </div>
                                     </div>
                                     <div className="flex items-center gap-4">
-                                        <span className="text-xl font-mono text-indigo-400 tracking-widest bg-surface-main px-3 py-1.5 rounded shadow-inner">
+                                        <span className="text-xl font-mono text-indigo-400 tracking-wide bg-surface-main px-3 py-1.5 rounded shadow-inner">
                                             {Math.floor(callDuration / 60).toString().padStart(2, '0')}:{(callDuration % 60).toString().padStart(2, '0')}
                                         </span>
-                                        <Button variant="danger" className="text-xs font-[700] tracking-widest" onClick={handleSendComms}>
+                                        <Button variant="danger" className="text-xs font-medium tracking-wide" onClick={handleSendComms}>
                                             <PhoneOff size={14} className="mr-1" /> End Call
                                         </Button>
                                     </div>
@@ -598,13 +605,13 @@ export const CustomerProfileModal: React.FC<CustomerProfileModalProps> = ({
 
                 {/* TRANSACTION HISTORY */}
                 <div className="space-y-3 flex-1 flex flex-col min-h-0">
-                    <h4 className="text-[10px] uppercase font-[700] text-text-primary flex items-center gap-2 tracking-widest">
+                    <h4 className="text-[10px] uppercase font-medium text-text-primary flex items-center gap-2 tracking-wide">
                         <Calendar size={12} className="text-accent-primary"/> Transaction Ledger
                     </h4>
                     <div className="border border-border-subtle rounded-xl overflow-hidden shadow-sm flex-1 bg-surface-main">
                         <div className="max-h-[300px] overflow-y-auto custom-scrollbar">
                             <table className="w-full text-left bg-surface-main relative">
-                                <thead className="bg-surface-alt/90 backdrop-blur-md text-[10px] uppercase font-bold text-text-muted tracking-widest border-b border-border-subtle sticky top-0 z-10">
+                                <thead className="bg-surface-alt/90  text-[10px] uppercase font-bold text-text-muted tracking-wide border-b border-border-subtle sticky top-0 z-10">
                                     <tr>
                                         <th className="p-3 pl-4 w-8"></th>
                                         <th className="p-3">Order Details</th>
@@ -675,21 +682,21 @@ export const CustomerProfileModal: React.FC<CustomerProfileModalProps> = ({
                                                         <td colSpan={6} className="p-4 pl-12">
                                                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 bg-surface-main p-4 rounded-xl border border-border-subtle shadow-inner">
                                                                 <div className="space-y-3">
-                                                                    <div className="text-[10px] uppercase font-bold text-text-muted tracking-widest flex items-center gap-1.5">
+                                                                    <div className="text-[10px] uppercase font-bold text-text-muted tracking-wide flex items-center gap-1.5">
                                                                         <FileText size={12}/> Order Summary
                                                                     </div>
                                                                     <div className="text-xs text-text-secondary leading-relaxed p-3 bg-surface-alt rounded-lg border border-border-subtle/50">
                                                                         {sale.callSummary || <span className="italic opacity-50">No summary notes provided for this transaction.</span>}
                                                                         {(sale.status === 'Declined' || sale.status === 'Cancelled') && sale.declineReason && (
                                                                             <div className="mt-3 pt-3 border-t border-border-subtle">
-                                                                                <div className="text-[10px] uppercase font-bold text-status-error mb-1 tracking-widest">Reason</div>
+                                                                                <div className="text-[10px] uppercase font-bold text-status-error mb-1 tracking-wide">Reason</div>
                                                                                 <div className="text-status-error font-medium">{sale.declineReason}</div>
                                                                             </div>
                                                                         )}
                                                                     </div>
                                                                 </div>
                                                                 <div className="space-y-3">
-                                                                     <div className="text-[10px] uppercase font-bold text-text-muted tracking-widest flex items-center gap-1.5">
+                                                                     <div className="text-[10px] uppercase font-bold text-text-muted tracking-wide flex items-center gap-1.5">
                                                                         <Ticket size={12}/> Logistic & Financial Details
                                                                     </div>
                                                                     <div className="text-xs grid grid-cols-2 gap-y-2 gap-x-4">
@@ -726,7 +733,7 @@ export const CustomerProfileModal: React.FC<CustomerProfileModalProps> = ({
                 </div>
                 
                 <div className="pt-2">
-                    <Button variant="ghost" onClick={onClose} className="w-full h-10 tracking-widest font-bold text-xs hover:bg-surface-alt border border-transparent hover:border-border-subtle">
+                    <Button variant="ghost" onClick={onClose} className="w-full h-10 tracking-wide font-bold text-xs hover:bg-surface-alt border border-transparent hover:border-border-subtle">
                         Dismiss Profile
                     </Button>
                 </div>

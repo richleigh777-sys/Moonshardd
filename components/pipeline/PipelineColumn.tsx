@@ -54,18 +54,18 @@ export const PipelineColumn = React.memo<PipelineColumnProps>(({
             onDragOver={(e) => onDragOver(e, stage)}
             onDragLeave={onDragLeave}
         >
-            <div className="mb-1.5 p-1.5 sticky top-0 z-20 bg-inherit backdrop-blur-sm rounded-t-[1.25rem]">
-                <div className={`p-2.5 rounded-xl border ${config.bg} ${config.accent} backdrop-blur-md shadow-sm relative overflow-hidden transition-all group`}>
+            <div className="mb-1.5 p-1.5 sticky top-0 z-20 bg-inherit  rounded-t-[1.25rem]">
+                <div className={`p-2.5 rounded-xl border ${config.bg} ${config.accent}  shadow-sm relative overflow-hidden transition-all group`}>
                     <div className="flex justify-between items-center mb-1.5 relative z-10">
                         <div className="flex items-center gap-2">
-                            <div className={`p-1 rounded-lg bg-surface-main/80 backdrop-blur-sm ${config.color} shadow-sm`}>
+                            <div className={`p-1 rounded-lg bg-surface-main/80  ${config.color} shadow-sm`}>
                                 <StageIcon size={16} strokeWidth={3} />
                             </div>
-                            <h3 className={`text-sm font-[700]  tracking-tight ${config.color} truncate max-w-[110px]`}>
+                            <h3 className={`text-sm font-medium  tracking-tight ${config.color} truncate max-w-[110px]`}>
                                 {stage}
                             </h3>
                         </div>
-                        <Badge status="Mid" className="shadow-none bg-surface-main/50 border-transparent text-xs font-[700] px-1.5 py-0 h-auto min-w-[20px] justify-center">
+                        <Badge status="Mid" className="shadow-none bg-surface-main/50 border-transparent text-xs font-medium px-1.5 py-0 h-auto min-w-[20px] justify-center">
                             {sales.length}
                         </Badge>
                     </div>
@@ -74,7 +74,7 @@ export const PipelineColumn = React.memo<PipelineColumnProps>(({
                         <p className="text-xs font-bold text-text-muted/80 truncate max-w-[130px] opacity-80">
                             {config.strategy}
                         </p>
-                        <div className="text-xs font-[700] text-text-primary bg-surface-main/40 px-3 py-1.5 rounded border border-border-subtle num-font">
+                        <div className="text-xs font-medium text-text-primary bg-surface-main/40 px-3 py-1.5 rounded border border-border-subtle num-font">
                             {formatCurrency(totalValue)}
                         </div>
                     </div>
@@ -109,12 +109,12 @@ export const PipelineColumn = React.memo<PipelineColumnProps>(({
                         {isDragOver ? (
                             <div className="flex flex-col items-center animate-bounce">
                                 <ArrowDown size={24} className="mb-2 text-accent-primary"/>
-                                <span className="text-xs font-[700]  tracking-widest text-accent-primary">Release to Move</span>
+                                <span className="text-xs font-medium  tracking-wide text-accent-primary">Release to Move</span>
                             </div>
                         ) : (
                             <div className="flex flex-col items-center">
                                 <Layers size={24} className="mb-2 opacity-50"/>
-                                <span className="text-xs font-[700]  tracking-widest">No Active Deals</span>
+                                <span className="text-xs font-medium  tracking-wide">No Active Deals</span>
                             </div>
                         )}
                     </div>

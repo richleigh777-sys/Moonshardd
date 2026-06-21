@@ -219,18 +219,18 @@ export const CallbackForm: React.FC<CallbackFormProps> = ({ onAddNote, currentUs
         <Card className="flex flex-col h-full bg-surface-main border border-border-subtle shadow-2xl overflow-hidden p-0 relative group">
             <div className="absolute inset-0 bg-amber-500/[0.02] pointer-events-none"></div>
             
-            <div className="p-5 border-b border-border-subtle bg-surface-alt/50 flex justify-between items-center shrink-0 backdrop-blur-md">
+            <div className="p-5 border-b border-border-subtle bg-surface-alt/50 flex justify-between items-center shrink-0 ">
                 <div className="flex items-center gap-3">
                     <div className="p-2.5 bg-amber-500/10 rounded-xl text-status-warning border border-amber-500/20 shadow-neon">
                         <Timer size={20} strokeWidth={2.5} className={targetTimestamp ? 'animate-pulse' : ''} />
                     </div>
                     <div>
-                        <h3 className="text-base font-[700] text-text-primary  tracking-tight italic">Recovery Link</h3>
-                        <p className="text-sm text-text-muted font-[700]  tracking-[0.25em]">Lead Scheduler v5.0</p>
+                        <h3 className="text-base font-medium text-text-primary  tracking-tight italic">Recovery Link</h3>
+                        <p className="text-sm text-text-muted font-medium  tracking-[0.25em]">Lead Scheduler v5.0</p>
                     </div>
                 </div>
                 {countdownText && (
-                    <div className="px-3 py-1.5 bg-amber-500 text-black rounded-lg font-[700] text-sm  tracking-widest shadow-lg animate-in zoom-in">
+                    <div className="px-3 py-1.5 bg-amber-500 text-black rounded-lg font-medium text-sm  tracking-wide shadow-lg animate-in zoom-in">
                         {countdownText}
                     </div>
                 )}
@@ -239,7 +239,7 @@ export const CallbackForm: React.FC<CallbackFormProps> = ({ onAddNote, currentUs
             <div className="flex-1 overflow-y-auto custom-scrollbar p-5 space-y-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-1.5">
-                        <label className="text-sm font-[700]  text-text-muted tracking-widest ml-1">Client Identity</label>
+                        <label className="text-sm font-medium  text-text-muted tracking-wide ml-1">Client Identity</label>
                         <Input 
                             value={formData.name} 
                             onChange={e => setFormData({...formData, name: e.target.value})} 
@@ -248,7 +248,7 @@ export const CallbackForm: React.FC<CallbackFormProps> = ({ onAddNote, currentUs
                         />
                     </div>
                     <div className="space-y-1.5">
-                        <label className="text-sm font-[700]  text-text-muted tracking-widest ml-1">Phone Line</label>
+                        <label className="text-sm font-medium  text-text-muted tracking-wide ml-1">Phone Line</label>
                         <Input 
                             value={formData.phone} 
                             onChange={e => setFormData({...formData, phone: formatUSAPhone(e.target.value)})} 
@@ -262,7 +262,7 @@ export const CallbackForm: React.FC<CallbackFormProps> = ({ onAddNote, currentUs
                 {/* QUICK OUTCOMES / WHAT HAPPENED SECTION */}
                 <div className="space-y-3">
                     <div className="flex flex-col gap-0.5">
-                        <label className="text-sm font-[700] text-amber-500 tracking-widest ml-1 flex items-center gap-1.5 uppercase">
+                        <label className="text-sm font-medium text-amber-500 tracking-wide ml-1 flex items-center gap-1.5 uppercase">
                             <Check size={16} className="text-emerald-500" /> 1. Auto-Log Current Attempt
                         </label>
                         <p className="text-sm sm:text-sm text-text-muted px-1 leading-snug">
@@ -277,7 +277,7 @@ export const CallbackForm: React.FC<CallbackFormProps> = ({ onAddNote, currentUs
                                 onClick={() => handleOutcomeClick(item.outcome)}
                                 className={`
                                     py-2 px-3 bg-surface-alt border border-border-subtle rounded-xl 
-                                    text-sm font-[700] tracking-wider text-text-secondary transition-all 
+                                    text-sm font-medium tracking-wider text-text-secondary transition-all 
                                     active:scale-95 shadow-sm text-center truncate ${item.color}
                                 `}
                             >
@@ -290,7 +290,7 @@ export const CallbackForm: React.FC<CallbackFormProps> = ({ onAddNote, currentUs
                 {/* TEMPORAL OFFSET */}
                 <div className="space-y-3 mt-2">
                     <div className="flex flex-col gap-0.5">
-                        <label className="text-sm font-[700] text-amber-500 tracking-widest ml-1 flex items-center gap-2 uppercase">
+                        <label className="text-sm font-medium text-amber-500 tracking-wide ml-1 flex items-center gap-2 uppercase">
                             <Clock size={16} className="text-status-warning" /> 2. Set Timer
                         </label>
                         <p className="text-sm sm:text-sm text-text-muted px-1 leading-snug">
@@ -301,7 +301,7 @@ export const CallbackForm: React.FC<CallbackFormProps> = ({ onAddNote, currentUs
                         <button 
                             type="button" 
                             onClick={() => addHours(1)} 
-                            className="relative h-12 bg-surface-alt hover:bg-amber-500 hover:text-black border border-border-subtle rounded-xl text-sm font-[700] tracking-widest transition-all active:scale-95 shadow-sm overflow-hidden"
+                            className="relative h-12 bg-surface-alt hover:bg-amber-500 hover:text-black border border-border-subtle rounded-xl text-sm font-medium tracking-wide transition-all active:scale-95 shadow-sm overflow-hidden"
                         >
                             <span className="relative z-10 flex flex-col items-center justify-center">
                                 <span>+1 HOUR</span>
@@ -311,7 +311,7 @@ export const CallbackForm: React.FC<CallbackFormProps> = ({ onAddNote, currentUs
                         <button 
                             type="button" 
                             onClick={() => addDays(1)} 
-                            className="relative h-12 bg-surface-alt hover:bg-amber-500 hover:text-black border border-border-subtle rounded-xl text-sm font-[700] tracking-widest transition-all active:scale-95 shadow-sm overflow-hidden"
+                            className="relative h-12 bg-surface-alt hover:bg-amber-500 hover:text-black border border-border-subtle rounded-xl text-sm font-medium tracking-wide transition-all active:scale-95 shadow-sm overflow-hidden"
                         >
                             <span className="relative z-10 flex flex-col items-center justify-center">
                                 <span>+1 DAY</span>
@@ -321,7 +321,7 @@ export const CallbackForm: React.FC<CallbackFormProps> = ({ onAddNote, currentUs
                         <button 
                             type="button" 
                             onClick={() => addWeeks(1)} 
-                            className="relative h-12 bg-surface-alt hover:bg-amber-500 hover:text-black border border-border-subtle rounded-xl text-sm font-[700] tracking-widest transition-all active:scale-95 shadow-sm overflow-hidden"
+                            className="relative h-12 bg-surface-alt hover:bg-amber-500 hover:text-black border border-border-subtle rounded-xl text-sm font-medium tracking-wide transition-all active:scale-95 shadow-sm overflow-hidden"
                         >
                             <span className="relative z-10 flex flex-col items-center justify-center">
                                 <span>+1 WEEK</span>
@@ -335,7 +335,7 @@ export const CallbackForm: React.FC<CallbackFormProps> = ({ onAddNote, currentUs
                             <div className="flex items-center gap-3">
                                 <Calendar size={16} className="text-status-warning" />
                                 <div>
-                                    <p className="text-sm font-[700] text-text-muted  tracking-widest">Scheduled Window (Offset-based)</p>
+                                    <p className="text-sm font-medium text-text-muted  tracking-wide">Scheduled Window (Offset-based)</p>
                                     <p className="text-sm font-bold text-text-primary num-font">
                                         {new Date(targetTimestamp).toLocaleDateString()} @ {new Date(targetTimestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                                     </p>
@@ -356,7 +356,7 @@ export const CallbackForm: React.FC<CallbackFormProps> = ({ onAddNote, currentUs
                 <div className="space-y-5 pt-2 border-t border-border-subtle mt-4">
                     <div className="space-y-2">
                         <div className="flex flex-col gap-0.5">
-                            <label className="text-sm font-[700] text-amber-500 tracking-widest ml-1 uppercase">
+                            <label className="text-sm font-medium text-amber-500 tracking-wide ml-1 uppercase">
                                 3. Callback Protocol Category
                             </label>
                             <p className="text-sm sm:text-sm text-text-muted px-1 leading-snug">
@@ -378,7 +378,7 @@ export const CallbackForm: React.FC<CallbackFormProps> = ({ onAddNote, currentUs
                     </div>
                     <div className="space-y-2">
                         <div className="flex flex-col gap-0.5">
-                            <label className="text-sm font-[700] text-amber-500 tracking-widest ml-1 flex items-center gap-1.5 uppercase">
+                            <label className="text-sm font-medium text-amber-500 tracking-wide ml-1 flex items-center gap-1.5 uppercase">
                                 <StickyNote size={16} /> 4. Additional Intelligence
                             </label>
                             <p className="text-sm sm:text-sm text-text-muted px-1 leading-snug">
@@ -400,7 +400,7 @@ export const CallbackForm: React.FC<CallbackFormProps> = ({ onAddNote, currentUs
                     variant="primary" 
                     onClick={handleSubmit}
                     disabled={isSubmitting || !formData.name || !formData.phone || !targetTimestamp || isSuccess} 
-                    className={`w-full h-14 text-sm font-[700]  tracking-[0.25em] shadow-lg transition-all duration-300 relative overflow-hidden group/btn ${
+                    className={`w-full h-14 text-sm font-medium  tracking-[0.25em] shadow-lg transition-all duration-300 relative overflow-hidden group/btn ${
                         isSuccess ? 'bg-status-success' : 'bg-amber-600 hover:bg-amber-500 shadow-amber-500/20'
                     }`}
                 >

@@ -324,9 +324,9 @@ export const CommandDeckTab = () => {
             <motion.div variants={itemVariants} className="flex flex-col gap-3 pb-4">
                 <div className="flex items-center gap-2 text-[#EF4444]">
                     <ShieldAlert size={14} className="animate-pulse" />
-                    <span className="text-sm font-black tracking-widest uppercase opacity-80">Administrative Control Level 10 Only</span>
+                    <span className="text-sm font-bold tracking-wide uppercase opacity-80">Administrative Control Level 10 Only</span>
                 </div>
-                <h3 className="text-3xl font-black text-text-primary tracking-tight">
+                <h3 className="text-3xl font-bold text-text-primary tracking-tight">
                     System Core <span className="text-[#3B82F6]">Controls</span>
                 </h3>
                 <p className="text-xs text-text-muted max-w-2xl leading-relaxed">
@@ -335,13 +335,13 @@ export const CommandDeckTab = () => {
             </motion.div>
 
             <motion.div variants={itemVariants} className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                 <div className="bg-surface-main/ border border-border-subtle rounded-[2rem] p-6 sm:p-8 shadow-inner flex flex-col justify-between">
+                 <div className="bg-surface-main/ border border-border-subtle rounded-xl p-6 sm:p-8 shadow-inner flex flex-col justify-between">
                     <div>
                         <div className="flex items-center gap-3 mb-6 pb-4 border-b border-border-subtle">
                             <div className="p-2 rounded-xl bg-[#3B82F6]/10 text-[#60A5FA] border border-[#3B82F6]/20 shadow-inner">
                                 <Radio size={16} />
                             </div>
-                            <h3 className="text-xs font-black text-text-primary uppercase tracking-widest">Broadcasters</h3>
+                            <h3 className="text-xs font-bold text-text-primary uppercase tracking-wide">Broadcasters</h3>
                         </div>
                         
                         <div className="space-y-2">
@@ -357,7 +357,7 @@ export const CommandDeckTab = () => {
                                  </div>
                                  <button 
                                      onClick={() => setLevel10Settings(prev => ({ ...prev, shieldInactiveAgents: !prev.shieldInactiveAgents }))}
-                                     className={`px-4 py-2 rounded-xl text-sm font-black uppercase tracking-widest transition-all border ${level10Settings.shieldInactiveAgents ? "bg-[#3B82F6]/10 border-[#3B82F6]/30 text-[#60A5FA] shadow-inner" : "bg-surface-alt border-border-subtle text-text-muted hover:bg-surface-main"}`}
+                                     className={`px-4 py-2 rounded-xl text-sm font-bold uppercase tracking-wide transition-all border ${level10Settings.shieldInactiveAgents ? "bg-[#3B82F6]/10 border-[#3B82F6]/30 text-[#60A5FA] shadow-inner" : "bg-surface-alt border-border-subtle text-text-muted hover:bg-surface-main"}`}
                                  >
                                      {level10Settings.shieldInactiveAgents ? 'Shield Safe' : 'Hard Purge'}
                                  </button>
@@ -368,7 +368,7 @@ export const CommandDeckTab = () => {
                                      <span className="text-sm font-bold text-text-primary">Affirmation Beacon</span>
                                      <span className="text-sm text-text-muted mt-1">Push custom mental health remind triggers.</span>
                                  </div>
-                                 <Button variant="secondary" className="text-sm font-black tracking-widest uppercase h-10 px-5 bg-surface-alt" onClick={handleBroadcastAffirmation}>
+                                 <Button variant="secondary" className="text-sm font-bold tracking-wide uppercase h-10 px-5 bg-surface-alt" onClick={handleBroadcastAffirmation}>
                                      Beam Affirmation
                                  </Button>
                              </div>
@@ -378,7 +378,7 @@ export const CommandDeckTab = () => {
                                      <span className="text-sm font-bold text-text-primary">Floor Celebrations</span>
                                      <span className="text-sm text-text-muted mt-1">Trigger global celebration confetti.</span>
                                  </div>
-                                 <Button variant="secondary" className="text-sm font-black tracking-widest uppercase h-10 px-5 gap-2 bg-surface-alt" onClick={handleBroadcastConfetti}>
+                                 <Button variant="secondary" className="text-sm font-bold tracking-wide uppercase h-10 px-5 gap-2 bg-surface-alt" onClick={handleBroadcastConfetti}>
                                      <Sparkles size={12} className="text-[#F59E0B]" /> Launch
                                  </Button>
                              </div>
@@ -388,7 +388,7 @@ export const CommandDeckTab = () => {
                                      <span className="text-sm font-bold text-text-primary">Global Lock</span>
                                      <span className="text-sm text-text-muted mt-1">Restrict standard logins for tweaks.</span>
                                  </div>
-                                 <Button variant={systemConfig?.maintenanceMode ? "danger" : "secondary"} className="text-sm font-black tracking-widest uppercase h-10 px-5 bg-surface-alt" onClick={() => runAction("Maintenance Mode", () => {
+                                 <Button variant={systemConfig?.maintenanceMode ? "danger" : "secondary"} className="text-sm font-bold tracking-wide uppercase h-10 px-5 bg-surface-alt" onClick={() => runAction("Maintenance Mode", () => {
                                      updateSystemConfig({ maintenanceMode: !systemConfig?.maintenanceMode });
                                  })}>
                                      {systemConfig?.maintenanceMode ? 'Locked Out' : 'Active'}
@@ -398,13 +398,13 @@ export const CommandDeckTab = () => {
                     </div>
                  </div>
 
-                <div className="bg-surface-main/ border border-border-subtle rounded-[2rem] p-6 sm:p-8 shadow-inner flex flex-col justify-between">
+                <div className="bg-surface-main/ border border-border-subtle rounded-xl p-6 sm:p-8 shadow-inner flex flex-col justify-between">
                     <div>
                         <div className="flex items-center gap-3 mb-6 pb-4 border-b border-border-subtle">
                             <div className="p-2 rounded-xl bg-[#10B981]/10 text-[#34D399] border border-[#10B981]/20 shadow-inner">
                                 <ShieldCheck size={16} />
                             </div>
-                            <h3 className="text-xs font-black text-text-primary uppercase tracking-widest">Core Constraints</h3>
+                            <h3 className="text-xs font-bold text-text-primary uppercase tracking-wide">Core Constraints</h3>
                         </div>
                         
                         <div className="space-y-6">
@@ -443,7 +443,7 @@ export const CommandDeckTab = () => {
                           <div className="p-2 rounded-xl bg-[#F59E0B]/10 text-[#FBBF24] border border-[#F59E0B]/20 shadow-inner">
                               <Server size={16} />
                           </div>
-                           <h3 className="text-xs font-black text-text-primary uppercase tracking-widest">Distributed Cluster Nodes</h3>
+                           <h3 className="text-xs font-bold text-text-primary uppercase tracking-wide">Distributed Cluster Nodes</h3>
                        </div>
                       <div className="flex items-center gap-4">
                           <span className="text-sm font-semibold text-text-muted bg-surface-alt px-4 py-2 border border-border-subtle rounded-xl flex items-center gap-2 shadow-inner">
@@ -455,10 +455,10 @@ export const CommandDeckTab = () => {
                                   sfx.playClick();
                                   setShowDeployForm(!showDeployForm);
                               }}
-                              className={`h-10 px-5 rounded-xl text-sm font-black uppercase tracking-widest shadow-md transition-all flex items-center gap-2 cursor-pointer ${
+                              className={`h-10 px-5 rounded-xl text-sm font-bold uppercase tracking-wide shadow-md transition-all flex items-center gap-2 cursor-pointer ${
                                   showDeployForm 
                                   ? 'bg-[#EF4444]/10 border border-[#EF4444]/30 text-[#FCA5A5] hover:bg-[#EF4444]/20' 
-                                  : 'bg-gradient-to-r from-[#3B82F6] to-[#2563EB] text-text-primary hover:shadow-[0_0_20px_rgba(59,130,246,0.3)] border border-[#60A5FA]/30'
+                                  : 'bg-gradient-to-r from-[#3B82F6] to-[#2563EB] text-text-primary hover:shadow-sm border border-[#60A5FA]/30'
                               }`}
                           >
                               {showDeployForm ? (
@@ -480,7 +480,7 @@ export const CommandDeckTab = () => {
                           animate={{ opacity: 1, y: 0, height: 'auto' }}
                           exit={{ opacity: 0, y: -20, height: 0 }}
                           transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] as any }}
-                          className="bg-gradient-to-br from-[#0A0A0C] to-[#0F0F11] border border-border-subtle rounded-[2rem] p-6 sm:p-8 mt-6 shadow-2xl relative overflow-hidden text-left"
+                          className="bg-gradient-to-br from-[#0A0A0C] to-[#0F0F11] border border-border-subtle rounded-xl p-6 sm:p-8 mt-6 shadow-2xl relative overflow-hidden text-left"
                       >
                           <div className="absolute right-0 top-0 w-48 h-48 bg-[#3B82F6]/5 rounded-full blur-[60px] pointer-events-none"></div>
                           
@@ -489,7 +489,7 @@ export const CommandDeckTab = () => {
                                   <Cpu size={20} />
                               </div>
                               <div className="text-left">
-                                  <h4 className="text-sm font-black text-text-primary tracking-tight">Generate Server</h4>
+                                  <h4 className="text-sm font-bold text-text-primary tracking-tight">Generate Server</h4>
                                   <span className="text-sm text-text-muted block mt-1 font-medium leading-relaxed">Initialize a sandboxed telephony and client database node.</span>
                               </div>
                           </div>
@@ -499,7 +499,7 @@ export const CommandDeckTab = () => {
                                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 text-left">
                                       
                                       <div className="space-y-2 text-left">
-                                          <label className="text-sm font-black uppercase text-text-muted tracking-[0.15em] ml-1 block">Company Team Name</label>
+                                          <label className="text-sm font-bold uppercase text-text-muted tracking-wide ml-1 block">Company Team Name</label>
                                           <input
                                               type="text"
                                               required
@@ -511,7 +511,7 @@ export const CommandDeckTab = () => {
                                       </div>
 
                                       <div className="space-y-2 text-left">
-                                          <label className="text-sm font-black uppercase text-text-muted tracking-[0.15em] ml-1 block">Lead Routing Strategy</label>
+                                          <label className="text-sm font-bold uppercase text-text-muted tracking-wide ml-1 block">Lead Routing Strategy</label>
                                           <select
                                               value={deployingNodeData.leadRouting}
                                               onChange={e => setDeployingNodeData(prev => ({ ...prev, leadRouting: e.target.value }))}
@@ -524,7 +524,7 @@ export const CommandDeckTab = () => {
                                       </div>
 
                                       <div className="space-y-2 text-left">
-                                          <label className="text-sm font-black uppercase text-text-muted tracking-[0.15em] ml-1 block">Max Seat Capacity</label>
+                                          <label className="text-sm font-bold uppercase text-text-muted tracking-wide ml-1 block">Max Seat Capacity</label>
                                           <select
                                               value={deployingNodeData.capacityLimit}
                                               onChange={e => setDeployingNodeData(prev => ({ ...prev, capacityLimit: Number(e.target.value) }))}
@@ -537,7 +537,7 @@ export const CommandDeckTab = () => {
                                       </div>
 
                                       <div className="space-y-2 text-left">
-                                          <label className="text-sm font-black uppercase text-text-muted tracking-[0.15em] ml-1 block">VoIP Concurrency Ratio</label>
+                                          <label className="text-sm font-bold uppercase text-text-muted tracking-wide ml-1 block">VoIP Concurrency Ratio</label>
                                           <select
                                               value={deployingNodeData.dialingRatio}
                                               onChange={e => setDeployingNodeData(prev => ({ ...prev, dialingRatio: e.target.value }))}
@@ -550,7 +550,7 @@ export const CommandDeckTab = () => {
                                       </div>
 
                                       <div className="space-y-2 text-left">
-                                          <label className="text-sm font-black uppercase text-text-muted tracking-[0.15em] ml-1 block">Database Sync Engine</label>
+                                          <label className="text-sm font-bold uppercase text-text-muted tracking-wide ml-1 block">Database Sync Engine</label>
                                           <select
                                               value={deployingNodeData.databaseEngine}
                                               onChange={e => setDeployingNodeData(prev => ({ ...prev, databaseEngine: e.target.value }))}
@@ -563,7 +563,7 @@ export const CommandDeckTab = () => {
                                       </div>
 
                                       <div className="space-y-2 text-left">
-                                          <label className="text-sm font-black uppercase text-text-muted tracking-[0.15em] ml-1 block">Logging level</label>
+                                          <label className="text-sm font-bold uppercase text-text-muted tracking-wide ml-1 block">Logging level</label>
                                           <select
                                               value={deployingNodeData.loggingPrivacy}
                                               onChange={e => setDeployingNodeData(prev => ({ ...prev, loggingPrivacy: e.target.value }))}
@@ -576,7 +576,7 @@ export const CommandDeckTab = () => {
                                       </div>
 
                                       <div className="space-y-2 text-left md:col-span-2 lg:col-span-1">
-                                          <label className="text-sm font-black uppercase text-text-muted tracking-[0.15em] ml-1 block">Initial Security Key</label>
+                                          <label className="text-sm font-bold uppercase text-text-muted tracking-wide ml-1 block">Initial Security Key</label>
                                           <div className="flex gap-2">
                                               <div className="relative flex-1">
                                                   <Key size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-text-muted" />
@@ -584,7 +584,7 @@ export const CommandDeckTab = () => {
                                                       type="text"
                                                       readOnly
                                                       value={deployingNodeData.accessKey}
-                                                      className="w-full h-12 pl-12 pr-4 bg-surface-main border border-border-subtle rounded-xl text-sm text-[#60A5FA] font-mono select-all font-black focus:outline-none shadow-inner"
+                                                      className="w-full h-12 pl-12 pr-4 bg-surface-main border border-border-subtle rounded-xl text-sm text-[#60A5FA] font-mono select-all font-bold focus:outline-none shadow-inner"
                                                   />
                                               </div>
                                               <button
@@ -599,9 +599,9 @@ export const CommandDeckTab = () => {
                                       </div>
                                   </div>
 
-                                  <div className="flex items-center justify-between p-5 bg-surface-main/ border border-border-subtle rounded-2xl text-left mt-6">
+                                  <div className="flex items-center justify-between p-5 bg-surface-main/ border border-border-subtle rounded-xl text-left mt-6">
                                       <div className="space-y-1.5">
-                                          <label className="text-sm font-black uppercase text-text-primary tracking-widest block">Auto Seed Lead Injection</label>
+                                          <label className="text-sm font-bold uppercase text-text-primary tracking-wide block">Auto Seed Lead Injection</label>
                                           <span className="text-sm text-text-muted block leading-relaxed">Directly populate this team node with 250 verified leads on boot.</span>
                                       </div>
                                       <button
@@ -620,10 +620,10 @@ export const CommandDeckTab = () => {
                                       </button>
                                   </div>
 
-                                  <div className="p-4 bg-surface-main/50 border border-border-subtle rounded-2xl flex items-start gap-4 text-left mt-4">
+                                  <div className="p-4 bg-surface-main/50 border border-border-subtle rounded-xl flex items-start gap-4 text-left mt-4">
                                       <AlertTriangle size={16} className="text-[#F59E0B] shrink-0 mt-0.5" />
                                       <p className="text-sm leading-relaxed text-text-muted">
-                                          <strong className="text-[#E4E4E7] font-bold">Z-Knowledge Verification Handshake:</strong> Lower agents will be restricted from socket handshakes without verifying their portal key <code className="text-[#FBBF24] bg-[#FBBF24]/10 border border-[#FBBF24]/20 px-1.5 py-0.5 rounded font-mono font-black text-sm ml-1">{deployingNodeData.accessKey}</code>.
+                                          <strong className="text-[#E4E4E7] font-bold">Z-Knowledge Verification Handshake:</strong> Lower agents will be restricted from socket handshakes without verifying their portal key <code className="text-[#FBBF24] bg-[#FBBF24]/10 border border-[#FBBF24]/20 px-1.5 py-0.5 rounded font-mono font-bold text-sm ml-1">{deployingNodeData.accessKey}</code>.
                                       </p>
                                   </div>
 
@@ -634,13 +634,13 @@ export const CommandDeckTab = () => {
                                               sfx.playClick();
                                               setShowDeployForm(false);
                                           }}
-                                          className="h-12 px-6 bg-surface-alt hover:bg-surface-main text-sm font-black uppercase tracking-widest text-text-muted hover:text-text-primary rounded-xl border border-border-subtle transition-all cursor-pointer"
+                                          className="h-12 px-6 bg-surface-alt hover:bg-surface-main text-sm font-bold uppercase tracking-wide text-text-muted hover:text-text-primary rounded-xl border border-border-subtle transition-all cursor-pointer"
                                       >
                                           Exit Core Setup
                                       </button>
                                       <button
                                           type="submit"
-                                          className="h-12 px-8 bg-gradient-to-r from-[#3B82F6] to-[#2563EB] hover:from-[#2563EB] hover:to-[#1D4ED8] text-sm font-black uppercase tracking-widest text-white rounded-xl shadow-[0_0_20px_rgba(59,130,246,0.3)] flex items-center gap-2.5 transition-all outline-none cursor-pointer hover:scale-[1.02] border border-[#60A5FA]/30"
+                                          className="h-12 px-8 bg-gradient-to-r from-[#3B82F6] to-[#2563EB] hover:from-[#2563EB] hover:to-[#1D4ED8] text-sm font-bold uppercase tracking-wide text-white rounded-xl shadow-sm flex items-center gap-2.5 transition-all outline-none cursor-pointer hover:scale-[1.02] border border-[#60A5FA]/30"
                                       >
                                           <Play size={14} className="fill-white" /> Compile & Deploy Cohort Node
                                       </button>
@@ -650,7 +650,7 @@ export const CommandDeckTab = () => {
                               <div className="space-y-6 animate-in fade-in zoom-in-95 duration-500">
                                   
                                   <div className="space-y-3">
-                                      <div className="flex justify-between items-center text-sm font-black uppercase tracking-widest">
+                                      <div className="flex justify-between items-center text-sm font-bold uppercase tracking-wide">
                                           <span className="text-[#60A5FA] flex items-center gap-2">
                                               <RefreshCw size={14} className="animate-spin" />
                                               Assembling Virtualized Team Infrastructure...
@@ -659,21 +659,21 @@ export const CommandDeckTab = () => {
                                       </div>
                                       <div className="h-3 w-full bg-surface-main rounded-full overflow-hidden border border-border-subtle shadow-inner p-0.5">
                                           <div 
-                                              className="h-full bg-gradient-to-r from-[#3B82F6] to-[#60A5FA] transition-all duration-300 ease-out rounded-full shadow-[0_0_15px_rgba(59,130,246,0.6)]"
+                                              className="h-full bg-gradient-to-r from-[#3B82F6] to-[#60A5FA] transition-all duration-300 ease-out rounded-full shadow-sm"
                                               style={{ width: `${compilationProgress}%` }}
                                           ></div>
                                       </div>
                                   </div>
 
-                                  <div className="p-5 bg-surface-alt/ backdrop-blur-md rounded-2xl border border-border-subtle font-mono text-xs leading-relaxed max-h-[280px] overflow-y-auto custom-scrollbar flex flex-col justify-start shadow-inner">
+                                  <div className="p-5 bg-surface-alt/  rounded-xl border border-border-subtle font-mono text-xs leading-relaxed max-h-[280px] overflow-y-auto custom-scrollbar flex flex-col justify-start shadow-inner">
                                       {compilerLogs.map((logLine, logIdx) => (
                                           <motion.div 
                                               initial={{ opacity: 0, x: -10 }}
                                               animate={{ opacity: 1, x: 0 }}
                                               key={logIdx}
                                               className={`py-1.5 ${
-                                                  logLine.startsWith('⚡') ? 'text-text-primary font-black' :
-                                                  logLine.includes('[SUCCESS]') || logLine.includes('[NODE_ONLINE]') ? 'text-[#34D399] font-black' :
+                                                  logLine.startsWith('⚡') ? 'text-text-primary font-bold' :
+                                                  logLine.includes('[SUCCESS]') || logLine.includes('[NODE_ONLINE]') ? 'text-[#34D399] font-bold' :
                                                   logLine.includes('[AUTH_SECURE]') ? 'text-[#FBBF24]' : 'text-[#60A5FA]/90 font-medium'
                                               }`}
                                           >
@@ -682,7 +682,7 @@ export const CommandDeckTab = () => {
                                       ))}
                                   </div>
                                   
-                                  <div className="flex justify-start text-sm font-bold uppercase tracking-widest text-text-muted">
+                                  <div className="flex justify-start text-sm font-bold uppercase tracking-wide text-text-muted">
                                       System thread occupied. Outbound routing signals are temporarily gated.
                                   </div>
                               </div>
@@ -743,7 +743,7 @@ export const CommandDeckTab = () => {
                              <div className="grid grid-cols-2 gap-2 mt-4 p-2 rounded-xl bg-surface-alt/50 border border-border-subtle/50 relative z-10 font-mono text-sm leading-tight">
                                  <div>
                                      <span className="text-text-muted/70 block text-[8px] uppercase">STATUS</span>
-                                     <span className={`font-black flex items-center gap-1 mt-0.5 uppercase ${
+                                     <span className={`font-bold flex items-center gap-1 mt-0.5 uppercase ${
                                          org.status === 'online' ? 'text-status-success' 
                                          : org.status === 'degraded' ? 'text-status-warning' 
                                          : 'text-text-muted'
@@ -759,7 +759,7 @@ export const CommandDeckTab = () => {
 
                                  <div className="text-right">
                                      <span className="text-text-muted/70 block text-[8px] uppercase">LATENCY</span>
-                                     <span className={`font-black block mt-0.5 ${org.latency > 150 ? 'text-status-warning' : 'text-text-primary'}`}>
+                                     <span className={`font-bold block mt-0.5 ${org.latency > 150 ? 'text-status-warning' : 'text-text-primary'}`}>
                                          {org.latency > 0 ? `${org.latency}ms` : '---'}
                                      </span>
                                  </div>
@@ -770,14 +770,14 @@ export const CommandDeckTab = () => {
 
                  {/* Node Detail Inspector Drawer */}
                  {activeNode && (
-                     <Card variant="refraction" className="p-5 border border-border-subtle/70 bg-surface-main/40 backdrop-blur-md animate-in fade-in duration-200">
+                     <Card variant="refraction" className="p-5 border border-border-subtle/70 bg-surface-main/40  animate-in fade-in duration-200">
                          <div className="flex flex-wrap items-center justify-between gap-4">
                              <div className="flex items-center gap-3">
                                  <div className="p-2 bg-accent-primary/10 rounded-xl text-accent-primary border border-accent-primary/20">
                                      <Activity size={18} />
                                  </div>
                                  <div>
-                                     <h4 className="text-sm font-black text-text-primary">Cluster Node Detailed Monitor: {activeNode.name}</h4>
+                                     <h4 className="text-sm font-bold text-text-primary">Cluster Node Detailed Monitor: {activeNode.name}</h4>
                                      <p className="text-sm text-text-muted font-bold font-mono">NETWORK INGRESS ENDPOINT: {activeNode.ipEndpoint || 'UNKNOWN'} | ID: {activeNode.id}</p>
                                  </div>
                              </div>
@@ -791,7 +791,7 @@ export const CommandDeckTab = () => {
                                  </span>
                                  <Button 
                                      variant="secondary" 
-                                     className="text-sm font-black uppercase tracking-wider h-8 flex items-center gap-1"
+                                     className="text-sm font-bold uppercase tracking-wider h-8 flex items-center gap-1"
                                      onClick={handleTestPing}
                                      disabled={isPinging}
                                  >

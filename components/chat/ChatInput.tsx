@@ -235,7 +235,7 @@ export const ChatInput: React.FC<ChatInputProps> = ({
                             <span className="text-[15px] font-mono font-bold text-status-error/80 ml-auto bg-surface-main px-2 py-0.5 rounded-lg shadow-sm">{formatDuration(recordTime)}</span>
                         </div>
                     ) : (
-                        <div className="relative w-full bg-surface-alt border border-transparent focus-within:border-border-subtle focus-within:bg-surface-main rounded-[20px] transition-all flex items-end">
+                        <div className="relative w-full bg-surface-alt border border-transparent focus-within:border-border-subtle focus-within:bg-surface-main rounded-lg transition-all flex items-end">
                             <textarea 
                                 ref={textareaRef}
                                 value={input} 

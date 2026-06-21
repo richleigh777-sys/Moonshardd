@@ -4,6 +4,7 @@ import { useCRM } from '../hooks/useCRM';
 import { useSystem } from '../hooks/useSystem';
 import { User, ProductConfig, Sale } from '../types';
 import { sfx } from '../lib/soundService';
+import { nexusGateway } from '../nexus/adapters/DataGateway';
 
 export const useAdminLogic = () => {
     const { users, addUser, updateUser, sendDirective, updateProductConfig, updateSaleStatus, productConfig, systemConfig } = useCRM();
@@ -59,18 +60,18 @@ export const useAdminLogic = () => {
             if (action === 'approve') sfx.playSuccess();
             else sfx.playDecline();
 
-            await Promise.all(selectedSales.map(sale => {
-                const updates: any = { status };
-                if (action === 'approve' && payload?.txnId) {
-                    updates.orderId = payload.txnId;
-                    updates.dealStage = 'Won';
-                }
-                if (action === 'decline' && payload?.reason) {
-                    updates.declineReason = payload.reason;
-                    updates.dealStage = 'Lost';
-                }
-                return updateSaleStatus(sale.id, status, updates);
-            }));
+            const ids = selectedSales.map(s => s.id);
+            const updates: any = { status };
+            if (action === 'approve' && payload?.txnId) {
+                updates.orderId = payload.txnId;
+                updates.dealStage = 'Won';
+            }
+            if (action === 'decline' && payload?.reason) {
+                updates.declineReason = payload.reason;
+                updates.dealStage = 'Lost';
+            }
+
+            await nexusGateway.updateBulk('sales', ids, updates);
 
             // Message Logic
             if (selectedSales.length === 1) {

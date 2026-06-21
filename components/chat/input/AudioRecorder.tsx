@@ -44,9 +44,9 @@ export const AudioRecorder: React.FC<AudioRecorderProps> = ({ recordTime, onCanc
                     ))}
                 </div>
                 
-                <div className="z-10 bg-surface-main/90 backdrop-blur-sm px-4 py-1.5 rounded-full border border-status-error/20 shadow-sm flex items-center gap-2">
+                <div className="z-10 bg-surface-main/90  px-4 py-1.5 rounded-full border border-status-error/20 shadow-sm flex items-center gap-2">
                     <div className="w-2 h-2 bg-status-error rounded-full animate-pulse"></div>
-                    <span className="font-mono font-bold text-status-error text-sm tracking-widest">
+                    <span className="font-mono font-bold text-status-error text-sm tracking-wide">
                         {Math.floor(recordTime / 60)}:{(recordTime % 60).toString().padStart(2, '0')}
                     </span>
                 </div>
@@ -54,7 +54,7 @@ export const AudioRecorder: React.FC<AudioRecorderProps> = ({ recordTime, onCanc
             
             <button 
                 onClick={onSend} 
-                className="z-10 h-10 px-4 bg-status-error hover:bg-red-600 text-text-primary rounded-xl shadow-lg shadow-red-500/30 flex items-center gap-2 text-sm font-[700]  tracking-widest transition-all hover:scale-105 active:scale-95"
+                className="z-10 h-10 px-4 bg-status-error hover:bg-red-600 text-text-primary rounded-xl shadow-lg shadow-red-500/30 flex items-center gap-2 text-sm font-medium  tracking-wide transition-all hover:scale-105 active:scale-95"
                 title="Send Audio"
             >
                 Send <Send size={16} fill="currentColor" />

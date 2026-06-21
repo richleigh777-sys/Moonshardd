@@ -151,8 +151,8 @@ export const ServerGateway: React.FC = () => {
             />
 
             {/* NUCLEAR PURGE MODAL */}
-            <div className={`fixed inset-0 z-[9999] flex items-center justify-center bg-black/60 backdrop-blur-sm transition-opacity duration-300 ${isDeleteOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}>
-                <div className={`w-full max-w-md bg-surface-main border border-border-strong rounded-2xl p-6 shadow-2xl transform transition-all duration-300 ${isDeleteOpen ? 'scale-100' : 'scale-95'}`}>
+            <div className={`fixed inset-0 z-[9999] flex items-center justify-center bg-black/60  transition-opacity duration-300 ${isDeleteOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}>
+                <div className={`w-full max-w-md bg-surface-main border border-border-strong rounded-xl p-6 shadow-2xl transform transition-all duration-300 ${isDeleteOpen ? 'scale-100' : 'scale-95'}`}>
                     
                     {isPurging ? (
                         <div className="flex flex-col items-center justify-center h-[280px]">
@@ -173,7 +173,7 @@ export const ServerGateway: React.FC = () => {
                                 </div>
                                 <div>
                                     <h2 className="text-lg font-bold">Destructive Action</h2>
-                                    <p className="text-xs font-bold text-status-error/80 uppercase tracking-widest">Cannot be undone</p>
+                                    <p className="text-xs font-bold text-status-error/80 uppercase tracking-wide">Cannot be undone</p>
                                 </div>
                             </div>
                             

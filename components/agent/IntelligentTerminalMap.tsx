@@ -186,7 +186,7 @@ export const IntelligentTerminalMap: React.FC<IntelligentTerminalMapProps> = ({
                     <GitMerge size={160} className="text-indigo-500" />
                 </div>
                 <div>
-                    <h2 className="text-lg font-black tracking-tight text-text-primary flex items-center gap-2">
+                    <h2 className="text-lg font-bold tracking-tight text-text-primary flex items-center gap-2">
                         <GitMerge className="text-indigo-400 rotate-90" size={20} />
                         CRM Core Routing & Judgment Gateway
                     </h2>
@@ -217,20 +217,20 @@ export const IntelligentTerminalMap: React.FC<IntelligentTerminalMapProps> = ({
             {/* Grid Map: The 3 Terminal Diagnostics Channels */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 {/* 1. Pipeline Board Column */}
-                <div className="bg-gradient-to-b from-surface-main to-surface-alt border border-border-subtle hover:border-blue-500/40 rounded-xl p-3 relative overflow-hidden flex flex-col justify-between h-[110px] shadow-[0_4px_12px_-2px_rgba(0,0,0,0.1)] group transition-all">
+                <div className="bg-gradient-to-b from-surface-main to-surface-alt border border-border-subtle hover:border-blue-500/40 rounded-xl p-3 relative overflow-hidden flex flex-col justify-between h-[110px] shadow-sm group transition-all">
                     <div className="absolute -top-10 -right-10 w-32 h-32 bg-blue-500/10 rounded-full blur-2xl group-hover:bg-blue-500/20 transition-colors" />
                     <div className="relative z-10 flex justify-between items-start w-full">
                         <div className="flex gap-3">
-                            <div className="flex flex-col items-center justify-center text-blue-400 transform group-hover:scale-105 group-hover:-translate-y-0.5 transition-all drop-shadow-[0_0_10px_rgba(59,130,246,0.3)]">
+                            <div className="flex flex-col items-center justify-center text-blue-400 transform group-hover:scale-105 group-hover:-translate-y-0.5 transition-all shadow-sm">
                                 <Map size={40} strokeWidth={1.5} />
-                                <span className="text-[8px] font-black tracking-widest text-[#ffffff60] uppercase mt-1">Term 01</span>
+                                <span className="text-[8px] font-bold tracking-wide text-[#ffffff60] uppercase mt-1">Term 01</span>
                             </div>
                             <div className="flex flex-col pt-1">
-                                <h3 className="text-sm font-black text-white leading-none tracking-tight">Pipeline Board</h3>
-                                <span className="text-sm font-bold text-blue-400/80 uppercase tracking-widest mt-1">Following Up</span>
+                                <h3 className="text-sm font-bold text-white leading-none tracking-tight">Pipeline Board</h3>
+                                <span className="text-sm font-bold text-blue-400/80 uppercase tracking-wide mt-1">Following Up</span>
                             </div>
                         </div>
-                        <div className="px-2 py-0.5 bg-blue-500/10 border border-blue-500/20 rounded-md text-sm font-black text-blue-400 shadow-[0_0_8px_rgba(59,130,246,0.15)] shrink-0">
+                        <div className="px-2 py-0.5 bg-blue-500/10 border border-blue-500/20 rounded-md text-sm font-bold text-blue-400 shadow-sm shrink-0">
                             {terminalCounts.Pipeline} Active
                         </div>
                     </div>
@@ -240,20 +240,20 @@ export const IntelligentTerminalMap: React.FC<IntelligentTerminalMapProps> = ({
                 </div>
 
                 {/* 2. Call Back Column */}
-                <div className="bg-gradient-to-b from-surface-main to-surface-alt border border-border-subtle hover:border-indigo-500/40 rounded-xl p-3 relative overflow-hidden flex flex-col justify-between h-[110px] shadow-[0_4px_12px_-2px_rgba(0,0,0,0.1)] group transition-all">
+                <div className="bg-gradient-to-b from-surface-main to-surface-alt border border-border-subtle hover:border-indigo-500/40 rounded-xl p-3 relative overflow-hidden flex flex-col justify-between h-[110px] shadow-sm group transition-all">
                     <div className="absolute -top-10 -right-10 w-32 h-32 bg-indigo-500/10 rounded-full blur-2xl group-hover:bg-indigo-500/20 transition-colors" />
                     <div className="relative z-10 flex justify-between items-start w-full">
                         <div className="flex gap-3">
-                            <div className="flex flex-col items-center justify-center text-indigo-400 transform group-hover:scale-105 group-hover:-translate-y-0.5 transition-all drop-shadow-[0_0_10px_rgba(99,102,241,0.3)]">
+                            <div className="flex flex-col items-center justify-center text-indigo-400 transform group-hover:scale-105 group-hover:-translate-y-0.5 transition-all shadow-sm">
                                 <History size={40} strokeWidth={1.5} />
-                                <span className="text-[8px] font-black tracking-widest text-[#ffffff60] uppercase mt-1">Term 02</span>
+                                <span className="text-[8px] font-bold tracking-wide text-[#ffffff60] uppercase mt-1">Term 02</span>
                             </div>
                             <div className="flex flex-col pt-1">
-                                <h3 className="text-sm font-black text-white leading-none tracking-tight">Call Back Hub</h3>
-                                <span className="text-sm font-bold text-indigo-400/80 uppercase tracking-widest mt-1">Scheduled</span>
+                                <h3 className="text-sm font-bold text-white leading-none tracking-tight">Call Back Hub</h3>
+                                <span className="text-sm font-bold text-indigo-400/80 uppercase tracking-wide mt-1">Scheduled</span>
                             </div>
                         </div>
-                        <div className="px-2 py-0.5 bg-indigo-500/10 border border-indigo-500/20 rounded-md text-sm font-black text-indigo-400 shadow-[0_0_8px_rgba(99,102,241,0.15)] shrink-0">
+                        <div className="px-2 py-0.5 bg-indigo-500/10 border border-indigo-500/20 rounded-md text-sm font-bold text-indigo-400 shadow-sm shrink-0">
                             {terminalCounts.Callback} Mapped
                         </div>
                     </div>
@@ -263,20 +263,20 @@ export const IntelligentTerminalMap: React.FC<IntelligentTerminalMapProps> = ({
                 </div>
 
                 {/* 3. Help Queue Column */}
-                <div className="bg-gradient-to-b from-surface-main to-surface-alt border border-border-subtle hover:border-rose-500/40 rounded-xl p-3 relative overflow-hidden flex flex-col justify-between h-[110px] shadow-[0_4px_12px_-2px_rgba(0,0,0,0.1)] group transition-all">
+                <div className="bg-gradient-to-b from-surface-main to-surface-alt border border-border-subtle hover:border-rose-500/40 rounded-xl p-3 relative overflow-hidden flex flex-col justify-between h-[110px] shadow-sm group transition-all">
                     <div className="absolute -top-10 -right-10 w-32 h-32 bg-rose-500/10 rounded-full blur-2xl group-hover:bg-rose-500/20 transition-colors" />
                     <div className="relative z-10 flex justify-between items-start w-full">
                         <div className="flex gap-3">
-                            <div className="flex flex-col items-center justify-center text-rose-400 transform group-hover:scale-105 group-hover:-translate-y-0.5 transition-all drop-shadow-[0_0_10px_rgba(244,63,94,0.3)]">
+                            <div className="flex flex-col items-center justify-center text-rose-400 transform group-hover:scale-105 group-hover:-translate-y-0.5 transition-all shadow-sm">
                                 <ShieldAlert size={40} strokeWidth={1.5} />
-                                <span className="text-[8px] font-black tracking-widest text-[#ffffff60] uppercase mt-1">Term 03</span>
+                                <span className="text-[8px] font-bold tracking-wide text-[#ffffff60] uppercase mt-1">Term 03</span>
                             </div>
                             <div className="flex flex-col pt-1">
-                                <h3 className="text-sm font-black text-white leading-none tracking-tight">Help Queue</h3>
-                                <span className="text-sm font-bold text-rose-400/80 uppercase tracking-widest mt-1">Escalations</span>
+                                <h3 className="text-sm font-bold text-white leading-none tracking-tight">Help Queue</h3>
+                                <span className="text-sm font-bold text-rose-400/80 uppercase tracking-wide mt-1">Escalations</span>
                             </div>
                         </div>
-                        <div className="px-2 py-0.5 bg-rose-500/10 border border-rose-500/20 rounded-md text-sm font-black text-rose-400 shadow-[0_0_8px_rgba(244,63,94,0.15)] shrink-0 animate-pulse">
+                        <div className="px-2 py-0.5 bg-rose-500/10 border border-rose-500/20 rounded-md text-sm font-bold text-rose-400 shadow-sm shrink-0 animate-pulse">
                             {terminalCounts.HelpQueue} Critical
                         </div>
                     </div>
@@ -293,7 +293,7 @@ export const IntelligentTerminalMap: React.FC<IntelligentTerminalMapProps> = ({
                 <div className="lg:col-span-1 space-y-4">
                     <div className="bg-surface-main border border-border-subtle rounded-xl p-4 space-y-6">
                         <div>
-                            <h3 className="text-sm font-black text-text-primary tracking-tight">Judgment Directives</h3>
+                            <h3 className="text-sm font-bold text-text-primary tracking-tight">Judgment Directives</h3>
                             <p className="text-sm text-text-muted mt-1 leading-relaxed">
                                 Customize rules explaining how incoming files are vectored to different terminals.
                             </p>
@@ -316,7 +316,7 @@ export const IntelligentTerminalMap: React.FC<IntelligentTerminalMapProps> = ({
 
                             {preferences.autoCallbackOnDecline && (
                                 <div className="pl-7 space-y-1.5 animate-in slide-in-from-top-2 duration-200">
-                                    <p className="text-sm font-black uppercase text-text-muted tracking-widest">Time Buffer</p>
+                                    <p className="text-sm font-bold uppercase text-text-muted tracking-wide">Time Buffer</p>
                                     <select 
                                         value={preferences.hoursToCallback}
                                         onChange={(e) => setPreferences({...preferences, hoursToCallback: Number(e.target.value)})}
@@ -358,7 +358,7 @@ export const IntelligentTerminalMap: React.FC<IntelligentTerminalMapProps> = ({
 
                             {preferences.escalateHighValueDecline && (
                                 <div className="pl-7 space-y-1.5 animate-in slide-in-from-top-2 duration-200">
-                                    <p className="text-sm font-black uppercase text-text-muted tracking-widest">Escalation Limit</p>
+                                    <p className="text-sm font-bold uppercase text-text-muted tracking-wide">Escalation Limit</p>
                                     <input 
                                         type="number"
                                         value={preferences.highValueThreshold}
@@ -387,7 +387,7 @@ export const IntelligentTerminalMap: React.FC<IntelligentTerminalMapProps> = ({
                 <div className="lg:col-span-3 bg-surface-main border border-border-subtle rounded-xl p-4 flex flex-col space-y-4">
                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                         <div>
-                            <h3 className="text-sm font-black text-text-primary">Live Routing Matrix Ledger</h3>
+                            <h3 className="text-sm font-bold text-text-primary">Live Routing Matrix Ledger</h3>
                             <p className="text-sm text-text-muted mt-0.5">Search or override any submitted record to track its mapping location.</p>
                         </div>
                         {/* Selector Filter Tabs */}
@@ -396,7 +396,7 @@ export const IntelligentTerminalMap: React.FC<IntelligentTerminalMapProps> = ({
                                 <button
                                     key={tab}
                                     onClick={() => { setFilterDestination(tab); sfx.playClick(); }}
-                                    className={`px-3 py-1.5 text-sm font-black uppercase tracking-widest rounded-lg transition-all ${
+                                    className={`px-3 py-1.5 text-sm font-bold uppercase tracking-wide rounded-lg transition-all ${
                                         filterDestination === tab 
                                             ? 'bg-indigo-500 text-white shadow-sm' 
                                             : 'text-text-muted hover:text-text-primary'
@@ -424,11 +424,11 @@ export const IntelligentTerminalMap: React.FC<IntelligentTerminalMapProps> = ({
                         <table className="w-full text-left border-collapse">
                             <thead>
                                 <tr className="border-b border-border-subtle/60 bg-surface-alt/30">
-                                    <th className="p-3 text-sm font-black uppercase tracking-widest text-[#ffffff50] w-[140px]">Record / Customer</th>
-                                    <th className="p-3 text-sm font-black uppercase tracking-widest text-[#ffffff50] w-[110px]">Active Terminal</th>
-                                    <th className="p-3 text-sm font-black uppercase tracking-widest text-[#ffffff50] w-[80px]">Status</th>
-                                    <th className="p-3 text-sm font-black uppercase tracking-widest text-[#ffffff50]">Routing Condition</th>
-                                    <th className="p-3 text-sm font-black uppercase tracking-widest text-[#ffffff50] text-right w-[180px]">Operations & Override</th>
+                                    <th className="p-3 text-sm font-bold uppercase tracking-wide text-[#ffffff50] w-[140px]">Record / Customer</th>
+                                    <th className="p-3 text-sm font-bold uppercase tracking-wide text-[#ffffff50] w-[110px]">Active Terminal</th>
+                                    <th className="p-3 text-sm font-bold uppercase tracking-wide text-[#ffffff50] w-[80px]">Status</th>
+                                    <th className="p-3 text-sm font-bold uppercase tracking-wide text-[#ffffff50]">Routing Condition</th>
+                                    <th className="p-3 text-sm font-bold uppercase tracking-wide text-[#ffffff50] text-right w-[180px]">Operations & Override</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -496,7 +496,7 @@ export const IntelligentTerminalMap: React.FC<IntelligentTerminalMapProps> = ({
                                                                 className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm"
                                                             >
                                                                 <div className="space-y-1.5 col-span-2">
-                                                                    <p className="font-black uppercase tracking-wider text-[#ffffff40] text-sm">Decision Rationale</p>
+                                                                    <p className="font-bold uppercase tracking-wider text-[#ffffff40] text-sm">Decision Rationale</p>
                                                                     <p className="text-text-secondary leading-relaxed font-medium">{item.rationale}</p>
                                                                     <p className="text-sm text-text-muted mt-2">
                                                                         <span className="font-bold text-indigo-400">Next Action Goal:</span> {item.actionText}
@@ -504,7 +504,7 @@ export const IntelligentTerminalMap: React.FC<IntelligentTerminalMapProps> = ({
                                                                 </div>
 
                                                                 <div className="space-y-3 bg-surface-main/30 p-3 rounded-xl border border-border-subtle/50">
-                                                                    <p className="font-black uppercase tracking-wider text-[#ffffff40] text-sm">Manual Terminal Override</p>
+                                                                    <p className="font-bold uppercase tracking-wider text-[#ffffff40] text-sm">Manual Terminal Override</p>
                                                                     
                                                                     <div className="flex flex-wrap gap-1.5">
                                                                         <button 

@@ -147,13 +147,13 @@ export const MyProfileModal: React.FC<MyProfileModalProps> = ({ isOpen, onClose,
 
                             {/* Identity Text */}
                             <div className="mb-2">
-                                <h3 className="text-lg font-[700] text-text-primary  tracking-tight flex items-center gap-2">
+                                <h3 className="text-lg font-medium text-text-primary  tracking-tight flex items-center gap-2">
                                     {formData.name || 'Unknown Agent'}
                                     <span className="px-2.5 py-1 rounded text-xs bg-accent-primary/10 text-accent-primary border border-accent-primary/20 tracking-wider">
                                         {stats.rank}
                                     </span>
                                 </h3>
-                                <p className="text-xs font-bold text-text-muted  tracking-widest flex items-center gap-2">
+                                <p className="text-xs font-bold text-text-muted  tracking-wide flex items-center gap-2">
                                     <Shield size={16} className="text-status-success" /> Clearance Level {user.accessLevel}
                                 </p>
                             </div>
@@ -162,13 +162,13 @@ export const MyProfileModal: React.FC<MyProfileModalProps> = ({ isOpen, onClose,
                         {/* Stats Summary (Desktop) */}
                         <div className="hidden md:flex gap-4 mb-2">
                             <div className="text-right">
-                                <p className="text-xs font-[700]  text-text-muted tracking-widest">Revenue</p>
-                                <p className="text-xl font-[700] text-text-primary num-font tracking-tight">${stats.revenue.toLocaleString()}</p>
+                                <p className="text-xs font-medium  text-text-muted tracking-wide">Revenue</p>
+                                <p className="text-xl font-medium text-text-primary num-font tracking-tight">${stats.revenue.toLocaleString()}</p>
                             </div>
                             <div className="w-px h-8 bg-border-subtle"></div>
                             <div className="text-right">
-                                <p className="text-xs font-[700]  text-text-muted tracking-widest">Win Rate</p>
-                                <p className="text-xl font-[700] text-status-success num-font tracking-tight">{stats.winRate}%</p>
+                                <p className="text-xs font-medium  text-text-muted tracking-wide">Win Rate</p>
+                                <p className="text-xl font-medium text-status-success num-font tracking-tight">{stats.winRate}%</p>
                             </div>
                         </div>
                     </div>
@@ -203,7 +203,7 @@ export const MyProfileModal: React.FC<MyProfileModalProps> = ({ isOpen, onClose,
                         <div className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-300">
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div className="space-y-4">
-                                    <h4 className="text-xs font-[700]  text-text-muted tracking-widest flex items-center gap-2 mb-2">
+                                    <h4 className="text-xs font-medium  text-text-muted tracking-wide flex items-center gap-2 mb-2">
                                         <UserIcon size={16} className="text-accent-primary"/> Personal Details
                                     </h4>
                                     <Input label="Display Name" name="name" value={formData.name} onChange={handleChange} />
@@ -213,26 +213,26 @@ export const MyProfileModal: React.FC<MyProfileModalProps> = ({ isOpen, onClose,
                                     <Input label="Phone Number" name="phone" value={formData.phone} onChange={handleChange} />
                                 </div>
                                 <div className="space-y-4">
-                                    <h4 className="text-xs font-[700]  text-text-muted tracking-widest flex items-center gap-2 mb-2">
+                                    <h4 className="text-xs font-medium  text-text-muted tracking-wide flex items-center gap-2 mb-2">
                                         <MapPin size={16} className="text-accent-primary"/> Location
                                     </h4>
                                     <Input label="Physical Address" name="address" value={formData.address} onChange={handleChange} />
                                     
                                     <div className="p-4 bg-surface-main rounded-xl border border-border-subtle mt-6">
-                                        <h5 className="text-xs font-bold  text-text-muted tracking-widest mb-3">Performance Snapshot</h5>
+                                        <h5 className="text-xs font-bold  text-text-muted tracking-wide mb-3">Performance Snapshot</h5>
                                         <div className="grid grid-cols-2 gap-4">
                                             <div className="flex items-center gap-3">
                                                 <div className="p-2 bg-accent-secondary/10 text-accent-secondary rounded-lg"><Trophy size={16}/></div>
                                                 <div>
                                                     <p className="text-xs text-text-muted  font-bold">Total Deals</p>
-                                                    <p className="text-sm font-[700] text-text-primary num-font">{stats.deals}</p>
+                                                    <p className="text-sm font-medium text-text-primary num-font">{stats.deals}</p>
                                                 </div>
                                             </div>
                                             <div className="flex items-center gap-3">
                                                 <div className="p-2 bg-emerald-500/10 text-status-success rounded-lg"><Activity size={16}/></div>
                                                 <div>
                                                     <p className="text-xs text-text-muted  font-bold">Active Rank</p>
-                                                    <p className="text-sm font-[700] text-text-primary">{stats.rank}</p>
+                                                    <p className="text-sm font-medium text-text-primary">{stats.rank}</p>
                                                 </div>
                                             </div>
                                         </div>
@@ -265,7 +265,7 @@ export const MyProfileModal: React.FC<MyProfileModalProps> = ({ isOpen, onClose,
                     {activeTab === 'security' && (
                         <div className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-300">
                             <div className="max-w-md">
-                                <h4 className="text-xs font-[700]  text-text-muted tracking-widest flex items-center gap-2 mb-4">
+                                <h4 className="text-xs font-medium  text-text-muted tracking-wide flex items-center gap-2 mb-4">
                                     <Lock size={16} className="text-accent-primary"/> Account Access
                                 </h4>
                                 <div className="space-y-4">

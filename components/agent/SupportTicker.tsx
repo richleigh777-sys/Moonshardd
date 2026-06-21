@@ -22,7 +22,7 @@ export const SupportTicker: React.FC = () => {
             <div className="absolute left-0 top-0 bottom-0 w-8 bg-gradient-to-r from-surface-main to-transparent z-10"></div>
             <div className="flex items-center gap-2 pl-4 shrink-0 z-10 border-r border-accent-secondary/20 pr-3 bg-surface-main">
                 <Quote size={12} className="text-accent-secondary" />
-                <span className="text-[10px] font-black uppercase tracking-widest text-accent-secondary">Underwriting</span>
+                <span className="text-[10px] font-bold uppercase tracking-wide text-accent-secondary">Underwriting</span>
             </div>
             <div className="flex flex-1 overflow-hidden relative">
                 <motion.div 

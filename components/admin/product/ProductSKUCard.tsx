@@ -29,18 +29,18 @@ export const ProductSKUCard: React.FC<Props> = ({ product, volume, onToggle, onE
                     </div>
                     <div>
                         <h5 className="font-bold text-sm text-text-primary  tracking-tight">{product.name}</h5>
-                        <p className="text-sm font-[700]  text-text-muted tracking-widest">{product.category || 'GENERAL'} • {product.sku || 'NO-SKU'}</p>
+                        <p className="text-sm font-medium  text-text-muted tracking-wide">{product.category || 'GENERAL'} • {product.sku || 'NO-SKU'}</p>
                     </div>
                 </div>
 
                 <div className="flex items-center gap-5">
                     <div className="text-right">
-                        <p className="text-sm font-[700]  text-text-muted tracking-widest mb-0.5">Price</p>
-                        <p className="text-sm font-[700] num-font text-text-primary">${product.price}</p>
+                        <p className="text-sm font-medium  text-text-muted tracking-wide mb-0.5">Price</p>
+                        <p className="text-sm font-medium num-font text-text-primary">${product.price}</p>
                     </div>
                     <div className="text-right hidden md:block">
-                        <p className="text-sm font-[700]  text-text-muted tracking-widest mb-0.5">Margin</p>
-                        <p className="text-sm font-[700] num-font text-status-success">{margin}%</p>
+                        <p className="text-sm font-medium  text-text-muted tracking-wide mb-0.5">Margin</p>
+                        <p className="text-sm font-medium num-font text-status-success">{margin}%</p>
                     </div>
                 </div>
 
@@ -84,10 +84,10 @@ export const ProductSKUCard: React.FC<Props> = ({ product, volume, onToggle, onE
                 </div>
 
                 <div>
-                    <p className="text-sm font-[700]  text-text-muted tracking-widest mb-1 truncate opacity-70">{product.category || 'GENERAL'}</p>
-                    <h5 className="font-[700] text-text-primary text-base  tracking-tight italic truncate pr-8 leading-tight">{product.name}</h5>
+                    <p className="text-sm font-medium  text-text-muted tracking-wide mb-1 truncate opacity-70">{product.category || 'GENERAL'}</p>
+                    <h5 className="font-medium text-text-primary text-base  tracking-tight italic truncate pr-8 leading-tight">{product.name}</h5>
                     <div className="flex items-center gap-2 mt-2 flex-wrap">
-                        <span className="text-xl font-[700] text-text-primary num-font">${product.price}</span>
+                        <span className="text-xl font-medium text-text-primary num-font">${product.price}</span>
                         <span className={`text-sm font-bold  px-3 py-1.5 rounded border ${margin > 50 ? 'bg-emerald-500/10 text-status-success border-emerald-500/20' : margin < 20 ? 'bg-red-500/10 text-status-error border-red-500/20' : 'bg-blue-500/10 text-blue-500 border-blue-500/20'}`}>
                             {margin}% Margin
                         </span>

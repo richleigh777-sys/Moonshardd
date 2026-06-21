@@ -255,7 +255,7 @@ export const MessageAttachments = React.memo(({ attachments, isMe, onViewImage }
                                 alt={at.name} 
                             />
                             {at.isScanning && (
-                                <div className="absolute inset-0 flex flex-col items-center justify-center bg-white/60 backdrop-blur-md">
+                                <div className="absolute inset-0 flex flex-col items-center justify-center bg-white/60 ">
                                     <div className="w-12 h-12 border-4 border-indigo-200 border-t-indigo-500 rounded-full animate-spin mb-3 shadow-md"></div>
                                     <span className="text-sm font-semibold text-indigo-700 tracking-wide animate-pulse bg-white/80 px-4 py-1.5 rounded-full shadow-sm">Checking picture...</span>
                                 </div>
@@ -377,7 +377,7 @@ export const MessageActions = ({
     const pickerRef = React.useRef<HTMLDivElement>(null);
 
     return (
-        <div className={`absolute -top-12 ${isMe ? 'right-0' : 'left-0'} z-30 flex items-center gap-1 p-1.5 rounded-xl bg-surface-main/95 backdrop-blur-xl border border-border-subtle shadow-lg animate-in fade-in zoom-in-95 duration-200 select-none`}>
+        <div className={`absolute -top-12 ${isMe ? 'right-0' : 'left-0'} z-30 flex items-center gap-1 p-1.5 rounded-xl bg-surface-main/95  border border-border-subtle shadow-lg animate-in fade-in zoom-in-95 duration-200 select-none`}>
             {['👍', '❤️', '😂', '🎉'].map(emoji => (
                 <button 
                     key={emoji}
@@ -453,7 +453,7 @@ export const ContextBanner = ({
 };
 
 export const DragOverlay = () => (
-    <div className="absolute inset-0 z-50 bg-white/90 backdrop-blur-xl flex flex-col items-center justify-center border-4 border-dashed border-indigo-400 m-6 rounded-[3rem] animate-in fade-in duration-200 pointer-events-none">
+    <div className="absolute inset-0 z-50 bg-white/90  flex flex-col items-center justify-center border-4 border-dashed border-indigo-400 m-6 rounded-[3rem] animate-in fade-in duration-200 pointer-events-none">
         <div className="w-28 h-28 bg-indigo-100 rounded-full flex items-center justify-center mb-6 animate-bounce shadow-lg">
             <UploadCloud size={56} className="text-indigo-500" />
         </div>
@@ -465,7 +465,7 @@ export const DragOverlay = () => (
 export const ScrollToBottomButton = ({ onClick }: { onClick: () => void }) => (
     <button 
         onClick={onClick}
-        className="absolute bottom-24 right-8 z-30 p-3 bg-white/90 backdrop-blur-md border border-border-subtle rounded-full shadow-lg text-indigo-500 hover:scale-105 active:scale-95 transition-all animate-in fade-in zoom-in hover:shadow-indigo-500/20"
+        className="absolute bottom-24 right-8 z-30 p-3 bg-white/90  border border-border-subtle rounded-full shadow-lg text-indigo-500 hover:scale-105 active:scale-95 transition-all animate-in fade-in zoom-in hover:shadow-indigo-500/20"
     >
         <ChevronDown size={24} strokeWidth={3} />
     </button>

@@ -64,7 +64,7 @@ export const NotificationPanel: React.FC<NotificationPanelProps> = ({
     return (
         <div 
             ref={panelRef}
-            className="absolute top-20 right-6 w-[420px] max-h-[85vh] flex flex-col bg-slate-950/95 backdrop-blur-3xl border border-border-subtle shadow-[0_50px_100px_-20px_rgba(0,0,0,0.5)] rounded-[2rem] z-[500] animate-in fade-in slide-in-from-top-4 duration-500 origin-top-right ring-1 ring-white/5 overflow-hidden"
+            className="absolute top-20 right-6 w-[420px] max-h-[85vh] flex flex-col bg-slate-950/95 backdrop-blur-3xl border border-border-subtle shadow-sm rounded-xl z-[500] animate-in fade-in slide-in-from-top-4 duration-500 origin-top-right ring-1 ring-white/5 overflow-hidden"
         >
             {/* Holographic Header Decor */}
             <div className="absolute top-0 left-0 right-0 h-32 bg-gradient-to-b from-indigo-500/10 to-transparent pointer-events-none opacity-50"></div>
@@ -78,7 +78,7 @@ export const NotificationPanel: React.FC<NotificationPanelProps> = ({
                             <Bell size={22} strokeWidth={2.5} className={notifications.length > 0 ? 'animate-swing' : ''} />
                         </div>
                         {notifications.length > 0 && (
-                            <span className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 border-2 border-slate-950 rounded-full flex items-center justify-center text-sm font-[700] text-white">
+                            <span className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 border-2 border-slate-950 rounded-full flex items-center justify-center text-sm font-medium text-white">
                                 {notifications.length}
                             </span>
                         )}
@@ -133,7 +133,7 @@ export const NotificationPanel: React.FC<NotificationPanelProps> = ({
             <div className="flex-1 overflow-y-auto custom-scrollbar p-4 pt-2 space-y-6">
                 {notifications.length === 0 ? (
                     <div className="flex flex-col items-center justify-center py-20 opacity-40">
-                        <div className="w-20 h-20 bg-surface-alt/50 rounded-[2.5rem] flex items-center justify-center mb-6 border border-border-subtle animate-pulse">
+                        <div className="w-20 h-20 bg-surface-alt/50 rounded-xl flex items-center justify-center mb-6 border border-border-subtle animate-pulse">
                             <Ghost size={32} className="text-text-muted" />
                         </div>
                         <p className="text-sm font-bold text-text-muted">No New Notifications</p>
@@ -216,7 +216,7 @@ export const NotificationPanel: React.FC<NotificationPanelProps> = ({
             </div>
 
             {/* Footer */}
-            <div className="p-4 border-t border-border-subtle bg-slate-900/50 backdrop-blur-md relative overflow-hidden">
+            <div className="p-4 border-t border-border-subtle bg-slate-900/50  relative overflow-hidden">
                 <div className="flex items-center justify-between relative z-10">
                     <p className="text-xs font-medium text-text-muted">System Notifications</p>
                     {notifications.length > 0 && (

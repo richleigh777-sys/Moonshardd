@@ -26,12 +26,12 @@ export const CallbackProtocol: React.FC<CallbackProtocolProps> = ({
     <div className="bg-surface-main/60 w-full max-w-2xl mx-auto rounded-xl border border-border-subtle shadow-float h-[80vh] flex flex-col overflow-hidden animate-in fade-in slide-in-from-right-8 duration-500 backdrop-blur-[40px] relative">
         <div className="absolute top-0 right-0 w-[400px] h-[300px] bg-amber-500/10 rounded-full blur-[100px] pointer-events-none -mr-32 -mt-32 z-0"></div>
         <div className="p-5 border-b border-border-subtle flex justify-between items-center bg-transparent relative z-10 shrink-0">
-            <Button variant="secondary" onClick={() => { setMode('order'); sfx.playClick(); }} className="h-10 px-5 text-sm font-[700]  tracking-widest bg-surface-alt/50 border-border-subtle hover:bg-surface-highlight hover:text-text-primary">
+            <Button variant="secondary" onClick={() => { setMode('order'); sfx.playClick(); }} className="h-10 px-5 text-sm font-medium  tracking-wide bg-surface-alt/50 border-border-subtle hover:bg-surface-highlight hover:text-text-primary">
                 <ArrowLeft size={16} className="mr-2"/> Return
             </Button>
-            <h3 className="text-sm font-[700]  text-text-primary tracking-[0.3em] flex items-center gap-3">
+            <h3 className="text-sm font-medium  text-text-primary tracking-[0.3em] flex items-center gap-3">
                 <div className="p-2 bg-gradient-to-br from-amber-500/20 to-amber-500/5 border border-amber-500/20 rounded-xl">
-                    <History size={16} className="text-status-warning drop-shadow-[0_0_8px_rgba(251,191,36,0.6)]"/>
+                    <History size={16} className="text-status-warning shadow-sm"/>
                 </div>
                 Recovery Protocol
             </h3>
@@ -48,7 +48,7 @@ export const CallbackProtocol: React.FC<CallbackProtocolProps> = ({
                         <UserCheck size={18} className={showAudit ? "text-amber-500" : "text-text-muted"} />
                         <div className="text-left">
                             <h4 className="text-sm font-semibold tracking-wide text-text-primary">Customer Profile Sync</h4>
-                            <p className="text-sm text-text-muted uppercase tracking-widest mt-0.5">Audit & edit information to be saved to main database</p>
+                            <p className="text-sm text-text-muted uppercase tracking-wide mt-0.5">Audit & edit information to be saved to main database</p>
                         </div>
                     </div>
                     {showAudit ? <ChevronUp size={16} className="text-text-muted" /> : <ChevronDown size={16} className="text-text-muted" />}
@@ -59,26 +59,26 @@ export const CallbackProtocol: React.FC<CallbackProtocolProps> = ({
                         <div className="p-4 bg-surface-alt/30 border border-border-subtle rounded-xl space-y-4">
                             <div className="grid grid-cols-2 gap-4">
                                 <div>
-                                    <label className="text-sm text-text-muted uppercase tracking-widest font-bold ml-1 mb-1 block">First Name</label>
+                                    <label className="text-sm text-text-muted uppercase tracking-wide font-bold ml-1 mb-1 block">First Name</label>
                                     <Input name="firstName" value={formData.firstName || ''} onChange={handleIdentityChange} placeholder="First Name" />
                                 </div>
                                 <div>
-                                    <label className="text-sm text-text-muted uppercase tracking-widest font-bold ml-1 mb-1 block">Last Name</label>
+                                    <label className="text-sm text-text-muted uppercase tracking-wide font-bold ml-1 mb-1 block">Last Name</label>
                                     <Input name="lastName" value={formData.lastName || ''} onChange={handleIdentityChange} placeholder="Last Name" />
                                 </div>
                             </div>
                             <div className="grid grid-cols-2 gap-4">
                                 <div>
-                                    <label className="text-sm text-text-muted uppercase tracking-widest font-bold ml-1 mb-1 block">Email Address</label>
+                                    <label className="text-sm text-text-muted uppercase tracking-wide font-bold ml-1 mb-1 block">Email Address</label>
                                     <Input name="email" value={formData.email || ''} onChange={handleIdentityChange} placeholder="Email" />
                                 </div>
                                 <div>
-                                    <label className="text-sm text-text-muted uppercase tracking-widest font-bold ml-1 mb-1 block">Phone Number</label>
+                                    <label className="text-sm text-text-muted uppercase tracking-wide font-bold ml-1 mb-1 block">Phone Number</label>
                                     <Input name="phone" value={formData.phone || ''} onChange={handleIdentityChange} placeholder="Phone" />
                                 </div>
                             </div>
                             <div>
-                                <label className="text-sm text-text-muted uppercase tracking-widest font-bold ml-1 mb-1 flex items-center gap-1.5"><MapPin size={12}/> Shipping Address</label>
+                                <label className="text-sm text-text-muted uppercase tracking-wide font-bold ml-1 mb-1 flex items-center gap-1.5"><MapPin size={12}/> Shipping Address</label>
                                 <Input name="shippingAddress" value={formData.shippingAddress || ''} onChange={handleIdentityChange} placeholder="Street Address" className="mb-2" />
                                 <div className="grid grid-cols-3 gap-2">
                                     <Input name="shippingCity" value={formData.shippingCity || ''} onChange={handleIdentityChange} placeholder="City" />
@@ -89,7 +89,7 @@ export const CallbackProtocol: React.FC<CallbackProtocolProps> = ({
 
                             {selectedConditions && selectedConditions.length > 0 && (
                                 <div>
-                                    <label className="text-sm text-text-muted uppercase tracking-widest font-bold ml-1 mb-1 block">Health Information</label>
+                                    <label className="text-sm text-text-muted uppercase tracking-wide font-bold ml-1 mb-1 block">Health Information</label>
                                     <div className="flex flex-wrap gap-1.5">
                                         {selectedConditions.map(cond => (
                                             <span key={cond} className="px-2 py-1 bg-amber-500/10 text-amber-500 border border-amber-500/20 rounded text-sm uppercase font-bold tracking-wider flex items-center gap-1">

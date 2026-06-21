@@ -8,7 +8,7 @@ export interface FormLabelProps {
 }
 
 export const FormLabel = ({ icon: Icon, children, className = "" }: FormLabelProps) => (
-    <label className={`text-sm font-[700]  text-text-muted/60 tracking-[0.2em] mb-1 flex items-center gap-1.5 ml-1 transition-colors select-none ${className}`}>
+    <label className={`text-sm font-medium  text-text-muted/60 tracking-wide mb-1 flex items-center gap-1.5 ml-1 transition-colors select-none ${className}`}>
         {Icon && <Icon size={16} className="text-accent-primary/60" strokeWidth={3} />}
         {children}
     </label>
@@ -35,7 +35,7 @@ export const FormInput = React.forwardRef<HTMLInputElement, FormInputProps>(({ i
             <div className={`
                 relative z-10 w-full rounded-xl border-none backdrop-blur-3xl transition-all duration-500
                 ${isError ? 'bg-rose-500/[0.03]' : isValid ? 'bg-emerald-500/[0.03]' : 'bg-surface-main/40 group-hover:bg-white/[0.05] group-focus-within:bg-surface-alt'}
-                shadow-[inset_0_1px_6px_rgba(0,0,0,0.4)] ring-1 
+                shadow-sm ring-1 
                 ${isError ? 'ring-rose-500/30' : isValid ? 'ring-emerald-500/30' : 'ring-white/10 group-focus-within:ring-accent-primary/40'}
             `}>
                 {Icon && (
@@ -81,7 +81,7 @@ FormInput.displayName = 'FormInput';
 export const FormSelect = ({ icon: Icon, children, className = "", ...props }: any) => (
     <div className="relative group w-full">
         <div className="absolute -inset-[1px] rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none z-0 bg-gradient-to-br from-white/10 via-white/5 to-transparent"></div>
-        <div className="relative z-10 w-full rounded-xl bg-surface-main/40 group-hover:bg-white/[0.05] ring-1 ring-white/10 group-focus-within:ring-accent-primary/40 shadow-[inset_0_1px_6px_rgba(0,0,0,0.4)] backdrop-blur-3xl transition-all duration-500">
+        <div className="relative z-10 w-full rounded-xl bg-surface-main/40 group-hover:bg-white/[0.05] ring-1 ring-white/10 group-focus-within:ring-accent-primary/40 shadow-sm backdrop-blur-3xl transition-all duration-500">
             {Icon && (
                 <div className="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted group-focus-within:text-accent-primary transition-colors duration-300 pointer-events-none z-20">
                     <Icon size={16} strokeWidth={2.5} />

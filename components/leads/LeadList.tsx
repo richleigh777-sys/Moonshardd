@@ -20,11 +20,11 @@ export const LeadList: React.FC<LeadListProps> = ({
 }) => {
     return (
         <div className="w-1/3 min-w-[300px] border-r border-border-subtle flex flex-col bg-surface-alt/10">
-            <div className="p-4 border-b border-border-subtle flex flex-col gap-3 bg-surface-main/50 backdrop-blur-sm sticky top-0 z-10">
+            <div className="p-4 border-b border-border-subtle flex flex-col gap-3 bg-surface-main/50  sticky top-0 z-10">
                 <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
                         <Heart size={16} className="text-accent-primary fill-current" />
-                        <h3 className="text-xs font-[700]  text-text-primary tracking-widest">Lead Pool</h3>
+                        <h3 className="text-xs font-medium  text-text-primary tracking-wide">Lead Pool</h3>
                     </div>
                     <span className="text-xs font-bold px-2.5 py-1 rounded bg-surface-alt border border-border-subtle text-text-muted">{leads.length} Pending</span>
                 </div>
@@ -44,7 +44,7 @@ export const LeadList: React.FC<LeadListProps> = ({
                         <button
                             key={p}
                             onClick={() => setFilterPriority(p)}
-                            className={`flex-1 py-1.5 text-xs font-[700]  rounded-lg border transition-all ${filterPriority === p ? 'bg-accent-primary text-white border-accent-primary shadow-sm' : 'bg-surface-main text-text-muted border-border-subtle hover:text-text-primary'}`}
+                            className={`flex-1 py-1.5 text-xs font-medium  rounded-lg border transition-all ${filterPriority === p ? 'bg-accent-primary text-white border-accent-primary shadow-sm' : 'bg-surface-main text-text-muted border-border-subtle hover:text-text-primary'}`}
                         >
                             {p}
                         </button>
@@ -64,7 +64,7 @@ export const LeadList: React.FC<LeadListProps> = ({
                     />
                 ))}
                 {leads.length === 0 && (
-                    <div className="p-5 text-center opacity-40 text-xs font-bold text-text-muted  tracking-widest">No matching leads</div>
+                    <div className="p-5 text-center opacity-40 text-xs font-bold text-text-muted  tracking-wide">No matching leads</div>
                 )}
             </div>
         </div>

@@ -30,7 +30,7 @@ export const SnapshotsTab = () => {
     const [snapshots, setSnapshots] = useState<Snapshot[]>(() => {
         const stored = localStorage.getItem('bh_snapshots');
         if (stored) {
-            try { return JSON.parse(stored); } catch (e) {}
+            try { return JSON.parse(stored); } catch (e) { console.error(e); }
         }
         return mockSnapshots;
     });
@@ -229,7 +229,7 @@ export const SnapshotsTab = () => {
 
     return (
         <div className="space-y-6 animate-in slide-in-from-bottom-4 duration-500">
-            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center bg-surface-main/80 backdrop-blur-xl p-4 rounded-xl border border-border-subtle shadow-sm gap-4 shrink-0 relative overflow-hidden">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center bg-surface-main/80  p-4 rounded-xl border border-border-subtle shadow-sm gap-4 shrink-0 relative overflow-hidden">
                 <div className="absolute top-0 right-0 p-5 opacity-5 pointer-events-none">
                     <Package size={120} />
                 </div>
@@ -238,7 +238,7 @@ export const SnapshotsTab = () => {
                         <Package size={28} />
                     </div>
                     <div>
-                        <h2 className="text-base font-black text-text-primary uppercase tracking-widest">Snapshot Engine</h2>
+                        <h2 className="text-base font-bold text-text-primary uppercase tracking-wide">Snapshot Engine</h2>
                         <p className="text-base font-medium text-text-muted mt-1">Package & deploy CRM configurations instantly across sub-accounts.</p>
                     </div>
                 </div>
@@ -262,7 +262,7 @@ export const SnapshotsTab = () => {
                     <div className="flex items-center justify-between pb-4 border-b border-border-subtle">
                         <div className="flex items-center gap-2">
                             <Shield className="text-indigo-500 animate-pulse" size={20} />
-                            <h4 className="text-base font-black text-text-primary uppercase tracking-wider">Forge Secure Custom Snapshot</h4>
+                            <h4 className="text-base font-bold text-text-primary uppercase tracking-wider">Forge Secure Custom Snapshot</h4>
                         </div>
                         <button 
                             onClick={() => { sfx.playDecline(); setShowBuilder(false); }}
@@ -276,7 +276,7 @@ export const SnapshotsTab = () => {
                         <div className="space-y-4">
                             <div className="grid grid-cols-3 gap-2">
                                 <div className="col-span-2 space-y-1.5">
-                                    <label className="text-sm font-black uppercase text-text-muted tracking-widest block mb-1">Package Name</label>
+                                    <label className="text-sm font-bold uppercase text-text-muted tracking-wide block mb-1">Package Name</label>
                                     <input autoComplete="off" data-lpignore="true" data-prevent-autofill="true" spellCheck={false} 
                                         type="text" 
                                         placeholder="e.g. Enterprise Roster v2" 
@@ -286,7 +286,7 @@ export const SnapshotsTab = () => {
                                     />
                                 </div>
                                 <div className="space-y-1.5">
-                                    <label className="text-sm font-black uppercase text-text-muted tracking-widest block mb-1">Version</label>
+                                    <label className="text-sm font-bold uppercase text-text-muted tracking-wide block mb-1">Version</label>
                                     <input autoComplete="off" data-lpignore="true" data-prevent-autofill="true" spellCheck={false} 
                                         type="text" 
                                         value={newVer} 
@@ -297,7 +297,7 @@ export const SnapshotsTab = () => {
                             </div>
 
                             <div className="space-y-1.5">
-                                <label className="text-sm font-black uppercase text-text-muted tracking-widest block mb-1">Description</label>
+                                <label className="text-sm font-bold uppercase text-text-muted tracking-wide block mb-1">Description</label>
                                 <textarea 
                                     placeholder="Brief summary of what settings and parameters this package contains." 
                                     rows={3}
@@ -308,7 +308,7 @@ export const SnapshotsTab = () => {
                             </div>
 
                             <div className="space-y-3">
-                                <span className="text-sm uppercase font-black tracking-widest text-text-muted block">Systems to Bundle</span>
+                                <span className="text-sm uppercase font-bold tracking-wide text-text-muted block">Systems to Bundle</span>
                                 <div className="flex flex-wrap gap-3">
                                     <button 
                                         onClick={() => { sfx.playClick(); setIncludeOps(!includeOps); }}
@@ -335,7 +335,7 @@ export const SnapshotsTab = () => {
                                 type="button"
                                 disabled={isForging || !newName}
                                 onClick={initiateForge}
-                                className="w-full h-12 rounded-xl bg-indigo-500 text-surface-main hover:bg-indigo-600 font-extrabold text-base uppercase tracking-widest transition-all shadow-[0_0_15px_rgba(99,102,241,0.3)] disabled:opacity-50 disabled:shadow-none flex items-center justify-center gap-2 mt-4"
+                                className="w-full h-12 rounded-xl bg-indigo-500 text-surface-main hover:bg-indigo-600 font-extrabold text-base uppercase tracking-wide transition-all shadow-sm disabled:opacity-50 disabled:shadow-none flex items-center justify-center gap-2 mt-4"
                             >
                                 {isForging ? (
                                     <>
@@ -372,7 +372,7 @@ export const SnapshotsTab = () => {
                                     <LayoutTemplate size={24} />
                                 </div>
                                 <div>
-                                    <h3 className="text-base font-black text-text-primary tracking-tight">{snap.name}</h3>
+                                    <h3 className="text-base font-bold text-text-primary tracking-tight">{snap.name}</h3>
                                     <div className="flex items-center gap-2 mt-1">
                                         <span className="text-base font-bold tracking-wider text-accent-secondary bg-accent-secondary/10 px-2.5 py-1 rounded border border-accent-secondary/20">{snap.version}</span>
                                         <span className="text-base text-text-muted font-mono bg-surface-main px-2 py-1 rounded border border-border-subtle">{snap.size}</span>
@@ -389,12 +389,12 @@ export const SnapshotsTab = () => {
                             
                             <div className="grid grid-cols-2 gap-3">
                                 <div className="p-3 border border-border-subtle rounded-xl bg-surface-main flex flex-col justify-center items-center text-center shadow-sm">
-                                    <div className="text-3xl font-black font-mono text-text-primary num-font leading-none">{snap.moduleCount}</div>
-                                    <div className="text-sm font-black uppercase tracking-widest text-text-muted mt-2">Modules</div>
+                                    <div className="text-3xl font-bold font-mono text-text-primary num-font leading-none">{snap.moduleCount}</div>
+                                    <div className="text-sm font-bold uppercase tracking-wide text-text-muted mt-2">Modules</div>
                                 </div>
                                 <div className="p-3 border border-border-subtle rounded-xl bg-surface-main flex flex-col justify-center items-center text-center shadow-sm">
                                     <div className="text-3xl font-medium text-text-primary leading-none"><Globe size={24} className="text-status-success"/></div>
-                                    <div className="text-sm font-black uppercase tracking-widest text-text-muted mt-2">Global</div>
+                                    <div className="text-sm font-bold uppercase tracking-wide text-text-muted mt-2">Global</div>
                                 </div>
                             </div>
                         </div>

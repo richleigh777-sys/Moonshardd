@@ -71,7 +71,7 @@ export const MessageContextMenu: React.FC<MessageContextMenuProps> = ({
         >
             <div 
                 ref={menuRef}
-                className="absolute w-64 bg-surface-main/95 backdrop-blur-xl border border-border-subtle rounded-xl shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200 flex flex-col"
+                className="absolute w-64 bg-surface-main/95  border border-border-subtle rounded-xl shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200 flex flex-col"
                 style={{ top: coords.y, left: coords.x }}
             >
                 {/* 1. REACTION BAR */}

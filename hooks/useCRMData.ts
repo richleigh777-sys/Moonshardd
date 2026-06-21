@@ -38,6 +38,18 @@ export const useCRMData = (currentUser: User | null) => {
     const [dialerLists, setDialerLists] = useState<any[]>([]);
     const [systemConfig, setSystemConfig] = useState<SystemConfig>({ 
         shiftStart: "08:00", shiftEnd: "17:00", cutoffDay1: 15, cutoffDay2: 0,
+        rbacMatrix: {
+            admin: { viewLeads: true, editLeads: true, deleteLeads: true, exportLeads: true, processSales: true, viewReports: true },
+            agent: { viewLeads: true, editLeads: true, deleteLeads: false, exportLeads: false, processSales: true, viewReports: false }
+        },
+        customFieldsConfig: [
+            { id: 'supp_primaryFocus', label: 'Primary Health Focus', type: 'select', options: ['Weight Loss', 'Muscle Gain', 'Joint Health', 'General Wellness', 'Heart Health', 'Brain Health'] },
+            { id: 'supp_currentMeds', label: 'Taking Other Medications', type: 'boolean' },
+            { id: 'supp_allergies', label: 'Allergies', type: 'text' },
+            { id: 'supp_preferredForm', label: 'Preferred Supplement Form', type: 'select', options: ['Capsules', 'Gummies', 'Powders', 'Liquid'] },
+            { id: 'supp_activityLevel', label: 'Activity Level', type: 'select', options: ['Sedentary', 'Lightly Active', 'Moderately Active', 'Very Active'] },
+            { id: 'supp_reorderCycleDays', label: 'Reorder Cycle (Days)', type: 'number' },
+        ],
         baseCommission: 15, breakDurationMinutes: 60, ecoMode: false, telephonyEnabled: false,
         customDialerEnabled: false, customDialerType: 'CLIPBOARD_ONLY', customDialerUrlTemplate: 'https://dialer.yourcompany.com/?phone={phone_clean}'
     });
@@ -285,6 +297,17 @@ export const useCRMData = (currentUser: User | null) => {
         await nexusGateway.delete('notifications', id);
     }, []);
 
+    const bulkAddCustomers = useCallback(async (customers: Partial<Customer>[]) => {
+        const payload = customers.map(customer => {
+            let normalizedPhone = customer.phone;
+            if (normalizedPhone) {
+                normalizedPhone = normalizedPhone.replace(/[\s\-()+]/g, '');
+            }
+            return { ...customer, phone: normalizedPhone, team: currentUser?.team || 'Alpha', updatedAt: Date.now(), createdAt: customer.createdAt || Date.now() };
+        });
+        await nexusGateway.addBulk('customers', payload);
+    }, [currentUser]);
+
     const addCustomer = useCallback(async (customer: Partial<Customer>) => {
         let normalizedPhone = customer.phone;
         if (normalizedPhone) {
@@ -385,6 +408,7 @@ export const useCRMData = (currentUser: User | null) => {
         ...dataHealthOps,
         ...scriptOps,
         ...notesTasksOps,
+        bulkAddCustomers,
 
         addCustomer, updateCustomer, deleteCustomer,
         updateUser, addUser, addDialerList, updateProductConfig, updateSystemConfig,
@@ -397,6 +421,7 @@ export const useCRMData = (currentUser: User | null) => {
         productConfig, fAuditLogs, fAttendance, directives, messages, channels,
         fNotifications, callLogs, scripts, customSheets, health, systemConfig, presence, dataHealthReports, dialerLists,
         salesOps, chatOps, sheetOps, dataHealthOps, scriptOps, notesTasksOps,
+        bulkAddCustomers,
         addCustomer, updateCustomer, deleteCustomer,
         updateUser, addUser, addDialerList, updateProductConfig, updateSystemConfig,
         sendDirective, logAttendance, logAudit, runDiagnostic, testUplink,

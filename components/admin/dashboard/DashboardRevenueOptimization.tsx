@@ -185,7 +185,7 @@ export const DashboardRevenueOptimization: React.FC<DashboardRevenueOptimization
                   <p className="text-sm text-slate-300 mt-1">{opp.description}</p>
                 </div>
                 <div className="text-right ml-4">
-                  <div className="text-lg font-black text-emerald-400">
+                  <div className="text-lg font-bold text-emerald-400">
                     ${Math.round(opp.potential / 1000)}k
                   </div>
                   <p className="text-sm text-slate-400">potential</p>

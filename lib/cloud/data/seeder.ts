@@ -18,12 +18,12 @@ export const seedInfrastructure = () => {
             status: 'active',
             region: 'US-EAST-1',
             created: Date.now(),
-            userCount: 10,
+            userCount: 17,
             accessKey: `key-${serverId}`
         });
 
-        // 10 Agents per Server
-        for (let j = 1; j <= 10; j++) {
+        // 15 Agents per Server
+        for (let j = 1; j <= 15; j++) {
             users.push({
                 id: `agent-${serverId}-${j}`,
                 serverId: serverId,
@@ -37,18 +37,20 @@ export const seedInfrastructure = () => {
             });
         }
 
-        // Add 1 Manager per Server
-        users.push({
-            id: `admin-${serverId}-1`,
-            serverId: serverId,
-            passwordHash: 'admin123',
-            name: `Manager (${companyName})`,
-            role: 'admin',
-            level: 5,
-            commissionRate: 0,
-            active: true,
-            currentStatus: 'offline'
-        });
+        // Add 2 Lower Admin Level Accounts per Server
+        for (let k = 1; k <= 2; k++) {
+            users.push({
+                id: `admin-${serverId}-${k}`,
+                serverId: serverId,
+                passwordHash: 'admin123',
+                name: `Admin ${k} (${companyName})`,
+                role: 'admin',
+                level: 8,
+                commissionRate: 0,
+                active: true,
+                currentStatus: 'offline'
+            });
+        }
 
         configs.push({
             ...INITIAL_PRODUCT_CONFIG,
@@ -58,6 +60,18 @@ export const seedInfrastructure = () => {
         systemConfigs.push({
             id: i === 1 ? 'CORE_CONFIG' : `sys-cfg-${serverId}`,
             serverId,
+            rbacMatrix: {
+                admin: { viewLeads: true, editLeads: true, deleteLeads: true, exportLeads: true, processSales: true, viewReports: true },
+                agent: { viewLeads: true, editLeads: true, deleteLeads: false, exportLeads: false, processSales: true, viewReports: false }
+            },
+            customFieldsConfig: [
+                { id: 'supp_primaryFocus', label: 'Primary Health Focus', type: 'select', options: ['Weight Loss', 'Muscle Gain', 'Joint Health', 'General Wellness', 'Heart Health', 'Brain Health'] },
+                { id: 'supp_currentMeds', label: 'Taking Other Medications', type: 'boolean' },
+                { id: 'supp_allergies', label: 'Allergies', type: 'text' },
+                { id: 'supp_preferredForm', label: 'Preferred Supplement Form', type: 'select', options: ['Capsules', 'Gummies', 'Powders', 'Liquid'] },
+                { id: 'supp_activityLevel', label: 'Activity Level', type: 'select', options: ['Sedentary', 'Lightly Active', 'Moderately Active', 'Very Active'] },
+                { id: 'supp_reorderCycleDays', label: 'Reorder Cycle (Days)', type: 'number' },
+            ],
             shiftStart: '08:00',
             shiftEnd: '17:00',
             cutoffDay1: 15,

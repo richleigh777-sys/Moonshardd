@@ -10,83 +10,83 @@
     --font-display: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
 
-    /* B2C Minimalist Light Mode - Warm Empathy Theme -> Now High Contrast Professional */
-    --color-surface-canvas: 220 18% 92%; /* Deep cool canvas to make panels pop */
-    --color-surface-widget: 215 15% 97%; /* Distinct widget panel */
-    --color-surface-main: 0 0% 100%; /* Soft pure-white panels */
-    --color-surface-alt: 210 16% 95%; /* Intermediate layering */
-    --color-surface-highlight: 210 16% 93%; /* Action highlight */
+    /* Modern SaaS Professional Light Mode (HubSpot/Salesforce Inspired) */
+    --color-surface-canvas: 210 20% 98%; /* Very soft cool white for canvas */
+    --color-surface-widget: 0 0% 100%; /* Pure white widgets */
+    --color-surface-main: 0 0% 100%; /* Pure white panels */
+    --color-surface-alt: 210 16% 96%; /* Subtle gray for active/hover states */
+    --color-surface-highlight: 210 16% 92%; /* Action highlight */
     
-    --color-accent-primary: 12 85% 58%; /* Luxurious Warm Terracotta Primary */
-    --color-accent-secondary: 38 92% 52%; /* Optimistic Sunrise Amber Secondary */
+    --color-accent-primary: 210 100% 50%; /* Trustworthy SaaS Blue (like Salesforce/HubSpot) */
+    --color-accent-secondary: 250 80% 60%; /* Modern Purple */
     
-    --color-text-primary: 220 40% 12%; /* Deeper, thicker text */
-    --color-text-secondary: 220 20% 30%; /* Secondary crisp text */
-    --color-text-muted: 220 15% 45%; /* High contrast muted */
+    --color-text-primary: 220 40% 15%; /* Crisp deeply saturated slate for max readability */
+    --color-text-secondary: 220 20% 40%; /* Professional secondary text */
+    --color-text-muted: 220 15% 55%; /* Lighter muted text */
     
-    --color-border-subtle: 220 15% 85%; /* Distinct borders */
-    --color-border-strong: 220 15% 75%;
+    --color-border-subtle: 220 15% 90%; /* Very clean, almost invisible borders */
+    --color-border-strong: 220 15% 82%;
 
-    /* Gentle Status Colors (Light) */
-    --color-status-success: 145 50% 38%; /* Rich Sage Green (Accessible and High Contrast) */
-    --color-status-warning: 38 92% 48%; /* Strong Sunrise Amber */
-    --color-status-error: 12 85% 56%; /* Soft Terracotta Rouge */
-    --color-status-info: 201 70% 46%; /* Deep Cozy Sky Blue */
+    /* Standardized SaaS Status Colors */
+    --color-status-success: 150 70% 40%; /* Clear SaaS Green */
+    --color-status-warning: 35 90% 50%; /* Alert Orange */
+    --color-status-error: 350 80% 55%; /* Clean Red */
+    --color-status-info: 210 100% 50%; /* Royal Blue */
 
     /* Generic component overrides */
     --color-blue-500: var(--color-status-info);
     --color-emerald-400: 150 60% 45%;
     --color-emerald-500: var(--color-status-success);
     --color-emerald-600: 150 60% 32%;
-    --color-amber-400: 40 90% 55%;
+    --color-amber-400: 35 90% 55%;
     --color-amber-500: var(--color-status-warning);
     --color-red-400: 350 80% 60%;
     --color-red-500: var(--color-status-error);
     --color-indigo-500: var(--color-accent-secondary);
 
-    /* Clean Subtle Shadows */
-    --shadow-panel: 0 2px 8px -2px rgba(0, 0, 0, 0.05), 0 1px 2px -1px rgba(0, 0, 0, 0.02);
-    --shadow-float: 0 12px 24px -5px rgba(0, 0, 0, 0.08), 0 4px 10px -3px rgba(0, 0, 0, 0.04);
+    /* Clean Subtle Shadows for SaaS */
+    --shadow-panel: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.025);
+    --shadow-float: 0 10px 25px -5px rgba(0, 0, 0, 0.08), 0 8px 10px -6px rgba(0, 0, 0, 0.04);
   }
 
   html.dark, .dark {
-    /* Cozy Hazel Midnight Dark Mode -> High Contrast Deep Slate */
-    --color-surface-canvas: 225 15% 4%; /* Deep black slate */
-    --color-surface-widget: 225 12% 9%; /* Subtle widget panel */
-    --color-surface-main: 225 12% 11%; /* Base panel */
-    --color-surface-alt: 225 12% 14%; /* Elevated layer */
-    --color-surface-highlight: 225 12% 18%; /* Active state */
+    /* Sleek Professional Dark Mode (Linear/Vercel Inspired) */
+    --color-surface-canvas: 220 10% 8%; /* Very dark refined gray */
+    --color-surface-widget: 220 10% 12%; /* Elevated dark slate */
+    --color-surface-main: 220 10% 12%; /* Base dark panel */
+    --color-surface-alt: 220 10% 16%; /* Lighter border/hover state */
+    --color-surface-highlight: 220 10% 20%; /* Active state */
     
-    --color-accent-primary: 12 85% 68%; /* Radiant Terracotta Rouge */
-    --color-accent-secondary: 38 92% 64%; /* Glowing Sunset Honey Gold */
+    --color-accent-primary: 210 100% 60%; /* Vibrant Blue for dark mode */
+    --color-accent-secondary: 250 80% 70%; /* Vibrant Purple */
     
-    --color-text-primary: 225 20% 98%; /* High-contrast Creamy White */
-    --color-text-secondary: 225 15% 85% ; /* Highly legible Sand */
-    --color-text-muted: 225 12% 65%; /* Readable Mist */
+    --color-text-primary: 210 20% 98%; /* High-contrast white */
+    --color-text-secondary: 210 15% 75%; /* Highly legible light gray */
+    --color-text-muted: 210 10% 55%; /* Readable muted gray */
     
-    --color-border-subtle: 225 12% 16%; /* Defined border */
-    --color-border-strong: 225 12% 24%;     
+    --color-border-subtle: 220 10% 18%; /* Clean dark borders */
+    --color-border-strong: 220 10% 25%;     
     
-    /* Gentle Status Colors */
-    --color-status-success: 145 60% 58%; /* Organic Sage Glow */ 
-    --color-status-warning: 38 92% 62%; /* Radiant Honey Amber */  
-    --color-status-error: 12 85% 68%; /* Radiant Coral Terracotta */   
-    --color-status-info: 201 80% 68%; /* Calm Electric Sky Blue */     
+    /* Standardized SaaS Status Colors */
+    --color-status-success: 150 70% 45%; 
+    --color-status-warning: 35 90% 55%; 
+    --color-status-error: 350 80% 60%; 
+    --color-status-info: 210 100% 60%; 
 
     /* Generic component overrides */
     --color-blue-500: var(--color-status-info);
-    --color-emerald-400: 150 60% 58%;
+    --color-emerald-400: 150 60% 50%;
     --color-emerald-500: var(--color-status-success);
-    --color-emerald-600: 150 60% 48%;
-    --color-amber-400: 40 80% 68%;
+    --color-emerald-600: 150 60% 40%;
+    --color-amber-400: 35 90% 60%;
     --color-amber-500: var(--color-status-warning);
-    --color-red-400: 350 70% 74%;
+    --color-red-400: 350 80% 65%;
     --color-red-500: var(--color-status-error);
     --color-indigo-500: var(--color-accent-secondary);
 
     /* Soft Dark Shadows */
-    --shadow-panel: 0 4px 10px -2px rgb(0 0 0 / 0.4), 0 2px 4px -2px rgb(0 0 0 / 0.2);
-    --shadow-float: 0 20px 25px -5px rgb(0 0 0 / 0.6), 0 8px 10px -6px rgb(0 0 0 / 0.4);
+    --shadow-panel: 0 4px 6px -1px rgba(0, 0, 0, 0.4), 0 2px 4px -2px rgba(0, 0, 0, 0.2);
+    --shadow-float: 0 20px 25px -5px rgba(0, 0, 0, 0.6), 0 8px 10px -6px rgba(0, 0, 0, 0.4);
   }
 
   html {

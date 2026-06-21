@@ -129,8 +129,8 @@ export const PipelineBoard: React.FC<PipelineBoardProps> = ({ sales, onStageChan
                                 </div>
 
                                 {/* Table-like List */}
-                                <div className="bg-surface-main/30 backdrop-blur-md border border-border-subtle rounded-xl overflow-hidden shadow-2xl">
-                                    <div className="grid grid-cols-12 gap-4 border-b border-border-subtle bg-black/20 p-4 text-xs font-[700]  tracking-widest text-text-muted hidden md:grid">
+                                <div className="bg-surface-main/30  border border-border-subtle rounded-xl overflow-hidden shadow-2xl">
+                                    <div className="grid grid-cols-12 gap-4 border-b border-border-subtle bg-black/20 p-4 text-xs font-medium  tracking-wide text-text-muted hidden md:grid">
                                         <div className="col-span-4 lg:col-span-3">Customer</div>
                                         <div className="col-span-3 lg:col-span-2">Value & Product</div>
                                         <div className="col-span-3 lg:col-span-3">Lifecycle Stage</div>
@@ -201,7 +201,7 @@ export const PipelineBoard: React.FC<PipelineBoardProps> = ({ sales, onStageChan
                             <div className="w-16 h-16 rounded-full border-2 border-dashed border-white/20 flex items-center justify-center mb-4 text-white/50">
                                 <Search size={24} />
                             </div>
-                            <p className="text-sm font-bold text-white  tracking-widest">No Active Customers</p>
+                            <p className="text-sm font-bold text-white  tracking-wide">No Active Customers</p>
                             <p className="text-xs text-text-muted mt-2">Pipeline is empty. Start dialing.</p>
                         </div>
                     )}

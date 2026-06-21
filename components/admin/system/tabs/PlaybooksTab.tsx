@@ -118,7 +118,7 @@ export const PlaybooksTab: React.FC<PlaybooksTabProps> = ({ config, onChange }) 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                 
                 {/* PRODUCTS & SUPPLY */}
-                <div className="p-4 bg-surface-alt border border-border-subtle rounded-[2rem] space-y-6">
+                <div className="p-4 bg-surface-alt border border-border-subtle rounded-xl space-y-6">
                     <div className="flex items-center gap-3 pb-4 border-b border-border-subtle">
                         <div className="p-2 bg-text-primary text-surface-main rounded-xl">
                             <PackageOpen size={18} />
@@ -180,7 +180,7 @@ export const PlaybooksTab: React.FC<PlaybooksTabProps> = ({ config, onChange }) 
                 </div>
 
                 {/* CALLBACK OBJECTIONS */}
-                <div className="p-4 bg-surface-alt border border-border-subtle rounded-[2rem] space-y-6">
+                <div className="p-4 bg-surface-alt border border-border-subtle rounded-xl space-y-6">
                     <div className="flex items-center gap-3 pb-4 border-b border-border-subtle">
                         <div className="p-2 bg-text-primary text-surface-main rounded-xl">
                             <RotateCcw size={18} />
@@ -232,7 +232,7 @@ export const PlaybooksTab: React.FC<PlaybooksTabProps> = ({ config, onChange }) 
             </div>
 
             {/* LIVE PLAYGROUND PITCH SIMULATOR */}
-            <div className="p-4 bg-surface-alt/40 border border-border-subtle rounded-[2rem] space-y-6">
+            <div className="p-4 bg-surface-alt/40 border border-border-subtle rounded-xl space-y-6">
                 <div className="flex items-center gap-3">
                     <div className="p-2 bg-indigo-500/10 text-accent-secondary rounded-xl font-bold">
                         <Zap size={18} />
@@ -276,7 +276,7 @@ export const PlaybooksTab: React.FC<PlaybooksTabProps> = ({ config, onChange }) 
 
                     <div className="bg-surface-main border border-border-subtle rounded-xl p-5 space-y-4">
                         <div>
-                            <span className="text-sm uppercase font-mono font-black text-accent-secondary tracking-widest block mb-2 animate-pulse">
+                            <span className="text-sm uppercase font-mono font-bold text-accent-secondary tracking-wide block mb-2 animate-pulse">
                                 Live Compiled Rebuttal Script
                             </span>
                             <div className="p-4 rounded-xl bg-surface-alt border border-border-subtle text-sm text-text-secondary leading-relaxed font-serif italic text-left relative min-h-[90px]">

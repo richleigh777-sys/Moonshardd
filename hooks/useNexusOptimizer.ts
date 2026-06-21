@@ -4,31 +4,28 @@ import { useCRM } from '../hooks/useCRM';
 import { sfx } from '../lib/soundService';
 
 export const useNexusOptimizer = (sales: Sale[]) => {
-  const { updateSaleStatus } = useCRM();
+  const { bulkUpdateSales } = useCRM();
   const [isOptimizing, setIsOptimizing] = useState(false);
 
   const executeCorrection = useCallback(async () => {
     setIsOptimizing(true);
     sfx.playSubmit();
 
-    const corrections: Promise<void>[] = [];
+    const ids: string[] = [];
+    const updates: Partial<Sale> = {}; // In this specific case, all selected get { pipelineStatus: 'Closed Won' }
     let count = 0;
 
     sales.forEach(sale => {
-      let targetStage: PipelineStage | null = null;
-
       // Rule A: Approved sales must be in 'Closed Won'
       if (sale.status === 'Approved' && sale.pipelineStatus !== 'Closed Won') {
-        targetStage = 'Closed Won';
-      }
-
-      if (targetStage) {
+        ids.push(sale.id);
         count++;
-        corrections.push(updateSaleStatus(sale.id, sale.status, { pipelineStatus: targetStage }));
       }
     });
 
-    await Promise.all(corrections);
+    if (ids.length > 0) {
+        await bulkUpdateSales(ids, { pipelineStatus: 'Closed Won' });
+    }
     
     // Artificial delay for visual "Scanning" interaction
     await new Promise(resolve => setTimeout(resolve, 1200));
@@ -37,7 +34,7 @@ export const useNexusOptimizer = (sales: Sale[]) => {
     if (count > 0) sfx.playSuccess();
     
     return count;
-  }, [sales, updateSaleStatus]);
+  }, [sales, bulkUpdateSales]);
 
   return { isOptimizing, executeCorrection };
 };

@@ -27,7 +27,7 @@ export const RosterHeader: React.FC<RosterHeaderProps> = ({
     sortMode, setSortMode, viewMode, setViewMode, onAddUser
 }) => {
     return (
-        <div className="flex flex-col xl:flex-row justify-between items-start xl:items-center gap-4 bg-surface-main/40 backdrop-blur-xl p-3.5 rounded-xl border border-border-subtle shadow-xl shrink-0">
+        <div className="flex flex-col xl:flex-row justify-between items-start xl:items-center gap-4 bg-surface-main/40  p-3.5 rounded-xl border border-border-subtle shadow-xl shrink-0">
             <div className="flex items-center gap-3.5">
                 <div className="p-2 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-full text-white shadow-lg shadow-indigo-500/20">
                     <Heart size={16} fill="currentColor" />

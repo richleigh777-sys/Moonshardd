@@ -1,22 +1,6 @@
 import React, { memo } from 'react';
 import { motion } from 'framer-motion';
-import { Flame } from 'lucide-react';
-const StreakFlame = ({ streak }) => {
-    if (streak < 3) return null;
-    return (
-        <motion.div 
-            initial={{ scale: 0.8, opacity: 0 }}
-            animate={{ scale: [1, 1.2, 1], opacity: [0.8, 1, 0.8] }}
-            transition={{ repeat: Infinity, duration: 1.5 }}
-            className="absolute top-3 right-3 text-red-500 flex items-center gap-1 bg-red-500/10 px-2 py-1 rounded-full"
-            title={'Hot streak! ' + streak + ' in a row!'}
-        >
-            <Flame size={14} className="fill-red-500" />
-            <span className="text-xs font-black">{streak}</span>
-        </motion.div>
-    );
-};
-import { Heart, Activity, Target, Wallet, List, TrendingUp, Pin } from 'lucide-react';
+import { Flame, Heart, Activity, Target, Wallet, List, TrendingUp, Pin } from 'lucide-react';
 import { Sale } from '../types';
 import { useAuth } from '../hooks/useAuth';
 import { useCRM } from '../hooks/useCRM';
@@ -27,43 +11,48 @@ import { ActionCenter } from '../components/widgets/ActionCenter';
 import { MiniLeaderboard } from '../components/widgets/MiniLeaderboard';
 import { PersonalMetricTerminal } from '../components/widgets/PersonalMetricTerminal';
 import { useAgentStats } from '../components/agent/hooks/useAgentStats';
+import { WidgetContainer } from '../components/agent/WidgetContainer';
+
+const StreakFlame = ({ streak }: { streak: number }) => {
+    if (streak < 3) return null;
+    return (
+        <motion.div 
+            initial={{ scale: 0.8, opacity: 0 }}
+            animate={{ scale: [1, 1.2, 1], opacity: [0.8, 1, 0.8] }}
+            transition={{ repeat: Infinity, duration: 1.5 }}
+            className="absolute top-4 right-4 text-red-500 flex items-center gap-1.5 bg-red-500/10 px-3 py-1 rounded-full shadow-sm border border-red-500/20"
+            title={'Hot streak! ' + streak + ' in a row!'}
+        >
+            <Flame size={14} className="fill-red-500" />
+            <span className="text-xs font-black tracking-wide">{streak}</span>
+        </motion.div>
+    );
+};
 
 const StatCard = memo(({ label, value, icon: Icon, trend, description, streak, showStreak }: any) => (
-    <Card variant="refraction" className="p-4 flex flex-col justify-between group overflow-hidden border border-border-subtle bg-surface-main hover:border-accent-primary/40 hover:shadow-lg transition-all duration-300 relative rounded-xl cursor-pointer hover:-translate-y-0.5">
-        {/* Decorative corner ambient glow */}
-        <div className="absolute -right-6 -top-4 w-16 h-16 bg-accent-primary/[0.04] rounded-full blur-xl group-hover:bg-accent-primary/10 transition-all duration-500"></div>
-        
-        <div className="flex justify-between items-start relative z-10">
-            <div className={`p-2 rounded-lg bg-surface-alt border border-border-subtle text-text-primary transition-all duration-300 group-hover:bg-accent-primary/10 group-hover:text-accent-primary group-hover:border-accent-primary/20 shadow-sm group-hover:scale-105`}>
-                <Icon size={16} strokeWidth={2.5} />
+    <Card variant="panel" className="relative p-6 flex flex-col justify-between group bg-surface-main border border-border-subtle hover:border-accent-primary/50 transition-all duration-300 rounded-2xl shadow-sm">
+        {showStreak && streak > 0 && <StreakFlame streak={streak} />}
+        <div className="flex justify-between items-start mb-6">
+            <div className="p-3.5 bg-surface-alt rounded-xl text-text-secondary group-hover:text-accent-primary group-hover:bg-accent-primary/10 transition-colors border border-border-subtle shadow-sm">
+                <Icon size={22} strokeWidth={2.5} />
             </div>
-            {trend ? (
-                <div className={`flex items-center gap-1 px-2 py-0.5 rounded-md bg-emerald-500/10 border border-emerald-500/20 text-status-success text-[9px] font-black tracking-tight font-mono shadow-sm`}>
-                    <TrendingUp size={10} /> {trend > 0 ? `+${trend}` : trend}%
+            {trend && (
+                <div className={`flex items-center gap-1 text-sm font-bold px-2.5 py-1 rounded-lg ${trend > 0 ? 'bg-status-success/10 text-status-success' : 'bg-status-error/10 text-status-error'}`}>
+                    <TrendingUp size={16} className={trend < 0 ? 'rotate-180' : ''} strokeWidth={2.5} /> 
+                    {Math.abs(trend)}%
                 </div>
-            ) : (
-                <span className="w-1.5 h-1.5 rounded-full bg-border-strong opacity-40 group-hover:bg-accent-primary group-hover:opacity-100 transition-all"></span>
             )}
         </div>
 
-        <div className="mt-4 relative z-10">
-            <p className="text-[9px] font-black text-text-muted mb-0.5 tracking-wider uppercase opacity-70 leading-none">{label}</p>
-            <div className="flex items-baseline gap-1">
-                <h3 className="text-xl font-black text-text-primary tracking-tight leading-none font-mono">{value}</h3>
+        <div>
+            <p className="text-sm font-semibold text-text-muted mb-1.5 tracking-tight uppercase">{label}</p>
+            <div className="flex items-baseline gap-2">
+                <h3 className="text-4xl font-extrabold tracking-tight text-text-primary drop-shadow-sm">{value}</h3>
             </div>
-            {description && (
-                <p className="text-[9px] font-bold text-text-muted/65 mt-1 tracking-tight group-hover:text-text-muted transition-colors leading-tight">
-                    {description}
-                </p>
-            )}
+            {description && <p className="text-xs text-text-muted mt-2 opacity-80">{description}</p>}
         </div>
-        
-        {/* Bottom indicator border line */}
-        <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-accent-primary/20 via-accent-secondary/10 to-transparent group-hover:from-accent-primary/60 transition-all duration-300" />
     </Card>
 ));
-
-import { WidgetContainer } from '../components/agent/WidgetContainer';
 
 export const DashView: React.FC<{ sales: Sale[] }> = ({ sales }) => {
   const { currentUser } = useAuth();
@@ -113,53 +102,63 @@ export const DashView: React.FC<{ sales: Sale[] }> = ({ sales }) => {
           />
       ),
       'activity_table': (
-          <Card variant="panel" className="flex-1 min-h-[220px] overflow-hidden flex flex-col p-0 border-border-subtle/80 bg-surface-main shadow-sm w-full rounded-xl">
-              <div className="px-4 py-4 border-b border-border-subtle flex justify-between items-center bg-surface-main">
+          <Card variant="panel" className="flex-1 min-h-[400px] overflow-hidden flex flex-col p-0 border-border-subtle bg-surface-main shadow-sm w-full rounded-2xl">
+              <div className="px-6 py-5 border-b border-border-subtle flex justify-between items-center bg-surface-alt">
                   <div className="flex items-center gap-3">
-                      <div className="p-2 bg-surface-alt rounded-lg text-text-secondary border border-border-subtle shadow-sm">
-                          <List size={18} strokeWidth={2}/>
+                      <div className="p-2.5 bg-surface-main rounded-lg text-text-primary shadow-sm border border-border-subtle">
+                          <List size={20} strokeWidth={2.5}/>
                       </div>
                       <div>
-                          <h3 className="text-sm font-bold text-text-primary tracking-tight">What You Have Done Recently</h3>
+                          <h3 className="text-base font-bold text-text-primary tracking-tight">Recent Deal Ledger</h3>
+                          <p className="text-xs text-text-muted mt-0.5">Your most recent transaction activity</p>
                       </div>
                   </div>
               </div>
               <div className="flex-1 overflow-auto custom-scrollbar">
-                  <table className="w-full text-left">
-                      <thead className="bg-surface-alt text-xs font-semibold text-text-muted border-b border-border-subtle sticky top-0 z-10 transition-colors">
-                          <tr>
-                              <th className="p-4 pl-6  tracking-wider font-medium">Time</th>
-                              <th className="p-4  tracking-wider font-medium">Customer</th>
-                              <th className="p-4  tracking-wider font-medium">Product</th>
-                              <th className="p-4 text-right  tracking-wider font-medium">Value</th>
-                              <th className="p-4 text-right pr-6  tracking-wider font-medium">Status</th>
-                          </tr>
-                      </thead>
-                      <tbody className="divide-y divide-border-subtle">
-                          {stats.mySales.slice(0, 10).map((sale) => (
-                              <tr key={sale.id} className="hover:bg-surface-highlight hover:shadow-sm cursor-pointer transition-all duration-200 group">
-                                  <td className="p-4 pl-6 text-sm text-text-muted font-mono whitespace-nowrap">{new Date(sale.timestamp).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})}</td>
-                                  <td className="p-4">
-                                      <div className="flex flex-col">
-                                          <span className="font-semibold text-sm text-text-primary group-hover:text-accent-primary transition-colors">{sale.customer}</span>
-                                          <span className="text-xs text-text-muted mt-0.5">ID: {sale.id.slice(-6)}</span>
-                                      </div>
-                                  </td>
-                                  <td className="p-4">
-                                      <div className="text-xs py-1 px-2.5 bg-surface-alt border border-border-subtle rounded-md text-text-secondary inline-flex font-medium">
-                                          {sale.product}
-                                      </div>
-                                  </td>
-                                  <td className="p-4 text-right">
-                                      <span className="font-bold text-sm text-text-primary tracking-tight">${Number(sale.amount).toLocaleString()}</span>
-                                  </td>
-                                  <td className="p-4 text-right pr-6">
-                                      <Badge status={sale.status} className="shadow-sm float-right text-xs px-2 py-1" />
-                                  </td>
+                  {stats.mySales.length === 0 ? (
+                      <div className="h-full flex flex-col items-center justify-center text-text-muted pb-10">
+                          <List size={48} strokeWidth={1} className="mb-4 opacity-30" />
+                          <p className="text-sm font-medium">No recent deals to display.</p>
+                      </div>
+                  ) : (
+                      <table className="w-full text-left border-collapse">
+                          <thead className="bg-[#141414] text-xs font-semibold text-text-muted sticky top-0 z-10 shadow-sm border-b border-border-subtle">
+                              <tr>
+                                  <th className="p-4 pl-6 uppercase tracking-wider font-bold">Time</th>
+                                  <th className="p-4 uppercase tracking-wider font-bold">Customer Info</th>
+                                  <th className="p-4 uppercase tracking-wider font-bold">Assigned Product</th>
+                                  <th className="p-4 text-right uppercase tracking-wider font-bold">Value</th>
+                                  <th className="p-4 text-right pr-6 uppercase tracking-wider font-bold">Approval Status</th>
                               </tr>
-                          ))}
-                      </tbody>
-                  </table>
+                          </thead>
+                          <tbody className="divide-y divide-border-subtle/50">
+                              {stats.mySales.slice(0, 10).map((sale) => (
+                                  <tr key={sale.id} className="hover:bg-surface-highlight/50 cursor-pointer transition-colors group">
+                                      <td className="p-4 pl-6 text-sm text-text-muted font-mono whitespace-nowrap align-middle">
+                                          {new Date(sale.timestamp).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})}
+                                      </td>
+                                      <td className="p-4 align-middle">
+                                          <div className="flex flex-col">
+                                              <span className="font-bold text-sm text-text-primary group-hover:text-accent-primary transition-colors">{sale.customer}</span>
+                                              <span className="text-xs text-text-muted mt-1 font-mono">ID: {sale.id.slice(-6).toUpperCase()}</span>
+                                          </div>
+                                      </td>
+                                      <td className="p-4 align-middle">
+                                          <div className="text-xs py-1.5 px-3 bg-surface-alt border border-border-subtle rounded-lg text-text-secondary inline-flex font-bold uppercase tracking-wide">
+                                              {sale.product}
+                                          </div>
+                                      </td>
+                                      <td className="p-4 text-right align-middle">
+                                          <span className="font-extrabold text-sm text-text-primary tracking-tight">${Number(sale.amount).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</span>
+                                      </td>
+                                      <td className="p-4 text-right pr-6 align-middle">
+                                          <Badge status={sale.status} className="shadow-sm float-right text-xs px-3 py-1.5 font-bold tracking-wide" />
+                                      </td>
+                                  </tr>
+                              ))}
+                          </tbody>
+                      </table>
+                  )}
               </div>
           </Card>
       ),
