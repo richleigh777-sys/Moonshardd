@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import { Sale, User, Note } from '../../../types';
-import { Phone, Users, AlertCircle, TrendingUp, Clock, Zap, Target, Trophy, Workflow, Activity, Repeat } from 'lucide-react';
+import { Phone, Users, AlertCircle, TrendingUp, Clock, Zap, Target, Trophy, Workflow, Activity, Repeat, ChevronDown, ChevronUp } from 'lucide-react';
 import { Card } from '../../../ui/Base';
 
 interface DashboardLiveOpsBoardProps {
@@ -100,6 +100,8 @@ export const DashboardLiveOpsBoard: React.FC<DashboardLiveOpsBoardProps> = ({
     return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
   };
 
+  const [showSecondaryMetrics, setShowSecondaryMetrics] = useState(false);
+
   return (
     <div className="space-y-6">
       {/* Header & Quick Action */}
@@ -185,10 +187,23 @@ export const DashboardLiveOpsBoard: React.FC<DashboardLiveOpsBoardProps> = ({
         </Card>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-        
-        {/* Left Col: Gamification Leaderboard */}
-        <div className="md:col-span-2 flex flex-col space-y-4">
+      <div className="w-full">
+         <div className="flex items-center gap-2 px-1 mb-4">
+             <button 
+                 onClick={() => setShowSecondaryMetrics(!showSecondaryMetrics)}
+                 className="flex items-center gap-2 text-sm font-semibold text-text-muted hover:text-text-primary transition-colors"
+             >
+                 {showSecondaryMetrics ? "Hide Leaderboard & CLM Metrics" : "Show Leaderboard & CLM Metrics"}
+                 {showSecondaryMetrics ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+             </button>
+             <div className="flex-1 h-px bg-border-subtle ml-2" />
+         </div>
+
+         {showSecondaryMetrics && (
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+              
+              {/* Left Col: Gamification Leaderboard */}
+              <div className="md:col-span-2 flex flex-col space-y-4">
           <Card className="p-0 bg-surface-main border-border-subtle overflow-hidden flex-1 flex flex-col">
             <div className="p-4 border-b border-border-subtle bg-surface-alt/30 flex items-center justify-between relative overflow-hidden">
                <div className="absolute top-0 right-0 w-32 h-32 bg-amber-500/10 rounded-full blur-3xl -mr-16 -mt-16"></div>
@@ -314,6 +329,8 @@ export const DashboardLiveOpsBoard: React.FC<DashboardLiveOpsBoardProps> = ({
             </div>
           </Card>
         </div>
+      </div>
+      )}
       </div>
     </div>
   );

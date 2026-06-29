@@ -1,6 +1,6 @@
 
 import React, { useMemo, useState, useEffect } from 'react';
-import { User, ShoppingBag, Clock, Shield, Mail, Phone, MapPin, TrendingUp, Award, Calendar, Activity, AlertTriangle, ArrowUpRight, Zap, Link, Eye, EyeOff, UserIcon, FileText, ChevronDown, ChevronRight, CheckCircle2, Ticket, MessageSquare, PhoneOff, Tag, Copy } from 'lucide-react';
+import { User, ShoppingBag, Clock, Shield, Mail, Phone, MapPin, TrendingUp, Award, Calendar, Activity, AlertTriangle, ArrowUpRight, Zap, Link, Eye, EyeOff, UserIcon, FileText, ChevronDown, ChevronRight, CheckCircle2, Ticket, MessageSquare, PhoneOff, Tag, Copy, HeartPulse, Network, Layers } from 'lucide-react';
 import { Modal } from '../ui/Modal';
 import { Sale } from '../../types';
 import { Badge, Button } from '../ui/Base';
@@ -251,7 +251,7 @@ export const CustomerProfileModal: React.FC<CustomerProfileModalProps> = ({
                                             <span className="font-mono">{isRevealed ? phone : maskPII(phone, 'phone')}</span>
                                             <button 
                                                 onClick={(e) => { e.stopPropagation(); navigator.clipboard.writeText(phone); }}
-                                                className="opacity-0 group-hover/link:opacity-100 transition-opacity p-1 hover:bg-surface-highlight rounded"
+                                                className="p-1 hover:bg-surface-highlight text-text-muted hover:text-accent-primary rounded transition-colors"
                                                 title="Copy to clipboard"
                                             >
                                                 <Copy size={14} />
@@ -388,8 +388,8 @@ export const CustomerProfileModal: React.FC<CustomerProfileModalProps> = ({
                             <Tag size={12} className="text-purple-500"/> Global CRM Tags & Pipeline Data
                         </h4>
                         <div className="p-4 glass-panel rounded-xl min-h-[88px] flex flex-wrap content-start gap-2 shadow-inner">
-                            {customerHistory.length > 0 && customerHistory[0].crmTags && customerHistory[0].crmTags.length > 0 ? (
-                                customerHistory[0].crmTags.map((c, i) => (
+                            {customerProfile && customerProfile.crmTags && customerProfile.crmTags.length > 0 ? (
+                                customerProfile.crmTags.map((c, i) => (
                                     <span key={i} className="px-3 py-1 bg-purple-500/10 rounded border border-purple-500/20 text-[11px] font-medium tracking-wide text-purple-400 flex items-center gap-1.5">
                                         <Tag size={10}/>
                                         {c}
@@ -397,8 +397,8 @@ export const CustomerProfileModal: React.FC<CustomerProfileModalProps> = ({
                                 ))
                             ) : null}
                             
-                            {customerHistory.length > 0 && customerHistory[0].leadSources && customerHistory[0].leadSources.length > 0 ? (
-                                customerHistory[0].leadSources.map((c, i) => (
+                            {customerProfile && customerProfile.leadSources && customerProfile.leadSources.length > 0 ? (
+                                customerProfile.leadSources.map((c, i) => (
                                     <span key={i} className="px-3 py-1 bg-blue-500/10 rounded border border-blue-500/20 text-[11px] font-medium tracking-wide text-blue-400 flex items-center gap-1.5">
                                         <Network size={10}/>
                                         {c}
@@ -406,8 +406,8 @@ export const CustomerProfileModal: React.FC<CustomerProfileModalProps> = ({
                                 ))
                             ) : null}
                             
-                            {customerHistory.length > 0 && customerHistory[0].pipelineStages && customerHistory[0].pipelineStages.length > 0 ? (
-                                customerHistory[0].pipelineStages.map((c, i) => (
+                            {customerProfile && customerProfile.pipelineStages && customerProfile.pipelineStages.length > 0 ? (
+                                customerProfile.pipelineStages.map((c, i) => (
                                     <span key={i} className="px-3 py-1 bg-amber-500/10 rounded border border-amber-500/20 text-[11px] font-medium tracking-wide text-amber-400 flex items-center gap-1.5">
                                         <Layers size={10}/>
                                         {c}
@@ -415,7 +415,7 @@ export const CustomerProfileModal: React.FC<CustomerProfileModalProps> = ({
                                 ))
                             ) : null}
 
-                            {(!customerHistory[0]?.crmTags?.length && !customerHistory[0]?.leadSources?.length && !customerHistory[0]?.pipelineStages?.length) ? (
+                            {(!customerProfile?.crmTags?.length && !customerProfile?.leadSources?.length && !customerProfile?.pipelineStages?.length) ? (
                                 <span className="text-xs text-text-muted italic flex items-center gap-2 opacity-60">
                                     <AlertTriangle size={12}/> No CRM tags assigned.
                                 </span>

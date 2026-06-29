@@ -9,7 +9,7 @@ const InputBlock = ({ label, name, value, placeholder, isShort, handleIdentityCh
             value={value}
             onChange={handleIdentityChange}
             placeholder={placeholder}
-            className="w-full bg-surface-alt/50 border border-white/5 rounded-xl px-5 py-4 text-lg font-medium text-white placeholder-text-muted outline-none transition-all focus:border-white focus:bg-surface-alt focus:ring-1 focus:ring-white shadow-sm"
+            className="w-full bg-surface-alt/50 border border-border-subtle rounded-xl px-5 py-4 text-lg font-medium text-white placeholder-text-muted outline-none transition-all focus:border-white focus:bg-surface-alt focus:ring-1 focus:ring-white shadow-sm"
         />
     </div>
 );
@@ -45,7 +45,7 @@ export function LogisticsSector({ formData, handleIdentityChange, useShippingFor
                         name="shippingState" 
                         value={shippingState} 
                         onChange={handleIdentityChange}
-                        className="w-full bg-surface-alt/50 border border-white/5 rounded-xl px-5 py-4 text-lg font-medium text-white placeholder-text-muted outline-none transition-all focus:border-white focus:bg-surface-alt focus:ring-1 focus:ring-white shadow-sm appearance-none"
+                        className="w-full bg-surface-alt/50 border border-border-subtle rounded-xl px-5 py-4 text-lg font-medium text-white placeholder-text-muted outline-none transition-all focus:border-white focus:bg-surface-alt focus:ring-1 focus:ring-white shadow-sm appearance-none"
                     >
                         <option value="">Select State</option>
                         {['CA','NY','TX','FL','IL','PA','OH','GA','NC','MI'].map(s => <option key={s} value={s}>{s}</option>)}
@@ -55,12 +55,12 @@ export function LogisticsSector({ formData, handleIdentityChange, useShippingFor
             </div>
         </div>
 
-        <div className="pt-4 border-t border-white/5">
+        <div className="pt-4 border-t border-border-subtle">
             <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
                  <h5 className="text-base font-semibold text-white flex items-center gap-2"><Home size={18} className="text-blue-400"/> Billing Address</h5>
                  <button 
                     onClick={(e) => { e.preventDefault(); setUseShippingForBilling(!useShippingForBilling); }}
-                    className={`px-4 py-2 rounded-xl text-sm font-medium transition-all flex items-center gap-2 border ${useShippingForBilling ? 'bg-blue-500 text-white border-blue-400 shadow-lg shadow-blue-500/20' : 'bg-surface-alt border-white/5 text-text-secondary hover:text-white hover:border-white/20'}`}
+                    className={`px-4 py-2 rounded-xl text-sm font-medium transition-all flex items-center gap-2 border ${useShippingForBilling ? 'bg-blue-500 text-white border-blue-400 shadow-lg shadow-blue-500/20' : 'bg-surface-alt border-border-subtle text-text-secondary hover:text-white hover:border-white/20'}`}
                  >
                      {useShippingForBilling && <Check size={14} />}
                      Use Shipping Address
@@ -81,7 +81,7 @@ export function LogisticsSector({ formData, handleIdentityChange, useShippingFor
                             name="billingState" 
                             value={billingState} 
                             onChange={handleIdentityChange}
-                            className="w-full bg-surface-alt/50 border border-white/5 rounded-xl px-5 py-4 text-lg font-medium text-white placeholder-text-muted outline-none transition-all focus:border-white focus:bg-surface-alt focus:ring-1 focus:ring-white shadow-sm appearance-none"
+                            className="w-full bg-surface-alt/50 border border-border-subtle rounded-xl px-5 py-4 text-lg font-medium text-white placeholder-text-muted outline-none transition-all focus:border-white focus:bg-surface-alt focus:ring-1 focus:ring-white shadow-sm appearance-none"
                         >
                             <option value="">Select State</option>
                             {['CA','NY','TX','FL','IL','PA','OH','GA','NC','MI'].map(s => <option key={s} value={s}>{s}</option>)}

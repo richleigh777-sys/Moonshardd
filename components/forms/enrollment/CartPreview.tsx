@@ -32,10 +32,10 @@ export function CartPreview({ cart, onRemove, calculatedTotal }: any) {
     });
 
   return (
-    <div className="flex flex-col overflow-hidden bg-surface-main rounded-xl border border-white/5 shadow-inner">
+    <div className="flex flex-col overflow-hidden bg-surface-main rounded-xl border border-border-subtle shadow-inner">
       <div className="p-4 flex flex-col gap-3">
         {cart.length === 0 ? (
-          <div className="text-center py-6 px-4 bg-surface-alt/20 rounded-[16px] border border-dashed border-white/10">
+          <div className="text-center py-6 px-4 bg-surface-alt/20 rounded-[16px] border border-dashed border-border-strong">
             <ShoppingCart size={32} className="mx-auto text-text-muted/30 mb-2" />
             <p className="text-sm font-semibold text-text-muted">No items selected</p>
           </div>
@@ -48,9 +48,9 @@ export function CartPreview({ cart, onRemove, calculatedTotal }: any) {
               };
 
               return (
-                <div key={index} className="flex justify-between items-center bg-surface-alt/50 border border-white/5 rounded-xl p-3 pr-4 group transition-all">
+                <div key={index} className="flex justify-between items-center bg-surface-alt/50 border border-border-subtle rounded-xl p-3 pr-4 group transition-all">
                   <div className="flex items-center gap-3 w-full">
-                    <div className="bg-white/5 text-white/50 border border-white/10 rounded-lg p-2 flex items-center justify-center shrink-0">
+                    <div className="bg-surface-hover text-white/50 border border-border-strong rounded-lg p-2 flex items-center justify-center shrink-0">
                       <ShoppingCart size={14} />
                     </div>
                     <div className="flex-1 min-w-0">
@@ -72,7 +72,7 @@ export function CartPreview({ cart, onRemove, calculatedTotal }: any) {
                       )}
                     </div>
                     
-                    <div className="flex items-center gap-4 pl-4 border-l border-white/5">
+                    <div className="flex items-center gap-4 pl-4 border-l border-border-subtle">
                         <div className="text-emerald-400 font-bold text-sm">
                             $${group.totalPrice.toFixed(2)}
                         </div>

@@ -29,15 +29,15 @@ export const Modal = ({ isOpen, onClose, title, children, footer, type = 'defaul
   if (!show && !isOpen) return null;
 
   const typeStyles = {
-    default: 'border-border-subtle shadow-2xl',
-    danger: 'border-status-error shadow-2xl shadow-status-error/10',
-    success: 'border-status-success shadow-2xl shadow-status-success/10'
+    default: 'border-border-strong shadow-[0_20px_40px_-15px_rgba(0,0,0,0.5)]',
+    danger: 'border-status-error shadow-[0_20px_40px_-15px_rgba(255,0,0,0.2)]',
+    success: 'border-status-success shadow-[0_20px_40px_-15px_rgba(0,255,0,0.2)]'
   };
 
   const sizeStyles = {
     sm: 'max-w-sm',
     md: 'max-w-lg',
-    lg: 'max-w-2xl',
+    lg: 'max-w-3xl',
     xl: 'max-w-4xl',
     '2xl': 'max-w-6xl',
     full: 'w-screen h-screen max-w-none m-0 rounded-none'
@@ -48,17 +48,17 @@ export const Modal = ({ isOpen, onClose, title, children, footer, type = 'defaul
   return (
     <div className={`fixed inset-0 z-[9999] flex items-center justify-center p-0 md:p-4 transition-all duration-200 ${isOpen ? 'opacity-100' : 'opacity-0'}`}>
       <div 
-        className="absolute inset-0 bg-surface-alt/80 backdrop-blur-md" 
+        className="absolute inset-0 bg-surface-main/90 backdrop-blur-sm" 
         onClick={onClose}
       />
 
-      <div className={`relative w-full bg-surface-main border ${typeStyles[type]} ${isFull ? '' : 'rounded-xl'} transform transition-all duration-200 flex flex-col ${isFull ? 'h-full' : 'max-h-[90vh]'} ${sizeStyles[size]} ${isOpen ? 'scale-100 translate-y-0' : 'scale-95 translate-y-4'}`}>
+      <div className={`relative w-full bg-surface-main border-[1px] ${typeStyles[type]} ${isFull ? '' : 'rounded-[8px]'} transform transition-all duration-200 flex flex-col ${isFull ? 'h-full' : 'max-h-[90vh]'} ${sizeStyles[size]} ${isOpen ? 'scale-100 translate-y-0' : 'scale-[0.98] translate-y-4'}`}>
         
-        <div className="flex items-center justify-between p-4 border-b border-border-subtle shrink-0">
-          <h3 className="text-xl font-semibold text-text-primary tracking-tight flex items-center gap-2">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-border-strong shrink-0 bg-surface-alt rounded-t-[8px]">
+          <h3 className="text-[16px] font-bold text-text-primary uppercase tracking-widest flex items-center gap-2">
             {title}
           </h3>
-          <button onClick={onClose} className="text-text-muted hover:text-text-primary transition-colors p-2 rounded-lg hover:bg-surface-alt">
+          <button onClick={onClose} className="text-text-muted hover:text-text-primary transition-colors p-1 rounded hover:bg-surface-main border border-transparent hover:border-border-strong hover:shadow-sm">
             <X size={20} />
           </button>
         </div>

@@ -15,9 +15,9 @@ export const CheckoutModal = ({
                 initial={{ opacity: 0, scale: 0.95, y: 10 }}
                 animate={{ opacity: 1, scale: 1, y: 0 }}
                 exit={{ opacity: 0, scale: 0.95, y: 10 }}
-                className="bg-surface-main w-full max-w-2xl rounded-xl overflow-hidden shadow-2xl border border-white/10 flex flex-col max-h-[90vh]"
+                className="bg-surface-main w-full max-w-2xl rounded-xl overflow-hidden shadow-2xl border border-border-strong flex flex-col max-h-[90vh]"
             >
-                <div className="shrink-0 p-6 sm:p-8 border-b border-white/5 flex items-center justify-between">
+                <div className="shrink-0 p-6 sm:p-8 border-b border-border-subtle flex items-center justify-between">
                     <button onClick={onClose} className="p-2 -ml-2 rounded-xl text-text-muted hover:text-white hover:bg-surface-hover transition-colors">
                         <ArrowLeft size={20} />
                     </button>
@@ -30,7 +30,7 @@ export const CheckoutModal = ({
 
                 <div className="flex-1 overflow-y-auto custom-scrollbar p-6 sm:p-8 space-y-8">
                     
-                    <div className="bg-surface-alt/50 border border-white/5 rounded-xl p-6 shadow-sm">
+                    <div className="bg-surface-alt/50 border border-border-subtle rounded-xl p-6 shadow-sm">
                         <div className="flex justify-between items-center mb-4">
                             <span className="text-sm font-semibold text-text-muted">Total Amount Due</span>
                             <span className="text-3xl font-bold text-white">$${grandTotal.toFixed(2)}</span>
@@ -50,7 +50,7 @@ export const CheckoutModal = ({
 
                 </div>
 
-                <div className="shrink-0 p-6 sm:p-8 bg-surface-alt/30 border-t border-white/5 flex justify-end gap-4">
+                <div className="shrink-0 p-6 sm:p-8 bg-surface-alt/30 border-t border-border-subtle flex justify-end gap-4">
                     <button 
                         onClick={onClose}
                         className="px-6 py-4 rounded-xl text-text-secondary font-semibold hover:bg-surface-hover transition-colors"

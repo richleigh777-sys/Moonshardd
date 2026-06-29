@@ -70,6 +70,23 @@ export const ClearanceTab: React.FC<ClearanceTabProps> = ({ config, onChange, is
         onChange('permissions', newPermissions);
     };
 
+    const setLevelClearance = (e: React.MouseEvent, tabId: string, level: number) => {
+        e.stopPropagation();
+        if (!isSuperAdmin) {
+            sfx.playError();
+            setToast({ title: 'Access Denied', message: 'Clearance modifications require Level 10 Admin authorization.', type: 'error' });
+            return;
+        }
+        sfx.playClick();
+        
+        const newClearances = {
+            ...(config.adminLevelClearances || {})
+        };
+        newClearances[tabId] = level;
+        
+        onChange('adminLevelClearances', newClearances);
+    };
+
     const toggleRbac = (role: string, action: keyof import('../../../../types').PermissionSet) => {
         if (!isSuperAdmin) {
             sfx.playError();
@@ -202,24 +219,41 @@ export const ClearanceTab: React.FC<ClearanceTabProps> = ({ config, onChange, is
                 <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
                     {MANAGER_TERMINALS.map(term => {
                         const isChecked = config.permissions?.manager?.includes(term.id);
+                        const requiredLevel = config.adminLevelClearances?.[term.id] || 1;
                         return (
                             <div 
                                 key={term.id} 
                                 onClick={() => togglePermission('manager', term.id)} 
-                                className={`p-4 rounded-xl border cursor-pointer transition-all flex items-center justify-between group ${
+                                className={`p-4 rounded-xl border cursor-pointer transition-all flex flex-col justify-between group ${
                                     isChecked 
                                     ? 'bg-surface-main border-accent-secondary/50 shadow-md scale-[1.02]' 
                                     : 'bg-surface-alt/40 border-border-subtle opacity-60 hover:opacity-100 hover:border-border-strong'
                                 }`}
                             >
-                                <span className="text-sm font-extrabold text-text-primary">{term.label}</span>
-                                <div className={`w-4 h-4 rounded-full border flex items-center justify-center transition-all ${
-                                    isChecked 
-                                    ? 'bg-accent-secondary border-accent-secondary scale-110 shadow-sm' 
-                                    : 'border-border-strong bg-surface-main'
-                                }`}>
-                                    {isChecked && <Check size={10} className="text-white font-bold stroke-[3px]" />}
+                                <div className="flex items-center justify-between mb-3">
+                                    <span className="text-sm font-extrabold text-text-primary">{term.label}</span>
+                                    <div className={`w-4 h-4 rounded-full border flex items-center justify-center transition-all ${
+                                        isChecked 
+                                        ? 'bg-accent-secondary border-accent-secondary scale-110 shadow-sm' 
+                                        : 'border-border-strong bg-surface-main'
+                                    }`}>
+                                        {isChecked && <Check size={10} className="text-white font-bold stroke-[3px]" />}
+                                    </div>
                                 </div>
+                                {isChecked && (
+                                    <div className="flex items-center gap-2 mt-auto pt-2 border-t border-border-subtle/50" onClick={e => e.stopPropagation()}>
+                                        <span className="text-[10px] font-bold text-text-muted uppercase tracking-wider">Min Level</span>
+                                        <select 
+                                            value={requiredLevel} 
+                                            onChange={(e) => setLevelClearance(e as any, term.id, parseInt(e.target.value))}
+                                            className="bg-surface-alt border border-border-subtle rounded text-xs px-1 py-0.5 font-bold text-text-primary focus:outline-none focus:border-accent-secondary"
+                                        >
+                                            {[1,2,3,4,5,6,7,8,9,10].map(lvl => (
+                                                <option key={lvl} value={lvl}>L{lvl}</option>
+                                            ))}
+                                        </select>
+                                    </div>
+                                )}
                             </div>
                         );
                     })}

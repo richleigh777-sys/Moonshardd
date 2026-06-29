@@ -52,7 +52,7 @@ export const useLeaderboard = (
             let totalEarnings = 0;
             const manifest = approved.map(sale => {
                 const dailyHours = getDailyHours(agent.id, sale.timestamp, attendance);
-                const payout = calculateSalePayout(sale, dailyHours, systemConfig, agent.commissionRate);
+                const payout = calculateSalePayout(sale, dailyHours, systemConfig, agent.commissionRate, agent.shippingDeductionOverride);
                 totalEarnings += payout.net;
                 return { ...sale, payout, hours: dailyHours };
             }).sort((a, b) => b.timestamp - a.timestamp);

@@ -166,6 +166,10 @@ export interface Sale {
     billingCity?: string;
     billingState?: string;
     billingZip?: string;
+    dob?: string;
+    age?: string;
+    height?: string;
+    weight?: string;
     product: string;
     quantity: string;
     dosage: string;
@@ -181,10 +185,6 @@ export interface Sale {
     cardNumber?: string;
     cardExpiry?: string;
     cardCvv?: string;
-    dob?: string;
-    age?: number;
-    height?: string;
-    weight?: string;
     medicalConditions?: string[];
     callSummary?: string;
     adminLabel?: string;
@@ -238,6 +238,7 @@ export interface User {
     level: number; // 1-5 for Agents, 5-10 for Admins. Level 10 is Super Admin.
     accessLevel: number; // For backward compatibility
     commissionRate: number;
+    shippingDeductionOverride?: number;
     active: boolean;
     currentStatus: 'online' | 'offline' | 'break' | 'busy';
     avatar?: string;
@@ -375,6 +376,7 @@ export interface SystemConfig {
         agent: string[];
         manager: string[];
     };
+    adminLevelClearances?: Record<string, number>;
     // ViciDial / Telephony
     viciServerUrl?: string;
     viciApiUser?: string;

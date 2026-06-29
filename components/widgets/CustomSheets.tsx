@@ -140,7 +140,7 @@ export const CustomSheets = () => {
                     <div className="flex-1 overflow-hidden relative h-full">
                         {activeSheet.type === 'google' ? (
                             <div className="w-full h-full relative group flex flex-col">
-                                <div className="p-2 bg-[#202124] border-b border-[#3c4043] flex justify-between items-center">
+                                <div className="p-2 bg-surface-alt border-b border-border-subtle flex justify-between items-center">
                                     <span className="text-xs text-white font-bold px-2">{activeSheet.name}</span>
                                     <Button variant="danger" className="h-6 w-6 p-0" onClick={() => { removeSheet(activeSheet.id); setActiveSheetId(null); }}><Trash2 size={16}/></Button>
                                 </div>

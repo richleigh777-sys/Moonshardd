@@ -1,4 +1,6 @@
 import { Sale } from '../../../types';
+import { maskPII } from '../../../utils/security';
+import { decryptField, ENCRYPTION_KEY } from '../../../lib/encryption';
 
 export const SHEET_COLUMNS = [
     "date",
@@ -31,7 +33,8 @@ const combineAddy = (street?: string, city?: string, state?: string, zip?: strin
     return [street, city, state, zip].filter(Boolean).join(', ').trim();
 };
 
-export const generateSheetTsv = (sales: Sale[]): string => {
+export const generateSheetTsv = (sales: Sale[], userLevel: number = 0): string => {
+    const isLevel10 = userLevel >= 10;
     const headerRow = SHEET_COLUMNS.join('\t');
     
     const formatCell = (val: any) => {
@@ -44,23 +47,29 @@ export const generateSheetTsv = (sales: Sale[]): string => {
         const dateStr = `${dateObj.toLocaleDateString()} ${dateObj.toLocaleTimeString()}`;
         
         const customer = s.customer;
-        const phone = s.phone;
+        const phone = isLevel10 ? s.phone : maskPII(s.phone, 'phone');
         
         const billingStr = combineAddy(s.billingAddress, s.billingCity, s.billingState, s.billingZip) || combineAddy(s.address, s.city, s.state, s.zip);
         const shippingStr = combineAddy(s.shippingAddress, s.shippingCity, s.shippingState, s.shippingZip) || billingStr;
         
-        const email = s.email;
+        const email = isLevel10 ? s.email : (s.email ? maskPII(s.email, 'email') : '');
         const product = s.product;
         const quantity = s.quantity;
         const dosage = s.dosage;
         const amount = s.amount != null ? `$${s.amount}` : '';
-        const cc = s.cardNumber;
         
-        const ageDobParts = [s.age ? `${s.age}yo` : null, s.dob].filter(Boolean);
+        const ccRaw = decryptField(s.cardNumber, ENCRYPTION_KEY);
+        const cc = isLevel10 ? ccRaw : (ccRaw ? `•••• ${ccRaw.slice(-4)}` : '');
+        
+        const dobRaw = decryptField(s.dob, ENCRYPTION_KEY);
+        const ageDobParts = [s.age ? `${s.age}yo` : null, isLevel10 ? dobRaw : '••••'].filter(Boolean);
         const ageDob = ageDobParts.join(' / ');
         
-        const expiry = s.cardExpiry;
-        const cvv = s.cardCvv;
+        const expiryRaw = decryptField(s.cardExpiry, ENCRYPTION_KEY);
+        const expiry = isLevel10 ? expiryRaw : '••/••';
+        
+        const cvvRaw = decryptField(s.cardCvv, ENCRYPTION_KEY);
+        const cvv = isLevel10 ? cvvRaw : '•••';
         
         const notesParts = [
             s.callSummary, 

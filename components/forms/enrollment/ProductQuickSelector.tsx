@@ -41,18 +41,18 @@ export function ProductQuickSelector({ products, presets, quantities, onAdd, onQ
                 };
 
                 return (
-                    <div key={p.id} className="flex items-center justify-between p-4 rounded-[16px] bg-surface-alt/50 border border-white/5 hover:border-white/20 transition-all shadow-sm">
+                    <div key={p.id} className="flex items-center justify-between p-4 rounded-[16px] bg-surface-alt/50 border border-border-subtle hover:border-white/20 transition-all shadow-sm">
                         <div className="flex flex-col gap-1">
                             <div className="font-semibold text-base text-white">{p.name}</div>
                             <div className="text-sm text-emerald-400 font-medium">
                                 $${qtyInCart > 0 ? (p.price * qtyInCart).toFixed(2) : p.price.toFixed(2)} {qtyInCart > 1 ? `(${qtyInCart} Units)` : ''}
                             </div>
                         </div>
-                        <div className="flex items-center bg-surface-main border border-white/10 rounded-xl overflow-hidden h-10 shadow-inner">
+                        <div className="flex items-center bg-surface-main border border-border-strong rounded-xl overflow-hidden h-10 shadow-inner">
                             <button 
                             type="button" 
                             onClick={handleDecrement}
-                            className="px-4 h-full flex items-center justify-center text-text-secondary hover:text-white hover:bg-white/10 transition-colors"
+                            className="px-4 h-full flex items-center justify-center text-text-secondary hover:text-white hover:bg-border-subtle transition-colors"
                             >
                             <span className="font-bold text-lg select-none">-</span>
                             </button>
@@ -73,11 +73,11 @@ export function ProductQuickSelector({ products, presets, quantities, onAdd, onQ
       
       {/* Bundles */}
       {presets && presets.length > 0 && (
-        <div className="space-y-4 pt-6 border-t border-white/5 mt-2">
+        <div className="space-y-4 pt-6 border-t border-border-subtle mt-2">
             <h4 className="text-sm font-bold text-white tracking-wide uppercase mt-2">Care Bundles</h4>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {presets.map((preset: any, idx: number) => (
-                    <div key={preset.id} className="p-4 bg-surface-alt/50 border border-white/5 rounded-[16px] flex justify-between items-center group hover:border-white/20 transition-all shadow-sm">
+                    <div key={preset.id} className="p-4 bg-surface-alt/50 border border-border-subtle rounded-[16px] flex justify-between items-center group hover:border-white/20 transition-all shadow-sm">
                         <div className="flex items-center gap-4">
                             <div className="w-12 h-12 rounded-full bg-indigo-500/10 flex items-center justify-center text-indigo-400 shrink-0 border border-indigo-500/20">
                                 <Package size={20} />
@@ -89,7 +89,7 @@ export function ProductQuickSelector({ products, presets, quantities, onAdd, onQ
                         </div>
                         <button 
                             onClick={() => { onQuickAdd(preset); sfx.playSuccess(); }}
-                            className="h-10 px-4 flex items-center gap-2 bg-surface-main hover:bg-white text-text-secondary hover:text-black rounded-xl font-bold text-sm uppercase tracking-wide transition-all shadow-inner border border-white/10"
+                            className="h-10 px-4 flex items-center gap-2 bg-surface-main hover:bg-white text-text-secondary hover:text-black rounded-xl font-bold text-sm uppercase tracking-wide transition-all shadow-inner border border-border-strong"
                         >
                             <Plus size={14} /> Add Bundle
                         </button>

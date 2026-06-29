@@ -2,18 +2,48 @@
 // Database Connection Pool Manager
 // This file initializes a secure connection to your enterprise database.
 import { Pool } from 'pg';
+import { drizzle } from 'drizzle-orm/node-postgres';
+import * as schema from '../src/db/schema';
 
 // We implement connection pooling to handle high-velocity CRM interactions securely.
 // Ensure DATABASE_URL is set in the environment variables.
 let pool: Pool | null = null;
-if (process.env.DATABASE_URL) {
+let db: ReturnType<typeof drizzle> | null = null;
+
+const sqlHost = process.env.SQL_HOST;
+const sqlUser = process.env.SQL_USER;
+const sqlPassword = process.env.SQL_PASSWORD;
+const sqlDbName = process.env.SQL_DB_NAME;
+
+let dbUrl = process.env.DATABASE_URL;
+if (dbUrl && (dbUrl.includes('localhost') || dbUrl.includes('127.0.0.1'))) {
+  dbUrl = undefined;
+  delete process.env.DATABASE_URL;
+}
+
+if (sqlHost && sqlUser && sqlPassword && sqlDbName) {
+  process.env.DATABASE_URL = "postgres://dummy";
   pool = new Pool({
-    connectionString: process.env.DATABASE_URL,
+    user: sqlUser,
+    password: sqlPassword,
+    database: sqlDbName,
+    host: sqlHost, // Use the Unix socket path directly
+    max: 20,
+    idleTimeoutMillis: 30000,
+    connectionTimeoutMillis: 2000,
+  });
+} else if (dbUrl) {
+  pool = new Pool({
+    connectionString: dbUrl,
     ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : undefined,
     max: 20,
     idleTimeoutMillis: 30000,
     connectionTimeoutMillis: 2000,
   });
+}
+
+if (pool) {
+  db = drizzle(pool, { schema });
 
   pool.on('error', (err, client) => {
     console.error('Unexpected error on idle database client', err);
@@ -21,6 +51,8 @@ if (process.env.DATABASE_URL) {
 } else {
   console.warn("DATABASE_URL is not set. Database operations will fail if called.");
 }
+
+export { db, schema };
 
 /**
  * Execute a query securely using parameterized statements to prevent SQL injection.

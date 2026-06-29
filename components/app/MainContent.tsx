@@ -1,4 +1,4 @@
-import React, { Suspense } from 'react';
+import React, { Suspense, lazy } from 'react';
 import { LoginScreen } from '../../views/LoginScreen';
 import { SyncOverlay } from '../ui/Feedback';
 import { Toast } from '../ui/Toast';
@@ -15,9 +15,8 @@ import { GhostModeBanner } from './GhostModeBanner';
 import { useAppInitialization } from '../../hooks/useAppInitialization';
 import { GlobalWorkers } from './GlobalWorkers';
 
-import { AgentPortal } from '../../views/AgentPortal';
-import { AdminPortal } from '../../views/AdminPortal';
-
+const AgentPortal = lazy(() => import('../../views/AgentPortal').then(m => ({ default: m.AgentPortal })));
+const AdminPortal = lazy(() => import('../../views/AdminPortal').then(m => ({ default: m.AdminPortal })));
 
 export const MainContent: React.FC = () => {
     const { activeServer } = useSystem();

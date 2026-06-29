@@ -43,7 +43,6 @@ export const useCrmSales = (
                  timestamp: saleData.timestamp || Date.now(),
                  team: saleData.team || currentUser?.team || 'Alpha',
                  agentId: saleData.agentId || currentUser?.id,
-                 agentName: saleData.agentName || currentUser?.name,
             };
             
             if (matchedCustomer) {

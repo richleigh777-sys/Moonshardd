@@ -678,7 +678,7 @@ export function useEnrollmentLogic(
         pipelineStatus: 'New',
         snapshotTotalDiscount: cart.reduce((acc, c) => acc + ((productConfig.products.find(p => p.name === c.product)?.price || c.unitPrice) - c.unitPrice) * getQuantityMultiplier(c.quantity), 0),
         snapshotOriginalAmount: cart.reduce((acc, c) => acc + (productConfig.products.find(p => p.name === c.product)?.price || c.unitPrice) * getQuantityMultiplier(c.quantity), 0)
-      } as Sale);
+      } as unknown as Sale);
 
       sfx.playSuccess();
       draftService.delete(STORAGE_KEY);
@@ -844,7 +844,7 @@ export function useEnrollmentLogic(
           weight: formData.weight || undefined,
           medicalConditions: formData.medicalConditions || [],
           callSummary: summary
-        } as Sale);
+        } as unknown as Sale);
 
       } else {
         // Declined / Busy / Not Interested
@@ -862,7 +862,7 @@ export function useEnrollmentLogic(
              status: 'Declined',
              declineReason: summary,
              callSummary: summary
-           } as Sale);
+           } as unknown as Sale);
         } else {
            // Just add a note if no name/phone is there
            await addNote({

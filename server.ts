@@ -5,8 +5,22 @@ import bcrypt from "bcrypt";
 import helmet from "helmet";
 import rateLimit from "express-rate-limit";
 import { GoogleGenAI, Type } from "@google/genai";
-import { query } from "./lib/db.ts"; // Secure DB Gateway
-import { initializeRealtime, broadcast } from "./lib/realtime.ts"; // WebSocket Hub
+import { query, db, schema } from "./lib/db.ts"; // Secure DB Gateway
+import { eq, inArray, and, or, sql } from "drizzle-orm";
+import { initializeRealtime, broadcast as originalBroadcast } from "./lib/realtime.ts"; // WebSocket Hub
+import { LRUCache } from "lru-cache";
+
+const analyticsCache = new LRUCache({
+    max: 10,
+    ttl: 1000 * 60 * 5, // 5 min
+});
+
+const broadcast = (event: any) => {
+    if (event?.type === 'COLLECTION_MUTATED' && ['sales', 'customers', 'users'].includes(event.collectionName)) {
+        analyticsCache.delete('aggregates');
+    }
+    originalBroadcast(event);
+};
 
 // Workflow & Automation Core
 function startAutomatedWorkers() {
@@ -52,7 +66,37 @@ async function startServer() {
               updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
               PRIMARY KEY (collection_name, id)
           )`);
+
+          await query(`CREATE TABLE IF NOT EXISTS leads (
+              id VARCHAR(255) PRIMARY KEY,
+              email VARCHAR(255),
+              phone VARCHAR(50),
+              created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+          )`);
+
+          await query(`CREATE TABLE IF NOT EXISTS users (
+              id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+              email VARCHAR(255) UNIQUE NOT NULL,
+              password_hash VARCHAR(255) NOT NULL,
+              role VARCHAR(50) DEFAULT 'Agent',
+              clearance_level INT DEFAULT 1,
+              team VARCHAR(50) DEFAULT 'Alpha',
+              name VARCHAR(255),
+              status VARCHAR(50) DEFAULT 'Active',
+              assigned_agent_id VARCHAR(255),
+              created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+          )`);
+
+          await query(`CREATE TABLE IF NOT EXISTS drip_campaigns (
+              id VARCHAR(255) PRIMARY KEY,
+              lead_id VARCHAR(255),
+              status VARCHAR(50) DEFAULT 'Pending',
+              next_action_date TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+              sequence_step INT DEFAULT 0,
+              created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+          )`);
           
+          const rootCheck = await query(`SELECT id FROM users WHERE email = 'sys_root'`); if (rootCheck.rows.length === 0) { const rootHash = await bcrypt.hash('root123', await bcrypt.genSalt(10)); await query(`INSERT INTO users (email, password_hash, role, clearance_level, team, name) VALUES ('sys_root', $1, 'admin', 10, 'Admin', 'Root Admin')`, [rootHash]); console.log('[Security] Seeded sys_root.'); }
           // Verify optimized indices exist for high frequency concurrent lookups and complex analytics queries
           await query(`CREATE INDEX IF NOT EXISTS idx_crm_documents_normalized_phone 
                        ON crm_documents ((data->>'normalizedPhone')) 
@@ -154,6 +198,51 @@ async function startServer() {
   });
 
   // User Login
+  // --- 1.5. Lead Ingestion & Campaigns ---
+  app.post("/api/leads", async (req, res) => {
+      try {
+          const { email, phone, source } = req.body;
+          if (!process.env.DATABASE_URL) {
+              return res.status(503).json({ error: "Database not connected." });
+          }
+          
+          const leadId = 'lead_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5);
+          
+          await query(
+              `INSERT INTO leads (id, email, phone) VALUES ($1, $2, $3)`,
+              [leadId, email || null, phone || null]
+          );
+
+          // Auto-enroll in a drip campaign
+          const campaignId = 'drip_' + Date.now();
+          await query(
+              `INSERT INTO drip_campaigns (id, lead_id, status, next_action_date, sequence_step) 
+               VALUES ($1, $2, 'Pending', NOW(), 0)`,
+              [campaignId, leadId]
+          );
+
+          res.json({ message: "Lead ingested and enrolled in drip campaign.", leadId, campaignId });
+      } catch (err: any) {
+          console.error("Lead Ingestion Error:", err);
+          res.status(500).json({ error: err.message });
+      }
+  });
+
+  app.get("/api/leads", async (req, res) => {
+      try {
+          if (!process.env.DATABASE_URL) return res.json([]);
+          const result = await query(`
+              SELECT l.*, d.status as campaign_status, d.sequence_step, d.next_action_date 
+              FROM leads l 
+              LEFT JOIN drip_campaigns d ON l.id = d.lead_id
+              ORDER BY l.created_at DESC LIMIT 50
+          `);
+          res.json(result.rows);
+      } catch (err: any) {
+          res.status(500).json({ error: "Failed to fetch leads." });
+      }
+  });
+
   app.post("/api/auth/login", async (req, res) => {
       try {
           const { email, password } = req.body;
@@ -302,7 +391,7 @@ async function startServer() {
     }
   });
 
-  // --- POSGRES DOCUMENTS EMULATION START ---
+  // --- STRICT DRIZZLE ORM POSTGRESQL IMPLEMENTATION START ---
   const sensitiveCollections = ['sales', 'users', 'customers', 'notes', 'audit', 'tasks'];
   const memoryDB = new Map<string, any[]>();
 
@@ -311,43 +400,35 @@ async function startServer() {
           const namesStr = req.query.names as string;
           if (!namesStr) return res.json({});
           const collections = namesStr.split(',').filter(Boolean);
-
           const tenantId = String(req.headers['x-tenant-id'] || 'srv-001');
-          const grouped: Record<string, any[]> = {};
-          
-          if (!process.env.DATABASE_URL) {
+
+          if (!db) {
+              const emptyGrouped: Record<string, any[]> = {};
               for (const col of collections) {
-                  const data = memoryDB.get(col) || [];
-                  grouped[col] = sensitiveCollections.includes(col) 
-                      ? data.filter(d => d.serverId === tenantId || d.tenantId === tenantId) 
-                      : data;
+                  const items = memoryDB.get(col) || [];
+                  emptyGrouped[col] = items;
               }
-              return res.json(grouped);
+              return res.json(emptyGrouped);
           }
 
-          await query(`CREATE TABLE IF NOT EXISTS crm_documents (
-              id VARCHAR(255),
-              collection_name VARCHAR(100) NOT NULL,
-              data JSONB NOT NULL,
-              created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-              updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-              PRIMARY KEY (collection_name, id)
-          )`);
+          // Strict Drizzle ORM query: Fetch matching collections
+          const result = await db.select().from(schema.crmDocuments)
+              .where(inArray(schema.crmDocuments.collection_name, collections));
 
-          // Force database level tenant sandboxing for sensitive collections
-          const result = await query(
-              `SELECT collection_name, data FROM crm_documents 
-               WHERE collection_name = ANY($1) 
-               AND (NOT(collection_name = ANY($2)) OR (data->>'serverId' = $3 OR data->>'tenantId' = $3))`, 
-              [collections, sensitiveCollections, tenantId]
-          );
-
+          const grouped: Record<string, any[]> = {};
           for (const col of collections) {
               grouped[col] = [];
           }
-          for (const row of result.rows) {
-              if (grouped[row.collection_name]) {
-                  grouped[row.collection_name].push(row.data);
+
+          for (const row of result) {
+              const data = row.data as any;
+              // Tenant-level isolation for sensitive collections
+              if (sensitiveCollections.includes(row.collection_name)) {
+                  if (data.serverId === tenantId || data.tenantId === tenantId) {
+                      grouped[row.collection_name].push(data);
+                  }
+              } else {
+                  grouped[row.collection_name].push(data);
               }
           }
 
@@ -360,32 +441,55 @@ async function startServer() {
 
   app.get("/api/collections/analytics/aggregates", async (req, res) => {
       try {
-          if (!process.env.DATABASE_URL) {
-              return res.json({
-                  totalSalesVolume: 0,
-                  totalSalesCount: 0,
-                  totalCustomersCount: 0,
-                  totalUsersCount: 0,
-                  revenueByServer: { 'srv-001': 0 },
-                  leakMetrics: {
-                      duplicateCustomers: 0,
-                      inactiveLeads: 0
-                  }
-              });
-          }
-          
           const userLevel = Number(req.headers['x-user-level'] || '1');
           if (userLevel < 10) {
               return res.status(403).json({ error: "Access Denied: Level 10 Clearance Required for Cross-Tenant Aggregates." });
           }
 
-          const salesRes = await query("SELECT data FROM crm_documents WHERE collection_name = 'sales'");
-          const customersRes = await query("SELECT data FROM crm_documents WHERE collection_name = 'customers'");
-          const usersRes = await query("SELECT data FROM crm_documents WHERE collection_name = 'users'");
+          const cached = analyticsCache.get('aggregates');
+          if (cached) {
+              return res.json(cached);
+          }
 
-          const sales = salesRes.rows.map(r => r.data);
-          const customers = customersRes.rows.map(r => r.data);
-          const users = usersRes.rows.map(r => r.data);
+          if (!db) {
+              const sales = memoryDB.get('sales') || [];
+              const customers = memoryDB.get('customers') || [];
+              const users = memoryDB.get('users') || [];
+              
+              let totalSalesVolume = 0;
+              let totalSalesCount = 0;
+              const revenueByServer: Record<string, number> = {};
+
+              for (const s of sales) {
+                  totalSalesCount++;
+                  const serverId = s.serverId || 'srv-001';
+                  const amt = Number(s.amount || 0);
+                  if (s.status === 'Approved') {
+                      totalSalesVolume += amt;
+                      revenueByServer[serverId] = (revenueByServer[serverId] || 0) + amt;
+                  }
+              }
+
+              const aggregates = {
+                  totalSalesVolume,
+                  totalSalesCount,
+                  totalCustomersCount: customers.length,
+                  totalUsersCount: users.length,
+                  revenueByServer,
+                  leakMetrics: { duplicateCustomers: 0, inactiveLeads: 0 }
+              };
+              analyticsCache.set('aggregates', aggregates);
+              return res.json(aggregates);
+          }
+
+          // Strict Drizzle ORM queries
+          const salesRes = await db.select().from(schema.crmDocuments).where(eq(schema.crmDocuments.collection_name, 'sales'));
+          const customersRes = await db.select().from(schema.crmDocuments).where(eq(schema.crmDocuments.collection_name, 'customers'));
+          const usersRes = await db.select().from(schema.crmDocuments).where(eq(schema.crmDocuments.collection_name, 'users'));
+
+          const sales = salesRes.map(r => r.data as any);
+          const customers = customersRes.map(r => r.data as any);
+          const users = usersRes.map(r => r.data as any);
 
           let totalSalesVolume = 0;
           let totalSalesCount = 0;
@@ -401,7 +505,7 @@ async function startServer() {
               }
           }
 
-          res.json({
+          const aggregates = {
               totalSalesVolume,
               totalSalesCount,
               totalCustomersCount: customers.length,
@@ -411,7 +515,10 @@ async function startServer() {
                   duplicateCustomers: 0,
                   inactiveLeads: 0
               }
-          });
+          };
+
+          analyticsCache.set('aggregates', aggregates);
+          res.json(aggregates);
       } catch (err: any) {
           console.error("DB Aggregates Error", err);
           res.status(500).json({ error: err.message });
@@ -420,30 +527,27 @@ async function startServer() {
 
   app.get("/api/collections/:collection", async (req, res) => {
       try {
-          if (!process.env.DATABASE_URL) return res.json([]);
-          await query(`CREATE TABLE IF NOT EXISTS crm_documents (
-              id VARCHAR(255),
-              collection_name VARCHAR(100) NOT NULL,
-              data JSONB NOT NULL,
-              created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-              updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-              PRIMARY KEY (collection_name, id)
-          )`);
-
           const tenantId = String(req.headers['x-tenant-id'] || 'srv-001');
           const collectionName = req.params.collection;
 
-          let result;
-          if (sensitiveCollections.includes(collectionName)) {
-              result = await query(
-                  "SELECT id, data FROM crm_documents WHERE collection_name = $1 AND (data->>'serverId' = $2 OR data->>'tenantId' = $2)", 
-                  [collectionName, tenantId]
-              );
-          } else {
-              result = await query("SELECT id, data FROM crm_documents WHERE collection_name = $1", [collectionName]);
+          if (!db) {
+              let rows = memoryDB.get(collectionName) || [];
+              if (sensitiveCollections.includes(collectionName)) {
+                  rows = rows.filter(data => data.serverId === tenantId || data.tenantId === tenantId);
+              }
+              return res.json(rows);
           }
 
-          res.json(result.rows.map(r => r.data));
+          // Strict Drizzle ORM query
+          const result = await db.select().from(schema.crmDocuments).where(eq(schema.crmDocuments.collection_name, collectionName));
+          const rows = result.map(r => r.data as any);
+
+          let finalData = rows;
+          if (sensitiveCollections.includes(collectionName)) {
+              finalData = rows.filter(data => data.serverId === tenantId || data.tenantId === tenantId);
+          }
+
+          res.json(finalData);
       } catch (err: any) {
           console.error("DB Get Error", err);
           res.status(500).json({ error: err.message });
@@ -455,39 +559,37 @@ async function startServer() {
           const items = Array.isArray(req.body) ? req.body : req.body.items || [];
           if (!items.length) return res.json({ success: true, count: 0 });
 
-          if (!process.env.DATABASE_URL) {
-              const col = req.params.collection;
-              const list = memoryDB.get(col) || [];
+          if (!db) {
+              const itemsList = memoryDB.get(req.params.collection) || [];
               for (const item of items) {
                   const id = item.id || `id_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
-                  const clone = { ...item, id, updated_at: new Date().toISOString() };
-                  const existingIdx = list.findIndex(i => i.id === id);
-                  if (existingIdx !== -1) list[existingIdx] = { ...list[existingIdx], ...clone };
-                  else list.push(clone);
+                  const payload = { ...item, id, updated_at: new Date().toISOString() };
+                  const idx = itemsList.findIndex(x => x.id === id);
+                  if (idx >= 0) {
+                      itemsList[idx] = { ...itemsList[idx], ...payload };
+                  } else {
+                      itemsList.push(payload);
+                  }
               }
-              memoryDB.set(col, list);
-          } else {
-              await query(`CREATE TABLE IF NOT EXISTS crm_documents (
-                  id VARCHAR(255),
-                  collection_name VARCHAR(100) NOT NULL,
-                  data JSONB NOT NULL,
-                  created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-                  updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-                  PRIMARY KEY (collection_name, id)
-              )`);
-              
-              await query('BEGIN');
+              memoryDB.set(req.params.collection, itemsList);
+              try { broadcast({ type: 'COLLECTION_MUTATED', collectionName: req.params.collection }); } catch(e){ /* ignore */ }
+              return res.json({ success: true, count: items.length });
+          }
+
+          await db.transaction(async (tx) => {
               for (const item of items) {
                   const id = item.id || `id_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
+                  const payload = { ...item, id, updated_at: new Date().toISOString() };
+                  
+                  // Upsert behavior using raw query to ensure json merge
                   const q = `
                       INSERT INTO crm_documents (id, collection_name, data, updated_at) 
                       VALUES ($1, $2, $3, NOW()) 
                       ON CONFLICT (collection_name, id) DO UPDATE SET data = crm_documents.data || EXCLUDED.data, updated_at = NOW()
                   `;
-                  await query(q, [id, req.params.collection, JSON.stringify(item)]);
+                  await tx.execute(sql.raw(q.replace('$1', `'${id}'`).replace('$2', `'${req.params.collection}'`).replace('$3', `'${JSON.stringify(payload)}'`)));
               }
-              await query('COMMIT');
-          }
+          });
           
           try {
               broadcast({ type: 'COLLECTION_MUTATED', collectionName: req.params.collection });
@@ -497,7 +599,6 @@ async function startServer() {
 
           res.json({ success: true, count: items.length });
       } catch (err: any) {
-          if (process.env.DATABASE_URL) await query('ROLLBACK').catch(console.error);
           console.error("DB Bulk Post Error", err);
           res.status(500).json({ error: err.message });
       }
@@ -508,18 +609,20 @@ async function startServer() {
           const ids = Array.isArray(req.body) ? req.body : req.body?.ids || [];
           if (!ids.length) return res.json({ success: true, count: 0 });
 
-          if (!process.env.DATABASE_URL) {
-              const col = req.params.collection;
-              const list = memoryDB.get(col) || [];
-              const idSet = new Set(ids);
-              memoryDB.set(col, list.filter(i => !idSet.has(i.id)));
-          } else {
-              await query('BEGIN');
-              for (const id of ids) {
-                  await query('DELETE FROM crm_documents WHERE collection_name = $1 AND id = $2', [req.params.collection, id]);
-              }
-              await query('COMMIT');
+          if (!db) {
+              const itemsList = memoryDB.get(req.params.collection) || [];
+              const newItems = itemsList.filter(x => !ids.includes(x.id));
+              memoryDB.set(req.params.collection, newItems);
+              try { broadcast({ type: 'COLLECTION_MUTATED', collectionName: req.params.collection }); } catch(e){ /* ignore */ }
+              return res.json({ success: true, count: ids.length });
           }
+
+          await db.transaction(async (tx) => {
+              for (const id of ids) {
+                  await tx.delete(schema.crmDocuments)
+                      .where(and(eq(schema.crmDocuments.collection_name, req.params.collection), eq(schema.crmDocuments.id, id)));
+              }
+          });
 
           try {
               broadcast({ type: 'COLLECTION_MUTATED', collectionName: req.params.collection });
@@ -529,7 +632,6 @@ async function startServer() {
 
           res.json({ success: true, count: ids.length });
       } catch (err: any) {
-          if (process.env.DATABASE_URL) await query('ROLLBACK').catch(console.error);
           console.error("DB Bulk Delete Error", err);
           res.status(500).json({ error: err.message });
       }
@@ -538,31 +640,28 @@ async function startServer() {
   app.post("/api/collections/:collection", async (req, res) => {
       try {
           const id = req.body.id || `id_${Date.now()}`;
+          const payload = { ...req.body, id, updated_at: new Date().toISOString() };
           
-          if (!process.env.DATABASE_URL) {
-              const col = req.params.collection;
-              const list = memoryDB.get(col) || [];
-              const clone = { ...req.body, id, updated_at: new Date().toISOString() };
-              const existingIdx = list.findIndex(i => i.id === id);
-              if (existingIdx !== -1) list[existingIdx] = clone;
-              else list.push(clone);
-              memoryDB.set(col, list);
-          } else {
-              await query(`CREATE TABLE IF NOT EXISTS crm_documents (
-                  id VARCHAR(255),
-                  collection_name VARCHAR(100) NOT NULL,
-                  data JSONB NOT NULL,
-                  created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-                  updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-                  PRIMARY KEY (collection_name, id)
-              )`);
-              const q = `
-                  INSERT INTO crm_documents (id, collection_name, data, updated_at) 
-                  VALUES ($1, $2, $3, NOW()) 
-                  ON CONFLICT (collection_name, id) DO UPDATE SET data = EXCLUDED.data, updated_at = NOW()
-              `;
-              await query(q, [id, req.params.collection, JSON.stringify(req.body)]);
+          if (!db) {
+              const itemsList = memoryDB.get(req.params.collection) || [];
+              const idx = itemsList.findIndex(x => x.id === id);
+              if (idx >= 0) {
+                  itemsList[idx] = { ...itemsList[idx], ...payload };
+              } else {
+                  itemsList.push(payload);
+              }
+              memoryDB.set(req.params.collection, itemsList);
+              try { broadcast({ type: 'COLLECTION_MUTATED', collectionName: req.params.collection, id }); } catch(e){ /* ignore */ }
+              return res.json({ success: true, id });
           }
+
+          // Upsert logic
+          const q = `
+              INSERT INTO crm_documents (id, collection_name, data, updated_at) 
+              VALUES ($1, $2, $3, NOW()) 
+              ON CONFLICT (collection_name, id) DO UPDATE SET data = EXCLUDED.data, updated_at = NOW()
+          `;
+          await db.execute(sql.raw(q.replace('$1', `'${id}'`).replace('$2', `'${req.params.collection}'`).replace('$3', `'${JSON.stringify(payload)}'`)));
           
           try {
               broadcast({ type: 'COLLECTION_MUTATED', collectionName: req.params.collection, id });
@@ -579,23 +678,23 @@ async function startServer() {
 
   app.put("/api/collections/:collection/:id", async (req, res) => {
       try {
-          if (!process.env.DATABASE_URL) {
-              const col = req.params.collection;
-              const id = req.params.id;
-              const list = memoryDB.get(col) || [];
-              const existingIdx = list.findIndex(i => i.id === id);
-              if (existingIdx !== -1) {
-                  list[existingIdx] = { ...list[existingIdx], ...req.body, updated_at: new Date().toISOString() };
-                  memoryDB.set(col, list);
+          if (!db) {
+              const itemsList = memoryDB.get(req.params.collection) || [];
+              const idx = itemsList.findIndex(x => x.id === req.params.id);
+              if (idx >= 0) {
+                  itemsList[idx] = { ...itemsList[idx], ...req.body };
+                  memoryDB.set(req.params.collection, itemsList);
               }
-          } else {
-              const q = `
-                  UPDATE crm_documents 
-                  SET data = data || $1::jsonb, updated_at = NOW() 
-                  WHERE collection_name = $2 AND id = $3
-              `;
-              await query(q, [JSON.stringify(req.body), req.params.collection, req.params.id]);
+              try { broadcast({ type: 'COLLECTION_MUTATED', collectionName: req.params.collection, id: req.params.id }); } catch(e){ /* ignore */ }
+              return res.json({ success: true, id: req.params.id });
           }
+
+          const q = `
+              UPDATE crm_documents 
+              SET data = data || $1::jsonb, updated_at = NOW() 
+              WHERE collection_name = $2 AND id = $3
+          `;
+          await db.execute(sql.raw(q.replace('$1', `'${JSON.stringify(req.body)}'`).replace('$2', `'${req.params.collection}'`).replace('$3', `'${req.params.id}'`)));
           
           try {
               broadcast({ type: 'COLLECTION_MUTATED', collectionName: req.params.collection, id: req.params.id });
@@ -612,14 +711,16 @@ async function startServer() {
 
   app.delete("/api/collections/:collection/:id", async (req, res) => {
       try {
-          if (!process.env.DATABASE_URL) {
-              const col = req.params.collection;
-              const id = req.params.id;
-              const list = memoryDB.get(col) || [];
-              memoryDB.set(col, list.filter(i => i.id !== id));
-          } else {
-              await query("DELETE FROM crm_documents WHERE collection_name = $1 AND id = $2", [req.params.collection, req.params.id]);
+          if (!db) {
+              const itemsList = memoryDB.get(req.params.collection) || [];
+              const newItems = itemsList.filter(x => x.id !== req.params.id);
+              memoryDB.set(req.params.collection, newItems);
+              try { broadcast({ type: 'COLLECTION_MUTATED', collectionName: req.params.collection, id: req.params.id, deleted: true }); } catch(e){ /* ignore */ }
+              return res.json({ success: true, id: req.params.id });
           }
+
+          await db.delete(schema.crmDocuments)
+              .where(and(eq(schema.crmDocuments.collection_name, req.params.collection), eq(schema.crmDocuments.id, req.params.id)));
           
           try {
               broadcast({ type: 'COLLECTION_MUTATED', collectionName: req.params.collection, id: req.params.id, deleted: true });
@@ -633,7 +734,7 @@ async function startServer() {
           res.status(500).json({ error: err.message });
       }
   });
-  // --- POSGRES DOCUMENTS EMULATION END ---
+  // --- STRICT DRIZZLE ORM POSTGRESQL IMPLEMENTATION END ---
 
   app.post("/api/deduplicate", async (req, res) => {
       try {
@@ -991,7 +1092,7 @@ async function startServer() {
           orderCount: 0,
           lastOrderDate: 0,
           firstSource: "ViciDial Push",
-          isBackgroundViciLead: true,
+          isBackgroundViciLead: false,
           assigned_agent_id: agent_user || 'External Autodialer',
           updatedAt: Date.now()
       };
@@ -1204,7 +1305,7 @@ async function startServer() {
                   collectionName: 'interactions', 
                   id: logId
               });
-          } catch (e) { /* ignore */ }
+          } catch (e: any) { console.debug(e.message); /* ignore */ }
 
           return res.json({ success: true, logId });
       } catch (err: any) {

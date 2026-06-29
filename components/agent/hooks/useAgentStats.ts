@@ -23,7 +23,7 @@ export const useAgentStats = (sales: Sale[], user: User | null, config: SystemCo
         approved.forEach(sale => {
             totalRevenue += Number(sale.amount);
             // Defaulting to 8 hours for estimation if precise daily hours aren't passed
-            const payout = calculateSalePayout(sale, 8, config, user.commissionRate);
+            const payout = calculateSalePayout(sale, 8, config, user.commissionRate, user.shippingDeductionOverride);
             totalCommission += payout.commission;
             totalSpiffs += payout.spiff;
         });

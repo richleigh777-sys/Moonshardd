@@ -30,6 +30,7 @@ export const useEnrollment = (onSuccess: () => void, customerData?: any) => {
         return parsed || {
             firstName: savedDraft.formData?.firstName || '', 
             lastName: savedDraft.formData?.lastName || '', 
+            middleInitial: savedDraft.formData?.middleInitial || '', 
             phone: savedDraft.formData?.phone || '', 
             email: savedDraft.formData?.email || '', 
             dob: savedDraft.formData?.dob || '', 
@@ -205,6 +206,7 @@ export const useEnrollment = (onSuccess: () => void, customerData?: any) => {
             ...prev,
             firstName: parsedFirstName || prev.firstName,
             lastName: parsedLastName || prev.lastName,
+            middleInitial: customer.middleInitial || prev.middleInitial,
             phone: customer.phone || prev.phone,
             email: customer.email || prev.email,
             dob: customer.dob || prev.dob,
@@ -486,7 +488,8 @@ export const useEnrollment = (onSuccess: () => void, customerData?: any) => {
             const profileData = {
                 firstName: mergedFirstName,
                 lastName: mergedLastName,
-                name: `${mergedFirstName} ${mergedLastName}`.trim(),
+                middleInitial: formData.middleInitial || '',
+                name: `${mergedFirstName} ${formData.middleInitial ? formData.middleInitial + '. ' : ''}${mergedLastName}`.trim(),
                 phone: formData.phone,
                 email: formData.email,
                 address: fullShippingAddress,
@@ -578,7 +581,7 @@ export const useEnrollment = (onSuccess: () => void, customerData?: any) => {
 
     const handleClear = useCallback(() => {
         setFormData({
-            firstName: '', lastName: '', phone: '', email: '', dob: '', age: '',
+            firstName: '', lastName: '', middleInitial: '', phone: '', email: '', dob: '', age: '',
             shippingAddress: '', shippingApt: '', shippingCity: '', shippingState: '', shippingZip: '',
             billingAddress: '', billingApt: '', billingCity: '', billingState: '', billingZip: '',
             height: '', weight: '', medicalConditions: []

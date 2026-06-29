@@ -4,9 +4,9 @@ import { useAuth } from '../../../../hooks/useAuth';
 import { 
     Clock, Phone, Mail, Truck, 
     Hash, Landmark, Activity, FileText, 
-    User, Heart, 
+    User, Heart, Copy,
     Calendar, MapPin, ChevronDown, 
-    CheckCircle, RotateCcw, XCircle, AlertTriangle, Eye, CreditCard, Plus, AlertCircle, Package, Star, Music, Play
+    CheckCircle, RotateCcw, XCircle, AlertTriangle, Eye, CreditCard, Plus, AlertCircle, Package, Star, Music, Play, ExternalLink
 } from 'lucide-react';
 import { AudioPlayer } from '../../../ui/Base';
 import { sfx } from '../../../../lib/soundService';
@@ -19,6 +19,22 @@ interface CellProps {
     row?: any; 
     onAction?: (action: string, payload?: any) => void;
 }
+
+const CopyBtn = ({ text }: { text: string }) => {
+    return (
+        <button 
+            type="button"
+            onClick={(e) => { 
+                e.stopPropagation(); 
+                if (text && text !== '-') navigator.clipboard.writeText(text); 
+            }}
+            className="p-1 ml-1 text-text-muted hover:text-accent-primary hover:bg-surface-highlight rounded transition-all shrink-0 opacity-0 group-hover/cell:opacity-100"
+            title="Copy"
+        >
+            <Copy size={14} />
+        </button>
+    );
+};
 
 // --- 1. STATUS & PIPELINE (The Pulse) ---
 
@@ -60,7 +76,7 @@ export const StatusCell: React.FC<CellProps> = ({ value, isEditing, onChange }) 
     }
 
     return (
-        <span className={`p-1.5 rounded-md text-xs font-[700] tracking-wider border flex items-center justify-center w-fit ${style}`} title={value}>
+        <span className={`p-1.5 rounded-md text-xs font-medium tracking-wider border flex items-center justify-center w-fit ${style}`} title={value}>
             {icon}
         </span>
     );
@@ -90,7 +106,7 @@ export const PipelineCell: React.FC<CellProps> = ({ value, isEditing, onChange }
     let icon = <Activity size={16} />;
 
     if (value === 'Closed') {
-        style = 'text-accent-secondary bg-accent-secondary/10 border-accent-secondary/20 shadow-[0_0_10px_rgba(99,102,241,0.1)]';
+        style = 'text-accent-secondary bg-accent-secondary/10 border-accent-secondary/20 shadow-sm';
         icon = <CheckCircle size={16} />;
     }
     if (value?.includes('Interested')) {
@@ -118,7 +134,7 @@ export const PipelineCell: React.FC<CellProps> = ({ value, isEditing, onChange }
 export const MoneyCell: React.FC<CellProps> = ({ value, isEditing, onChange }) => {
     if (isEditing) {
         return (
-            <div className="relative group">
+            <div className="relative group/cell">
                 <span className="absolute left-2 top-1/2 -translate-y-1/2 text-text-muted font-bold">$</span>
                 <input autoComplete="off" data-lpignore="true" data-prevent-autofill="true" spellCheck={false} 
                     type="number" 
@@ -130,8 +146,9 @@ export const MoneyCell: React.FC<CellProps> = ({ value, isEditing, onChange }) =
         );
     }
     return (
-        <span className={`font-[700] num-font tracking-tight text-xs transition-colors ${Number(value) > 500 ? 'text-status-success drop-shadow-sm' : 'text-text-primary'}`}>
+        <span className={`group/cell flex items-center font-medium num-font tracking-tight text-xs transition-colors ${Number(value) > 500 ? 'text-status-success drop-shadow-sm' : 'text-text-primary'}`}>
             ${Number(value).toLocaleString(undefined, { minimumFractionDigits: 2 })}
+            <CopyBtn text={value?.toString()}/>
         </span>
     );
 };
@@ -150,7 +167,7 @@ export const BankCell: React.FC<CellProps> = ({ value, isEditing, onChange, row 
                 <Landmark size={16} strokeWidth={2.5}/>
             </div>
             <div className="flex flex-col leading-none">
-                <span className="text-xs font-[700] text-text-primary  tracking-tight truncate max-w-[100px]">{bankName}</span>
+                <span className="text-xs font-medium text-text-primary  tracking-tight truncate max-w-[100px]">{bankName}</span>
                 <span className="text-sm font-bold text-text-muted ">{cardType}</span>
             </div>
         </div>
@@ -176,16 +193,20 @@ export const SecureCell: React.FC<CellProps> = ({ value, isEditing, onChange }) 
     }
     
     // Masked View
+    const displayValue = decryptField(value, ENCRYPTION_KEY);
+    const isLevel10 = (currentUser?.level || 0) >= 10;
+    
     return (
-        <div className="flex items-center gap-2 text-text-muted font-mono text-xs bg-surface-alt/20 px-3 py-1.5 rounded border border-transparent hover:border-border-subtle transition-all">
-            {value ? (
+        <div className="flex items-center gap-2 text-text-muted font-mono text-xs bg-surface-alt/20 px-3 py-1.5 rounded border border-transparent hover:border-border-subtle transition-all group/cell">
+            {displayValue ? (
                 <>
-                    <CreditCard size={14} className="opacity-50"/>
-                    <span className="tracking-widest">
-                        {visible ? value : (value.length > 4 ? `•••• ${value.slice(-4)}` : '•••')}
+                    <CreditCard size={14} className="opacity-50 shrink-0"/>
+                    <span className="tracking-wide truncate block min-w-0 flex-1">
+                        {visible ? displayValue : (displayValue.length > 4 ? `•••• ${displayValue.slice(-4)}` : '•••')}
                     </span>
-                    {(currentUser?.level || 0) >= 10 && (
-                        <button onMouseDown={() => setVisible(true)} onMouseUp={() => setVisible(false)} onMouseLeave={() => setVisible(false)} className="ml-auto text-text-muted hover:text-text-primary"><Eye size={14}/></button>
+                    {isLevel10 && <CopyBtn text={displayValue} />}
+                    {isLevel10 && (
+                        <button onMouseDown={() => setVisible(true)} onMouseUp={() => setVisible(false)} onMouseLeave={() => setVisible(false)} className="ml-auto shrink-0 text-text-muted hover:text-text-primary"><Eye size={14}/></button>
                     )}
                 </>
             ) : <span className="opacity-30">-</span>}
@@ -203,12 +224,12 @@ export const IdentityCell: React.FC<CellProps> = ({ value, row, onAction }) => {
 
     return (
         <div className="flex items-start gap-3 group cursor-pointer" onClick={() => onAction && onAction('view_profile', row?.phone)}>
-            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-surface-alt to-surface-highlight border border-border-subtle flex min-w-8 items-center justify-center font-[700] text-xs text-text-secondary group-hover:border-accent-primary/40 group-hover:text-accent-primary transition-all shadow-sm">
+            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-surface-alt to-surface-highlight border border-border-subtle flex min-w-8 items-center justify-center font-medium text-xs text-text-secondary group-hover:border-accent-primary/40 group-hover:text-accent-primary transition-all shadow-sm">
                 {initial}
             </div>
             <div className="flex flex-col justify-center min-w-0">
                 <div className="flex flex-col group/name relative">
-                    <span className="text-sm font-[700] text-text-primary group-hover:text-accent-primary transition-colors truncate max-w-[140px] leading-tight" title={displayValue}>
+                    <span className="text-sm font-medium text-text-primary group-hover:text-accent-primary transition-colors truncate max-w-[140px] leading-tight" title={displayValue}>
                         {displayValue}
                     </span>
                     {hasParts && (
@@ -237,7 +258,9 @@ import { MaskedData } from '../../../ui/MaskedData';
 import { maskPII } from '../../../../utils/security';
 
 export const ContactCell: React.FC<CellProps> = ({ value, isEditing, onChange }) => {
+    const { currentUser } = useAuth();
     const isPhone = !value?.includes('@'); 
+    const isLevel10 = (currentUser?.level || 0) >= 10;
     
     if (isEditing) {
         return (
@@ -249,37 +272,60 @@ export const ContactCell: React.FC<CellProps> = ({ value, isEditing, onChange })
         );
     }
 
+    const canCopy = isPhone || isLevel10;
+
     const copyToClipboard = (e: React.MouseEvent) => {
         e.stopPropagation();
-        navigator.clipboard.writeText(value);
-        sfx.playConfirm();
+        if (canCopy) {
+            navigator.clipboard.writeText(value);
+            sfx.playConfirm();
+        }
     };
 
     return (
         <div 
-            className="flex items-center gap-2 max-w-full cursor-pointer hover:bg-surface-alt/60 p-1.5 -ml-1.5 rounded-lg transition-colors group" 
-            title="Click to copy"
-            onClick={copyToClipboard}
+            className={`flex items-center gap-2 max-w-full p-1.5 -ml-1.5 rounded-lg transition-colors group ${canCopy ? 'cursor-pointer hover:bg-surface-alt/60' : ''}`} 
+            title={canCopy ? "Click to copy" : "Protected"}
+            onClick={canCopy ? copyToClipboard : undefined}
         >
             <div className={`p-1 rounded bg-surface-alt border border-border-subtle ${isPhone ? 'text-status-success' : 'text-blue-500'}`}>
                 {isPhone ? <Phone size={16} fill="currentColor"/> : <Mail size={16} fill="currentColor"/>}
             </div>
-            <div className="truncate text-xs font-mono font-bold text-text-secondary group-hover:text-text-primary transition-colors select-none" onClick={(e) => e.stopPropagation()}>
-                <MaskedData value={value} type={isPhone ? 'phone' : 'email'} />
+            <div className="flex items-center min-w-0 flex-1 group/cell text-xs font-mono font-bold text-text-secondary group-hover:text-text-primary transition-colors select-none" onClick={(e) => e.stopPropagation()}>
+                <div className="truncate min-w-0 flex-1"><MaskedData value={value} type={isPhone ? 'phone' : 'email'} /></div>
+                {canCopy && <CopyBtn text={value} />}
             </div>
         </div>
     );
 };
 
-export const BioCell: React.FC<CellProps> = ({ row }) => (
+import { decryptField, ENCRYPTION_KEY } from '../../../../lib/encryption';
+
+export const BioCell: React.FC<CellProps> = ({ row }) => {
+    const dob = decryptField(row?.dob, ENCRYPTION_KEY) || 'Unknown';
+    return (
+        <div className="flex flex-col gap-1 min-w-0">
+            <div className="flex items-center gap-1.5">
+                <User size={14} className="text-text-muted shrink-0"/>
+                <span className="text-[11px] font-bold text-text-primary truncate">{row?.age || '--'} Yrs</span>
+            </div>
+            <div className="flex items-center gap-1.5 min-w-0">
+                <Calendar size={14} className="text-text-muted shrink-0"/>
+                <span className="text-[11px] font-mono text-text-secondary truncate block">{dob}</span>
+            </div>
+        </div>
+    );
+};
+
+export const PhysicalCell: React.FC<CellProps> = ({ row }) => (
     <div className="flex flex-col gap-0.5">
         <div className="flex items-center gap-2">
             <User size={16} className="text-text-muted"/>
-            <span className="text-xs font-bold text-text-primary">{row?.age || '--'} Yrs</span>
+            <span className="text-xs font-bold text-text-primary">{row?.height || '--'}</span>
         </div>
         <div className="flex items-center gap-2">
-            <Calendar size={16} className="text-text-muted"/>
-            <span className="text-xs font-mono text-text-secondary">{row?.dob || 'Unknown'}</span>
+            <Activity size={16} className="text-text-muted"/>
+            <span className="text-xs font-mono text-text-secondary">{row?.weight || '--'}</span>
         </div>
     </div>
 );
@@ -287,72 +333,43 @@ export const BioCell: React.FC<CellProps> = ({ row }) => (
 // --- 4. LOGISTICS & PRODUCT (The Goods) ---
 
 export const QuantityCell: React.FC<CellProps> = ({ row }) => {
-    if (!row?.rawCart || row.rawCart.length === 0) return <span className="text-xs opacity-50">-</span>;
+    let displayValue = row?.quantity?.toString() || '1';
+    if (row?.rawCart && Array.isArray(row.rawCart) && row.rawCart.length > 0) {
+        displayValue = row.rawCart.map((item: any) => item.quantity || '1').join(' + ');
+    }
     return (
-        <div className="flex flex-col gap-1">
-            {row.rawCart.map((item: any, idx: number) => (
-                <span key={idx} className="text-xs font-bold text-text-primary">{item.quantity}</span>
-            ))}
-        </div>
+        <span className="text-xs font-bold text-text-primary flex items-center group/cell">
+            {displayValue} <CopyBtn text={displayValue} />
+        </span>
     );
 };
 
 export const DosageCell: React.FC<CellProps> = ({ row }) => {
-    if (!row?.rawCart || row.rawCart.length === 0) return <span className="text-xs opacity-50">-</span>;
+    let displayValue = row?.dosage || '-';
+    if (row?.rawCart && Array.isArray(row.rawCart) && row.rawCart.length > 0) {
+        displayValue = row.rawCart.map((item: any) => item.dosage || '-').join(' + ');
+    }
     return (
-        <div className="flex flex-col gap-1">
-            {row.rawCart.map((item: any, idx: number) => (
-                <span key={idx} className="text-xs text-text-secondary">{item.dosage || '-'}</span>
-            ))}
-        </div>
+        <span className="text-xs text-text-secondary flex items-center group/cell">
+            {displayValue} <CopyBtn text={displayValue} />
+        </span>
     );
 };
 
 export const ProductCell: React.FC<CellProps> = ({ value, row }) => {
+    let displayValue = value || '-';
     if (row?.rawCart && Array.isArray(row.rawCart) && row.rawCart.length > 0) {
-        return (
-            <div className="flex flex-col justify-center gap-2">
-                {row.rawCart.map((item: any, idx: number) => (
-                    <div key={idx} className="flex flex-col gap-1 pr-2">
-                        <div className="flex items-center gap-1.5">
-                            <Package size={14} className="text-accent-primary shrink-0"/>
-                            <span className="text-[11px] font-[700] text-text-primary truncate max-w-[140px] tracking-tight" title={item.product}>
-                                {item.product}
-                            </span>
-                        </div>
-                        <div className="flex items-center gap-1.5 ml-4">
-                            <span className="text-[10px] font-bold text-text-muted bg-surface-alt px-1.5 py-0.5 rounded border border-border-subtle">
-                                Qty: {item.quantity}
-                            </span>
-                            {item.dosage && (
-                                <span className="text-[10px] font-bold text-text-muted opacity-70">
-                                    {item.dosage}
-                                </span>
-                            )}
-                        </div>
-                    </div>
-                ))}
-            </div>
-        );
+        displayValue = row.rawCart.map((item: any) => item.product).join(' + ');
     }
     
     return (
-        <div className="flex flex-col justify-center">
+        <div className="flex flex-col justify-center group/cell">
             <div className="flex items-center gap-1.5">
                 <Package size={16} className="text-accent-primary shrink-0"/>
-                <span className="text-xs font-[700] text-text-primary truncate max-w-[140px] tracking-tight" title={value}>
-                    {value}
+                <span className="text-xs font-medium text-text-primary truncate tracking-tight" title={displayValue}>
+                    {displayValue}
                 </span>
-            </div>
-            <div className="flex items-center gap-1.5 mt-0.5 ml-5">
-                <span className="text-[11px] font-bold text-text-muted bg-surface-alt px-1.5 py-0.5 rounded border border-border-subtle">
-                    Qty: {row?.quantity || '1'}
-                </span>
-                {row?.dosage && (
-                    <span className="text-[11px] font-bold text-text-muted opacity-70">
-                        {row.dosage}
-                    </span>
-                )}
+                <CopyBtn text={displayValue} />
             </div>
         </div>
     );
@@ -383,7 +400,9 @@ export const TrackingCell: React.FC<CellProps> = ({ value, isEditing, onChange, 
 
     return (
         <button 
-            onClick={() => onAction && onAction('openLogistics')}
+            onClick={() => {
+                window.open(`https://tools.usps.com/go/TrackConfirmAction?tLabels=${value}`, '_blank', 'noopener,noreferrer');
+            }}
             className="group flex items-center gap-2 bg-indigo-500/5 hover:bg-accent-secondary/10 border border-indigo-500/10 hover:border-indigo-500/30 rounded-lg p-1.5 transition-all w-full max-w-[140px]"
         >
             <div className="p-1 bg-indigo-500/20 rounded text-accent-secondary">
@@ -392,6 +411,7 @@ export const TrackingCell: React.FC<CellProps> = ({ value, isEditing, onChange, 
             <span className="font-mono text-xs font-bold text-accent-secondary truncate flex-1 text-left">
                 {value}
             </span>
+            <ExternalLink size={14} className="text-indigo-400 opacity-0 group-hover:opacity-100 transition-opacity" />
         </button>
     );
 };
@@ -454,7 +474,7 @@ export const NoteCell: React.FC<CellProps> = ({ value, row, isEditing, onChange 
                 </span>
             </div>
             {/* Tooltip */}
-            <div className="absolute left-0 bottom-full mb-2 w-56 p-3 bg-slate-900/95 text-white text-xs rounded-xl border border-border-subtle shadow-2xl opacity-0 group-hover:opacity-100 pointer-events-none transition-all z-50 translate-y-2 group-hover:translate-y-0 backdrop-blur-md">
+            <div className="absolute left-0 bottom-full mb-2 w-56 p-3 bg-slate-900/95 text-white text-xs rounded-xl border border-border-subtle shadow-2xl opacity-0 group-hover:opacity-100 pointer-events-none transition-all z-50 translate-y-2 group-hover:translate-y-0 ">
                 {value && <p className="leading-relaxed mb-2"><span className="text-accent-primary font-bold">Notes:</span> {value}</p>}
                 {medTags && <p className="leading-relaxed mb-1"><span className="text-rose-400 font-bold">Medical:</span> {row.medicalConditions.join(', ')}</p>}
                 {heightWeight && <p className="leading-relaxed"><span className="text-blue-400 font-bold">Vitals:</span> {heightWeight}</p>}
@@ -509,15 +529,17 @@ export const AddressCell: React.FC<CellProps> = ({ value, row, isEditing, onChan
 
     const hasStructured = city || state || zip;
 
-    // Extract City/State for quick view fallback
-    const parts = (value || '').split(',');
-    const quickLoc = hasStructured ? `${city || ''}, ${state || ''}` : (parts.length > 2 ? `${parts[parts.length-3]}, ${parts[parts.length-2]}` : value);
+    // Build the full address string if structured
+    const fullAddress = hasStructured 
+        ? `${street ? street + ', ' : ''}${[city, state].filter(Boolean).join(', ')} ${zip || ''}`.trim()
+        : value;
 
     return (
-        <div className="group relative">
-            <div className="flex items-center gap-1.5 text-xs text-text-secondary cursor-pointer">
+        <div className="group relative group/cell min-w-0">
+            <div className="flex items-center gap-1.5 text-xs text-text-secondary cursor-pointer min-w-0">
                 <MapPin size={16} className="text-text-muted group-hover:text-accent-primary transition-colors shrink-0"/>
-                <span className="truncate max-w-[140px] group-hover:text-text-primary transition-colors">{quickLoc || '-'}</span>
+                <span className="truncate group-hover:text-text-primary transition-colors block">{fullAddress || '-'}</span>
+                <CopyBtn text={fullAddress || ''} />
             </div>
             {/* Full Address Tooltip */}
             <div className="absolute left-0 top-full mt-1 w-56 p-3 bg-surface-main border border-border-subtle rounded-xl shadow-2xl opacity-0 group-hover:opacity-100 pointer-events-none transition-all duration-200 translate-y-1 group-hover:translate-y-0 z-50 flex flex-col gap-1.5">
@@ -536,15 +558,15 @@ export const AddressCell: React.FC<CellProps> = ({ value, row, isEditing, onChan
 };
 
 export const IdCell: React.FC<CellProps> = ({ value }) => (
-    <span className="font-mono text-xs font-bold text-text-muted bg-surface-alt/50 px-3 py-1.5 rounded border border-border-subtle select-none hover:bg-surface-alt hover:text-text-primary transition-colors flex items-center gap-1">
-        <Hash size={16} /> {value || '-'}
+    <span className="font-mono text-xs font-bold text-text-muted bg-surface-alt/50 px-3 py-1.5 rounded border border-border-subtle select-none hover:bg-surface-alt hover:text-text-primary transition-colors flex items-center gap-1 group/cell">
+        <Hash size={16} /> {value || '-'} <CopyBtn text={value} />
     </span>
 );
 
 export const QACell: React.FC<CellProps> = ({ value }) => {
     if (value === undefined || value === null) return <span className="text-xs text-text-muted italic">Pending</span>;
     return (
-        <span className={`text-xs font-[700] px-2 py-1 flex items-center gap-1 rounded border ${value >= 4 ? 'bg-emerald-500/10 text-status-success border-emerald-500/20' : value === 3 ? 'bg-amber-500/10 text-status-warning border-amber-500/20' : 'bg-red-500/10 text-status-error border-red-500/20'}`}>
+        <span className={`text-xs font-medium px-2 py-1 flex items-center gap-1 rounded border ${value >= 4 ? 'bg-emerald-500/10 text-status-success border-emerald-500/20' : value === 3 ? 'bg-amber-500/10 text-status-warning border-amber-500/20' : 'bg-red-500/10 text-status-error border-red-500/20'}`}>
             <Star size={12} fill="currentColor"/> {value}/5
         </span>
     );
@@ -553,7 +575,7 @@ export const QACell: React.FC<CellProps> = ({ value }) => {
 export const DeclineReasonCell: React.FC<CellProps> = ({ value }) => (
     <div className="flex items-center gap-1.5 text-status-error/80 bg-status-error/5 px-2.5 py-1 rounded border border-status-error/10 max-w-fit">
         {value && <AlertCircle size={16} className="shrink-0" strokeWidth={2.5} />}
-        <span className="text-sm font-[700]  tracking-tight truncate max-w-[120px]" title={value}>
+        <span className="text-sm font-medium tracking-tight truncate flex-1" title={value}>
             {value || '-'}
         </span>
     </div>
@@ -570,7 +592,13 @@ export const TextCell: React.FC<CellProps> = ({ value, isEditing, onChange }) =>
             />
         );
     }
-    return <span className="text-xs text-text-secondary truncate block" title={value}>{value || '-'}</span>;
+    const displayValue = decryptField(value, ENCRYPTION_KEY);
+    return (
+        <div className="flex items-center min-w-0 group/cell" title={displayValue}>
+            <span className="text-xs text-text-secondary truncate block">{displayValue || '-'}</span>
+            <CopyBtn text={displayValue} />
+        </div>
+    );
 };
 
 // --- NEW CELLS (Added) ---
@@ -581,7 +609,7 @@ export const AgentCell: React.FC<CellProps> = ({ value, isEditing, onChange }) =
     }
     return (
         <div className="flex items-center gap-2">
-            <div className="w-5 h-5 rounded-md bg-surface-alt border border-border-subtle flex items-center justify-center text-xs font-[700] text-text-secondary">
+            <div className="w-5 h-5 rounded-md bg-surface-alt border border-border-subtle flex items-center justify-center text-xs font-medium text-text-secondary">
                 {(value || '?').charAt(0)}
             </div>
             <span className="text-xs font-bold text-text-primary truncate max-w-[100px]">{value || 'Unknown'}</span>

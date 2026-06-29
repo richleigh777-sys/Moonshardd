@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { Mail, Calendar, User, Phone, MapPin, AlertCircle } from 'lucide-react';
-import DatePicker from 'react-datepicker';
-import 'react-datepicker/dist/react-datepicker.css';
+import { ModernDatePicker } from '../../../ui/ModernDatePicker';
 
 export function BiographicalSector({ formData, handleIdentityChange, handleDobChange, handleAgeChange, autoFillFromCustomer }: any) {
   
@@ -32,7 +31,7 @@ export function BiographicalSector({ formData, handleIdentityChange, handleDobCh
                     onChange={handleIdentityChange}
                     onPaste={handleFirstNamePaste}
                     placeholder="e.g. Jane"
-                    className="w-full bg-surface-alt/50 border border-white/5 rounded-xl px-5 py-4 text-lg font-medium text-white placeholder-text-muted outline-none transition-all focus:border-white focus:bg-surface-alt focus:ring-1 focus:ring-white shadow-sm"
+                    className="w-full bg-surface-alt/50 border border-border-subtle rounded-xl px-5 py-4 text-lg font-medium text-white placeholder-text-muted outline-none transition-all focus:border-white focus:bg-surface-alt focus:ring-1 focus:ring-white shadow-sm"
                 />
             </div>
             <div className="space-y-2">
@@ -42,7 +41,7 @@ export function BiographicalSector({ formData, handleIdentityChange, handleDobCh
                     value={formData.lastName}
                     onChange={handleIdentityChange}
                     placeholder="e.g. Doe"
-                    className="w-full bg-surface-alt/50 border border-white/5 rounded-xl px-5 py-4 text-lg font-medium text-white placeholder-text-muted outline-none transition-all focus:border-white focus:bg-surface-alt focus:ring-1 focus:ring-white shadow-sm"
+                    className="w-full bg-surface-alt/50 border border-border-subtle rounded-xl px-5 py-4 text-lg font-medium text-white placeholder-text-muted outline-none transition-all focus:border-white focus:bg-surface-alt focus:ring-1 focus:ring-white shadow-sm"
                 />
             </div>
         </div>
@@ -59,7 +58,7 @@ export function BiographicalSector({ formData, handleIdentityChange, handleDobCh
                     value={formData.email}
                     onChange={handleIdentityChange}
                     placeholder="jane@example.com"
-                    className={`w-full bg-surface-alt/50 border ${!isEmailValid ? 'border-rose-500 focus:border-rose-500 focus:ring-rose-500' : 'border-white/5 focus:border-white focus:ring-white'} rounded-xl px-5 py-4 text-lg font-medium text-white placeholder-text-muted outline-none transition-all focus:bg-surface-alt focus:ring-1 shadow-sm`}
+                    className={`w-full bg-surface-alt/50 border ${!isEmailValid ? 'border-rose-500 focus:border-rose-500 focus:ring-rose-500' : 'border-border-subtle focus:border-white focus:ring-white'} rounded-xl px-5 py-4 text-lg font-medium text-white placeholder-text-muted outline-none transition-all focus:bg-surface-alt focus:ring-1 shadow-sm`}
                 />
             </div>
             <div className="space-y-2">
@@ -73,7 +72,7 @@ export function BiographicalSector({ formData, handleIdentityChange, handleDobCh
                         handleIdentityChange(e);
                     }}
                     placeholder="(555) 000-0000"
-                    className="w-full bg-surface-alt/50 border border-white/5 rounded-xl px-5 py-4 text-lg font-medium text-white placeholder-text-muted outline-none transition-all focus:border-white focus:bg-surface-alt focus:ring-1 focus:ring-white shadow-sm"
+                    className="w-full bg-surface-alt/50 border border-border-subtle rounded-xl px-5 py-4 text-lg font-medium text-white placeholder-text-muted outline-none transition-all focus:border-white focus:bg-surface-alt focus:ring-1 focus:ring-white shadow-sm"
                 />
             </div>
         </div>
@@ -86,29 +85,16 @@ export function BiographicalSector({ formData, handleIdentityChange, handleDobCh
                     value={formData.age}
                     onChange={(e) => handleAgeChange(e.target.value)}
                     placeholder="e.g. 34"
-                    className="w-full bg-surface-alt/50 border border-white/5 rounded-xl px-5 py-4 text-lg font-medium text-white placeholder-text-muted outline-none transition-all focus:border-white focus:bg-surface-alt focus:ring-1 focus:ring-white shadow-sm"
+                    className="w-full bg-surface-alt/50 border border-border-subtle rounded-xl px-5 py-4 text-lg font-medium text-white placeholder-text-muted outline-none transition-all focus:border-white focus:bg-surface-alt focus:ring-1 focus:ring-white shadow-sm"
                 />
             </div>
             <div className="space-y-2 relative">
                 <label className="text-sm font-medium text-text-secondary ml-1">Date of Birth</label>
-                <div className="custom-datepicker-wrapper w-full">
-                     <DatePicker
-                        selected={parsedDate}
-                        onChange={(date: Date | null) => {
-                            if (date) {
-                                const y = date.getFullYear();
-                                const m = String(date.getMonth() + 1).padStart(2, '0');
-                                const d = String(date.getDate()).padStart(2, '0');
-                                handleDobChange(y + '-' + m + '-' + d);
-                            } else {
-                                handleDobChange('');
-                            }
-                        }}
-                        showMonthDropdown
-                        showYearDropdown
-                        dropdownMode="select"
-                        placeholderText="MM/DD/YYYY"
-                        className="w-full bg-surface-alt/50 border border-white/5 rounded-xl px-5 py-4 text-lg font-medium text-white placeholder-text-muted outline-none transition-all focus:border-white focus:bg-surface-alt focus:ring-1 focus:ring-white shadow-sm"
+                <div className="w-full">
+                     <ModernDatePicker
+                        date={formData.dob}
+                        onChange={(dateStr: string) => handleDobChange(dateStr)}
+                        className="w-full [&>button]:py-4 [&>button]:text-lg [&>button]:bg-surface-alt/50"
                     />
                 </div>
             </div>

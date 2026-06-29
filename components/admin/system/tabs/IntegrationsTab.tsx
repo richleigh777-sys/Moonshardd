@@ -29,15 +29,6 @@ export const IntegrationsTab: React.FC<IntegrationsTabProps> = ({ config, onChan
     const [syncLogs, setSyncLogs] = useState<string[]>([]);
     const [syncStats, setSyncStats] = useState<{ count: number; duplicates: number } | null>(null);
 
-    // ViciDial Interactive CLI Terminal State
-    const [viciTerminalLogs, setViciTerminalLogs] = useState<string[]>([
-        '⚡ VICIDIAL MULTI-LINE TERMINAL SYSTEM v2.4 (SIP-GW-04)',
-        '⚡ STACK PORTS: SIP/5060, API/8080, RTC/10000 | CORE DRIVER: G.711 PCMU',
-        '⚡ TYPE "help" TO SEE VALID SYSTEM COMMANDS OR DISPATCH QUICK MICRO-MACROS.',
-        '-------------------------------------------------------------------------'
-    ]);
-    const [viciTerminalInput, setViciTerminalInput] = useState('');
-
     const addLog = (msg: string) => setConsoleLogs(prev => [...prev, msg]);
 
     const handleSyncViciList = async () => {
@@ -52,19 +43,19 @@ export const IntegrationsTab: React.FC<IntegrationsTabProps> = ({ config, onChan
         const policy = config.viciRosterDuplicatePolicy || 'skip_duplicates';
 
         setSyncLogs([
-            `[DAEMON_INIT] Initiating silent sync handler for ViciDial List #${listId}`,
-            `[DAEMON_INIT] Campaign: ${campaignId} | Duplicate Policy: ${policy}`,
-            `[UPLINK] Pinging ViciDial active list database...`
+            `[SYNC_INIT] Initiating list synchronization for ViciDial List #${listId}`,
+            `[SYNC_INIT] Campaign: ${campaignId} | Duplicate Policy: ${policy}`,
+            `[NET] Connecting to ViciDial active list database...`
         ]);
 
         try {
             await new Promise(r => setTimeout(r, 400));
             setSyncProgress(25);
-            setSyncLogs(prev => [...prev, `[UPLINK] Connection to database route srv-dev-01 successful.`, `[QUERY] Extracting available phone rosters from List #${listId}...`]);
+            setSyncLogs(prev => [...prev, `[NET] Connection to database successful.`, `[QUERY] Extracting available phone rosters from List #${listId}...`]);
             
             await new Promise(r => setTimeout(r, 600));
             setSyncProgress(55);
-            setSyncLogs(prev => [...prev, `[CRAWLER] Read 12,482 total records buffer. Filtering by Campaign ID ${campaignId}...`, `[SYNC] Handing off pristine subset (limit: ${limit}) matching safe local parameters...`]);
+            setSyncLogs(prev => [...prev, `[SCAN] Read 12,482 total records. Filtering by Campaign ID ${campaignId}...`, `[SYNC] Processing subset (limit: ${limit}) matching criteria...`]);
 
             const res = await fetch('/api/telephony/vicidial-sync-list', {
                 method: 'POST',
@@ -88,15 +79,15 @@ export const IntegrationsTab: React.FC<IntegrationsTabProps> = ({ config, onChan
             setSyncProgress(85);
             setSyncLogs(prev => [
                 ...prev, 
-                `[SQL] Executing duplicate checks on CRM crm_documents table...`,
-                `[SQL] Mirroring records silently in background. Duplicate skip count: ${data.duplicateCount}`,
-                `[SQL] Persisted ${data.insertedCount} fresh customers silently directly into CRM databases.`
+                `[DB] Executing duplicate checks on CRM target table...`,
+                `[DB] Mirroring records. Duplicate skip count: ${data.duplicateCount}`,
+                `[DB] Persisted ${data.insertedCount} fresh customers.`
             ]);
 
             await new Promise(r => setTimeout(r, 400));
             setSyncProgress(100);
             setSyncStats({ count: data.insertedCount, duplicates: data.duplicateCount });
-            setSyncLogs(prev => [...prev, `[DAEMON] Synchronization finished successfully. 100% complete.`]);
+            setSyncLogs(prev => [...prev, `[SYNC] Synchronization finished successfully. 100% complete.`]);
             sfx.playSuccess();
             setToast({ 
                 title: 'Telephony Sync', 
@@ -116,128 +107,13 @@ export const IntegrationsTab: React.FC<IntegrationsTabProps> = ({ config, onChan
         }
     };
 
-    const runViciTerminalCommand = (rawCmd: string) => {
-        const cmd = rawCmd.trim();
-        if (!cmd) return;
-        sfx.playClick();
-        
-        // Append input line
-        setViciTerminalLogs(prev => [...prev, `[vici-session@dialer-node-04 ~]$ ${cmd}`]);
-        setViciTerminalInput('');
-
-        const parts = cmd.split(' ');
-        const baseCmd = parts[0].toLowerCase();
-        const arg = parts.slice(1).join(' ');
-
-        setTimeout(() => {
-            switch(baseCmd) {
-                case 'help':
-                    setViciTerminalLogs(prev => [
-                        ...prev,
-                        'AVAILABLE SIP COMMAND PROTOCOLS:',
-                        '  dial <number>  - Initiate live simulated outbound SIP gateway channel',
-                        '  hangup         - Instantly abort current carrier connection tunnels',
-                        '  status         - Query real-time active campaign and agent break statistics',
-                        '  sysinfo        - Fetch cluster hardware telemetry (Jitter, CPU, loss ratios)',
-                        '  reboot         - Execute emergency trunk reload and socket validation',
-                        '  clear          - Flush console database lines from memory buffer'
-                    ]);
-                    break;
-                case 'dial':
-                    if (!arg) {
-                        setViciTerminalLogs(prev => [...prev, 'CRITICAL: Target digits required. Syntax: dial <number>']);
-                    } else {
-                        setViciTerminalLogs(prev => [
-                            ...prev,
-                            `[SIP] Initializing socket bridge to outbound carrier for ${arg}...`,
-                        ]);
-                        setTimeout(() => {
-                            setViciTerminalLogs(prev => [
-                                ...prev,
-                                `[SIP] Carrier selected: LEVEL3-PRO-ROUTE-01 [OK]`,
-                                `[SIP] Dialing target: ${arg}... Ringback audio channel acquired.`,
-                            ]);
-                        }, 300);
-                        setTimeout(() => {
-                            setViciTerminalLogs(prev => [
-                                ...prev,
-                                `[SIP] Carrier status code: 183 Session Progress (Hearing Ringing)...`,
-                            ]);
-                        }, 600);
-                        setTimeout(() => {
-                            setViciTerminalLogs(prev => [
-                                ...prev,
-                                `[SIP] Live answer bridged. Negotiating speech codecs...`,
-                                `[CRM] Connection status: VICI/SIP-ACTIVE on session channel 0xf42`
-                            ]);
-                        }, 900);
-                    }
-                    break;
-                case 'hangup':
-                    setViciTerminalLogs(prev => [
-                        ...prev,
-                        '[SIP] Hanging up routing channels...',
-                        '[SIP] Bye received. Outbound session closed.'
-                    ]);
-                    break;
-                case 'status':
-                    setViciTerminalLogs(prev => [
-                        ...prev,
-                        '+--------------------------------------------+',
-                        '| ACTIVE CAMPAIGN : REGIONAL_OUTREACH        |',
-                        '| ONLINE AGENTS   : 42   | ON COZY BREAK : 8 |',
-                        '| ACTIVE SIP LINES: 6    | RETENTION RATIO: 98%|',
-                        '| CURRENT CLUSTER : vici.telephony.node-04   |',
-                        '+--------------------------------------------+'
-                    ]);
-                    break;
-                case 'sysinfo':
-                    setViciTerminalLogs(prev => [
-                        ...prev,
-                        `TIMESTAMP (UTC)    : ${new Date().toISOString()}`,
-                        `ROUTER INSTANCE     : vici.telephony.node-04 [AM4 Cluster]`,
-                        `TOTAL VOICE PORTS   : 142 / 512 Max Active Channels`,
-                        `NETWORK INGEST BAND : 18,485 packets/sec`,
-                        `JITTER STRETCH RATIO: 0.14ms (Grade A Excellent)`,
-                        `PACKET LOSS LEVEL   : 0.00% [0 packets dropped]`
-                    ]);
-                    break;
-                case 'clear':
-                    setViciTerminalLogs([]);
-                    break;
-                case 'reboot':
-                    setViciTerminalLogs(prev => [
-                        ...prev,
-                        '[CRITICAL_CORE] Emergency system reboot initiated...',
-                        '[CRITICAL_CORE] Sending SIGTERM to active SIP bridges...'
-                    ]);
-                    setTimeout(() => {
-                        setViciTerminalLogs(prev => [
-                            ...prev,
-                            '[CRITICAL_CORE] Mounting backup virtual trunk structures...',
-                            '[CRITICAL_CORE] TCP socket handshake check: Port 5060 ONLINE.',
-                            '[CRITICAL_CORE] ViciDial service online. Dialer node-04 fully recovered.'
-                        ]);
-                    }, 500);
-                    break;
-                default:
-                    setViciTerminalLogs(prev => [
-                        ...prev,
-                        `ERROR: Operational command "${cmd}" not recognized.`,
-                        'Type "help" to view high-clearance command protocols.'
-                    ]);
-                    break;
-            }
-        }, 100);
-    };
-
     const handleTestConnection = async () => {
         setIsPing(true);
         sfx.playClick();
         setConsoleLogs([]); 
         
         const steps = [
-            `INIT_UPLINK --target=${config.viciServerUrl || 'UNKNOWN'}`,
+            `INIT_CONNECTION --target=${config.viciServerUrl || 'UNKNOWN'}`,
             "HANDSHAKE_SYN_ACK...",
             "AUTHENTICATING_USER...",
             "VALIDATING_CAMPAIGN_ID...",
@@ -248,13 +124,11 @@ export const IntegrationsTab: React.FC<IntegrationsTabProps> = ({ config, onChan
         for (const step of steps) {
             await new Promise(r => setTimeout(r, 450));
             addLog(step);
-            // Sync with interactive CLI logs also
-            setViciTerminalLogs(prev => [...prev, `[UPLINK_DAEMON] ${step}`]);
         }
 
         setIsPing(false);
         sfx.playSuccess();
-        setToast({ title: 'Uplink', message: "Uplink Established", type: "success" });
+        setToast({ title: 'Connection', message: "Connection Established", type: "success" });
 
         if (config.viciAutoSyncOnConn && config.viciListId) {
             setTimeout(() => {
@@ -338,7 +212,7 @@ export const IntegrationsTab: React.FC<IntegrationsTabProps> = ({ config, onChan
 
     return (
         <section className="space-y-10 animate-in fade-in slide-in-from-right-4 duration-500">
-            <SectionHeader icon={Globe} title="External Neural Uplinks" sub="Third-Party API Bridges" color="text-accent-secondary" />
+            <SectionHeader icon={Globe} title="Integrations" sub="Third-Party Connections" color="text-accent-secondary" />
             
             <div className="space-y-8">
                 {/* SERVER IDENTITY MODULE */}
@@ -347,7 +221,7 @@ export const IntegrationsTab: React.FC<IntegrationsTabProps> = ({ config, onChan
                         <div className="bg-[#09090b] text-white rounded-[1.4rem] p-4 space-y-6">
                             <div className="flex items-center justify-between pb-4 border-b border-border-subtle">
                                 <h5 className="text-sm font-bold  text-cyan-400 tracking-wide flex items-center gap-2">
-                                    <Key size={16} className="animate-pulse"/> Command Deck Identity
+                                    <Key size={16} /> Server Connection
                                 </h5>
                             </div>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
@@ -388,7 +262,7 @@ export const IntegrationsTab: React.FC<IntegrationsTabProps> = ({ config, onChan
                                 {/* Header Status */}
                                 <div className="flex items-center justify-between pb-4 border-b border-border-subtle">
                                     <h5 className="text-sm font-bold  text-accent-secondary tracking-wide flex items-center gap-2">
-                                        <Radio size={16} className="animate-pulse"/> ViciDial Command Matrix
+                                        <Phone size={16} /> Dialer Server Configuration
                                     </h5>
                                     <button 
                                         onClick={handleTestConnection}
@@ -454,10 +328,10 @@ export const IntegrationsTab: React.FC<IntegrationsTabProps> = ({ config, onChan
                                     </div>
                                 )}
 
-                                {/* Section 1b: Silent Roster Mapping Settings */}
+                                {/* Section 1b: Sync Settings */}
                                 <div className="space-y-4 pt-4 border-t border-border-subtle/50">
                                     <h6 className="text-sm font-bold uppercase text-accent-secondary tracking-wide">
-                                        Active List Mapping & Mirroring Parameters
+                                        Database Sync Settings
                                     </h6>
                                     <div className="grid grid-cols-1 md:grid-cols-4 gap-4 text-left">
                                         <Input 
@@ -483,15 +357,15 @@ export const IntegrationsTab: React.FC<IntegrationsTabProps> = ({ config, onChan
                                             </select>
                                         </div>
                                         <div className="text-left">
-                                            <label className="text-sm font-extrabold uppercase tracking-wider text-text-muted mb-1.5 block text-left">Duplicate Merging Policy</label>
+                                            <label className="text-sm font-extrabold uppercase tracking-wider text-text-muted mb-1.5 block text-left">Duplicate Policy</label>
                                             <select
                                                 value={config.viciRosterDuplicatePolicy || 'skip_duplicates'}
                                                 onChange={e => onChange('viciRosterDuplicatePolicy', e.target.value)}
                                                 className="w-full h-[42px] px-3 bg-surface-alt border border-border-subtle rounded-xl text-sm text-text-primary focus:border-accent-secondary focus:ring-1 focus:ring-accent-secondary/20 outline-none text-left"
                                             >
-                                                <option value="skip_duplicates">Skip Dupes (Prune Mode)</option>
-                                                <option value="overwrite_existing">Force Overwrite (Overwrite Mode)</option>
-                                                <option value="merge_soft">Soft Merge Merging (Enhance Mode)</option>
+                                                <option value="skip_duplicates">Skip</option>
+                                                <option value="overwrite_existing">Overwrite</option>
+                                                <option value="merge_soft">Merge</option>
                                             </select>
                                         </div>
                                         <div className="flex flex-col justify-end text-left">
@@ -507,23 +381,23 @@ export const IntegrationsTab: React.FC<IntegrationsTabProps> = ({ config, onChan
                                         </div>
                                     </div>
                                     
-                                    {/* Silent Background list syncing console block */}
+                                    {/* list syncing block */}
                                     <div className="p-4 bg-surface-alt/75 border border-border-subtle rounded-xl space-y-4 text-left">
                                         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-left">
                                             <div className="text-left">
-                                                <span className="text-sm font-bold text-text-primary block text-left">Silent Roster Sync Host Daemon</span>
+                                                <span className="text-sm font-bold text-text-primary block text-left">List Synchronization</span>
                                                 <span className="text-sm text-text-muted block mt-0.5 leading-relaxed text-left">
-                                                    Mirror the active ViciDial lead list in real-time. This saves the customer records silently into the CRM without agent interruption.
+                                                    Mirror the active ViciDial lead list into the CRM.
                                                 </span>
                                             </div>
                                             <button
                                                 type="button"
                                                 disabled={isSyncingList || !config.viciListId}
                                                 onClick={handleSyncViciList}
-                                                className="px-4 py-2 bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 disabled:from-indigo-500/50 disabled:to-purple-600/50 text-white rounded-xl text-sm font-bold font-mono tracking-wide flex items-center gap-2 transition-all shadow-md active:scale-95 shrink-0 self-start sm:self-center"
+                                                className="px-4 py-2 bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 disabled:from-indigo-500/50 disabled:to-purple-600/50 text-white rounded-xl text-sm font-bold tracking-wide flex items-center gap-2 transition-all shadow-md active:scale-95 shrink-0 self-start sm:self-center"
                                             >
-                                                {isSyncingList ? <Activity size={14} className="animate-spin text-white" /> : <Zap size={14} className="text-amber-300 animate-pulse" />}
-                                                {isSyncingList ? "RUNNING INGEST DAEMON..." : "EXECUTE CORE SYNC"}
+                                                {isSyncingList ? <Activity size={14} className="animate-spin text-white" /> : <Zap size={14} className="text-white" />}
+                                                {isSyncingList ? "RUNNING..." : "SYNC LIST"}
                                             </button>
                                         </div>
 
@@ -571,74 +445,7 @@ export const IntegrationsTab: React.FC<IntegrationsTabProps> = ({ config, onChan
                                     </div>
                                 </div>
 
-                                {/* SECTION 2: CLIENT-INTERACTIVE VICIDIAL TERMINAL SHELL */}
-                                <div className="space-y-3 pt-4 border-t border-border-subtle/50 text-left">
-                                    <div className="flex items-center gap-2">
-                                        <Terminal size={14} className="text-accent-secondary" />
-                                        <h6 className="text-sm font-bold uppercase text-text-primary tracking-wider font-mono">
-                                            Interactive ViciDial SIP Command Console
-                                        </h6>
-                                    </div>
-
-                                    {/* Terminal Interface */}
-                                    <div className="p-4 bg-black/85 rounded-xl border border-border-strong font-mono text-sm leading-relaxed text-cyan-400 text-left min-h-[160px] max-h-[220px] overflow-y-auto custom-scrollbar flex flex-col justify-between">
-                                        <div className="space-y-1">
-                                            {viciTerminalLogs.map((logLine, lineIdx) => (
-                                                <div 
-                                                    key={lineIdx} 
-                                                    className={
-                                                        logLine.startsWith('ERROR') ? 'text-status-error' :
-                                                        logLine.startsWith('[CRITICAL_CORE]') ? 'text-amber-500 font-bold' :
-                                                        logLine.startsWith('[SIP]') ? 'text-emerald-400' :
-                                                        logLine.startsWith('[vici-session@') ? 'text-text-primary' : 'text-cyan-400'
-                                                    }
-                                                >
-                                                    {logLine}
-                                                </div>
-                                            ))}
-                                        </div>
-
-                                        {/* Prompt Input Line */}
-                                        <div className="flex items-center gap-1.5 mt-3 pt-2.5 border-t border-border-strong/40 text-left">
-                                            <span className="text-text-primary shrink-0">[vici-session@dialer-node-04 ~]$</span>
-                                            <div className="flex-1 flex items-center gap-1 text-left">
-                                                <input
-                                                    type="text"
-                                                    value={viciTerminalInput}
-                                                    onChange={e => setViciTerminalInput(e.target.value)}
-                                                    onKeyDown={e => {
-                                                        if (e.key === 'Enter') {
-                                                            runViciTerminalCommand(viciTerminalInput);
-                                                        }
-                                                    }}
-                                                    placeholder="Type command (e.g. status, sysinfo, dial 18005550199) and hit Enter..."
-                                                    className="w-full bg-transparent border-none outline-none focus:ring-0 text-emerald-400 placeholder-text-muted/40 font-mono text-sm text-left"
-                                                />
-                                                <CornerDownLeft size={10} className="text-text-muted animate-pulse shrink-0" />
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    {/* Terminal Macro Presets */}
-                                    <div className="flex flex-wrap gap-1.5 pt-1">
-                                        {[
-                                            { label: 'Inject Dial 1-800', cmd: 'dial 18005550199' },
-                                            { label: 'Query Gateway State', cmd: 'status' },
-                                            { label: 'Inspect Trunks', cmd: 'sysinfo' },
-                                            { label: 'Safe Soft Reboot', cmd: 'reboot' },
-                                            { label: 'Flush Buffer', cmd: 'clear' },
-                                        ].map((p, pIdx) => (
-                                            <button
-                                                key={pIdx}
-                                                type="button"
-                                                onClick={() => runViciTerminalCommand(p.cmd)}
-                                                className="px-2.5 py-1 rounded bg-[#202020]/50 hover:bg-[#303030]/50 border border-border-strong/50 hover:border-border-strong text-sm font-bold text-text-secondary hover:text-text-primary font-mono transition-colors"
-                                            >
-                                                {p.label}
-                                            </button>
-                                        ))}
-                                    </div>
-                                </div>
+                                {/* SECTION 2: Removed CLI Terminal */}
                             </div>
                         </div>
                     )}
@@ -659,7 +466,7 @@ export const IntegrationsTab: React.FC<IntegrationsTabProps> = ({ config, onChan
                             <div className="bg-[#09090b] text-white rounded-[1.4rem] p-4 space-y-6 font-sans">
                                 <div className="flex items-center justify-between pb-4 border-b border-border-subtle">
                                     <h5 className="text-sm font-bold text-cyan-400 tracking-wide flex items-center gap-2">
-                                        <Activity size={16} className="animate-pulse"/> Dialer Bridge Engine Configuration
+                                        <Activity size={16} /> Custom Dialer Settings
                                     </h5>
                                 </div>
 

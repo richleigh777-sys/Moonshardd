@@ -53,7 +53,7 @@ export const OperationalRhythm: React.FC<OperationalRhythmProps> = ({ notes, sal
                 } else if (elapsedDays > 30) score -= 20;
 
                 if (s.callSummary) score += 10;
-                if (s.age && s.age > 45) score += 5;
+                if (s.age && Number(s.age) > 45) score += 5;
                 if (s.medicalConditions && s.medicalConditions.length > 0) score += 10;
                 if (s.height && s.weight) score += 5;
 

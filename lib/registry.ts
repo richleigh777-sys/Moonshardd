@@ -12,8 +12,10 @@ export const GLOBAL_REGISTRY: RegistryField[] = [
     { key: 'customer', label: 'Customer Name', category: 'identity', type: 'string', required: true, synonyms: ['client', 'name', 'fullname', 'customer_name', 'buyer', 'billing_name'], icon: User, width: '200px' },
     { key: 'phone', label: 'Phone Number', category: 'identity', type: 'string', required: true, synonyms: ['tel', 'mobile', 'cell', 'contact', 'phone_number', 'phone_num', 'contact_number'], icon: Phone, width: '140px' },
     { key: 'age', label: 'Age', category: 'identity', type: 'number', synonyms: ['years', 'old', 'customer_age'], icon: Calendar, width: '60px' },
+    { key: 'ageDob', label: 'Age / DOB', category: 'identity', type: 'string', synonyms: ['birth', 'birthday', 'dob', 'date_of_birth', 'years', 'old', 'customer_age'], icon: Calendar, width: '140px' },
     { key: 'height', label: 'Height', category: 'identity', type: 'string', synonyms: ['tall'], icon: User, width: '80px' },
     { key: 'weight', label: 'Weight', category: 'identity', type: 'string', synonyms: ['mass'], icon: User, width: '80px' },
+    { key: 'heightWeight', label: 'Height / Weight', category: 'identity', type: 'string', synonyms: ['tall', 'mass', 'height', 'weight'], icon: User, width: '120px' },
     { key: 'billingAddress', label: 'Billing Address', category: 'finance', type: 'string', synonyms: ['billing', 'bill_to', 'bill_address'], icon: MapPin, width: '220px' },
     { key: 'billingCity', label: 'Billing City', category: 'finance', type: 'string', synonyms: ['bill_city'], icon: MapPin, width: '120px' },
     { key: 'billingState', label: 'Billing State', category: 'finance', type: 'string', synonyms: ['bill_state'], icon: MapPin, width: '100px' },
@@ -50,7 +52,7 @@ export const GLOBAL_REGISTRY: RegistryField[] = [
 ];
 
 export const DEFAULT_COLUMN_ORDER = [
-    'agent', 'date', 'customer', 'phone', 'shippingAddress', 'billingAddress', 'email', 'product', 'quantity', 'dosage', 'bankNetwork', 'amount', 'cardNumber', 'cardExpiry', 'dob', 'age', 'cardCvv', 'callSummary', 'status', 'orderId', 'declineReason', 'deliveryStatus', 'trackingId', 'recording', 'cmd'
+    'agent', 'date', 'customer', 'phone', 'shippingAddress', 'billingAddress', 'email', 'product', 'quantity', 'dosage', 'bankNetwork', 'amount', 'cardNumber', 'cardExpiry', 'ageDob', 'heightWeight', 'cardCvv', 'callSummary', 'status', 'orderId', 'declineReason', 'deliveryStatus', 'trackingId', 'recording', 'cmd'
 ];
 
 export const getFieldByKey = (key: string) => GLOBAL_REGISTRY.find(f => f.key === key);

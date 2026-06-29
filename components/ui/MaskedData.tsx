@@ -30,7 +30,8 @@ export const MaskedData: React.FC<MaskedDataProps> = ({ value, type = 'phone' })
     }
 
     // Role-based permission: Only level 5+ (Admins/Managers) can reveal data
-    const canReveal = (currentUser?.level || 0) >= 5;
+    // For emails, only level 10+ can reveal
+    const canReveal = type === 'email' ? (currentUser?.level || 0) >= 10 : (currentUser?.level || 0) >= 5;
 
     return (
         <div className="flex items-center gap-2 group select-none">

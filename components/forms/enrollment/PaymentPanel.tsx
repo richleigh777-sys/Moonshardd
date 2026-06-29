@@ -20,7 +20,10 @@ export function PaymentPanel({ financials, setFinancials, handleCardInput, cardS
                         value={financials.cardNumber}
                         onChange={(e) => handleCardInput(e.target.value)}
                         placeholder="0000 0000 0000 0000"
-                        className={`w-full bg-surface-alt/50 border ${cardStatus === 'invalid' ? 'border-rose-500/50 focus:border-rose-500 focus:ring-rose-500/20' : 'border-white/5 focus:border-white focus:ring-white'} rounded-xl pl-12 pr-5 py-4 text-lg font-medium text-white placeholder-text-muted outline-none transition-all focus:bg-surface-alt focus:ring-1 shadow-sm font-mono`}
+                        autoComplete="none"
+                        name="rnd_cc_number"
+                        data-lpignore="true" data-1p-ignore="true" data-form-type="other"
+                        className={`w-full bg-surface-alt/50 border ${cardStatus === 'invalid' ? 'border-rose-500/50 focus:border-rose-500 focus:ring-rose-500/20' : 'border-border-subtle focus:border-white focus:ring-white'} rounded-xl pl-12 pr-5 py-4 text-lg font-medium text-white placeholder-text-muted outline-none transition-all focus:bg-surface-alt focus:ring-1 shadow-sm font-mono`}
                     />
                     <CreditCard className="absolute left-4 top-1/2 -translate-y-1/2 text-text-muted" size={20} />
                 </div>
@@ -34,7 +37,9 @@ export function PaymentPanel({ financials, setFinancials, handleCardInput, cardS
                             value={financials.cardExpiry}
                             onChange={(e) => setFinancials({...financials, cardExpiry: e.target.value})}
                             placeholder="MM/YY"
-                            className="w-full bg-surface-alt/50 border border-white/5 rounded-xl pl-12 pr-5 py-4 text-lg font-medium text-white placeholder-text-muted outline-none transition-all focus:border-white focus:bg-surface-alt focus:ring-1 focus:ring-white shadow-sm font-mono"
+                            autoComplete="new-password"
+                            name="secure-exp-panel"
+                            className="w-full bg-surface-alt/50 border border-border-subtle rounded-xl pl-12 pr-5 py-4 text-lg font-medium text-white placeholder-text-muted outline-none transition-all focus:border-white focus:bg-surface-alt focus:ring-1 focus:ring-white shadow-sm font-mono"
                         />
                         <Calendar className="absolute left-4 top-1/2 -translate-y-1/2 text-text-muted" size={20} />
                     </div>
@@ -48,8 +53,10 @@ export function PaymentPanel({ financials, setFinancials, handleCardInput, cardS
                             onChange={(e) => setFinancials({...financials, cardCvv: e.target.value})}
                             placeholder="123"
                             type="password"
+                            autoComplete="new-password"
+                            name="secure-cvv-panel"
                             maxLength={4}
-                            className="w-full bg-surface-alt/50 border border-white/5 rounded-xl pl-12 pr-5 py-4 text-lg font-medium text-white placeholder-text-muted outline-none transition-all focus:border-white focus:bg-surface-alt focus:ring-1 focus:ring-white shadow-sm font-mono"
+                            className="w-full bg-surface-alt/50 border border-border-subtle rounded-xl pl-12 pr-5 py-4 text-lg font-medium text-white placeholder-text-muted outline-none transition-all focus:border-white focus:bg-surface-alt focus:ring-1 focus:ring-white shadow-sm font-mono"
                         />
                         <LockKeyhole className="absolute left-4 top-1/2 -translate-y-1/2 text-text-muted" size={20} />
                     </div>

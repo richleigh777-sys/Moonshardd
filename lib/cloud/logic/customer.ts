@@ -35,7 +35,7 @@ export const rebuildCustomersFromSales = (sales: Sale[], currentCustomers: Custo
                 phones: [sale.phone],
                 emails: [sale.email || ''],
                 dob: sale.dob,
-                age: sale.age
+                age: sale.age ? Number(sale.age) : undefined
             };
         }
 

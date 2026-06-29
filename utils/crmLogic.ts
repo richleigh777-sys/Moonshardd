@@ -180,9 +180,9 @@ export const getDailyHours = (
     return preciseRound(totalSeconds / 3600, 2);
 };
 
-export const calculateSalePayout = (sale: Sale, dailyHours: number, config: SystemConfig, agentCommissionRate?: number) => {
+export const calculateSalePayout = (sale: Sale, dailyHours: number, config: SystemConfig, agentCommissionRate?: number, agentShippingDeduction?: number) => {
     const amount = preciseRound(Number(sale.amount) || 0);
-    const shippingDeduction = preciseRound(Number(config.shippingDeduction) || 0);
+    const shippingDeduction = preciseRound(agentShippingDeduction !== undefined ? Number(agentShippingDeduction) : (Number(config.shippingDeduction) || 0));
     
     const commissionableBasis = Math.max(0, amount - shippingDeduction);
     const rateToUse = Number(agentCommissionRate) || Number(config.baseCommission) || 15;

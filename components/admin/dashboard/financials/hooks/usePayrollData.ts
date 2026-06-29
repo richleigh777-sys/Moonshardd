@@ -30,7 +30,7 @@ export const usePayrollData = () => {
 
                 const enrichedSales = agentSales.map(s => {
                     const hours = getDailyHours(agent.id, s.timestamp, attendance);
-                    const payout = calculateSalePayout(s, hours, systemConfig, agent.commissionRate);
+                    const payout = calculateSalePayout(s, hours, systemConfig, agent.commissionRate, agent.shippingDeductionOverride);
                     return { sale: s, payout };
                 });
 

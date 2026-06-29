@@ -61,7 +61,7 @@ export const SmartQueue: React.FC<SmartQueueProps> = ({ sales, onEngage }) => {
                 }
                 
                 // Demographic data (age/medical conditions)
-                if (s.age && s.age > 45) score += 5;
+                if (s.age && Number(s.age) > 45) score += 5;
                 if (s.medicalConditions && s.medicalConditions.length > 0) score += 10;
                 if (s.height && s.weight) score += 5; // Has some medical profile data
 

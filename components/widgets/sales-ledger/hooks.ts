@@ -6,14 +6,14 @@ import { sfx } from '../../../lib/soundService';
 export const useLedgerLayout = () => {
     const DEFAULT_ORDER = [
         'date', 'customer', 'phone', 'billingAddress', 'shippingAddress', 'email', 
-        'product', 'quantity', 'dosage', 'cardType', 'amount', 'cardNumber', 'age', 'dob', 'cardExpiry', 'cardCvv', 
-        'callSummary', 'medicalConditions', 'height', 'weight', 'agent', 
+        'product', 'quantity', 'dosage', 'cardType', 'amount', 'cardNumber', 'ageDob', 'cardExpiry', 'cardCvv', 
+        'callSummary', 'medicalConditions', 'heightWeight', 'agent', 
         'orderId', 'trackingId', 'status', 'declineReason', 'deliveryStatus', 'recording', 'cmd'
     ];
     const DEFAULT_VISIBLE = DEFAULT_ORDER.reduce((acc, k) => ({...acc, [k]: true}), {});
 
     const [preferences, setPreferences] = useState<{order: string[], visible: Record<string, boolean>}>(() => {
-        const saved = localStorage.getItem('nexus_ledger_prefs_v7');
+        const saved = localStorage.getItem('nexus_ledger_prefs_v9');
         if (saved) {
             const parsed = JSON.parse(saved);
             // Ensure any new default columns are merged in if they are missing
@@ -28,7 +28,7 @@ export const useLedgerLayout = () => {
     });
 
     useEffect(() => {
-        localStorage.setItem('nexus_ledger_prefs_v7', JSON.stringify(preferences));
+        localStorage.setItem('nexus_ledger_prefs_v9', JSON.stringify(preferences));
     }, [preferences]);
 
     return [preferences, setPreferences] as const;

@@ -1,10 +1,10 @@
  
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, lazy, Suspense } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { 
     Settings, Clock, DollarSign, Save, Lock, Globe, Database,
-    Tag, Sparkles, RefreshCw, ChevronRight, ShieldAlert, Package, Target, Network, Terminal, LayoutGrid, Server, Activity, Zap
+    RefreshCw, Terminal, LayoutGrid, Server, Zap, Loader2
 } from 'lucide-react';
 import { Card, Button } from '../ui/Base';
 import { SystemConfig, Sale, Note } from '../../types';
@@ -12,23 +12,19 @@ import { sfx } from '../../lib/soundService';
 import { useSystem } from '../../hooks/useSystem';
 import { useAuth } from '../../hooks/useAuth';
 
-// Tabs
-import { OperationsTab } from './system/tabs/OperationsTab';
-import { FinancialsTab } from './system/FinancialsTab';
-import { ClearanceTab } from './system/tabs/ClearanceTab';
-import { IntegrationsTab } from './system/tabs/IntegrationsTab';
-import { TaxonomyTab } from './system/tabs/TaxonomyTab';
-import { ExtensionsTab } from './system/tabs/ExtensionsTab';
-import { ExperienceTab } from './system/tabs/ExperienceTab';
-import { SystemTab } from './system/tabs/SystemTab';
-import { CommandDeckTab } from './system/tabs/CommandDeckTab';
-import { CRMConfigTab } from './system/tabs/CRMConfigTab';
-import { HygieneTab } from './system/tabs/HygieneTab';
-import { SnapshotsTab } from './system/tabs/SnapshotsTab';
-import { PlaybooksTab } from './system/tabs/PlaybooksTab';
-import { AuditTab } from './system/tabs/AuditTab';
-import { EcosystemTab } from './system/tabs/EcosystemTab';
-import { TerminalsConfigTab } from './system/tabs/TerminalsConfigTab';
+// Lazy load Tabs
+const OperationsTab = lazy(() => import('./system/tabs/OperationsTab').then(m => ({ default: m.OperationsTab })));
+const FinancialsTab = lazy(() => import('./system/FinancialsTab').then(m => ({ default: m.FinancialsTab })));
+const ClearanceTab = lazy(() => import('./system/tabs/ClearanceTab').then(m => ({ default: m.ClearanceTab })));
+const IntegrationsTab = lazy(() => import('./system/tabs/IntegrationsTab').then(m => ({ default: m.IntegrationsTab })));
+const CRMConfigTab = lazy(() => import('./system/tabs/CRMConfigTab').then(m => ({ default: m.CRMConfigTab })));
+const TerminalsConfigTab = lazy(() => import('./system/tabs/TerminalsConfigTab').then(m => ({ default: m.TerminalsConfigTab })));
+
+const ConfigTabLoader = () => (
+    <div className="w-full h-64 flex flex-col items-center justify-center text-text-muted">
+        <Loader2 className="w-6 h-6 animate-spin text-accent-primary" />
+    </div>
+);
 
 interface SystemConfigPanelProps {
     config: SystemConfig;
@@ -65,14 +61,11 @@ export const SystemConfigPanel = ({ config, onUpdate, sales, notes }: SystemConf
     }, [config]);
 
     const handleSave = async () => {
-        // const confirmed = window.confirm("⚠️ SYSTEM OVERRIDE ⚠️\n\nAre you sure you want to commit these system-wide configuration changes?");
-        // if (!confirmed) return;
-
         setIsSaving(true);
         try {
             sfx.playConfirm();
             await onUpdate(localConfig);
-            setToast({ title: 'System Config', message: "System Parameters Deployed", type: "success" });
+            setToast({ title: 'System Config', message: "Settings Saved", type: "success" });
             setIsDirty(false);
         } catch {
             sfx.playError();
@@ -90,43 +83,33 @@ export const SystemConfigPanel = ({ config, onUpdate, sales, notes }: SystemConf
 
     const NAV_GROUPS = [
         {
-            group: "Core Logic",
+            group: "Settings",
             icon: LayoutGrid,
             items: [
                 { id: 'operations', label: 'Operations', icon: Clock, color: 'text-blue-500' },
                 { id: 'financials', label: 'Financials', icon: DollarSign, color: 'text-emerald-500' },
-                { id: 'playbooks', label: 'Playbooks', icon: Target, color: 'text-indigo-400' },
-                { id: 'experience', label: 'UX / Vibe', icon: Sparkles, color: 'text-pink-500' },
             ]
         },
         {
-            group: "Data Integrity",
+            group: "Database",
             icon: Database,
             items: [
-                { id: 'crm', label: 'CRM State', icon: Database, color: 'text-emerald-500' },
-                { id: 'hygiene', label: 'Hygiene', icon: Sparkles, color: 'text-indigo-400' },
-                { id: 'audit', label: 'Audit Log', icon: ShieldAlert, color: 'text-rose-500' },
-                { id: 'taxonomy', label: 'Taxonomy', icon: Tag, color: 'text-purple-500' },
-                { id: 'extensions', label: 'Extensions', icon: Database, color: 'text-cyan-500' },
+                { id: 'crm', label: 'CRM Config', icon: Database, color: 'text-emerald-500' },
             ]
         },
         {
             group: "Infrastructure",
             icon: Server,
             items: [
-                { id: 'integrations', label: 'Uplinks', icon: Globe, color: 'text-indigo-400' },
-                { id: 'snapshots', label: 'Snapshots', icon: Package, color: 'text-indigo-400' },
-                { id: 'ecosystem', label: 'Mapping', icon: Network, color: 'text-cyan-500' },
-                { id: 'system', label: 'Sys Core', icon: Activity, color: 'text-rose-500' },
+                { id: 'integrations', label: 'Integrations', icon: Globe, color: 'text-indigo-400' },
             ]
         },
         {
-            group: "Level 10 Control",
+            group: "Admin",
             icon: Lock,
             hidden: !isSuperAdmin,
             items: [
                 { id: 'clearance', label: 'Clearance', icon: Lock, color: 'text-amber-500' },
-                { id: 'command', label: 'Command', icon: Settings, color: 'text-rose-500' },
                 { id: 'terminals', label: 'Terminals', icon: Terminal, color: 'text-blue-500' },
             ]
         }
@@ -155,16 +138,16 @@ export const SystemConfigPanel = ({ config, onUpdate, sales, notes }: SystemConf
         >
             <div className="flex flex-col h-full w-full max-w-7xl mx-auto rounded-xl bg-surface-main border border-border-subtle shadow-sm overflow-hidden">
                 
-                {/* HUD Header */}
+                {/* Header */}
                 <header className="px-8 py-5 border-b border-border-subtle bg-surface-alt/80 backdrop-blur-3xl flex justify-between items-center relative z-20 shrink-0">
                     <div className="flex items-center gap-5">
                         <div className="w-12 h-12 flex items-center justify-center rounded-xl bg-surface-main border border-border-subtle shadow-sm">
                             <Zap size={24} className="text-accent-primary" />
                         </div>
                         <div>
-                            <h2 className="text-xl font-semibold text-text-primary tracking-tight">Extra Settings Terminal</h2>
+                            <h2 className="text-xl font-semibold text-text-primary tracking-tight">System Settings</h2>
                             <div className="flex items-center gap-3 mt-1">
-                                <span className="text-sm font-semibold uppercase tracking-wide text-text-muted">System Configuration Hub</span>
+                                <span className="text-sm font-semibold uppercase tracking-wide text-text-muted">Configuration Panel</span>
                                 <div className="h-3 w-px bg-border-strong"></div>
                                 {isDirty ? (
                                     <span className="text-sm font-semibold px-2.5 py-0.5 rounded-full bg-amber-500/10 text-amber-500 border border-amber-500/20 uppercase tracking-wide flex items-center gap-1.5 shadow-inner">
@@ -200,7 +183,7 @@ export const SystemConfigPanel = ({ config, onUpdate, sales, notes }: SystemConf
                             className={`px-8 py-3 rounded-xl text-sm font-semibold tracking-wide uppercase transition-all duration-300 flex items-center gap-2
                                 ${isDirty ? 'bg-accent-primary text-white shadow-sm hover:-translate-y-0.5 hover:shadow-sm' : 'bg-surface-alt text-text-muted border border-border-strong opacity-80'}`}
                         >
-                            <Save size={16} /> Deploy Architecture
+                            <Save size={16} /> Save Changes
                         </Button>
                     </div>
                 </header>
@@ -252,33 +235,25 @@ export const SystemConfigPanel = ({ config, onUpdate, sales, notes }: SystemConf
                     <div className="flex-1 overflow-y-auto custom-scrollbar relative bg-surface-main">
                         <div className="absolute inset-0 bg-gradient-to-br from-surface-alt/20 to-transparent pointer-events-none"></div>
                         <div className="max-w-5xl mx-auto h-full p-10 pb-32 relative z-10 w-full">
-                            <AnimatePresence mode="wait">
-                                <motion.div
-                                    key={activeTab}
-                                    variants={tabContentVariants}
-                                    initial="hidden"
-                                    animate="visible"
-                                    exit="exit"
-                                    className="h-full w-full"
-                                >
-                                    {activeTab === 'operations' && <OperationsTab config={localConfig} onChange={handleChange} isSuperAdmin={isSuperAdmin} />}
-                                    {activeTab === 'playbooks' && <PlaybooksTab config={localConfig} onChange={handleChange} />}
-                                    {activeTab === 'crm' && <CRMConfigTab config={localConfig} onChange={handleChange} />}
-                                    {activeTab === 'hygiene' && <HygieneTab sales={sales} notes={notes} now={now} />}
-                                    {activeTab === 'financials' && <FinancialsTab config={localConfig} onChange={handleChange} />}
-                                    {activeTab === 'clearance' && <ClearanceTab config={localConfig} onChange={handleChange} isSuperAdmin={isSuperAdmin} />}
-                                    {activeTab === 'integrations' && <IntegrationsTab config={localConfig} onChange={handleChange} />}
-                                    {activeTab === 'taxonomy' && <TaxonomyTab config={localConfig} onChange={handleChange} />}
-                                    {activeTab === 'extensions' && <ExtensionsTab config={localConfig} onChange={handleChange} />}
-                                    {activeTab === 'experience' && <ExperienceTab config={localConfig} onChange={handleChange} />}
-                                    {activeTab === 'snapshots' && <SnapshotsTab />}
-                                    {activeTab === 'audit' && <AuditTab />}
-                                    {activeTab === 'system' && <SystemTab config={localConfig} onChange={handleChange} />}
-                                    {activeTab === 'command' && <CommandDeckTab />}
-                                    {activeTab === 'ecosystem' && <EcosystemTab />}
-                                    {activeTab === 'terminals' && <TerminalsConfigTab config={localConfig} onChange={handleChange} isSuperAdmin={isSuperAdmin} />}
-                                </motion.div>
-                            </AnimatePresence>
+                            <Suspense fallback={<ConfigTabLoader />}>
+                                <AnimatePresence mode="wait">
+                                    <motion.div
+                                        key={activeTab}
+                                        variants={tabContentVariants}
+                                        initial="hidden"
+                                        animate="visible"
+                                        exit="exit"
+                                        className="h-full w-full"
+                                    >
+                                        {activeTab === 'operations' && <OperationsTab config={localConfig} onChange={handleChange} isSuperAdmin={isSuperAdmin} />}
+                                        {activeTab === 'crm' && <CRMConfigTab config={localConfig} onChange={handleChange} />}
+                                        {activeTab === 'financials' && <FinancialsTab config={localConfig} onChange={handleChange} />}
+                                        {activeTab === 'clearance' && <ClearanceTab config={localConfig} onChange={handleChange} isSuperAdmin={isSuperAdmin} />}
+                                        {activeTab === 'integrations' && <IntegrationsTab config={localConfig} onChange={handleChange} />}
+                                        {activeTab === 'terminals' && <TerminalsConfigTab config={localConfig} onChange={handleChange} isSuperAdmin={isSuperAdmin} />}
+                                    </motion.div>
+                                </AnimatePresence>
+                            </Suspense>
                         </div>
                     </div>
 

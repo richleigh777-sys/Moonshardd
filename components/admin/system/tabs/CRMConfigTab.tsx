@@ -43,7 +43,7 @@ export const CRMConfigTab: React.FC<CRMConfigTabProps> = ({ config, onChange }) 
         setTestResult(null);
         setTimeout(() => {
             setIsTestingSheet(false);
-            setTestResult('Successfully connected to spreadsheet cluster. Real-time sheet triggers deployed.');
+            setTestResult('Successfully connected to spreadsheet.');
             sfx.playSuccess();
         }, 1500);
     };
@@ -52,7 +52,7 @@ export const CRMConfigTab: React.FC<CRMConfigTabProps> = ({ config, onChange }) 
         <section className="space-y-10 animate-in fade-in slide-in-from-right-4 duration-500">
             <SectionHeader 
                 icon={Database} 
-                title="CRM Intelligence & Automation" 
+                title="CRM Automation" 
                 sub="Manage your customer relationship capabilities" 
                 color="text-status-success" 
             />
@@ -60,11 +60,11 @@ export const CRMConfigTab: React.FC<CRMConfigTabProps> = ({ config, onChange }) 
             <div className="space-y-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <ConfigToggle 
-                        label="AI Strategic Briefing" 
+                        label="AI Lead Briefing" 
                         active={crm.enableAiBriefing} 
                         onToggle={() => updateCrm('enableAiBriefing', !crm.enableAiBriefing)}
                         icon={Sparkles}
-                        description="Generate strategic summaries and sentiment analysis for leads using Gemini AI."
+                        description="Generate summaries and sentiment analysis for leads using Gemini AI."
                     />
                     <ConfigToggle 
                         label="Interaction Timeline" 
@@ -96,7 +96,7 @@ export const CRMConfigTab: React.FC<CRMConfigTabProps> = ({ config, onChange }) 
                                 <Sliders size={18} />
                             </div>
                             <div>
-                                <h4 className="text-sm font-bold tracking-tight text-text-primary">Attribution Stage Scoring Weights</h4>
+                                <h4 className="text-sm font-bold tracking-tight text-text-primary">Stage Scoring Weights</h4>
                                 <p className="text-sm font-medium text-text-muted">Set percentage weights for CRM scoring triggers</p>
                             </div>
                         </div>
@@ -127,7 +127,7 @@ export const CRMConfigTab: React.FC<CRMConfigTabProps> = ({ config, onChange }) 
                         {/* Enhanced Visual Formula Tracker */}
                         <div className="p-4 rounded-xl bg-surface-main/80 border border-border-subtle text-sm space-y-2.5">
                             <span className="text-sm uppercase font-mono font-bold text-status-success tracking-wide block">
-                                Core Intelligence Matrix Formula
+                                Scoring Formula
                             </span>
                             <div className="flex flex-col sm:flex-row items-baseline gap-2 text-text-secondary leading-normal font-mono text-sm">
                                 <span className="font-extrabold text-text-primary bg-surface-alt border border-border-subtle px-2 py-0.5 rounded shadow">Score(u)</span>
@@ -140,7 +140,7 @@ export const CRMConfigTab: React.FC<CRMConfigTabProps> = ({ config, onChange }) 
                                 <span>+</span>
                                 <span className="text-emerald-400">({stageWeights.won}% × W)</span>
                             </div>
-                            <p className="text-sm text-text-muted italic">Weights dictate prompt context relevance parameters for the server-side Gemini AI engine.</p>
+                            <p className="text-sm text-text-muted italic">Weights dictate scoring outcomes based on stage presence.</p>
                         </div>
                     </div>
                 )}

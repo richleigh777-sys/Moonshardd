@@ -67,30 +67,6 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ onLogin }) => {
       }
   };
 
-  const handleSimulateLogin = async (uid: string, pass: string, companyId: string) => {
-      setError('');
-      setIsProcessing(true);
-      sfx.playSubmit();
-
-      try {
-          await new Promise(r => setTimeout(r, 600)); 
-          const result = await authenticate(uid, pass, companyId, "");
-          if (result && 'user' in result) {
-              const { user, sig } = result;
-              sfx.playSuccess();
-              await login(user, sig);
-              onLogin(user);
-          } else {
-              throw new Error(result && 'error' in result ? result.error : 'Invalid Credentials');
-          }
-      } catch (err: any) {
-          sfx.playError();
-          setError(err.message || "Simulated Login Failed");
-      } finally {
-          setIsProcessing(false);
-      }
-  };
-
   const handleServerConnect = async (companyId: string) => {
       setError('');
       setIsProcessing(true);
@@ -115,33 +91,6 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ onLogin }) => {
       } finally {
           setIsProcessing(false);
       }
-  };
-
-  const handleQuickLogin = async () => {
-    setError('');
-    setIsProcessing(true);
-    sfx.playSubmit();
-    
-    // Use the known root credentials for quick developer access
-    const rootId = SYSTEM_ADMIN_ID;
-    const rootPass = 'root123';
-    
-    try {
-        await new Promise(r => setTimeout(r, 400));
-        const rootResult = await authenticateRoot(rootId, rootPass);
-        
-        if (rootResult && 'user' in rootResult) {
-            sfx.playSuccess();
-            await login(rootResult.user, rootResult.sig);
-            onLogin(rootResult.user);
-        } else {
-            setError(rootResult && 'error' in rootResult ? rootResult.error : "Quick access unavailable.");
-            setIsProcessing(false);
-        }
-    } catch (err: any) {
-        setError(err.message || "Bypass failed. System integrity check required.");
-        setIsProcessing(false);
-    }
   };
 
   return (
@@ -198,34 +147,8 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ onLogin }) => {
 
                 {/* Footer */}
                 <div className="p-5 border-t border-border-subtle bg-surface-alt/30 flex flex-col items-center gap-3">
-                    <div className="flex flex-col gap-2">
-                        <button 
-                            onClick={handleQuickLogin}
-                            disabled={isProcessing}
-                            className="text-xs font-semibold text-text-primary hover:text-accent-primary transition-colors disabled:opacity-50 border border-border-subtle hover:border-accent-primary/50 py-2 px-4 rounded-lg bg-surface-main"
-                        >
-                            Log in as Owner (Root)
-                        </button>
-                        <div className="grid grid-cols-2 gap-2">
-                            <button 
-                                onClick={() => handleSimulateLogin('admin-srv-001-1', 'admin123', 'srv-001')}
-                                disabled={isProcessing}
-                                className="text-xs font-medium text-text-secondary hover:text-text-primary transition-colors disabled:opacity-50 border border-border-subtle hover:bg-surface-highlight py-2 px-3 rounded-lg"
-                            >
-                                Log in as Admin
-                            </button>
-                            <button 
-                                onClick={() => handleSimulateLogin('agent-srv-001-1', 'agent123', 'srv-001')}
-                                disabled={isProcessing}
-                                className="text-xs font-medium text-text-secondary hover:text-text-primary transition-colors disabled:opacity-50 border border-border-subtle hover:bg-surface-highlight py-2 px-3 rounded-lg"
-                            >
-                                Log in as Agent
-                            </button>
-                        </div>
-                    </div>
                     <div className="text-xs text-text-muted mt-2 text-center opacity-70">
-                        Braveheart Workspace • v2.4.0 <br/>
-                        Development Environment Logins
+                        Braveheart Workspace • v2.4.0
                     </div>
                 </div>
             </Card>

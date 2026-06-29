@@ -1,9 +1,9 @@
 import React from 'react';
-import DatePicker from 'react-datepicker';
-import 'react-datepicker/dist/react-datepicker.css';
 import { Mail, User, Phone, MapPin, Search } from 'lucide-react';
 import { InputField, CustomSelect } from './InputFields';
+import { ModernDatePicker } from '../../../ui/ModernDatePicker';
 import { parseSmartAddress } from '../../../../lib/addressParser';
+import { parseFullName } from '../../../../lib/nameParser';
 import { MEDICAL_CONDITIONS } from '../../../../constants';
 
 const US_STATES = [
@@ -51,10 +51,17 @@ export function Stage1Profile({ formData, setFormData, handleIdentityChange, han
             const parsed = parseSmartAddress(rawValue);
             
             if (parsed) {
-                handleIdentityChange({ target: { name: 'shippingAddress', value: parsed.street } } as any);
-                if (parsed.city) handleIdentityChange({ target: { name: 'shippingCity', value: parsed.city } } as any);
-                if (parsed.state) handleIdentityChange({ target: { name: 'shippingState', value: parsed.state } } as any);
-                if (parsed.zip) handleIdentityChange({ target: { name: 'shippingZip', value: parsed.zip } } as any);
+                if (name === 'shippingAddress') {
+                    handleIdentityChange({ target: { name: 'shippingAddress', value: parsed.street } } as any);
+                    if (parsed.city) handleIdentityChange({ target: { name: 'shippingCity', value: parsed.city } } as any);
+                    if (parsed.state) handleIdentityChange({ target: { name: 'shippingState', value: parsed.state } } as any);
+                    if (parsed.zip) handleIdentityChange({ target: { name: 'shippingZip', value: parsed.zip } } as any);
+                } else if (name === 'billingAddress') {
+                    handleIdentityChange({ target: { name: 'billingAddress', value: parsed.street } } as any);
+                    if (parsed.city) handleIdentityChange({ target: { name: 'billingCity', value: parsed.city } } as any);
+                    if (parsed.state) handleIdentityChange({ target: { name: 'billingState', value: parsed.state } } as any);
+                    if (parsed.zip) handleIdentityChange({ target: { name: 'billingZip', value: parsed.zip } } as any);
+                }
             }
             
             setTimeout(() => setAddressValidationStatus('verified'), 400); // Mock network latency for USPS/Maps check
@@ -65,6 +72,7 @@ export function Stage1Profile({ formData, setFormData, handleIdentityChange, han
         // 1. Process the keystroke immediately for UI responsiveness
         const rawZip = e.target.value.replace(/\D/g, '').substring(0, 5);
         e.target.value = rawZip;
+        const name = e.target.name;
         handleIdentityChange(e);
 
         // 2. Trigger Reverse Lookup when we hit exactly 5 digits
@@ -75,10 +83,13 @@ export function Stage1Profile({ formData, setFormData, handleIdentityChange, han
                     const data = await response.json();
                     const place = data.places[0];
                     if (place) {
-                        // Auto-fill City
-                        handleIdentityChange({ target: { name: 'shippingCity', value: place['place name'] } } as any);
-                        // Auto-fill State (using abbreviation)
-                        handleIdentityChange({ target: { name: 'shippingState', value: place['state abbreviation'] } } as any);
+                        if (name === 'shippingZip') {
+                            handleIdentityChange({ target: { name: 'shippingCity', value: place['place name'] } } as any);
+                            handleIdentityChange({ target: { name: 'shippingState', value: place['state abbreviation'] } } as any);
+                        } else if (name === 'billingZip') {
+                            handleIdentityChange({ target: { name: 'billingCity', value: place['place name'] } } as any);
+                            handleIdentityChange({ target: { name: 'billingState', value: place['state abbreviation'] } } as any);
+                        }
                     }
                 }
             } catch (error) {
@@ -95,12 +106,14 @@ export function Stage1Profile({ formData, setFormData, handleIdentityChange, han
 
     const handleFirstNamePaste = (e: any) => {
         const paste = e.clipboardData.getData('text');
-        const parts = paste.trim().split(' ');
-        if (parts.length > 1) {
+        const parsedName = parseFullName(paste);
+        if (parsedName.lastName) {
             e.preventDefault();
-            handleIdentityChange({ target: { name: 'firstName', value: parts[0] } });
-            const lastName = parts.slice(1).join(' ');
-            handleIdentityChange({ target: { name: 'lastName', value: lastName } });
+            handleIdentityChange({ target: { name: 'firstName', value: parsedName.firstName } } as any);
+            handleIdentityChange({ target: { name: 'lastName', value: parsedName.lastName } } as any);
+            if (parsedName.middleInitial) {
+                handleIdentityChange({ target: { name: 'middleInitial', value: parsedName.middleInitial } } as any);
+            }
         }
     };
 
@@ -134,10 +147,10 @@ export function Stage1Profile({ formData, setFormData, handleIdentityChange, han
             <div className="w-full max-w-[1400px] grid grid-cols-1 lg:grid-cols-2 gap-12 pb-24">
                 
                 <div className="flex flex-col gap-12">
-                    <div className={`bg-[#141414] border rounded-xl p-8 shadow-2xl space-y-8 h-fit transition-all duration-1000 ${wasAutoFilled ? 'border-[#8BA888] shadow-sm/20 bg-[#8BA888]/5' : 'border-white/5'}`}>
+                    <div className={`bg-surface-alt border rounded-xl p-8 shadow-2xl space-y-8 h-fit transition-all duration-1000 ${wasAutoFilled ? 'border-emerald-500 shadow-sm/20 bg-emerald-500/5' : 'border-border-subtle'}`}>
                         <div className="flex items-center justify-between">
-                            <h2 className="text-[#FDFDFD] font-medium text-2xl tracking-wide flex items-center gap-3">
-                               <span className="text-[#C4A470]">01.</span> Customer Profile
+                            <h2 className="text-text-primary font-medium text-2xl tracking-wide flex items-center gap-3">
+                               <span className="text-accent-primary">01.</span> Customer Profile
                             </h2>
                             <div className="flex items-center gap-3">
                                 <button
@@ -157,6 +170,7 @@ export function Stage1Profile({ formData, setFormData, handleIdentityChange, han
                                                 ...prev,
                                                 firstName: extract('first') || extract('first name') || prev.firstName,
                                                 lastName: extract('last') || extract('last name') || prev.lastName,
+                                                middleInitial: extract('middle') || extract('m.i.') || extract('middle initial') || prev.middleInitial,
                                                 phone: phone || prev.phone,
                                                 email: extract('email') || prev.email,
                                                 shippingAddress: extract('address') || prev.shippingAddress,
@@ -173,16 +187,23 @@ export function Stage1Profile({ formData, setFormData, handleIdentityChange, han
                                     🪄 AutoFill Paste
                                 </button>
                                 {wasAutoFilled && (
-                                    <span className="px-3 py-1 bg-[#8BA888]/20 text-[#8BA888] rounded-full text-sm font-bold uppercase tracking-wide animate-pulse">
+                                    <span className="px-3 py-1 bg-emerald-500/20 text-emerald-500 rounded-full text-sm font-bold uppercase tracking-wide animate-pulse">
                                         Match Found: Auto-filled
                                     </span>
                                 )}
                             </div>
                         </div>
                         
-                        <div className="grid grid-cols-2 gap-6">
-                            <InputField label="First Name" name="firstName" value={formData.firstName || ''} onChange={handleIdentityChange} onPaste={handleFirstNamePaste} icon={User} placeholder="Jane" tabIndex={1}/>
-                            <InputField label="Last Name" name="lastName" value={formData.lastName || ''} onChange={handleIdentityChange} placeholder="Doe" tabIndex={2} />
+                        <div className="grid grid-cols-12 gap-6">
+                            <div className="col-span-5">
+                                <InputField label="First Name" name="firstName" value={formData.firstName || ''} onChange={handleIdentityChange} onPaste={handleFirstNamePaste} icon={User} placeholder="Jane" tabIndex={1}/>
+                            </div>
+                            <div className="col-span-2">
+                                <InputField label="M.I." name="middleInitial" value={formData.middleInitial || ''} onChange={handleIdentityChange} placeholder="A" maxLength={1} tabIndex={2} />
+                            </div>
+                            <div className="col-span-5">
+                                <InputField label="Last Name" name="lastName" value={formData.lastName || ''} onChange={handleIdentityChange} placeholder="Doe" tabIndex={3} />
+                            </div>
                         </div>
     
                         <div className="grid grid-cols-2 gap-6">
@@ -197,26 +218,12 @@ export function Stage1Profile({ formData, setFormData, handleIdentityChange, han
                                 </div>
                                 
                                 <div className="col-span-1 space-y-1.5 w-full">
-                                    <label className="text-[13px] font-semibold text-[#A0A0A0] px-1 tracking-wide">DOB</label>
-                                    <div className="custom-datepicker-wrapper w-full">
-                                        <DatePicker
-                                            selected={parsedDate}
-                                            onChange={(date: Date | null) => {
-                                                if (date) {
-                                                    const y = date.getFullYear();
-                                                    const m = String(date.getMonth() + 1).padStart(2, '0');
-                                                    const d = String(date.getDate()).padStart(2, '0');
-                                                    handleDobChange(y + '-' + m + '-' + d);
-                                                } else {
-                                                    handleDobChange('');
-                                                }
-                                            }}
-                                            showMonthDropdown
-                                            showYearDropdown
-                                            dropdownMode="select"
-                                            placeholderText="MM/DD/YY"
-                                            className="w-full bg-[#1A1A1A] border border-white/10 rounded-xl px-2 py-3 text-[13px] font-medium text-[#FDFDFD] outline-none transition-all focus:border-[#C4A470] focus:ring-1 focus:ring-[#C4A470]"
-                                            tabIndex={6}
+                                    <label className="text-[13px] font-semibold text-text-muted px-1 tracking-wide">DOB</label>
+                                    <div className="w-full">
+                                        <ModernDatePicker
+                                            date={formData.dob}
+                                            onChange={(dateStr: string) => handleDobChange(dateStr)}
+                                            className="w-full"
                                         />
                                     </div>
                                 </div>
@@ -224,7 +231,7 @@ export function Stage1Profile({ formData, setFormData, handleIdentityChange, han
 
                             <div className="grid grid-cols-2 gap-4">
                                 <div className="col-span-1 space-y-1.5 w-full">
-                                    <label className="text-[13px] font-semibold text-[#A0A0A0] px-1 tracking-wide">Height</label>
+                                    <label className="text-[13px] font-semibold text-text-muted px-1 tracking-wide">Height</label>
                                     <CustomSelect name="height" value={formData.height || ''} onChange={handleIdentityChange} options={HEIGHT_OPTIONS} placeholder="5'11&quot;" tabIndex={7} />
                                 </div>
                                 <div className="col-span-1">
@@ -234,7 +241,7 @@ export function Stage1Profile({ formData, setFormData, handleIdentityChange, han
                         </div>
 
                         <div className="space-y-3 pt-2">
-                            <label className="text-[13px] font-semibold text-[#A0A0A0] px-1 tracking-wide">Pre-existing Medical Conditions</label>
+                            <label className="text-[13px] font-semibold text-text-muted px-1 tracking-wide">Pre-existing Medical Conditions</label>
                             <div className="flex flex-wrap gap-2 items-center">
                                 {[...(productConfig?.medicalConditions || []), ...(formData.medicalConditions || []), ...MEDICAL_CONDITIONS].reduce((acc: string[], cur: string) => acc.includes(cur) ? acc : [...acc, cur], [] as string[]).map((cond: string) => {
                                     const isSelected = formData.medicalConditions?.includes(cond);
@@ -247,7 +254,7 @@ export function Stage1Profile({ formData, setFormData, handleIdentityChange, han
                                                 const newSelection = isSelected ? current.filter((c: string) => c !== cond) : [...current, cond];
                                                 handleIdentityChange({ target: { name: 'medicalConditions', value: newSelection } } as any);
                                             }}
-                                            className={`px-4 py-2 font-medium tracking-wide border transition-all ${isSelected ? 'bg-[#C4A470] text-black border-[#C4A470] shadow-sm rounded-full text-[13px]' : 'bg-[#1A1A1A] text-[#FDFDFD] border-white/20 hover:border-[#C4A470] hover:text-[#C4A470] hover:bg-[#C4A470]/10 rounded-full text-[13px] shadow-sm'}`}
+                                            className={`px-4 py-2 font-medium tracking-wide border transition-all ${isSelected ? 'bg-accent-primary text-black border-accent-primary shadow-sm rounded-full text-[13px]' : 'bg-surface-main text-text-primary border-white/20 hover:border-accent-primary hover:text-accent-primary hover:bg-accent-primary/10 rounded-full text-[13px] shadow-sm'}`}
                                         >
                                             {cond}
                                         </button>
@@ -255,7 +262,7 @@ export function Stage1Profile({ formData, setFormData, handleIdentityChange, han
                                 })}
                                 
                                 {addingCondition ? (
-                                    <div className="flex gap-2 items-center bg-[#1A1A1A] border border-white/10 rounded-full px-2 py-1">
+                                    <div className="flex gap-2 items-center bg-surface-main border border-border-strong rounded-full px-2 py-1">
                                         <input 
                                             type="text" 
                                             value={newCondition} 
@@ -289,7 +296,7 @@ export function Stage1Profile({ formData, setFormData, handleIdentityChange, han
                                                 setNewCondition('');
                                                 setAddingCondition(false);
                                             }} 
-                                            className="text-[#C4A470] hover:text-white text-sm font-bold px-2 border-l border-white/10"
+                                            className="text-accent-primary hover:text-white text-sm font-bold px-2 border-l border-border-strong"
                                         >
                                             ADD
                                         </button>
@@ -298,7 +305,7 @@ export function Stage1Profile({ formData, setFormData, handleIdentityChange, han
                                     <button
                                         type="button"
                                         onClick={() => setAddingCondition(true)}
-                                        className="w-8 h-8 rounded-full flex items-center justify-center bg-[#1A1A1A] text-[#A0A0A0] border border-white/10 hover:border-[#C4A470]/50 hover:text-white transition-all text-lg font-light leading-none"
+                                        className="w-8 h-8 rounded-full flex items-center justify-center bg-surface-main text-text-muted border border-border-strong hover:border-accent-primary/50 hover:text-white transition-all text-lg font-light leading-none"
                                         title="Add Custom Condition"
                                     >
                                         +
@@ -306,23 +313,23 @@ export function Stage1Profile({ formData, setFormData, handleIdentityChange, han
                                 )}
 
                                 {(!productConfig?.medicalConditions || productConfig.medicalConditions.length === 0) && (!formData.medicalConditions || formData.medicalConditions.length === 0) && !addingCondition && (
-                                    <span className="text-[#A0A0A0]/50 text-sm italic bg-white/5 px-4 py-2 rounded-full">No system conditions</span>
+                                    <span className="text-text-muted/50 text-sm italic bg-surface-hover px-4 py-2 rounded-full">No system conditions</span>
                                 )}
                             </div>
                         </div>
                     </div>
 
                     {customerNotes && customerNotes.length > 0 && (
-                        <div className="bg-[#141414] border border-white/5 rounded-xl p-8 shadow-2xl h-fit max-h-[400px] overflow-y-auto custom-scrollbar">
-                            <h2 className="text-[#FDFDFD] font-medium text-xl mb-6">Profile History Notes</h2>
+                        <div className="bg-surface-alt border border-border-subtle rounded-xl p-8 shadow-2xl h-fit max-h-[400px] overflow-y-auto custom-scrollbar">
+                            <h2 className="text-text-primary font-medium text-xl mb-6">Profile History Notes</h2>
                             <div className="space-y-4">
                                 {customerNotes.map((note: any, i: number) => (
-                                    <div key={i} className="bg-[#1A1A1A] p-5 rounded-xl border border-white/5 text-sm">
+                                    <div key={i} className="bg-surface-main p-5 rounded-xl border border-border-subtle text-sm">
                                         <div className="flex justify-between items-center mb-3">
-                                            <span className="text-[#C4A470] font-semibold">{note.agentName || 'Unknown Agent'}</span>
-                                            <span className="text-[#A0A0A0] text-sm font-mono">{new Date(note.timestamp).toLocaleString()}</span>
+                                            <span className="text-accent-primary font-semibold">{note.agentName || 'Unknown Agent'}</span>
+                                            <span className="text-text-muted text-sm font-mono">{new Date(note.timestamp).toLocaleString()}</span>
                                         </div>
-                                        <div className="text-[#FDFDFD] leading-relaxed whitespace-pre-wrap">{note.text}</div>
+                                        <div className="text-text-primary leading-relaxed whitespace-pre-wrap">{note.text}</div>
                                     </div>
                                 ))}
                             </div>
@@ -330,10 +337,10 @@ export function Stage1Profile({ formData, setFormData, handleIdentityChange, han
                     )}
                 </div>
 
-                <div className="bg-[#141414] border border-white/5 rounded-xl p-8 shadow-2xl flex flex-col h-fit">
+                <div className="bg-surface-alt border border-border-subtle rounded-xl p-8 shadow-2xl flex flex-col h-fit">
                     <div className="flex items-center justify-between mb-8">
-                        <h2 className="text-[#FDFDFD] font-medium text-2xl tracking-wide flex items-center gap-3">
-                           <span className="text-[#C4A470]">02.</span> Shipping Destination
+                        <h2 className="text-text-primary font-medium text-2xl tracking-wide flex items-center gap-3">
+                           <span className="text-accent-primary">02.</span> Shipping Destination
                         </h2>
                         {addressValidationStatus === 'validating' && (
                             <span className="px-3 py-1 bg-blue-500/10 text-blue-400 rounded-full text-sm font-bold uppercase tracking-wide animate-pulse flex items-center gap-1">
@@ -375,19 +382,19 @@ export function Stage1Profile({ formData, setFormData, handleIdentityChange, han
                                 id="sameAsShipping"
                                 checked={useShippingForBilling !== false} 
                                 onChange={(e) => setUseShippingForBilling(e.target.checked)} 
-                                className="w-5 h-5 bg-[#1A1A1A] border-white/10 rounded accent-[#C4A470] cursor-pointer"
+                                className="w-5 h-5 bg-surface-main border-border-strong rounded accent-[#C4A470] cursor-pointer"
                             />
-                            <label htmlFor="sameAsShipping" className="text-sm font-semibold text-[#A0A0A0] select-none cursor-pointer">
+                            <label htmlFor="sameAsShipping" className="text-sm font-semibold text-text-muted select-none cursor-pointer">
                                 Billing Address is same as Shipping
                             </label>
                         </div>
 
                         {useShippingForBilling === false && (
-                            <div className="space-y-6 pt-6 mt-2 border-t border-white/5 animate-in slide-in-from-top-4">
-                                <h3 className="text-[#FDFDFD] font-medium text-lg tracking-wide">Billing Address</h3>
+                            <div className="space-y-6 pt-6 mt-2 border-t border-border-subtle animate-in slide-in-from-top-4">
+                                <h3 className="text-text-primary font-medium text-lg tracking-wide">Billing Address</h3>
                                 <div className="flex gap-4">
                                     <div className="w-[70%]">
-                                        <InputField label="Street Address" name="billingAddress" value={formData.billingAddress || ''} onChange={handleIdentityChange} placeholder="123 Main St" />
+                                        <InputField label="Street Address" name="billingAddress" value={formData.billingAddress || ''} onChange={handleSmartAddressInput} placeholder="123 Main St" />
                                     </div>
                                     <div className="w-[30%]">
                                         <InputField label="Apt / Suite" name="billingApt" value={formData.billingApt || ''} onChange={handleIdentityChange} placeholder="Apt 4B" />
@@ -402,18 +409,18 @@ export function Stage1Profile({ formData, setFormData, handleIdentityChange, han
                                         <InputField label="State" name="billingState" value={formData.billingState || ''} onChange={(e: any) => handleStateChange(e, true)} placeholder="NY" />
                                     </div>
                                     <div className="col-span-1">
-                                        <InputField label="ZIP Code" name="billingZip" value={formData.billingZip || ''} onChange={handleIdentityChange} placeholder="10001" />
+                                        <InputField label="ZIP Code" name="billingZip" value={formData.billingZip || ''} onChange={handleZipChange} placeholder="10001" />
                                     </div>
                                 </div>
                             </div>
                         )}
                     </div>
 
-                    <div className="pt-8 mt-8 border-t border-white/5 flex gap-4">
+                    <div className="pt-8 mt-8 border-t border-border-subtle flex gap-4">
                         <button
                             type="button"
                             onClick={onCallback}
-                            className="w-1/3 py-4 rounded-xl border border-white/10 text-[#A0A0A0] font-semibold uppercase tracking-wider text-sm hover:text-white hover:border-[#C4A470]/50 hover:bg-[#C4A470]/5 transition-all"
+                            className="w-1/3 py-4 rounded-xl border border-border-strong text-text-muted font-semibold uppercase tracking-wider text-sm hover:text-white hover:border-accent-primary/50 hover:bg-accent-primary/5 transition-all"
                             tabIndex={14}
                         >
                             Save Callback
@@ -422,7 +429,7 @@ export function Stage1Profile({ formData, setFormData, handleIdentityChange, han
                             type="button"
                             onClick={onNext} 
                             disabled={!isValid}
-                            className="w-2/3 py-4 bg-gradient-to-r from-[#E6C280] to-[#C4A470] text-black font-bold text-lg rounded-xl hover:shadow-sm active:scale-[0.98] transition-all disabled:opacity-50 disabled:grayscale disabled:cursor-not-allowed uppercase tracking-wider"
+                            className="w-2/3 py-4 bg-gradient-to-r from-amber-400 to-[#C4A470] text-black font-bold text-lg rounded-xl hover:shadow-sm active:scale-[0.98] transition-all disabled:opacity-50 disabled:grayscale disabled:cursor-not-allowed uppercase tracking-wider"
                             tabIndex={15}
                         >
                             Proceed

@@ -166,7 +166,6 @@ export default function EnrollmentForm({
                   useShippingForBilling={logic.useShippingForBilling}
                   setUseShippingForBilling={logic.setUseShippingForBilling}
                   onPasteParse={logic.handlePasteParse}
-                  handleCustomFieldChange={logic.handleCustomFieldChange}
                 />
               </div>
 

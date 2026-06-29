@@ -3,6 +3,7 @@ import { Sale } from '../../../types';
 import { sfx } from '../../../lib/soundService';
 import { useCRM } from '../../../hooks/useCRM';
 import { useSystem } from '../../../hooks/useSystem';
+import { useAuth } from '../../../hooks/useAuth';
 import { useLedgerData, useLedgerLayout } from './hooks';
 import { useImportLogic } from './useImportLogic';
 
@@ -11,6 +12,7 @@ const ITEMS_PER_PAGE = 1000;
 export const useSalesLedgerUI = (sales: Sale[], onImport?: (data: any) => Promise<number>, onBulkAction?: (ids: string[], action: string, payload?: any) => void) => {
     const { bulkUpdateSales, bulkDeleteSales } = useCRM();
     const { setToast } = useSystem();
+    const { currentUser } = useAuth();
     
     const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
     const [showColumnConfig, setShowConfig] = useState(false);
@@ -64,7 +66,7 @@ export const useSalesLedgerUI = (sales: Sale[], onImport?: (data: any) => Promis
         if (command === 'copy-sheets') {
             const selectedSales = processedSales.filter(s => selectedIds.has(s.id));
             const { generateSheetTsv } = await import('./sheetExport');
-            const tsv = generateSheetTsv(selectedSales);
+            const tsv = generateSheetTsv(selectedSales, currentUser?.level || 0);
             
             try {
                 await navigator.clipboard.writeText(tsv);

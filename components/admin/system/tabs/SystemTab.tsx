@@ -10,8 +10,6 @@ import { sfx } from '../../../../lib/soundService';
 import { Button } from '../../../ui/Base';
 import { nexusGateway } from '../../../../nexus/adapters/DataGateway';
 
-import { LoadTester } from '../LoadTester';
-
 interface SystemTabProps {
     config: SystemConfig;
     onChange: (field: keyof SystemConfig, value: any) => void;
@@ -40,8 +38,8 @@ export const SystemTab: React.FC<SystemTabProps> = ({ config, onChange }) => {
             <motion.div variants={itemVariants}>
                 <SectionHeader icon={ShieldAlert} title="Core Infrastructure" sub="Critical System Controls" color="text-status-error" />
                 
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-5 mt-6">
-                    <div className="lg:col-span-2 space-y-5 p-6 bg-surface-main/50 rounded-xl border border-border-subtle shadow-inner relative overflow-hidden group">
+                <div className="flex flex-col gap-5 mt-6">
+                    <div className="space-y-5 p-6 bg-surface-main/50 rounded-xl border border-border-subtle shadow-inner relative overflow-hidden group">
                         <div className="absolute top-0 right-0 p-8 opacity-[0.02] pointer-events-none group-hover:scale-110 group-hover:rotate-12 transition-all duration-1000 text-status-error">
                             <ShieldAlert size={140} />
                         </div>
@@ -80,12 +78,6 @@ export const SystemTab: React.FC<SystemTabProps> = ({ config, onChange }) => {
                                     description="Disable particle effects and heavy animations."
                                 />
                             </div>
-                        </div>
-                    </div>
-
-                    <div className="lg:col-span-1 flex flex-col">
-                        <div className="flex-1 bg-surface-main/50 rounded-xl border border-border-subtle p-5 shadow-inner">
-                            <LoadTester />
                         </div>
                     </div>
                 </div>
@@ -128,54 +120,6 @@ export const SystemTab: React.FC<SystemTabProps> = ({ config, onChange }) => {
                             <Trash2 size={16} className="group-hover:rotate-12 transition-transform duration-300"/>
                             Execute
                         </button>
-                    </div>
-                </div>
-            </motion.div>
-
-            <motion.div variants={itemVariants} className="pt-6">
-                <div className="p-6 sm:p-8 bg-surface-alt border border-border-subtle rounded-xl space-y-6 shadow-inner">
-                    <SectionHeader 
-                        icon={RefreshCw} 
-                        title="Database Control" 
-                        sub="Low-level nexus database operations" 
-                        color="text-accent-secondary" 
-                    />
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mt-6">
-                        <div className="p-5 bg-surface-main/50 border border-border-subtle rounded-xl flex flex-col justify-between hover:border-border-strong transition-colors group">
-                            <div className="mb-6">
-                                <h4 className="text-sm font-bold text-text-primary flex items-center gap-2">
-                                    <RefreshCw size={16} className="text-accent-secondary" /> Cloud Sync Reset
-                                </h4>
-                                <p className="text-xs font-medium text-text-muted mt-2 leading-relaxed">Purge local cache and re-sync all operatives directly from the remote Firestore mesh.</p>
-                            </div>
-                            <Button 
-                                variant="secondary" 
-                                className="w-full h-12 gap-2 text-sm font-bold tracking-wider uppercase bg-surface-main hover:bg-surface-alt border-border-strong text-text-primary"
-                                onClick={() => window.location.reload()}
-                            >
-                                <RefreshCw size={16} className="group-hover:animate-spin" /> Soft Reboot
-                            </Button>
-                        </div>
-                        <div className="p-5 bg-surface-main/50 border border-border-subtle rounded-xl flex flex-col justify-between hover:border-red-900/30 hover:bg-red-900/10 transition-colors group">
-                            <div className="mb-6">
-                                <h4 className="text-sm font-bold text-text-primary flex items-center gap-2">
-                                    <Database size={16} className="text-status-error" /> Infrastructure Seeding
-                                </h4>
-                                <p className="text-xs font-medium text-text-muted mt-2 leading-relaxed">Populate Firestore with default server and operative nodes. Overwrites existing core architecture.</p>
-                            </div>
-                            <Button 
-                                variant="secondary" 
-                                className="w-full h-12 gap-2 text-sm font-bold tracking-wider uppercase text-status-error bg-surface-main border-border-strong hover:bg-red-500/20 hover:border-red-500/30"
-                                onClick={async () => {
-                                // if(confirm("Confirm destructive seed? This will overwrite core server configs.")) {
-                                        await nexusGateway.seed();
-                                        setToast({ title: "Alert", message: "Nexus Seed Successful. Please refresh.", type: "warning" });
-                                // }
-                                }}
-                            >
-                                <Database size={16} className="group-hover:scale-110 transition-transform" /> Hard Seed Cloud
-                            </Button>
-                        </div>
                     </div>
                 </div>
             </motion.div>

@@ -72,7 +72,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
                     const user = JSON.parse(stored);
                     const isValid = await nexusGateway.verifySession(user.id, user.role, user.level, sig);
                     if (!isValid) {
-                        console.error("[Security] Session Signature Invalid. Purging session.");
+                        console.warn("[Security] Session Signature Invalid or Expired. Purging session.");
                         localStorage.removeItem(SESSION_STORAGE_KEY);
                         localStorage.removeItem(SESSION_SIG_KEY);
                         localStorage.removeItem(SESSION_START_KEY);

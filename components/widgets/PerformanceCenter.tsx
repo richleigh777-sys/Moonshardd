@@ -76,8 +76,9 @@ export const PerformanceCenter: React.FC<PerformanceCenterProps> = ({ sales, cur
         const totalRevenue = approved.reduce((acc, curr) => acc + (Number(curr.amount) || 0), 0);
         
         const manifest = approved.map(sale => {
+            const agent = users.find(u => u.id === sale.agentId);
             const dailyHours = getDailyHours(sale.agentId, sale.timestamp, attendance);
-            const payout = calculateSalePayout(sale, dailyHours, systemConfig, users.find(u => u.id === sale.agentId)?.commissionRate);
+            const payout = calculateSalePayout(sale, dailyHours, systemConfig, agent?.commissionRate, agent?.shippingDeductionOverride);
             return {
                 sale,
                 payout,

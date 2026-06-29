@@ -47,7 +47,7 @@ export const PayslipModal: React.FC<PayslipModalProps> = ({ cycle, onClose, curr
 
     return (
         <Modal isOpen={!!cycle} onClose={onClose} title="Statement of Earnings" size="2xl">
-            <div className="flex flex-col h-full -m-8 bg-[#09090b] text-white">
+            <div className="flex flex-col h-full -m-8 bg-surface-main text-text-primary">
                 
                 {/* 1. DOCUMENT HEADER */}
                 <div className="p-8 border-b border-border-subtle bg-surface-alt/20 relative overflow-hidden">
@@ -57,11 +57,11 @@ export const PayslipModal: React.FC<PayslipModalProps> = ({ cycle, onClose, curr
                     
                     <div className="flex justify-between items-start relative z-10">
                         <div className="flex gap-5">
-                            <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white shadow-xl shadow-indigo-500/20 border border-border-subtle">
+                            <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-text-primary shadow-xl shadow-indigo-500/20 border border-border-subtle">
                                 <Wallet size={32} />
                             </div>
                             <div>
-                                <h2 className="text-2xl font-[700] text-white  tracking-tight flex items-center gap-3">
+                                <h2 className="text-2xl font-[700] text-text-primary  tracking-tight flex items-center gap-3">
                                     Settlement
                                     <span className={`px-2.5 py-0.5 rounded text-xs font-[700]  tracking-widest border flex items-center gap-1.5 ${statusConfig.bg} ${statusConfig.color} ${statusConfig.border}`}>
                                         <StatusIcon size={16} strokeWidth={3} /> {cycle.status}
@@ -77,7 +77,7 @@ export const PayslipModal: React.FC<PayslipModalProps> = ({ cycle, onClose, curr
                         
                         <div className="text-right">
                             <p className="text-xs font-[700] text-text-muted  tracking-widest mb-1">Disbursement Date</p>
-                            <p className="text-xl font-mono font-bold text-white">{cycle.payDate.toLocaleDateString()}</p>
+                            <p className="text-xl font-mono font-bold text-text-primary">{cycle.payDate.toLocaleDateString()}</p>
                         </div>
                     </div>
                 </div>
@@ -90,7 +90,7 @@ export const PayslipModal: React.FC<PayslipModalProps> = ({ cycle, onClose, curr
                         <div className="flex justify-between items-start relative z-10">
                             <div>
                                 <p className="text-xs font-[700] text-status-success  tracking-[0.2em] mb-1">Net Payout Authorization</p>
-                                <h3 className="text-4xl md:text-5xl font-[700] text-white num-font tracking-tighter drop-shadow-md">
+                                <h3 className="text-4xl md:text-5xl font-[700] text-text-primary num-font tracking-tighter drop-shadow-md">
                                     ${cycle.netPayout.toLocaleString(undefined, {minimumFractionDigits: 2})}
                                 </h3>
                             </div>
@@ -107,7 +107,7 @@ export const PayslipModal: React.FC<PayslipModalProps> = ({ cycle, onClose, curr
 
                     {/* Account Details */}
                     <div className="rounded-3xl bg-surface-alt/30 border border-border-subtle p-6 flex flex-col justify-between relative overflow-hidden">
-                        <div className="absolute -right-4 -top-4 text-white/5 pointer-events-none">
+                        <div className="absolute -right-4 -top-4 text-text-primary/5 pointer-events-none">
                             <Building size={80} />
                         </div>
                         <div className="relative z-10">
@@ -115,11 +115,11 @@ export const PayslipModal: React.FC<PayslipModalProps> = ({ cycle, onClose, curr
                             <div className="space-y-3">
                                 <div>
                                     <p className="text-xs text-text-muted ">Bank Name</p>
-                                    <p className="text-sm font-bold text-white truncate">{currentUser.bankName || 'Not Configured'}</p>
+                                    <p className="text-sm font-bold text-text-primary truncate">{currentUser.bankName || 'Not Configured'}</p>
                                 </div>
                                 <div>
                                     <p className="text-xs text-text-muted ">Account Number</p>
-                                    <div className="flex items-center gap-2 text-sm font-mono font-bold text-white">
+                                    <div className="flex items-center gap-2 text-sm font-mono font-bold text-text-primary">
                                         <CreditCard size={16} className="text-accent-secondary"/>
                                         <span>•••• {currentUser.bankAccount ? currentUser.bankAccount.slice(-4) : '0000'}</span>
                                     </div>
@@ -133,7 +133,7 @@ export const PayslipModal: React.FC<PayslipModalProps> = ({ cycle, onClose, curr
                 <div className="grid grid-cols-4 divide-x divide-white/5 border-b border-border-subtle bg-surface-main/50">
                     <div className="p-4 flex flex-col items-center justify-center text-center group hover:bg-surface-highlight transition-colors">
                         <span className="text-xs font-[700] text-text-muted  tracking-widest mb-1">Gross Volume</span>
-                        <span className="text-lg font-bold text-text-primary group-hover:text-white transition-colors">${cycle.volume.toLocaleString()}</span>
+                        <span className="text-lg font-bold text-text-primary group-hover:text-text-primary transition-colors">${cycle.volume.toLocaleString()}</span>
                     </div>
                     <div className="p-4 flex flex-col items-center justify-center text-center group hover:bg-surface-highlight transition-colors">
                         <span className="text-xs font-[700] text-text-muted  tracking-widest mb-1">Base Comm.</span>
@@ -152,7 +152,7 @@ export const PayslipModal: React.FC<PayslipModalProps> = ({ cycle, onClose, curr
                 {/* 4. LINE ITEMS */}
                 <div className="flex-1 overflow-y-auto custom-scrollbar bg-surface-alt/10">
                     <table className="w-full text-left border-collapse">
-                        <thead className="sticky top-0 bg-[#09090b] z-10 text-xs font-[700]  text-text-muted tracking-widest border-b border-border-subtle shadow-sm">
+                        <thead className="sticky top-0 bg-surface-main z-10 text-xs font-[700]  text-text-muted tracking-widest border-b border-border-subtle shadow-sm">
                             <tr>
                                 <th className="p-4 pl-8 w-32">Date</th>
                                 <th className="p-4">Customer / Product</th>
@@ -169,7 +169,7 @@ export const PayslipModal: React.FC<PayslipModalProps> = ({ cycle, onClose, curr
                                         {new Date(item.sale.timestamp).toLocaleDateString()}
                                     </td>
                                     <td className="p-4">
-                                        <div className="font-bold text-white mb-0.5">{item.sale.customer}</div>
+                                        <div className="font-bold text-text-primary mb-0.5">{item.sale.customer}</div>
                                         <div className="text-xs text-text-muted">{item.sale.product}</div>
                                     </td>
                                     <td className="p-4 text-right font-mono text-blue-400 group-hover:text-blue-300">
@@ -191,7 +191,7 @@ export const PayslipModal: React.FC<PayslipModalProps> = ({ cycle, onClose, curr
                 </div>
 
                 {/* 5. FOOTER ACTIONS */}
-                <div className="p-6 border-t border-border-subtle bg-[#09090b] flex justify-between items-center shrink-0">
+                <div className="p-6 border-t border-border-subtle bg-surface-main flex justify-between items-center shrink-0">
                     <p className="text-xs font-mono text-text-muted/40  tracking-widest">
                         Generated by Nexus Financial Engine • Secure Protocol
                     </p>

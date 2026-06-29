@@ -284,6 +284,25 @@ export const EditUserModal: React.FC<EditUserModalProps> = ({ isOpen, onClose, u
                                                 />
                                             </div>
                                         </div>
+
+                                        {isSuperAdmin && (
+                                            <div className="space-y-2">
+                                                <label className="text-sm font-medium text-text-muted tracking-wide ml-1 flex justify-between">
+                                                    <span>Shipping Deduction Override</span>
+                                                    <span className="text-status-warning">${formData.shippingDeductionOverride !== undefined ? formData.shippingDeductionOverride : 'Auto'} Deduction</span>
+                                                </label>
+                                                <div className="relative group">
+                                                    <Wallet size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-status-warning" />
+                                                    <input autoComplete="off" data-lpignore="true" data-prevent-autofill="true" spellCheck={false} 
+                                                        type="number" 
+                                                        value={formData.shippingDeductionOverride !== undefined ? formData.shippingDeductionOverride : ''} 
+                                                        placeholder="Leave empty for global default"
+                                                        onChange={e => setFormData({...formData, shippingDeductionOverride: e.target.value === '' ? undefined : parseInt(e.target.value)})}
+                                                        className="w-full bg-surface-alt border border-border-subtle rounded-xl py-2.5 pl-10 pr-4 text-sm font-medium num-font outline-none focus:border-amber-500 transition-all"
+                                                    />
+                                                </div>
+                                            </div>
+                                        )}
                                         
                                         <div className="grid grid-cols-2 gap-4">
                                             <div className="space-y-2">

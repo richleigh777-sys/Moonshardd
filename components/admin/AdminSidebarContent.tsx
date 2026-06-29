@@ -1,6 +1,6 @@
 import React from 'react';
 import { 
-    LayoutDashboard, Database, Contact, Zap, 
+    LayoutDashboard, Database, Contact, Zap, Activity, 
     PlusCircle, List, Banknote, RefreshCw, 
     Trophy, BarChart3, MessageSquare, FileText, 
     Package, Settings, Phone, ShieldCheck, Users, Server
@@ -37,6 +37,11 @@ export const AdminSidebarContent: React.FC<AdminSidebarContentProps> = ({ isAllo
             {isAllowed('payroll') && <TabTrigger value="payroll" icon={<Banknote size={16}/>}>Team Earnings</TabTrigger>}
             {isAllowed('retention') && <TabTrigger value="retention" icon={<RefreshCw size={16}/>}>Save a Sale</TabTrigger>}
             {isAllowed('roster') && <TabTrigger value="roster" icon={<Contact size={16}/>}>Manage Team</TabTrigger>}
+        </TabList>
+        
+        <SidebarHeader>Automation</SidebarHeader>
+        <TabList className="flex flex-col gap-1 border-none mb-3">
+            {isAllowed('campaigns') && <TabTrigger value="campaigns" icon={<Activity size={16}/>}>Drip Campaigns</TabTrigger>}
         </TabList>
         
         <SidebarHeader>How We Are Doing</SidebarHeader>

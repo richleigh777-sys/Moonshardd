@@ -83,7 +83,7 @@ export const usePayoutHistory = (
 
                 const enrichedSales: EnrichedSale[] = cycleSales.map(sale => {
                     const hours = getDailyHours(user.id, sale.timestamp, attendance);
-                    const payout = calculateSalePayout(sale, hours, config, user.commissionRate);
+                    const payout = calculateSalePayout(sale, hours, config, user.commissionRate, user.shippingDeductionOverride);
                     
                     vol += Number(sale.amount);
                     comm += payout.commission;

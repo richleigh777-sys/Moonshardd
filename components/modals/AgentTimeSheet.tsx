@@ -93,7 +93,7 @@ export const AgentTimeSheet: React.FC<Props> = ({ isOpen, onClose, currentUser, 
             let dailySpiffs = 0;
 
             approvedSales.forEach(sale => {
-                const payout = calculateSalePayout(sale, hours, systemConfig, currentUser.commissionRate);
+                const payout = calculateSalePayout(sale, hours, systemConfig, currentUser.commissionRate, currentUser.shippingDeductionOverride);
                 dailyRevenue += Number(sale.amount);
                 dailyEarnings += payout.net;
                 dailySpiffs += payout.spiff;

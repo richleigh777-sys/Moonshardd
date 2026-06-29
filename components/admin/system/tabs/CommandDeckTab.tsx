@@ -599,27 +599,6 @@ export const CommandDeckTab = () => {
                                       </div>
                                   </div>
 
-                                  <div className="flex items-center justify-between p-5 bg-surface-main/ border border-border-subtle rounded-xl text-left mt-6">
-                                      <div className="space-y-1.5">
-                                          <label className="text-sm font-bold uppercase text-text-primary tracking-wide block">Auto Seed Lead Injection</label>
-                                          <span className="text-sm text-text-muted block leading-relaxed">Directly populate this team node with 250 verified leads on boot.</span>
-                                      </div>
-                                      <button
-                                          type="button"
-                                          onClick={() => {
-                                              sfx.playClick();
-                                              setDeployingNodeData(prev => ({ ...prev, autoSeedLeads: !prev.autoSeedLeads }));
-                                          }}
-                                          className={`w-14 h-8 rounded-full p-1 transition-colors duration-300 focus:outline-none flex relative items-center cursor-pointer shadow-inner ${
-                                              deployingNodeData.autoSeedLeads ? 'bg-[#3B82F6] justify-end' : 'bg-surface-main border border-border-strong justify-start'
-                                          }`}
-                                      >
-                                          <span className={`w-6 h-6 rounded-full shadow-md transform transition-transform duration-300 ${
-                                              deployingNodeData.autoSeedLeads ? 'bg-white' : 'bg-[#A1A1AA]'
-                                          }`} />
-                                      </button>
-                                  </div>
-
                                   <div className="p-4 bg-surface-main/50 border border-border-subtle rounded-xl flex items-start gap-4 text-left mt-4">
                                       <AlertTriangle size={16} className="text-[#F59E0B] shrink-0 mt-0.5" />
                                       <p className="text-sm leading-relaxed text-text-muted">

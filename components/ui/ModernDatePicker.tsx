@@ -127,9 +127,9 @@ export function ModernDatePicker({ date, onChange, className = '', calculatedYea
       </button>
 
       {isOpen && (
-        <div className="absolute z-50 mt-2 p-4 bg-surface-main border border-border-subtle rounded-xl shadow-xl w-72 animate-in fade-in slide-in-from-top-2 duration-200">
+        <div className="absolute z-[100] mt-2 p-4 bg-surface-main/60 backdrop-blur-xl border border-white/10 dark:border-white/5 rounded-2xl shadow-2xl ring-1 ring-black/5 w-72 animate-in fade-in zoom-in-95 slide-in-from-top-2 duration-200">
           <div className="flex items-center justify-between mb-4">
-            <button onClick={prevMonth} type="button" className="p-1 rounded-lg hover:bg-surface-alt text-text-muted hover:text-text-primary transition-colors">
+            <button onClick={prevMonth} type="button" className="p-1 rounded-lg hover:bg-white/10 text-text-muted hover:text-text-primary transition-colors">
               <ChevronLeft size={20} />
             </button>
             
@@ -137,14 +137,14 @@ export function ModernDatePicker({ date, onChange, className = '', calculatedYea
               <button 
                 type="button"
                 onClick={() => setShowMonthDropdown(!showMonthDropdown)}
-                className="font-bold text-text-primary flex items-center gap-1 hover:bg-surface-alt px-2 py-1 rounded-lg transition-colors"
+                className="font-bold text-text-primary flex items-center gap-1 hover:bg-white/10 px-2 py-1 rounded-lg transition-colors"
               >
                 {MONTHS[currentMonth]} {currentYear}
                 <ChevronDown size={14} className="text-text-muted" />
               </button>
               
               {showMonthDropdown && (
-                <div className="absolute top-10 left-1/2 -translate-x-1/2 bg-surface-main border border-border-subtle rounded-xl shadow-lg w-40 p-2 grid grid-cols-2 gap-1 z-50">
+                <div className="absolute top-10 left-1/2 -translate-x-1/2 bg-surface-main/70 backdrop-blur-2xl border border-white/10 dark:border-white/5 rounded-2xl shadow-2xl ring-1 ring-black/5 w-44 p-2 grid grid-cols-2 gap-1 z-[110]">
                   {MONTHS.map((month, idx) => (
                     <button
                       key={month}
@@ -153,7 +153,7 @@ export function ModernDatePicker({ date, onChange, className = '', calculatedYea
                         setCurrentMonth(idx);
                         setShowMonthDropdown(false);
                       }}
-                      className={`text-xs p-2 rounded-lg text-left ${currentMonth === idx ? 'bg-indigo-500/20 text-indigo-400 font-bold' : 'hover:bg-surface-alt text-text-secondary'}`}
+                      className={`text-xs p-2 rounded-lg text-left transition-colors ${currentMonth === idx ? 'bg-indigo-500/20 text-indigo-400 font-bold' : 'hover:bg-white/10 text-text-secondary'}`}
                     >
                       {month}
                     </button>
@@ -162,14 +162,14 @@ export function ModernDatePicker({ date, onChange, className = '', calculatedYea
               )}
             </div>
 
-            <button onClick={nextMonth} type="button" className="p-1 rounded-lg hover:bg-surface-alt text-text-muted hover:text-text-primary transition-colors">
+            <button onClick={nextMonth} type="button" className="p-1 rounded-lg hover:bg-white/10 text-text-muted hover:text-text-primary transition-colors">
               <ChevronRight size={20} />
             </button>
           </div>
 
           <div className="grid grid-cols-7 gap-1 mb-2">
             {['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'].map(day => (
-              <div key={day} className="text-center text-[10px] font-bold text-text-muted uppercase">
+              <div key={day} className="text-center text-[10px] font-bold text-text-muted uppercase tracking-wider">
                 {day}
               </div>
             ))}
@@ -192,10 +192,10 @@ export function ModernDatePicker({ date, onChange, className = '', calculatedYea
                   onClick={() => handleDayClick(day)}
                   className={`h-8 w-8 rounded-full flex items-center justify-center text-sm font-medium transition-all
                     ${isSelected 
-                      ? 'bg-indigo-500 text-white font-bold shadow-md shadow-indigo-500/20' 
+                      ? 'bg-indigo-500 text-white font-bold shadow-lg shadow-indigo-500/30 ring-2 ring-indigo-500/50 ring-offset-2 ring-offset-transparent' 
                       : isToday 
-                        ? 'border border-indigo-500/30 text-indigo-400' 
-                        : 'hover:bg-surface-alt text-text-primary'
+                        ? 'border border-indigo-500/50 text-indigo-400 bg-indigo-500/10' 
+                        : 'hover:bg-white/10 text-text-primary hover:scale-110'
                     }
                   `}
                 >

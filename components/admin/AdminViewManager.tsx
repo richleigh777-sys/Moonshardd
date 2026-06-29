@@ -1,23 +1,27 @@
+import React, { lazy, Suspense } from 'react';
 import { TabContent } from '../ui/Tabs';
-import { AdminDashboard } from './AdminDashboard';
-import EnrollmentFormV2 from '../forms/EnrollmentFormV2';
-import { PipelineBoard } from '../pipeline/PipelineBoard';
-import { RetentionView } from '../../views/RetentionView';
-import { SalesLedger } from '../widgets/SalesLedger';
-import { PayrollManager } from './dashboard/financials/PayrollManager';
-import { OperativeRoster } from './OperativeRoster';
-import { TeamLeaderboard } from '../widgets/TeamLeaderboard';
-import { MessagingLayout } from '../chat/MessagingLayout';
-import { ScriptManager } from '../../views/ScriptManager';
-import { ProductManager } from './ProductManager';
-import { AdminAnalytics } from '../widgets/AdminAnalytics';
-import { PerformanceCenter } from '../widgets/PerformanceCenter';
-import { SystemConfigPanel } from './SystemConfigPanel';
-import { GodModePanel } from '../widgets/GodModePanel';
-import { CRMAuditDashboard } from './CRMAuditDashboard';
-import { UniqueSalesPool } from './UniqueSalesPool';
 import { sfx } from '../../lib/soundService';
 import { User, Sale, Note, SystemConfig, ProductConfig, SystemHealth, ToastMessage } from '../../types';
+import { Loader2 } from 'lucide-react';
+
+// Lazy load all heavy terminal components to optimize bundle size and runtime performance
+const AdminDashboard = lazy(() => import('./AdminDashboard').then(m => ({ default: m.AdminDashboard })));
+const EnrollmentFormV2 = lazy(() => import('../forms/EnrollmentFormV2'));
+const PipelineBoard = lazy(() => import('../pipeline/PipelineBoard').then(m => ({ default: m.PipelineBoard })));
+const RetentionView = lazy(() => import('../../views/RetentionView').then(m => ({ default: m.RetentionView })));
+const SalesLedger = lazy(() => import('../widgets/SalesLedger').then(m => ({ default: m.SalesLedger })));
+const PayrollManager = lazy(() => import('./dashboard/financials/PayrollManager').then(m => ({ default: m.PayrollManager })));
+const OperativeRoster = lazy(() => import('./OperativeRoster').then(m => ({ default: m.OperativeRoster })));
+const TeamLeaderboard = lazy(() => import('../widgets/TeamLeaderboard').then(m => ({ default: m.TeamLeaderboard })));
+const MessagingLayout = lazy(() => import('../chat/MessagingLayout').then(m => ({ default: m.MessagingLayout })));
+const ScriptManager = lazy(() => import('../../views/ScriptManager').then(m => ({ default: m.ScriptManager })));
+const ProductManager = lazy(() => import('./ProductManager').then(m => ({ default: m.ProductManager })));
+const AdminAnalytics = lazy(() => import('../widgets/AdminAnalytics').then(m => ({ default: m.AdminAnalytics })));
+const PerformanceCenter = lazy(() => import('../widgets/PerformanceCenter').then(m => ({ default: m.PerformanceCenter })));
+const SystemConfigPanel = lazy(() => import('./SystemConfigPanel').then(m => ({ default: m.SystemConfigPanel })));
+const GodModePanel = lazy(() => import('../widgets/GodModePanel').then(m => ({ default: m.GodModePanel })));
+const CRMAuditDashboard = lazy(() => import('./CRMAuditDashboard').then(m => ({ default: m.CRMAuditDashboard })));
+const UniqueSalesPool = lazy(() => import('./UniqueSalesPool').then(m => ({ default: m.UniqueSalesPool })));
 
 interface AdminTerminalManagerProps {
     isAllowed: (id: string) => boolean;
@@ -45,6 +49,14 @@ interface AdminTerminalManagerProps {
     setShowTerminals: (show: boolean) => void;
 }
 
+// Global Terminal Loader
+const TerminalLoader = () => (
+    <div className="w-full h-full flex flex-col items-center justify-center text-text-muted space-y-4">
+        <Loader2 className="w-8 h-8 animate-spin text-accent-primary" />
+        <div className="text-sm font-mono uppercase tracking-widest animate-pulse">Initializing Terminal Module...</div>
+    </div>
+);
+
 export const AdminViewManager: React.FC<AdminTerminalManagerProps> = ({
     isAllowed, setView, currentUser, sales, users, notes, health, productConfig, updateProductConfig,
     systemConfig, updateSystemConfig, updateUser, addUser, importSales, sendDirective,
@@ -52,7 +64,7 @@ export const AdminViewManager: React.FC<AdminTerminalManagerProps> = ({
     onGhostLogin, showTerminals, setShowTerminals
 }) => {
     return (
-        <>
+        <Suspense fallback={<TerminalLoader />}>
             {isAllowed('overview') && (
                 <TabContent value="overview" className="w-full h-full">
                     <AdminDashboard 
@@ -105,6 +117,7 @@ export const AdminViewManager: React.FC<AdminTerminalManagerProps> = ({
             {isAllowed('standings') && <TabContent value="standings" className="w-full h-full"><TeamLeaderboard currentUserName={currentUser?.name || 'Admin'} currentUserRole="admin" currentUserTeam={currentUser.team || 'All'} currentUserLevel={currentUser.level} /></TabContent>}
             {isAllowed('comms') && <TabContent value="comms" className="w-full h-full"><MessagingLayout /></TabContent>}
             {isAllowed('scripts') && <TabContent value="scripts" className="w-full h-full"><ScriptManager /></TabContent>}
+            {isAllowed('campaigns') && <TabContent value="campaigns" className="w-full h-full"><CampaignManager /></TabContent>}
             {isAllowed('catalog') && <TabContent value="catalog" className="w-full h-full"><ProductManager configForm={productConfig} setConfigForm={updateProductConfig} onSave={updateProductConfig} /></TabContent>}
             {isAllowed('intel') && (
                 <TabContent value="intel" className="w-full h-full flex flex-col gap-4">
@@ -115,6 +128,7 @@ export const AdminViewManager: React.FC<AdminTerminalManagerProps> = ({
             {isAllowed('audit') && <TabContent value="audit" className="w-full h-full"><CRMAuditDashboard users={users} sales={sales} notes={notes} /></TabContent>}
             {isAllowed('system') && <TabContent value="system" className="w-full h-full"><SystemConfigPanel config={systemConfig} onUpdate={updateSystemConfig} sales={sales} notes={notes} /></TabContent>}
             {isAllowed('nexus') && <TabContent value="nexus" className="w-full h-full"><GodModePanel /></TabContent>}
-        </>
+        </Suspense>
     );
 };
+

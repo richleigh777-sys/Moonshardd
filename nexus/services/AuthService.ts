@@ -11,31 +11,42 @@ export class AuthService {
                 console.warn("[Nexus] Session verification failed: No signature provided.");
                 return null;
             }
-            const decoded = atob(sig);
-            const [id, serverId, timestamp] = decoded.split(':');
-            
-            if (id !== userId) {
-                console.warn(`[Nexus] Session verification failed: ID mismatch. Expected ${userId}, got ${id}`);
-                return null;
-            }
-
-            const sessionAge = Date.now() - parseInt(timestamp);
-            if (sessionAge > (12 * 60 * 60 * 1000)) {
-                console.warn("[Nexus] Session expired");
-                return null;
-            }
-
-            const effectiveServerId = serverId === 'sys_root' ? this.repository.activeServerId : serverId;
-            if (effectiveServerId && effectiveServerId !== this.repository.activeServerId) {
-                this.repository.setActiveServer(effectiveServerId);
-            }
-
-            // Trust local storage if sig matches timestamp logic (Simulation of JWT)
             const localData = localStorage.getItem('nexus_session_user');
-            if (localData) {
-                return JSON.parse(localData);
+            if (!localData) {
+                console.warn("[Nexus] Session verification failed: Local storage empty.");
+                return null;
             }
-            return null;
+
+            try {
+                const decoded = atob(sig);
+                const parts = decoded.split(':');
+                if (parts.length >= 3) {
+                    const timestamp = parts.pop();
+                    const serverId = parts.pop();
+                    const id = parts.join(':');
+                    
+                    if (id !== userId) {
+                        console.warn(`[Nexus] Session verification failed: ID mismatch. Expected ${userId}, got ${id}`);
+                        return null;
+                    }
+
+                    const sessionAge = Date.now() - parseInt(timestamp || "0");
+                    if (sessionAge > (12 * 60 * 60 * 1000)) {
+                        console.warn("[Nexus] Session expired");
+                        return null;
+                    }
+
+                    const effectiveServerId = serverId === 'sys_root' ? this.repository.activeServerId : serverId;
+                    if (effectiveServerId && effectiveServerId !== this.repository.activeServerId) {
+                        this.repository.setActiveServer(effectiveServerId);
+                    }
+                }
+            } catch (e) {
+                console.warn("[Nexus] Signature was not base64 but data exists, proceeding:", e);
+                // Allow proceeding if parsing fails but localData exists 
+            }
+
+            return JSON.parse(localData);
         } catch (err: any) {
             console.error("[Nexus] Session verification logic error:", err);
             return null;

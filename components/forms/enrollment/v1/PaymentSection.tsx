@@ -81,7 +81,7 @@ export const PaymentSection: React.FC<PaymentSectionProps> = ({
             />
             <input
               type="text"
-              name="cardNumber"
+              name="rnd_cc_number"
               autoComplete="none" data-lpignore="true" data-1p-ignore="true" data-form-type="other"
               value={financials.cardNumber}
               onChange={(e) => {

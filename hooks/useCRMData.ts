@@ -119,27 +119,52 @@ export const useCRMData = (currentUser: User | null) => {
     useEffect(() => {
         if (!currentUser) return;
 
+                const level = currentUser.level || 0;
+        const isSuperAdmin = level >= 10;
+        const isManager = level >= 5 && level < 10;
+        const isAgent = level < 5;
+
+        const filterData = <T>(data: T[], agentIdField: keyof T, teamField?: keyof T): T[] => {
+            if (isSuperAdmin) return data;
+            if (isManager && teamField) {
+                return data.filter(item => item[teamField] === currentUser.team || item[agentIdField] === currentUser.id);
+            }
+            return data.filter(item => item[agentIdField] === currentUser.id);
+        };
+
         const subs = [
-            nexusGateway.subscribe('sales', currentUser, (data: Sale[]) => setSales(data)),
+            nexusGateway.subscribe('sales', currentUser, (data: Sale[]) => setSales(filterData(data, 'agentId', 'team'))),
             nexusGateway.subscribe('customers', currentUser, (data: Customer[]) => {
-                const isAgent = currentUser && (currentUser.level || 0) < 10;
-                if (isAgent) {
-                    setCustomers(data.filter((c: any) => !c.isBackgroundViciLead && c.firstSource !== 'ViciDial Push'));
-                } else {
-                    setCustomers(data);
+                let filtered = data;
+                if (!isSuperAdmin) {
+                    filtered = filtered.filter(c => !c.isBackgroundViciLead);
+                    if (isManager) {
+                        filtered = filtered.filter(c => c.team === currentUser.team || c.assignedTo === currentUser.id);
+                    } else {
+                        filtered = filtered.filter(c => c.assignedTo === currentUser.id);
+                    }
                 }
+                setCustomers(filtered);
             }),
-            nexusGateway.subscribe('users', currentUser, (data: User[]) => setUsers(data.length ? data : VALID_USERS)),
+            nexusGateway.subscribe('users', currentUser, (data: User[]) => {
+                let filtered = data.length ? data : VALID_USERS;
+                if (isAgent) {
+                    filtered = filtered.filter(u => u.id === currentUser.id);
+                } else if (isManager) {
+                    filtered = filtered.filter(u => u.team === currentUser.team);
+                }
+                setUsers(filtered);
+            }),
             nexusGateway.subscribe('accounts', currentUser, (data: Account[]) => setAccounts(data)),
-            nexusGateway.subscribe('notes', currentUser, (data: Note[]) => setNotes(data)),
-            nexusGateway.subscribe('tasks', currentUser, (data: Task[]) => setTasks(data)),
-            nexusGateway.subscribe('audit', currentUser, (data: AuditEntry[]) => setAuditLogs(data)),
-            nexusGateway.subscribe('attendance', currentUser, (data: AttendanceRecord[]) => setAttendance(data)),
+            nexusGateway.subscribe('notes', currentUser, (data: Note[]) => setNotes(filterData(data, 'agentId'))),
+            nexusGateway.subscribe('tasks', currentUser, (data: Task[]) => setTasks(filterData(data, 'targetAgentId'))),
+            nexusGateway.subscribe('audit', currentUser, (data: AuditEntry[]) => setAuditLogs(filterData(data, 'agentId'))),
+            nexusGateway.subscribe('attendance', currentUser, (data: AttendanceRecord[]) => setAttendance(filterData(data, 'agentId'))),
             nexusGateway.subscribe('directives', currentUser, (data: TacticalDirective[]) => setDirectives(data)),
             nexusGateway.subscribe('messages', currentUser, (data: ChatMessage[]) => setMessages(data)),
             nexusGateway.subscribe('channels', currentUser, (data: ChatChannel[]) => setChannels(data)),
-            nexusGateway.subscribe('notifications', currentUser, (data: AppNotification[]) => setNotifications(data)),
-            nexusGateway.subscribe('callLogs', currentUser, (data: any[]) => setCallLogs(data)),
+            nexusGateway.subscribe('notifications', currentUser, (data: AppNotification[]) => setNotifications(data.filter(n => n.recipientId === currentUser.id || n.recipientId === 'all' || (n.roleTarget === 'agent' && isAgent) || (n.roleTarget === 'admin' && !isAgent)))),
+            nexusGateway.subscribe('callLogs', currentUser, (data: any[]) => setCallLogs(filterData(data, 'agentId'))),
             nexusGateway.subscribe('scripts', currentUser, (data: ScriptItem[]) => setScripts(data)),
             nexusGateway.subscribe('sheets', currentUser, (data: any[]) => setCustomSheets(data)),
             nexusGateway.subscribe('presence', currentUser, (data: Presence[]) => setPresenceList(data)),
@@ -173,6 +198,16 @@ export const useCRMData = (currentUser: User | null) => {
     useEffect(() => {
         if (!currentUser) return;
         
+        let unsub = () => {};
+        import('../lib/realtimeClient').then(({ realtimeClient }) => {
+            unsub = realtimeClient.subscribe((event: any) => {
+                if (event?.type === 'COLLECTION_MUTATED' && event.collectionName) {
+                    console.log(`[Global Data Hook] Optimistic Re-fetch triggered for ${event.collectionName}`);
+                    nexusGateway.enqueueBatchFetch(event.collectionName);
+                }
+            });
+        });
+
         const checkStagnation = () => {
             const now = Date.now();
             const ONE_DAY = 86400000;
@@ -203,7 +238,10 @@ export const useCRMData = (currentUser: User | null) => {
         };
 
         const interval = setInterval(checkStagnation, 60000); 
-        return () => clearInterval(interval);
+        return () => {
+            clearInterval(interval);
+            unsub();
+        };
     }, [currentUser]);
 
     // ----------------------------------------------
@@ -256,7 +294,32 @@ export const useCRMData = (currentUser: User | null) => {
     }, [currentUser]);
 
     const addUser = useCallback(async (data: Partial<User>) => {
-        await nexusGateway.add('users', { ...data, active: true });
+        if (data.passwordHash) {
+            try {
+                const response = await fetch('/api/auth/provision', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        email: data.id,
+                        password: data.passwordHash,
+                        role: data.role,
+                        clearance_level: data.level,
+                        team: data.team,
+                        name: data.name
+                    })
+                });
+                if (!response.ok) {
+                    const err = await response.json();
+                    throw new Error(err.error || 'Provisioning failed');
+                }
+            } catch (err) {
+                console.error('Auth Provisioning failed:', err);
+                throw err;
+            }
+        }
+        const safeData = { ...data, active: true };
+        delete safeData.passwordHash;
+        await nexusGateway.add('users', safeData);
     }, []);
 
     const updateProductConfig = useCallback(async (config: ProductConfig) => {

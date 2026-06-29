@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { 
-  Sun, Moon, LogOut, Bell, Coffee, Play, Server, ChevronDown, Menu, X as CloseIcon, LayoutGrid, Terminal, Palette, Check
+  Sun, Moon, LogOut, Bell, Coffee, Play, Server, ChevronDown, Menu, X as CloseIcon, LayoutGrid, Terminal, Palette, Check, Settings, HelpCircle, User as UserIcon
 } from 'lucide-react';
 import { User, AppNotification } from '../../types';
 import { useAuth, useTimer } from '../../hooks/useAuth';
@@ -14,6 +14,7 @@ import { ShiftOverlay } from './ShiftOverlay';
 import { BreakOverlay } from './BreakOverlay';
 import { AgentTimeSheet } from '../modals/AgentTimeSheet';
 import { BreakControlModal } from '../modals/BreakControlModal';
+import { UserSettingsModal } from './UserSettingsModal';
 import { motion, AnimatePresence } from 'motion/react';
 
 interface PortalShellProps {
@@ -42,6 +43,15 @@ export const PortalShell: React.FC<PortalShellProps> = ({
     const [isBreakModalOpen, setIsBreakModalOpen] = useState(false);
     const [isServerSwitcherOpen, setIsServerSwitcherOpen] = useState(false);
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+    
+    // User Settings Modal state
+    const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
+    const [settingsInitialTab, setSettingsInitialTab] = useState<'profile' | 'preferences' | 'support'>('profile');
+
+    const openSettings = (tab: 'profile' | 'preferences' | 'support') => {
+        setSettingsInitialTab(tab);
+        setIsSettingsModalOpen(true);
+    };
     
     // Zoom-like Theme Selector
     const [appThemePalette, setAppThemePalette] = useState(() => localStorage.getItem('appThemePalette') || 'Classic');
@@ -178,8 +188,17 @@ export const PortalShell: React.FC<PortalShellProps> = ({
                             <nav className="flex-1 px-4 py-4 space-y-1 overflow-y-auto custom-scrollbar">
                                 {sidebarContent}
                             </nav>
-                            <div className="p-4 border-t border-border-subtle">
-                                <button onClick={handleLogout} className="w-full p-4 flex items-center gap-4 text-status-error bg-red-500/5 hover:bg-red-500/10 transition-colors rounded-xl font-bold">
+                            <div className="p-4 border-t border-border-subtle flex flex-col gap-2">
+                                <div className="flex items-center gap-3 px-2 py-3 mb-2 border-b border-border-subtle bg-surface-alt rounded-lg">
+                                    <div className="w-10 h-10 rounded-full bg-accent-primary flex items-center justify-center text-white font-bold text-lg shadow-sm">
+                                        {user.name.charAt(0).toUpperCase()}
+                                    </div>
+                                    <div className="flex flex-col min-w-0">
+                                        <span className="text-sm font-bold text-text-primary truncate">{user.name}</span>
+                                        <span className="text-xs text-text-muted capitalize truncate">{user.role}</span>
+                                    </div>
+                                </div>
+                                <button onClick={handleLogout} className="w-full p-3 flex items-center gap-4 text-status-error bg-status-error/10 hover:bg-status-error/20 transition-colors rounded-xl font-bold mt-2">
                                     <LogOut size={20} />
                                     <span>Log Out Session</span>
                                 </button>
@@ -215,10 +234,22 @@ export const PortalShell: React.FC<PortalShellProps> = ({
                     {sidebarContent}
                 </nav>
 
-                <div className="p-3 border-t border-border-subtle bg-surface-main">
+                <div className="p-3 border-t border-border-subtle bg-surface-main flex flex-col gap-1">
+                    {!isSidebarCollapsed && (
+                        <div className="flex items-center gap-3 px-2 py-2 mb-2 border-b border-border-subtle">
+                            <div className="w-8 h-8 rounded-full bg-accent-primary/20 flex items-center justify-center text-accent-primary font-bold">
+                                {user.name.charAt(0).toUpperCase()}
+                            </div>
+                            <div className="flex flex-col min-w-0">
+                                <span className="text-sm font-bold text-text-primary truncate">{user.name}</span>
+                                <span className="text-xs text-text-muted capitalize truncate">{user.role}</span>
+                            </div>
+                        </div>
+                    )}
+                    
                     <button onClick={handleLogout} className="w-full p-2 flex items-center justify-center gap-3 text-text-secondary hover:text-text-primary transition-all rounded-md hover:bg-surface-highlight group">
                         <LogOut size={18} className="group-hover:text-status-error transition-colors shrink-0" />
-                        {!isSidebarCollapsed && <span className="text-sm font-medium truncate">Log Out</span>}
+                        {!isSidebarCollapsed && <span className="text-sm font-medium truncate flex-1 text-left">Log Out</span>}
                     </button>
                 </div>
             </aside>
@@ -431,6 +462,13 @@ export const PortalShell: React.FC<PortalShellProps> = ({
                     </div>
                 </div>
             </main>
+
+            <UserSettingsModal 
+                isOpen={isSettingsModalOpen}
+                onClose={() => setIsSettingsModalOpen(false)}
+                initialTab={settingsInitialTab}
+                user={user}
+            />
 
             <NotificationPanel 
                 isOpen={isNotificationPanelOpen}

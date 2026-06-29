@@ -58,7 +58,7 @@ export const SalesLedger: React.FC<SalesLedgerProps> = ({ sales = [], onAction, 
                 e.preventDefault();
                 const selectedSales = processedSales.filter(s => selectedIds.has(s.id));
                 const { generateSheetTsv } = await import('./sales-ledger/sheetExport');
-                const tsv = generateSheetTsv(selectedSales);
+                const tsv = generateSheetTsv(selectedSales, currentUser?.level || 0);
                 
                 try {
                     await navigator.clipboard.writeText(tsv);

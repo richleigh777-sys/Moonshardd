@@ -106,36 +106,38 @@ export const ProductManager: React.FC<Props> = ({ configForm, setConfigForm, onS
     };
 
     return (
-        <div className="flex flex-col h-full gap-3 animate-in fade-in duration-700 w-full overflow-visible pb-4">
+        <div className="flex flex-col h-full gap-4 animate-in fade-in duration-700 w-full overflow-hidden pb-4">
             
-            <div className="flex bg-surface-alt/50 border border-border-subtle rounded-xl p-1 mb-2">
-                <button 
-                  onClick={() => { setActiveTab('catalog'); sfx.playClick(); }}
-                  className={`flex-1 flex items-center justify-center gap-2 py-2 text-sm font-bold rounded-lg transition-all ${
-                    activeTab === 'catalog' 
-                      ? 'bg-surface-main text-emerald-400 shadow-sm border border-border-subtle/50' 
-                      : 'text-text-muted hover:text-text-primary'
-                  }`}
-                >
-                  <PackageOpen size={16} /> Catalog & Inventory
-                </button>
-                <button 
-                  onClick={() => { setActiveTab('presets'); sfx.playClick(); }}
-                  className={`flex-1 flex items-center justify-center gap-2 py-2 text-sm font-bold rounded-lg transition-all ${
-                    activeTab === 'presets' 
-                      ? 'bg-surface-main text-indigo-400 shadow-sm border border-border-subtle/50' 
-                      : 'text-text-muted hover:text-text-primary'
-                  }`}
-                >
-                  <Layers size={16} /> Fulfillment Presets
-                </button>
+            <div className="flex items-center justify-between items-end border-b border-border-subtle pb-4">
+                <div className="flex bg-surface-alt/80 border border-border-subtle rounded-lg p-1">
+                    <button 
+                      onClick={() => { setActiveTab('catalog'); sfx.playClick(); }}
+                      className={`flex items-center justify-center gap-2 px-6 py-2 text-sm font-bold rounded-md transition-all ${
+                        activeTab === 'catalog' 
+                          ? 'bg-surface-main text-text-primary shadow-sm border border-border-subtle' 
+                          : 'text-text-muted hover:text-text-primary'
+                      }`}
+                    >
+                      <PackageOpen size={16} /> Catalog & Inventory
+                    </button>
+                    <button 
+                      onClick={() => { setActiveTab('presets'); sfx.playClick(); }}
+                      className={`flex items-center justify-center gap-2 px-6 py-2 text-sm font-bold rounded-md transition-all ${
+                        activeTab === 'presets' 
+                          ? 'bg-surface-main text-text-primary shadow-sm border border-border-subtle' 
+                          : 'text-text-muted hover:text-text-primary'
+                      }`}
+                    >
+                      <Layers size={16} /> Fulfillment Presets
+                    </button>
+                </div>
             </div>
 
             {activeTab === 'catalog' ? (
-                <>
+                <div className="flex flex-col flex-1 overflow-hidden min-h-0">
                     <SupplyChainHUD stats={productLogic.stats} />
 
-                    <Card variant="panel" className="flex-1 flex flex-col overflow-hidden rounded-xl p-0 border-border-subtle bg-surface-main shadow-2xl relative">
+                    <div className="flex flex-col flex-1 overflow-hidden rounded-xl border border-border-subtle bg-surface-main relative min-h-0">
                         
                         <CatalogToolbar 
                             totalItems={configForm.products.length}
@@ -162,10 +164,10 @@ export const ProductManager: React.FC<Props> = ({ configForm, setConfigForm, onS
                             />
                         )}
 
-                        <div className={`flex-1 overflow-y-auto custom-scrollbar p-3 bg-surface-alt/5 ${viewMode === 'grid' ? '' : 'px-2'}`}>
+                        <div className={`flex-1 overflow-y-auto custom-scrollbar p-5 bg-surface-alt/10 ${viewMode === 'list' ? 'px-3' : ''}`}>
                             <div className={viewMode === 'grid' 
-                                ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-3" 
-                                : "flex flex-col gap-1.5"
+                                ? "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4" 
+                                : "flex flex-col gap-2"
                             }>
                                 {productLogic.filteredProducts.map(p => (
                                     <ProductSKUCard 
@@ -186,18 +188,18 @@ export const ProductManager: React.FC<Props> = ({ configForm, setConfigForm, onS
                             </div>
                         </div>
 
-                        <div className="p-2.5 border-t border-border-subtle bg-surface-alt/50 shrink-0  flex justify-between items-center px-4">
-                            <div className="flex items-center gap-4">
-                                <div className="flex items-center gap-1.5">
-                                    <ShieldCheck size={16} className="text-status-success" />
-                                    <span className="text-sm font-medium  text-text-muted tracking-wide leading-none">Security: Verified</span>
+                        <div className="p-3 border-t border-border-subtle bg-surface-main shrink-0 flex justify-between items-center px-5">
+                            <div className="flex items-center gap-5">
+                                <div className="flex items-center gap-2">
+                                    <ShieldCheck size={14} className="text-status-success" />
+                                    <span className="text-xs font-bold text-text-muted uppercase tracking-widest">Verified</span>
                                 </div>
-                                <div className="flex items-center gap-1.5">
-                                    <Activity size={16} className="text-accent-secondary" />
-                                    <span className="text-sm font-medium  text-text-muted tracking-wide leading-none">Load: Optimal</span>
+                                <div className="flex items-center gap-2">
+                                    <Activity size={14} className="text-accent-primary" />
+                                    <span className="text-xs font-bold text-text-muted uppercase tracking-widest">Optimal</span>
                                 </div>
                             </div>
-                            <span className="text-sm font-mono text-text-muted opacity-40  tracking-wide">Product Module v4.1</span>
+                            <span className="text-[10px] font-mono text-text-muted opacity-50 uppercase tracking-widest">Product Module v4.5</span>
                         </div>
 
                         <ProductConfigModal 
@@ -206,10 +208,10 @@ export const ProductManager: React.FC<Props> = ({ configForm, setConfigForm, onS
                             product={editingProduct} 
                             onSave={handleSaveProduct} 
                         />
-                    </Card>
-                </>
+                    </div>
+                </div>
             ) : (
-                <div className="flex-1 overflow-hidden pb-8">
+                <div className="flex-1 overflow-hidden">
                     <PresetManager productConfig={configForm} onUpdateConfig={onSave} />
                 </div>
             )}
