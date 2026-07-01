@@ -50,35 +50,64 @@ export const Scratchpad: React.FC<ScratchpadProps> = ({ isOpen, onClose }) => {
     const [isGhostMode, setIsGhostMode] = useState(false);
     
     // Dragging State
-    const [position, setPosition] = useState({ x: window.innerWidth - 650, y: 100 });
+    const [position, setPosition] = useState({ 
+        x: typeof window !== 'undefined' ? Math.max(20, window.innerWidth - 680) : 20, 
+        y: 100 
+    });
     const [isDragging, setIsDragging] = useState(false);
     const dragStart = useRef({ x: 0, y: 0 });
     const startPos = useRef({ x: 0, y: 0 });
     const textareaRef = useRef<HTMLTextAreaElement>(null);
 
+    // Keep within bounds on window resize
+    useEffect(() => {
+        const handleResize = () => {
+            setPosition(prev => ({
+                x: Math.min(Math.max(0, prev.x), window.innerWidth - 300),
+                y: Math.min(Math.max(0, prev.y), window.innerHeight - 100)
+            }));
+        };
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    }, []);
+
     // --- INITIALIZATION & MIGRATION ---
     useEffect(() => {
         const storedV3 = localStorage.getItem(STORAGE_KEY_V3);
         
+        let loadedSheets: ScratchSheet[] = [];
+        let loadedActiveId = '';
+
         if (storedV3) {
             try {
                 const parsed = JSON.parse(storedV3);
-                setSheets(parsed.sheets || []);
-                setActiveSheetId(parsed.activeId || '');
+                loadedSheets = parsed.sheets || [];
+                loadedActiveId = parsed.activeId || '';
             } catch {
                 console.error("Scratchpad V3 Load Error");
             }
         } else {
             // Migrate V2
             const legacyContent = localStorage.getItem(STORAGE_KEY_V2) || '';
-            const initialSheet: ScratchSheet = {
+            loadedSheets = [{
                 id: 'default',
                 content: legacyContent,
                 timestamp: Date.now()
-            };
-            setSheets([initialSheet]);
-            setActiveSheetId('default');
+            }];
+            loadedActiveId = 'default';
         }
+
+        if (loadedSheets.length === 0) {
+            loadedSheets = [{
+                id: `sheet-${Date.now()}`,
+                content: '',
+                timestamp: Date.now()
+            }];
+            loadedActiveId = loadedSheets[0].id;
+        }
+
+        setSheets(loadedSheets);
+        setActiveSheetId(loadedActiveId || loadedSheets[0].id);
     }, []);
 
     // --- PERSISTENCE ---
@@ -106,8 +135,8 @@ export const Scratchpad: React.FC<ScratchpadProps> = ({ isOpen, onClose }) => {
             const dx = e.clientX - dragStart.current.x;
             const dy = e.clientY - dragStart.current.y;
             setPosition({
-                x: startPos.current.x + dx,
-                y: startPos.current.y + dy
+                x: Math.min(Math.max(0, startPos.current.x + dx), window.innerWidth - 100),
+                y: Math.min(Math.max(0, startPos.current.y + dy), window.innerHeight - 100)
             });
         };
 

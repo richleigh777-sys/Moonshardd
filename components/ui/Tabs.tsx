@@ -1,6 +1,7 @@
 
 import React, { createContext, useContext, useState } from 'react';
 import { sfx } from '../../lib/soundService';
+import { motion } from 'motion/react';
 
 type TabsContextType = {
   activeTab: string;
@@ -80,18 +81,19 @@ interface TabTriggerProps {
   icon?: React.ReactNode;
   title?: string;
   isCollapsed?: boolean; 
+  colorHint?: string; // e.g. text-purple-400
 }
 
-export const TabTrigger: React.FC<TabTriggerProps> = ({ value, children, className = "", icon, title, isCollapsed }) => {
+export const TabTrigger: React.FC<TabTriggerProps> = ({ value, children, className = "", icon, title, isCollapsed, colorHint }) => {
   const context = useContext(TabsContext);
   if (!context) throw new Error("TabTrigger must be used within Tabs");
 
   const isActive = context.activeTab === value;
   
-  const verticalStyles = `w-full px-1 py-3 flex flex-col items-center justify-center gap-1 transition-all duration-200 hover:translate-y-[1px] outline-none rounded-xl mb-2 group relative overflow-hidden ${
+  const verticalStyles = `w-full px-2 py-4 flex flex-col items-center justify-center gap-2 transition-all duration-300 outline-none rounded-xl mb-2 group relative overflow-hidden ${
     isActive 
-      ? 'bg-accent-primary/10 text-accent-primary shadow-[inset_0_0_10px_rgba(0,0,0,0.1)] border border-accent-primary/20' 
-      : 'text-text-secondary hover:bg-surface-highlight hover:text-text-primary border border-transparent'
+      ? 'bg-surface-highlight text-text-primary shadow-[inset_0_0_20px_rgba(255,255,255,0.05)] border border-border-subtle' 
+      : 'text-text-secondary hover:bg-surface-highlight/50 hover:text-text-primary border border-transparent hover:border-border-subtle/50'
   }`;
 
   const horizontalStyles = `px-4 py-2 flex items-center gap-2 text-sm font-semibold transition-all duration-200 border-b-2 outline-none ${
@@ -105,20 +107,65 @@ export const TabTrigger: React.FC<TabTriggerProps> = ({ value, children, classNa
       context.setActiveTab(value);
   };
 
+  // Enhance icon size
+  const enhancedIcon = icon && React.isValidElement(icon) ? React.cloneElement(icon as React.ReactElement<any>, { 
+      size: context.orientation === 'vertical' ? 32 : 18 
+  }) : icon;
+
+  const getIconColorClass = () => {
+      if (colorHint) return colorHint;
+      // Default thematic colors based on value if no color hint provided
+      if (value === 'action') return 'text-purple-400';
+      if (value === 'money') return 'text-emerald-400';
+      if (value === 'oversight') return 'text-blue-400';
+      return isActive ? 'text-accent-primary' : 'text-text-muted group-hover:text-accent-secondary';
+  };
+
   return (
-    <button 
+    <motion.button 
       onClick={handleClick}
       onMouseEnter={() => sfx.playHover()}
-      className={`${context.orientation === 'vertical' ? verticalStyles : horizontalStyles} ${className} outline-none group`}
+      whileHover={{ scale: 1.02 }}
+      whileTap={{ scale: 0.95 }}
+      className={`${context.orientation === 'vertical' ? verticalStyles : horizontalStyles} ${className} outline-none group relative`}
       title={title || (typeof children === 'string' ? children : '')}
     >
-      {icon && (
-          <span className={`${isActive ? 'text-accent-primary scale-110' : 'text-text-muted group-hover:text-accent-secondary'} transition-transform shrink-0`}>
-              {icon}
-          </span>
+      {/* Background glow when active (vertical only) */}
+      {isActive && context.orientation === 'vertical' && (
+          <div className="absolute inset-0 opacity-20 pointer-events-none">
+             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-16 h-16 bg-current blur-2xl rounded-full" />
+          </div>
       )}
-      {!isCollapsed && <span className={`${context.orientation === 'vertical' ? 'text-xs font-bold text-center whitespace-normal leading-tight opacity-90 mt-1 max-w-full px-0.5' : 'whitespace-nowrap'} overflow-hidden transition-opacity duration-200 tracking-wide`}>{children}</span>}
-    </button>
+
+      {enhancedIcon && (
+          <motion.span 
+              initial={false}
+              animate={{
+                  scale: isActive ? 1.1 : 1,
+                  y: isActive && context.orientation === 'vertical' ? -2 : 0,
+                  filter: isActive ? 'drop-shadow(0 0 8px currentColor)' : 'drop-shadow(0 0 0px transparent)'
+              }}
+              transition={{ type: 'spring', stiffness: 400, damping: 15 }}
+              className={`${getIconColorClass()} transition-colors shrink-0 relative z-10`}
+          >
+              {enhancedIcon}
+          </motion.span>
+      )}
+      {!isCollapsed && (
+          <motion.span 
+              initial={false}
+              animate={{
+                  scale: isActive ? 1.05 : 1,
+                  color: isActive && getIconColorClass().includes('purple') ? '#c084fc' : 
+                         isActive && getIconColorClass().includes('emerald') ? '#34d399' :
+                         isActive && getIconColorClass().includes('blue') ? '#60a5fa' : undefined
+              }}
+              className={`${context.orientation === 'vertical' ? 'text-sm font-bold text-center whitespace-normal leading-tight opacity-100 mt-1 max-w-full px-0.5' : 'whitespace-nowrap'} overflow-hidden transition-colors duration-200 tracking-wide relative z-10`}
+          >
+              {children}
+          </motion.span>
+      )}
+    </motion.button>
   );
 };
 

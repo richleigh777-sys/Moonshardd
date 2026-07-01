@@ -2,14 +2,12 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { 
     Database, Radio, Server, FileJson, 
-    Zap, ShieldCheck, X, Scan, Info, Terminal
+    Zap, ShieldCheck, X, Scan, Info
 } from 'lucide-react';
 import { Card, Button } from '../ui/Base';
 import { useCRM } from '../../hooks/useCRM';
 import { sfx } from '../../lib/soundService';
 import { MemoryBlock } from './god-mode/MemoryBlock';
-
-import { nexusGateway } from '../../nexus/adapters/DataGateway';
 
 export const GodModePanel = () => {
     const { sales, users, auditLogs, systemConfig } = useCRM();

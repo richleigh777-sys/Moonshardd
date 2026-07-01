@@ -10,6 +10,7 @@ import { usePipelineData } from './usePipelineData';
 import { PipelineToolbar } from './PipelineToolbar';
 import { Button, Badge } from '../ui/Base';
 import { Search, Target, Clock } from 'lucide-react';
+import { useInfiniteCollection } from '../../hooks/useInfiniteCollection';
 
 const formatTimeElapsed = (timestamp: number) => {
     const diffInDays = Math.floor((Date.now() - timestamp) / (1000 * 60 * 60 * 24));
@@ -29,10 +30,13 @@ interface PipelineBoardProps {
     onProcessSale?: (sale: Sale) => void; 
 }
 
-export const PipelineBoard: React.FC<PipelineBoardProps> = ({ sales, onStageChange, onProcessSale }) => {
+export const PipelineBoard: React.FC<PipelineBoardProps> = ({ sales: propSales, onStageChange, onProcessSale }) => {
     const { currentUser, updateSaleStatus } = useCRM();
     const { setToast } = useSystem();
     
+    const { data: serverSales, loading, hasMore, fetchNextPage } = useInfiniteCollection('sales', {});
+    const sales = serverSales.length > 0 ? serverSales : propSales;
+
     // --- OPTIMIZER HOOK ---
     const { isOptimizing, executeCorrection } = useNexusOptimizer(sales);
     
@@ -203,6 +207,18 @@ export const PipelineBoard: React.FC<PipelineBoardProps> = ({ sales, onStageChan
                             </div>
                             <p className="text-sm font-bold text-white  tracking-wide">No Active Customers</p>
                             <p className="text-xs text-text-muted mt-2">Pipeline is empty. Start dialing.</p>
+                        </div>
+                    )}
+                    {hasMore && (
+                        <div className="flex justify-center p-4">
+                            <Button 
+                                variant="ghost" 
+                                onClick={() => fetchNextPage()} 
+                                disabled={loading}
+                                className="w-full max-w-sm text-xs font-bold tracking-widest text-text-muted hover:text-white border border-border-subtle hover:border-white/20"
+                            >
+                                {loading ? 'FETCHING...' : 'LOAD MORE RECORDS'}
+                            </Button>
                         </div>
                     )}
                 </div>

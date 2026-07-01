@@ -11,21 +11,21 @@
     --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
 
     /* Modern SaaS Professional Light Mode (HubSpot/Salesforce Inspired) */
-    --color-surface-canvas: 220 20% 90%; /* Much darker canvas background to dramatically pop the widgets */
+    --color-surface-canvas: 220 33% 98%; /* Clean fresh canvas */ /* Much darker canvas background to dramatically pop the widgets */
     --color-surface-widget: 0 0% 100%; /* Pure white widgets */
     --color-surface-main: 0 0% 100%; /* Pure white panels */
-    --color-surface-alt: 210 16% 95%; /* Subtle gray for active/hover states */
-    --color-surface-highlight: 210 16% 90%; /* Action highlight */
+    --color-surface-alt: 220 20% 96%; /* Subtle gray for active/hover states */
+    --color-surface-highlight: 250 85% 95%; /* Action highlight */
     
-    --color-accent-primary: 220 90% 50%; /* Trustworthy SaaS Blue */
-    --color-accent-secondary: 250 80% 60%; /* Modern Purple */
+    --color-accent-primary: 250 85% 60%; /* Vibrant fun purple */ /* Trustworthy SaaS Blue */
+    --color-accent-secondary: 330 80% 60%; /* Fun pink */ /* Modern Purple */
     
-    --color-text-primary: 220 80% 8%; /* Extremely deep, crisp dark slate font for max readability against white */
-    --color-text-secondary: 220 30% 25%; /* Professional secondary text, higher contrast */
-    --color-text-muted: 220 25% 45%; /* Lighter muted text, but still highly readable */
+    --color-text-primary: 220 40% 15%; /* Soft dark blue-gray */ /* Extremely deep, crisp dark slate font for max readability against white */
+    --color-text-secondary: 220 20% 40%; /* Professional secondary text, higher contrast */
+    --color-text-muted: 220 15% 60%; /* Lighter muted text, but still highly readable */
     
-    --color-border-subtle: 220 15% 82%; /* Stronger definition for borders */
-    --color-border-strong: 220 15% 70%;
+    --color-border-subtle: 220 20% 90%; /* Stronger definition for borders */
+    --color-border-strong: 220 20% 80%;
 
     /* Standardized SaaS Status Colors */
     --color-status-success: 150 70% 40%; /* Clear SaaS Green */
@@ -45,27 +45,27 @@
     --color-indigo-500: var(--color-accent-secondary);
 
     /* Clean Subtle Shadows for SaaS */
-    --shadow-panel: 0 4px 12px -2px rgba(0, 0, 0, 0.08), 0 2px 6px -2px rgba(0, 0, 0, 0.04);
-    --shadow-float: 0 15px 30px -5px rgba(0, 0, 0, 0.12), 0 10px 15px -6px rgba(0, 0, 0, 0.06);
+    --shadow-panel: 0 8px 30px rgba(0,0,0,0.04);
+    --shadow-float: 0 20px 40px rgba(0,0,0,0.08);
   }
 
   html.dark, .dark {
     /* Sleek Professional Dark Mode (Linear/Vercel Inspired) */
-    --color-surface-canvas: 220 10% 4%; /* Very dark refined gray, almost black to increase contrast with widgets */
-    --color-surface-widget: 220 10% 10%; /* Elevated dark slate */
-    --color-surface-main: 220 10% 10%; /* Base dark panel */
-    --color-surface-alt: 220 10% 15%; /* Lighter border/hover state */
-    --color-surface-highlight: 220 10% 20%; /* Active state */
+    --color-surface-canvas: 220 20% 5%;
+    --color-surface-widget: 220 20% 10%;
+    --color-surface-main: 220 20% 12%;
+    --color-surface-alt: 220 20% 18%;
+    --color-surface-highlight: 250 40% 25%;
     
-    --color-accent-primary: 220 90% 60%; /* Vibrant Blue for dark mode */
-    --color-accent-secondary: 250 80% 70%; /* Vibrant Purple */
+    --color-accent-primary: 250 85% 70%;
+    --color-accent-secondary: 330 80% 70%;
     
-    --color-text-primary: 0 0% 100%; /* Pure white text for max contrast */
-    --color-text-secondary: 210 15% 80%; /* Highly legible light gray */
-    --color-text-muted: 210 10% 60%; /* Readable muted gray */
+    --color-text-primary: 220 20% 98%;
+    --color-text-secondary: 220 20% 80%;
+    --color-text-muted: 220 15% 60%;
     
-    --color-border-subtle: 220 10% 18%; /* Clean dark borders */
-    --color-border-strong: 220 10% 25%;     
+    --color-border-subtle: 220 20% 20%;
+    --color-border-strong: 220 20% 30%;
     
     /* Standardized SaaS Status Colors */
     --color-status-success: 150 70% 45%; 
@@ -85,8 +85,8 @@
     --color-indigo-500: var(--color-accent-secondary);
 
     /* Soft Dark Shadows */
-    --shadow-panel: 0 4px 6px -1px rgba(0, 0, 0, 0.4), 0 2px 4px -2px rgba(0, 0, 0, 0.2);
-    --shadow-float: 0 20px 25px -5px rgba(0, 0, 0, 0.6), 0 8px 10px -6px rgba(0, 0, 0, 0.4);
+    --shadow-panel: 0 8px 30px rgba(0,0,0,0.4);
+    --shadow-float: 0 20px 40px rgba(0,0,0,0.6);
   }
 
   html {
@@ -143,6 +143,14 @@
   }
   .ledger-scrollbar::-webkit-scrollbar-thumb {
     @apply bg-border-strong/80 rounded-full hover:bg-accent-primary transition-colors border-4 border-transparent bg-clip-padding cursor-pointer shadow-sm;
+  }
+
+  .scrollbar-hide {
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
+  }
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
   }
 
   .glass-panel {
@@ -225,4 +233,65 @@
 .react-datepicker-popper[data-placement^='top'] .react-datepicker__triangle::before,
 .react-datepicker-popper[data-placement^='top'] .react-datepicker__triangle::after {
   border-top-color: hsl(var(--color-surface-main)) !important;
+}
+
+
+/* Fun & Modern Overrides */
+@layer components {
+  .rounded-lg, .rounded-xl, .rounded-md {
+    @apply rounded-[24px];
+  }
+  button, .btn {
+    @apply rounded-full transition-transform active:scale-95 font-bold tracking-wide;
+  }
+  
+}
+
+
+/* Clean Modern Overrides for legacy terminal styling */
+@layer utilities {
+  .font-mono {
+    @apply font-sans tracking-tight;
+  }
+  .text-emerald-400, .text-emerald-500 {
+    @apply text-accent-primary;
+  }
+  .bg-black\/30, .bg-black\/40, .bg-black\/90 {
+    @apply bg-surface-alt border-border-subtle shadow-sm;
+  }
+}
+
+
+/* Soften standard inputs */
+@layer components {
+  input, textarea, select {
+    @apply rounded-2xl bg-surface-main border-border-subtle focus:ring-4 focus:ring-accent-primary/20 focus:border-accent-primary transition-all;
+  }
+  .glass-panel { @apply shadow-[0_8px_30px_rgba(0,0,0,0.04)] dark:shadow-[0_8px_30px_rgba(0,0,0,0.4)] backdrop-blur-2xl border-border-subtle bg-surface-main/70; }
+  /* Fun hover states */
+  button:hover {
+    @apply shadow-lg -translate-y-0.5;
+  }
+}
+
+
+/* Soften standard panels */
+@layer components {
+  
+  /* Dashboard adjustments */
+  .shadow-panel {
+    @apply shadow-[0_4px_24px_rgba(0,0,0,0.03)];
+  }
+}
+
+
+/* Soften typography */
+@layer utilities {
+  .uppercase {
+    text-transform: none !important;
+    @apply tracking-normal font-semibold;
+  }
+  .tracking-widest, .tracking-wider, .tracking-wide {
+    letter-spacing: normal !important;
+  }
 }

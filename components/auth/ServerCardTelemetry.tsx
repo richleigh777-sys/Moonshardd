@@ -110,7 +110,7 @@ export const ServerCardTelemetry: React.FC<ServerCardTelemetryProps> = React.mem
                         <Globe size={16}/> {server.region}
                     </span>
                     <span className="flex items-center gap-1.5">
-                        <Key size={16}/> ID: {server.id.substring(0, 8)}
+                        <Key size={16}/> ID: {server.id.split('-').pop()}
                     </span>
                 </div>
 

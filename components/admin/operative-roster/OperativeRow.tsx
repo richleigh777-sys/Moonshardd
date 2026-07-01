@@ -23,7 +23,7 @@ const getRank = (revenue: number): { label: string, color: string } => {
     if (revenue >= 50000) return { label: 'S-Class', color: 'text-purple-400' };
     if (revenue >= 25000) return { label: 'A-Class', color: 'text-status-success' };
     if (revenue >= 10000) return { label: 'B-Class', color: 'text-blue-400' };
-    return { label: 'C-Class', color: 'text-slate-400' };
+    return { label: 'C-Class', color: 'text-text-secondary' };
 };
 
 export const OperativeRow: React.FC<OperativeRowProps> = React.memo(({ 

@@ -40,7 +40,7 @@ export const SalesLedger: React.FC<SalesLedgerProps> = ({ sales = [], onAction, 
         columnPreferences, setColumnPreferences, fileInputRef, importConfig, setImportConfig,
         columnMapping, setColumnMapping, isImporting, handleFileTrigger, handleFileChange,
         autoMapColumns, executeImport, paginatedSales, totalPages, currentPage, setCurrentPage,
-        handlePageChange, handleRefresh, handleBulkCommand, handleSaveBulk
+        handlePageChange, handleRefresh, handleBulkCommand, handleSaveBulk, isLoading, hasMore, fetchNextPage
     } = useSalesLedgerUI(sales, onImport, onBulkAction);
 
     // const { systemConfig } = useCRM();
@@ -55,10 +55,15 @@ export const SalesLedger: React.FC<SalesLedgerProps> = ({ sales = [], onAction, 
                     return;
                 }
                 
+                if (!currentUser || currentUser.level < 10) {
+                    setToast({ title: 'Export Denied', message: 'Level 10 Clearance Required to copy spreadsheet data.', type: "error" });
+                    return;
+                }
+                
                 e.preventDefault();
                 const selectedSales = processedSales.filter(s => selectedIds.has(s.id));
                 const { generateSheetTsv } = await import('./sales-ledger/sheetExport');
-                const tsv = generateSheetTsv(selectedSales, currentUser?.level || 0);
+                const tsv = generateSheetTsv(selectedSales, currentUser.level);
                 
                 try {
                     await navigator.clipboard.writeText(tsv);
@@ -167,7 +172,7 @@ export const SalesLedger: React.FC<SalesLedgerProps> = ({ sales = [], onAction, 
                 />
             )}
 
-            <div className={`flex-1 min-h-0 ${activePreset ? 'border-4 border-slate-700/80 rounded-xl' : 'bg-surface-main '} overflow-hidden flex flex-col relative transition-all duration-300`}>
+            <div className={`flex-1 min-h-0 ${activePreset ? 'border-4 border-border-subtle/80 rounded-xl' : 'bg-surface-main '} overflow-hidden flex flex-col relative transition-all duration-300`}>
                 
                 {/* Active View Banner (Google Sheets style) */}
                 {activePreset && (
@@ -242,7 +247,9 @@ export const SalesLedger: React.FC<SalesLedgerProps> = ({ sales = [], onAction, 
                         onAction={handleSafeAction}
                         onColumnReorder={(newOrder) => setColumnPreferences(prev => ({ ...prev, order: newOrder }))}
                         density={density}
-                        isLoading={isRefreshing}
+                        isLoading={isLoading || isRefreshing}
+                        hasMore={hasMore}
+                        fetchNextPage={fetchNextPage}
                     />
                 
                 <SummaryFooter 

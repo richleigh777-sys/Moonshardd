@@ -93,7 +93,7 @@ export const RetentionView: React.FC<RetentionViewProps> = ({ sales, onLoadToEnr
                     onClick={() => setFilterMode(mode)}
                     className={`px-3 py-1.5 rounded-lg text-xs font-[700]  tracking-wider transition-all ${
                         filterMode === mode 
-                        ? 'bg-white text-accent-primary shadow-sm ring-1 ring-border-subtle' 
+                        ? 'bg-surface-main text-accent-primary shadow-sm ring-1 ring-border-subtle' 
                         : 'text-text-muted hover:text-text-primary hover:bg-surface-main/50'
                     }`}
                   >

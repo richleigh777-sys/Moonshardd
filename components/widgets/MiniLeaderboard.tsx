@@ -41,7 +41,7 @@ export const MiniLeaderboard = () => {
                             <div className="flex items-center gap-3 relative z-10">
                                 <div className={`w-6 h-6 rounded flex items-center justify-center text-xs font-semibold
                                     ${idx === 0 ? 'bg-amber-500/10 text-status-warning' : 
-                                    idx === 1 ? 'bg-slate-300/10 text-slate-500' :
+                                    idx === 1 ? 'bg-slate-300/10 text-text-muted' :
                                     idx === 2 ? 'bg-amber-700/10 text-amber-600' : 
                                     'bg-surface-alt text-text-muted'}
                                 `}>

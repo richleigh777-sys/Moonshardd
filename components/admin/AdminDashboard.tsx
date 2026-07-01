@@ -1,29 +1,24 @@
-import React, { useState, lazy, Suspense } from 'react';
+import React, { useState } from 'react';
 import { useCRM } from '../../hooks/useCRM';
 import { SystemHealth, SystemConfig } from '../../types';
 import { DashboardHeader } from './dashboard/DashboardHeader';
 import { usePresence } from '../../hooks/usePresence';
-import { Loader2, ChevronDown, ChevronUp } from 'lucide-react';
+import { ChevronDown, ChevronUp } from 'lucide-react';
 import { DashboardTerminalZone } from './dashboard/financials/DashboardTerminalZone';
 import { DashboardLiveMetrics } from './dashboard/DashboardLiveMetrics';
+import { DailyVibesWidget } from './dashboard/DailyVibesWidget';
 
-// Lazy loaded components for code splitting optimization
-const CompanyHealthScorecard = lazy(() => import('./dashboard/CompanyHealthScorecard').then(m => ({ default: m.CompanyHealthScorecard })));
-const DashboardLiveOpsBoard = lazy(() => import('./dashboard/DashboardLiveOpsBoard').then(m => ({ default: m.DashboardLiveOpsBoard })));
-const DashboardApprovalPanel = lazy(() => import('./dashboard/DashboardApprovalPanel').then(m => ({ default: m.DashboardApprovalPanel })));
-const DashboardAgentSupportPanel = lazy(() => import('./dashboard/DashboardAgentSupportPanel').then(m => ({ default: m.DashboardAgentSupportPanel })));
-const DashboardRevenueOptimization = lazy(() => import('./dashboard/DashboardRevenueOptimization').then(m => ({ default: m.DashboardRevenueOptimization })));
-const DashboardStrategicAnalytics = lazy(() => import('./dashboard/DashboardStrategicAnalytics').then(m => ({ default: m.DashboardStrategicAnalytics })));
-const ScenarioPlanner = lazy(() => import('./tools/ScenarioPlanner').then(m => ({ default: m.ScenarioPlanner })));
-const AuditExplorer = lazy(() => import('./tools/AuditExplorer').then(m => ({ default: m.AuditExplorer })));
-const PredictiveAlerts = lazy(() => import('./tools/PredictiveAlerts').then(m => ({ default: m.PredictiveAlerts })));
-const SystemConfigPanel = lazy(() => import('./SystemConfigPanel').then(m => ({ default: m.SystemConfigPanel })));
-
-const ComponentLoader = () => (
-    <div className="w-full h-32 flex flex-col items-center justify-center text-text-muted">
-        <Loader2 className="w-6 h-6 animate-spin text-accent-primary" />
-    </div>
-);
+// Standard imports for fast routing
+import { CompanyHealthScorecard } from './dashboard/CompanyHealthScorecard';
+import { DashboardLiveOpsBoard } from './dashboard/DashboardLiveOpsBoard';
+import { DashboardApprovalPanel } from './dashboard/DashboardApprovalPanel';
+import { DashboardAgentSupportPanel } from './dashboard/DashboardAgentSupportPanel';
+import { DashboardRevenueOptimization } from './dashboard/DashboardRevenueOptimization';
+import { DashboardStrategicAnalytics } from './dashboard/DashboardStrategicAnalytics';
+import { ScenarioPlanner } from './tools/ScenarioPlanner';
+import { AuditExplorer } from './tools/AuditExplorer';
+import { PredictiveAlerts } from './tools/PredictiveAlerts';
+import { SystemConfigPanel } from './SystemConfigPanel';
 
 interface AdminDashboardProps {
   onToggleTerminals?: () => void;
@@ -104,30 +99,30 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
         ))}
       </div>
 
-      <Suspense fallback={<ComponentLoader />}>
+      <div className="tab-content-container">
         {/* TAB 1: OVERVIEW */}
         {activeTab === 'overview' && (
           <div className="space-y-4">
             
-            <DashboardLiveMetrics sales={sales} customers={customers} />
-            
-            {/* Quick Panels Grid (Prioritized High-Priority Tasks) */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {/* Approvals */}
-              <DashboardApprovalPanel
-                sales={sales}
-                users={users}
-                onApprove={handleApproveSale}
-                onDecline={handleDeclineSale}
-              />
-
-              {/* Agent Support */}
-              <DashboardAgentSupportPanel
-                sales={sales}
-                users={users}
-                systemConfig={systemConfig}
-                onSendMessage={handleSendMessage}
-              />
+            <div className="grid grid-cols-1 xl:grid-cols-[1fr_400px] gap-4">
+              <div className="flex flex-col gap-4">
+                <DashboardLiveMetrics sales={sales} customers={customers} />
+                <DashboardApprovalPanel
+                  sales={sales}
+                  users={users}
+                  onApprove={handleApproveSale}
+                  onDecline={handleDeclineSale}
+                />
+              </div>
+              <div className="flex flex-col gap-4">
+                <DailyVibesWidget />
+                <DashboardAgentSupportPanel
+                  sales={sales}
+                  users={users}
+                  systemConfig={systemConfig}
+                  onSendMessage={handleSendMessage}
+                />
+              </div>
             </div>
 
             {/* Health Scorecard (Secondary Metrics) */}
@@ -219,7 +214,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
             </div>
           </div>
         )}
-      </Suspense>
+      </div>
     </div>
   );
 };

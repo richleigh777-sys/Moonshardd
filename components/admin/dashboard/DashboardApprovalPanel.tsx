@@ -1,6 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import { Sale, User } from '../../../types';
-import { CheckCircle2, XCircle, Eye, Clock, AlertTriangle } from 'lucide-react';
+import { CheckCircle2, XCircle, Eye, Clock, AlertTriangle, PartyPopper } from 'lucide-react';
 import { DECLINE_REASONS } from '../../../constants';
 import { decryptField, ENCRYPTION_KEY } from '../../../lib/encryption';
 
@@ -43,131 +43,108 @@ export const DashboardApprovalPanel: React.FC<DashboardApprovalPanelProps> = ({
 
   if (pendingSales.length === 0) {
     return (
-      <div className="bg-slate-800 rounded-lg p-4 border border-slate-700 text-center">
-        <CheckCircle2 className="mx-auto text-green-400 mb-3" size={32} />
-        <p className="font-semibold text-white mb-1">All Caught Up!</p>
-        <p className="text-sm text-slate-400">No pending sales requiring approval</p>
+      <div className="bg-surface-main/60 dark:bg-surface-main/40 backdrop-blur-2xl rounded-[32px] p-8 border border-border-subtle/60 dark:border-border-subtle/20 text-center shadow-panel h-full flex flex-col justify-center items-center group transition-all hover:shadow-float">
+        <PartyPopper className="mx-auto text-accent-primary mb-3 transition-transform group-hover:scale-125 duration-500" size={48} />
+        <p className="text-xl font-bold text-text-primary mb-1">You're all caught up!</p>
+        <p className="text-sm text-text-muted">No pending approvals to worry about. Go have a snack.</p>
       </div>
     );
   }
 
   return (
-    <div className="bg-slate-800 rounded-lg border border-slate-700 overflow-hidden">
+    <div className="bg-surface-main/60 dark:bg-surface-main/40 backdrop-blur-2xl rounded-[32px] border border-border-subtle/60 dark:border-border-subtle/20 overflow-hidden shadow-panel transition-all hover:shadow-float flex flex-col min-h-[400px]">
       {/* Header */}
-      <div className="bg-gradient-to-r from-blue-900 to-blue-800 p-4 border-b border-blue-700">
-        <div className="flex items-center gap-2">
-          <Clock className="text-blue-300" size={20} />
+      <div className="bg-gradient-to-r from-accent-primary to-accent-secondary p-5 relative overflow-hidden shrink-0">
+        <div className="absolute -top-10 -right-10 w-32 h-32 bg-white/20 rounded-full blur-2xl pointer-events-none"></div>
+        <div className="flex items-center gap-3 relative z-10">
+          <div className="p-2 bg-white/20 rounded-2xl">
+              <Clock className="text-white" size={20} />
+          </div>
           <div>
-            <h3 className="font-bold text-white">Pending Approvals</h3>
-            <p className="text-sm text-blue-200">{pendingSales.length} sales awaiting decision</p>
+            <h3 className="font-bold text-white text-lg">Deals Waiting on You</h3>
+            <p className="text-sm text-white/80 font-medium">{pendingSales.length} {pendingSales.length === 1 ? 'sale needs' : 'sales need'} a quick look</p>
           </div>
         </div>
       </div>
 
       {/* Sales List */}
-      <div className="divide-y divide-slate-700">
+      <div className="divide-y divide-border-subtle flex-1 overflow-y-auto">
         {pendingSales.map((sale, idx) => (
-          <div key={sale.id} className="p-4 hover:bg-slate-700 transition-colors">
+          <div key={sale.id} className="p-4 hover:bg-surface-main/80 transition-colors group/item">
             {/* Main Row */}
             <div
               className="flex items-start justify-between cursor-pointer"
               onClick={() => setExpandedId(expandedId === sale.id ? null : sale.id)}
             >
               <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2">
-                  <span className="text-sm font-bold text-slate-400">#{idx + 1}</span>
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 rounded-full bg-surface-alt flex items-center justify-center text-xs font-bold text-text-muted group-hover/item:bg-accent-primary/10 group-hover/item:text-accent-primary transition-colors">
+                      {idx + 1}
+                  </div>
                   <div>
-                    <p className="font-semibold text-white truncate">{sale.customer}</p>
-                    <p className="text-sm text-slate-400">
-                      Agent: {getAgentName(sale.agentId!)} • {getTimeAgo(sale.timestamp)}
+                    <p className="font-bold text-text-primary truncate tracking-tight">{sale.customer}</p>
+                    <p className="text-sm font-medium text-text-muted">
+                      {getAgentName(sale.agentId!)} • {getTimeAgo(sale.timestamp)}
                     </p>
                   </div>
                 </div>
               </div>
 
-              <div className="flex items-center gap-3 ml-4">
+              <div className="flex items-center gap-4 ml-4">
                 <div className="text-right">
-                  <p className="text-lg font-bold text-emerald-400">${sale.amount}</p>
-                  <p className="text-sm text-slate-400">{sale.product}</p>
+                  <p className="text-lg font-bold text-emerald-500">${sale.amount}</p>
+                  <p className="text-xs font-medium text-text-muted bg-surface-alt px-2 py-0.5 rounded-full inline-block mt-0.5">{sale.product}</p>
                 </div>
-                <Eye className="text-slate-400 flex-shrink-0" size={18} />
+                <div className={`p-2 rounded-xl transition-colors ${expandedId === sale.id ? 'bg-accent-primary/10 text-accent-primary' : 'bg-surface-alt text-text-muted group-hover/item:bg-surface-main group-hover/item:text-text-primary'}`}>
+                    <Eye className="flex-shrink-0" size={18} />
+                </div>
               </div>
             </div>
 
             {/* Expanded Details */}
             {expandedId === sale.id && (
-              <div className="mt-4 pt-4 border-t border-slate-700 space-y-3">
+              <div className="mt-4 pt-4 border-t border-border-subtle space-y-4 animate-in slide-in-from-top-2 fade-in duration-300">
                 {sale.declineReason && (
-                  <div className="bg-yellow-900 bg-opacity-30 rounded p-2 border border-yellow-700">
-                    <p className="text-sm font-semibold text-yellow-300 mb-1">Issue:</p>
-                    <p className="text-sm text-yellow-100">{sale.declineReason}</p>
+                  <div className="bg-status-warning/10 rounded-2xl p-3 border border-status-warning/20 flex gap-3">
+                    <AlertTriangle className="text-status-warning flex-shrink-0 mt-0.5" size={18} />
+                    <div>
+                        <p className="text-sm font-bold text-status-warning mb-0.5">Previous Issue:</p>
+                        <p className="text-sm font-medium text-status-warning/80">{sale.declineReason}</p>
+                    </div>
                   </div>
                 )}
 
-                <div className="grid grid-cols-2 gap-3 text-sm">
+                <div className="grid grid-cols-2 gap-4 text-sm bg-surface-main p-4 rounded-2xl border border-border-subtle">
                   <div>
-                    <p className="text-sm text-slate-400 uppercase tracking-wider mb-1">Phone</p>
-                    <p className="font-mono text-white">{sale.phone}</p>
+                    <p className="text-xs font-bold text-text-muted uppercase tracking-wider mb-1">Phone</p>
+                    <p className="font-medium text-text-primary">{sale.phone || '—'}</p>
                   </div>
                   <div>
-                    <p className="text-sm text-slate-400 uppercase tracking-wider mb-1">Email</p>
-                    <p className="font-mono text-white truncate">{sale.email || '—'}</p>
+                    <p className="text-xs font-bold text-text-muted uppercase tracking-wider mb-1">CC #</p>
+                    <p className="font-mono text-emerald-500 font-bold bg-emerald-500/10 px-2 py-1 rounded inline-block">{decryptField(sale.cardNumber, ENCRYPTION_KEY) || '—'}</p>
+                  </div>
+                  <div>
+                    <p className="text-xs font-bold text-text-muted uppercase tracking-wider mb-1">State</p>
+                    <p className="font-medium text-text-primary">{sale.state || '—'}</p>
+                  </div>
+                  <div>
+                    <p className="text-xs font-bold text-text-muted uppercase tracking-wider mb-1">CVV / EXP</p>
+                    <p className="font-mono text-emerald-500 font-bold bg-emerald-500/10 px-2 py-1 rounded inline-block">{decryptField(sale.cardCvv, ENCRYPTION_KEY) || '***'} / {sale.cardExpiry || '—'}</p>
                   </div>
                 </div>
 
-                <div className="grid grid-cols-2 gap-3 text-sm mt-1">
-                  <div>
-                    <p className="text-sm text-slate-400 uppercase tracking-wider mb-1">Card Number (PCI Secured)</p>
-                    <p className="font-mono text-emerald-400 font-bold bg-black/30 p-1.5 rounded">{decryptField(sale.cardNumber, ENCRYPTION_KEY) || '—'}</p>
-                  </div>
-                  <div>
-                    <p className="text-sm text-slate-400 uppercase tracking-wider mb-1">CVV / Expiry</p>
-                    <p className="font-mono text-emerald-400 font-bold bg-black/30 p-1.5 rounded">{decryptField(sale.cardCvv, ENCRYPTION_KEY) || '***'} / {sale.cardExpiry || '—'}</p>
-                  </div>
-                </div>
-
-                <div>
-                  <p className="text-sm text-slate-400 uppercase tracking-wider mb-1">Decline/Cancel Reason</p>
-                  <select 
-                    value={declineReason}
-                    onChange={(e) => setDeclineReason(e.target.value)}
-                    className="w-full bg-slate-700 text-white p-2 rounded text-sm border border-slate-600"
-                  >
-                    {DECLINE_REASONS.map(reason => (
-                      <option key={reason} value={reason}>{reason}</option>
-                    ))}
-                  </select>
-                </div>
-
-                {sale.callSummary && (
-                  <div className="bg-slate-700 rounded p-2">
-                    <p className="text-sm text-slate-400 uppercase tracking-wider mb-1">Notes</p>
-                    <p className="text-sm text-slate-200">{sale.callSummary}</p>
-                  </div>
-                )}
-
-                {/* Action Buttons */}
-                <div className="flex gap-2 pt-2">
+                <div className="flex gap-2">
                   <button
-                    onClick={() => onApprove(sale.id)}
-                    className="flex-1 flex items-center justify-center gap-2 bg-green-600 hover:bg-green-700 text-white font-semibold py-2 rounded transition-colors"
+                    onClick={(e) => { e.stopPropagation(); onApprove(sale.id); }}
+                    className="flex-1 bg-emerald-500 hover:bg-emerald-600 text-white p-3 rounded-xl font-bold flex items-center justify-center gap-2 transition-all active:scale-95 shadow-md hover:shadow-lg"
                   >
-                    <CheckCircle2 size={18} />
-                    Approve
+                    <CheckCircle2 size={18} /> Approve!
                   </button>
                   <button
-                    onClick={() => onDecline(sale.id, declineReason, 'Declined')}
-                    className="flex-1 flex items-center justify-center gap-2 bg-red-600 hover:bg-red-700 text-white font-semibold py-2 rounded transition-colors"
+                    onClick={(e) => { e.stopPropagation(); onDecline(sale.id, declineReason, 'Declined'); }}
+                    className="flex-1 bg-surface-main border border-border-strong hover:bg-status-error/10 hover:border-status-error hover:text-status-error text-text-primary p-3 rounded-xl font-bold flex items-center justify-center gap-2 transition-all active:scale-95"
                   >
-                    <XCircle size={18} />
-                    Decline
-                  </button>
-                  <button
-                    onClick={() => onDecline(sale.id, declineReason, 'Cancelled')}
-                    className="flex-1 flex items-center justify-center gap-2 bg-slate-600 hover:bg-slate-700 text-white font-semibold py-2 rounded transition-colors"
-                  >
-                    <AlertTriangle size={18} />
-                    Cancel
+                    <XCircle size={18} /> Send Back
                   </button>
                 </div>
               </div>

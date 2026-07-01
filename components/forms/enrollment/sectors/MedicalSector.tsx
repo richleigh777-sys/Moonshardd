@@ -110,7 +110,7 @@ export function MedicalSector({ formData, handleIdentityChange }: any) {
                     placeholder="Add unlisted condition..."
                     className="w-full bg-surface-alt/50 border border-border-subtle rounded-xl pl-5 pr-14 py-4 text-lg font-medium text-white placeholder-text-muted outline-none transition-all focus:border-white focus:bg-surface-alt focus:ring-1 focus:ring-white shadow-sm"
                 />
-                <button type="submit" disabled={!customCondition.trim()} className="absolute right-2 top-1/2 -translate-y-1/2 p-2.5 bg-white text-black hover:bg-gray-100 rounded-xl transition-all disabled:opacity-50">
+                <button type="submit" disabled={!customCondition.trim()} className="absolute right-2 top-1/2 -translate-y-1/2 p-2.5 bg-surface-alt text-text-primary hover:bg-surface-highlight rounded-xl transition-all disabled:opacity-50">
                     Add
                 </button>
             </form>

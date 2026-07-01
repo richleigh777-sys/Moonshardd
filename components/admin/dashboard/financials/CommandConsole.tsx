@@ -56,7 +56,7 @@ export const CommandConsole: React.FC<CommandConsoleProps> = ({ onBroadcast }) =
         <PanelFrame 
             title="Internal Announcements" 
         >
-            <div className="flex flex-col h-full p-4 gap-4 bg-surface-main">
+            <div className="flex flex-col h-full p-4 gap-4 bg-transparent">
                 
                 {/* Preset Bar */}
                 <div className="flex gap-2 pb-2">
@@ -64,7 +64,7 @@ export const CommandConsole: React.FC<CommandConsoleProps> = ({ onBroadcast }) =
                         <button 
                             key={preset.label} 
                             onClick={() => loadPreset(preset)} 
-                            className="px-3 py-2 bg-surface-alt border border-border-subtle rounded-lg text-sm font-medium text-text-secondary hover:text-text-primary hover:bg-surface-highlight transition-colors flex-1 text-left"
+                            className="px-3 py-2 bg-surface-main/50 border border-border-subtle rounded-xl text-sm font-medium text-text-secondary hover:text-text-primary hover:bg-surface-highlight transition-colors flex-1 text-left"
                         >
                             <span>{preset.label}</span>
                         </button>
@@ -72,7 +72,7 @@ export const CommandConsole: React.FC<CommandConsoleProps> = ({ onBroadcast }) =
                 </div>
 
                 {/* Input Matrix */}
-                <div className="flex-1 bg-surface-alt border border-border-subtle rounded-xl flex flex-col focus-within:border-accent-primary/50 transition-colors shadow-sm overflow-hidden">
+                <div className="flex-1 bg-surface-main/50 border border-border-subtle rounded-2xl flex flex-col focus-within:border-accent-primary/50 transition-colors shadow-sm overflow-hidden">
                     <textarea 
                         value={message} 
                         onChange={(e) => setMessage(e.target.value)} 
@@ -80,7 +80,7 @@ export const CommandConsole: React.FC<CommandConsoleProps> = ({ onBroadcast }) =
                         className="w-full flex-1 bg-transparent text-sm font-sans text-text-primary p-4 outline-none resize-none" 
                     />
                     
-                    <div className="flex items-center justify-between p-3 bg-surface-main border-t border-border-subtle">
+                    <div className="flex items-center justify-between p-3 bg-transparent border-t border-border-subtle">
                         {/* Urgency Toggles */}
                         <div className="flex gap-2">
                             {(['Routine', 'Immediate', 'Flash'] as const).map(u => (
@@ -93,7 +93,7 @@ export const CommandConsole: React.FC<CommandConsoleProps> = ({ onBroadcast }) =
                                         ? (u === 'Flash' ? 'bg-rose-500 text-white' : 
                                            u === 'Immediate' ? 'bg-amber-500 text-white' : 
                                            'bg-emerald-500 text-white') 
-                                        : 'bg-surface-alt text-text-secondary hover:text-text-primary hover:bg-surface-highlight border border-border-subtle'}
+                                        : 'bg-surface-main/50 text-text-secondary hover:text-text-primary hover:bg-surface-highlight border border-border-subtle'}
                                     `}
                                 >
                                     {u}
@@ -112,7 +112,7 @@ export const CommandConsole: React.FC<CommandConsoleProps> = ({ onBroadcast }) =
                 </div>
 
                 {/* Log Output */}
-                <CommandLog logs={log} className="h-24 shrink-0 border border-border-subtle rounded-xl" />
+                <CommandLog logs={log} className="h-24 shrink-0 border border-border-subtle rounded-2xl" />
             </div>
         </PanelFrame>
     );

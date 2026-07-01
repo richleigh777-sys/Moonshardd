@@ -14,7 +14,7 @@ export const useAgentPortalLogic = () => {
     } = useCRM();
     const { setToast } = useSystem();
 
-    const [view, setView] = useState('dash');
+    const [view, setView] = useState('action');
     const [isFocusMode, setIsFocusMode] = useState(false);
     const [showCalculator, setShowCalculator] = useState(false);
     const [showScratchpad, setShowScratchpad] = useState(false);
@@ -36,11 +36,7 @@ export const useAgentPortalLogic = () => {
     }, [setToast]);
 
     const allowedTerminals = useMemo(() => {
-        const rawList = systemConfig.permissions?.agent || [
-            'dash', 'rhythm', 'comms', 'enrollment', 'pipeline', 'recovery', 'callbacks', 'contacts',
-            'ledger', 'payouts', 'standings', 'scripts', 'analytics'
-        ];
-        return rawList.filter(t => t !== 'contacts');
+        return ['action', 'money'];
     }, [systemConfig.permissions]);
 
     const isAllowed = useCallback((id: string) => allowedTerminals.includes(id), [allowedTerminals]);
@@ -48,7 +44,7 @@ export const useAgentPortalLogic = () => {
     useEffect(() => {
         if (!isAllowed(view)) {
             // Use timeout to avoid synchronous state update warning
-            const t = setTimeout(() => setView('dash'), 0);
+            const t = setTimeout(() => setView('action'), 0);
             return () => clearTimeout(t);
         }
     }, [allowedTerminals, view, isAllowed]);

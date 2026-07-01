@@ -23,7 +23,7 @@ export const CallbackProtocol: React.FC<CallbackProtocolProps> = ({
     const [showAudit, setShowAudit] = useState(false);
 
     return (
-    <div className="bg-surface-main/60 w-full max-w-2xl mx-auto rounded-xl border border-border-subtle shadow-float h-[80vh] flex flex-col overflow-hidden animate-in fade-in slide-in-from-right-8 duration-500 backdrop-blur-[40px] relative">
+    <div className="bg-surface-main/60 w-full max-w-4xl mx-auto rounded-xl border border-border-subtle shadow-float h-[80vh] flex flex-col overflow-hidden animate-in fade-in slide-in-from-right-8 duration-500 backdrop-blur-[40px] relative">
         <div className="absolute top-0 right-0 w-[400px] h-[300px] bg-amber-500/10 rounded-full blur-[100px] pointer-events-none -mr-32 -mt-32 z-0"></div>
         <div className="p-5 border-b border-border-subtle flex justify-between items-center bg-transparent relative z-10 shrink-0">
             <Button variant="secondary" onClick={() => { setMode('order'); sfx.playClick(); }} className="h-10 px-5 text-sm font-medium  tracking-wide bg-surface-alt/50 border-border-subtle hover:bg-surface-highlight hover:text-text-primary">

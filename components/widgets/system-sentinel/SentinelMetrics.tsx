@@ -17,7 +17,7 @@ export const SentinelMetrics: React.FC<SentinelMetricsProps> = ({ latency, traff
 
     return (
         <div className="grid grid-cols-2 gap-4 shrink-0">
-            <div className="bg-surface-alt p-4 rounded-xl border border-border-subtle flex flex-col justify-center relative overflow-hidden h-24 shadow-inner">
+            <div className="bg-surface-main/50 p-4 rounded-2xl border border-border-subtle flex flex-col justify-center relative overflow-hidden h-24 shadow-inner">
                 <div className="relative z-10">
                     <div className="flex items-center gap-2 mb-1">
                         <Globe size={14} className="text-indigo-600 dark:text-accent-secondary drop-drop-shadow-[0_0_8px_rgba(129,140,248,0.5)]"/>
@@ -30,7 +30,7 @@ export const SentinelMetrics: React.FC<SentinelMetricsProps> = ({ latency, traff
                 </div>
             </div>
             
-            <div className="bg-surface-alt p-4 rounded-xl border border-border-subtle flex flex-col justify-center h-24 shadow-inner relative overflow-hidden">
+            <div className="bg-surface-main/50 p-4 rounded-2xl border border-border-subtle flex flex-col justify-center h-24 shadow-inner relative overflow-hidden">
                 <div className="flex items-center gap-2 mb-1 relative z-10">
                     <Cpu size={14} className="text-status-success drop-drop-shadow-[0_0_8px_rgba(52,211,153,0.5)]"/>
                     <span className="text-[10px] font-[700] text-text-muted  tracking-widest drop-shadow-sm font-mono">Node Load</span>

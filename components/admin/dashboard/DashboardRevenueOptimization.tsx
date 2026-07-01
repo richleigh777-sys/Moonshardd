@@ -160,7 +160,7 @@ export const DashboardRevenueOptimization: React.FC<DashboardRevenueOptimization
   const totalPotential = opportunities.reduce((sum, o) => sum + o.potential, 0);
 
   return (
-    <div className="bg-slate-800 rounded-lg border border-slate-700 overflow-hidden">
+    <div className="bg-slate-800 rounded-lg border border-border-subtle overflow-hidden">
       {/* Header */}
       <div className="bg-gradient-to-r from-green-900 to-green-800 p-4 border-b border-green-700">
         <div className="flex items-center gap-2 mb-2">
@@ -182,13 +182,13 @@ export const DashboardRevenueOptimization: React.FC<DashboardRevenueOptimization
               <div className="flex items-start justify-between mb-2">
                 <div className="flex-1">
                   <h4 className="font-bold text-white">{opp.title}</h4>
-                  <p className="text-sm text-slate-300 mt-1">{opp.description}</p>
+                  <p className="text-sm text-text-primary mt-1">{opp.description}</p>
                 </div>
                 <div className="text-right ml-4">
                   <div className="text-lg font-bold text-emerald-400">
                     ${Math.round(opp.potential / 1000)}k
                   </div>
-                  <p className="text-sm text-slate-400">potential</p>
+                  <p className="text-sm text-text-secondary">potential</p>
                 </div>
               </div>
 
@@ -201,8 +201,8 @@ export const DashboardRevenueOptimization: React.FC<DashboardRevenueOptimization
         </div>
       ) : (
         <div className="p-4 text-center">
-          <Target className="mx-auto text-slate-600 mb-3" size={32} />
-          <p className="text-slate-400">No immediate opportunities identified</p>
+          <Target className="mx-auto text-text-muted mb-3" size={32} />
+          <p className="text-text-secondary">No immediate opportunities identified</p>
         </div>
       )}
     </div>

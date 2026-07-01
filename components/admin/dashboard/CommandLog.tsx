@@ -29,20 +29,20 @@ export const CommandLog: React.FC<CommandLogProps> = ({ logs, className = "" }) 
     };
 
     return (
-        <div className={`bg-surface-alt rounded-xl border border-border-subtle p-3 overflow-y-auto custom-scrollbar font-mono text-sm shadow-inner ${className}`}>
+        <div className={`bg-surface-main/50 rounded-2xl border border-border-subtle p-3 overflow-y-auto custom-scrollbar font-mono text-sm shadow-inner ${className}`}>
             {logs.length === 0 && (
-                <div className="h-full flex items-center justify-center text-slate-600 italic opacity-50">
+                <div className="h-full flex items-center justify-center text-text-muted italic opacity-50">
                     System Ready... Awaiting Input
                 </div>
             )}
             <div className="flex flex-col gap-1">
                 {logs.map((entry) => (
                     <div key={entry.id} className="flex gap-2 animate-in slide-in-from-left-2 duration-300">
-                        <span className="text-slate-500 opacity-50 select-none">[{entry.time}]</span>
+                        <span className="text-text-muted opacity-50 select-none">[{entry.time}]</span>
                         <span className={`font-bold ${getUrgencyColor(entry.urgency)}  tracking-wider min-w-[70px]`}>
                             {entry.urgency}:
                         </span>
-                        <span className="text-slate-300 break-words flex-1">{entry.msg}</span>
+                        <span className="text-text-primary break-words flex-1">{entry.msg}</span>
                     </div>
                 ))}
             </div>

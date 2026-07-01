@@ -16,10 +16,10 @@ export const InfrastructureList: React.FC<InfrastructureListProps> = ({ onlineCo
     ];
 
     return (
-        <div className="flex-1 bg-surface-alt rounded-2xl border border-border-subtle p-3 overflow-y-auto custom-scrollbar flex flex-col gap-2 min-h-0">
+        <div className="flex-1 bg-surface-main/50 rounded-2xl border border-border-subtle p-3 overflow-y-auto custom-scrollbar flex flex-col gap-2 min-h-0">
             <h5 className="text-[10px] font-[700] text-text-muted  tracking-widest mb-1 px-1 drop-drop-shadow-md">Infrastructure</h5>
             {services.map((svc, i) => (
-                <div key={i} className="flex items-center justify-between p-2.5 bg-surface-alt rounded-xl border border-border-subtle group hover:border-border-strong transition-all shrink-0 shadow-sm">
+                <div key={i} className="flex items-center justify-between p-2.5 bg-surface-main/50 rounded-2xl border border-border-subtle group hover:border-border-strong transition-all shrink-0 shadow-sm">
                     <div className="flex items-center gap-3">
                         <svc.icon size={14} className={svc.color}/>
                         <span className="text-[11px] font-bold text-text-secondary drop-shadow-sm  tracking-wider">{svc.label}</span>

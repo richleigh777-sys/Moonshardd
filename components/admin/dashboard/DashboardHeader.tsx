@@ -35,7 +35,7 @@ export const DashboardHeader: React.FC<DashboardHeaderProps> = ({ health, onTogg
                 </div>
                 <div>
                     <h2 className="text-xl font-display font-medium tracking-tight text-text-primary capitalize flex items-center gap-3">
-                        {isOffline ? 'System Offline' : 'Company Overview'}
+                        {isOffline ? 'Taking a nap 💤' : "How's the team doing? 🚀"}
                         <div className={`w-2.5 h-2.5 rounded-full animate-pulse shadow-sm ${isOffline ? 'bg-status-error text-status-error' : 'bg-status-success text-status-success'}`}></div>
                     </h2>
                     <p className="text-sm font-semibold text-text-muted mt-1 flex items-center gap-2">

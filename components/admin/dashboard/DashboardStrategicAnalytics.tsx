@@ -184,7 +184,7 @@ export const DashboardStrategicAnalytics: React.FC<DashboardStrategicAnalyticsPr
   return (
     <div className="space-y-4">
       {/* Tabs */}
-      <div className="flex gap-2 bg-slate-800 rounded-lg p-2 border border-slate-700 overflow-x-auto">
+      <div className="flex gap-2 bg-slate-800 rounded-lg p-2 border border-border-subtle overflow-x-auto">
         {(isSuperAdmin 
           ? ['cohort', 'attribution', 'churn', 'leaks & stalls', 'enterprise'] as const 
           : ['cohort', 'attribution', 'churn', 'leaks & stalls'] as const
@@ -202,7 +202,7 @@ export const DashboardStrategicAnalytics: React.FC<DashboardStrategicAnalyticsPr
               className={`flex-1 py-1.5 px-3 rounded font-semibold text-sm sm:text-sm transition-colors cursor-pointer whitespace-nowrap ${
                 isActive
                   ? 'bg-slate-700 text-white border border-slate-600'
-                  : 'text-slate-400 hover:text-white hover:bg-slate-700/30'
+                  : 'text-text-secondary hover:text-white hover:bg-surface-highlight'
               }`}
             >
               {displayLabel}
@@ -212,7 +212,7 @@ export const DashboardStrategicAnalytics: React.FC<DashboardStrategicAnalyticsPr
       </div>
 
       {/* Content */}
-      <div className="bg-slate-800 rounded-lg p-4 border border-slate-700">
+      <div className="bg-slate-800 rounded-lg p-4 border border-border-subtle">
         {activeTab === 'cohort' && (
           <div>
             <h3 className="font-bold text-white mb-4 flex items-center gap-2">
@@ -224,7 +224,7 @@ export const DashboardStrategicAnalytics: React.FC<DashboardStrategicAnalyticsPr
                 <div key={cohort.week}>
                   <div className="flex items-center justify-between mb-1">
                     <span className="text-sm font-semibold text-white">{cohort.week}</span>
-                    <span className="text-sm text-slate-400">
+                    <span className="text-sm text-text-secondary">
                       {cohort.avgSales} sales/agent • {cohort.agentCount} agents
                     </span>
                   </div>
@@ -253,7 +253,7 @@ export const DashboardStrategicAnalytics: React.FC<DashboardStrategicAnalyticsPr
                     <span className="font-semibold text-white">{source.source}</span>
                     <span className="text-emerald-400 font-bold">${Math.round(source.revenue / 1000)}k</span>
                   </div>
-                  <div className="grid grid-cols-3 gap-2 text-sm text-slate-300">
+                  <div className="grid grid-cols-3 gap-2 text-sm text-text-primary">
                     <div>Sales: {source.count}</div>
                     <div>Win Rate: {source.winRate}%</div>
                     <div>LTV: ${source.ltv}</div>
@@ -286,7 +286,7 @@ export const DashboardStrategicAnalytics: React.FC<DashboardStrategicAnalyticsPr
             </div>
             <div className="bg-slate-700 rounded p-4">
               <p className="font-semibold text-white mb-2">Reorder Rate: {churnData.reorderRate}</p>
-              <p className="text-sm text-slate-400">
+              <p className="text-sm text-text-secondary">
                 High reorder rate = good retention. Low rate = churn risk.
               </p>
             </div>
@@ -357,13 +357,13 @@ export const DashboardStrategicAnalytics: React.FC<DashboardStrategicAnalyticsPr
 
         {activeTab === 'enterprise' && isSuperAdmin && (
           <div className="space-y-6">
-            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center border-b border-slate-700 pb-4 gap-3">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center border-b border-border-subtle pb-4 gap-3">
               <div>
                 <h3 className="text-base font-extrabold text-white flex items-center gap-2 uppercase tracking-wider">
                   <ShieldAlert size={18} className="text-yellow-400" />
                   Global Cross-Tenant Operational Health
                 </h3>
-                <p className="text-sm text-slate-400 mt-1">
+                <p className="text-sm text-text-secondary mt-1">
                   Level 10 Super Admin global monitoring console & Database Isolations Integrity report.
                 </p>
               </div>
@@ -373,7 +373,7 @@ export const DashboardStrategicAnalytics: React.FC<DashboardStrategicAnalyticsPr
             </div>
 
             {loadingGlobal ? (
-              <div className="flex items-center justify-center p-12 text-slate-400 gap-2 font-mono text-sm">
+              <div className="flex items-center justify-center p-12 text-text-secondary gap-2 font-mono text-sm">
                 <Activity className="animate-spin text-cyan-400" size={16} />
                 <span>ACCUMULATING CROSS-TENANT DOCUMENT SCOPES...</span>
               </div>
@@ -381,26 +381,26 @@ export const DashboardStrategicAnalytics: React.FC<DashboardStrategicAnalyticsPr
               <div className="space-y-6">
                 {/* Visual scorecards */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                  <div className="bg-slate-900/60 border border-slate-700 p-4 rounded-xl">
-                    <span className="text-sm text-slate-400 uppercase font-bold tracking-wider block mb-1">Global Approved Volume</span>
+                  <div className="bg-slate-900/60 border border-border-subtle p-4 rounded-xl">
+                    <span className="text-sm text-text-secondary uppercase font-bold tracking-wider block mb-1">Global Approved Volume</span>
                     <div className="text-lg font-bold text-emerald-400 font-mono">
                       ${globalMetrics.totalSalesVolume.toLocaleString()}
                     </div>
                   </div>
-                  <div className="bg-slate-900/60 border border-slate-700 p-4 rounded-xl">
-                    <span className="text-sm text-slate-400 uppercase font-bold tracking-wider block mb-1">Total Transaction Records</span>
+                  <div className="bg-slate-900/60 border border-border-subtle p-4 rounded-xl">
+                    <span className="text-sm text-text-secondary uppercase font-bold tracking-wider block mb-1">Total Transaction Records</span>
                     <div className="text-lg font-bold text-white font-mono">
                       {globalMetrics.totalSalesCount}
                     </div>
                   </div>
-                  <div className="bg-slate-900/60 border border-slate-700 p-4 rounded-xl">
-                    <span className="text-sm text-slate-400 uppercase font-bold tracking-wider block mb-1">Global Customer Pool</span>
+                  <div className="bg-slate-900/60 border border-border-subtle p-4 rounded-xl">
+                    <span className="text-sm text-text-secondary uppercase font-bold tracking-wider block mb-1">Global Customer Pool</span>
                     <div className="text-lg font-bold text-cyan-400 font-mono">
                       {globalMetrics.totalCustomersCount}
                     </div>
                   </div>
-                  <div className="bg-slate-900/60 border border-slate-700 p-4 rounded-xl">
-                    <span className="text-sm text-slate-400 uppercase font-bold tracking-wider block mb-1">Registered Operators</span>
+                  <div className="bg-slate-900/60 border border-border-subtle p-4 rounded-xl">
+                    <span className="text-sm text-text-secondary uppercase font-bold tracking-wider block mb-1">Registered Operators</span>
                     <div className="text-lg font-bold text-indigo-400 font-mono">
                       {globalMetrics.totalUsersCount}
                     </div>
@@ -408,7 +408,7 @@ export const DashboardStrategicAnalytics: React.FC<DashboardStrategicAnalyticsPr
                 </div>
 
                 {/* Tenant Server Grid */}
-                <div className="bg-slate-900/40 border border-slate-700 rounded-xl p-4">
+                <div className="bg-slate-900/40 border border-border-subtle rounded-xl p-4">
                   <div className="flex items-center gap-2 mb-3">
                     <Server size={16} className="text-cyan-400" />
                     <span className="text-sm font-bold text-white uppercase tracking-wider">Tenant Breakdown Analytics</span>
@@ -417,7 +417,7 @@ export const DashboardStrategicAnalytics: React.FC<DashboardStrategicAnalyticsPr
                   <div className="overflow-x-auto">
                     <table className="w-full text-left border-collapse text-sm">
                       <thead>
-                        <tr className="border-b border-slate-700 text-slate-400">
+                        <tr className="border-b border-border-subtle text-text-secondary">
                           <th className="py-2 font-semibold">Tenant Server Code</th>
                           <th className="py-2 font-semibold text-right">Scope Revenue</th>
                           <th className="py-2 font-semibold text-right">Integrity Status</th>
@@ -439,7 +439,7 @@ export const DashboardStrategicAnalytics: React.FC<DashboardStrategicAnalyticsPr
                         ))}
                         {Object.keys(globalMetrics.revenueByServer).length === 0 && (
                           <tr>
-                            <td colSpan={3} className="py-4 text-center text-slate-500 italic">No tenant systems logged under dynamic scopes.</td>
+                            <td colSpan={3} className="py-4 text-center text-text-muted italic">No tenant systems logged under dynamic scopes.</td>
                           </tr>
                         )}
                       </tbody>
@@ -452,14 +452,14 @@ export const DashboardStrategicAnalytics: React.FC<DashboardStrategicAnalyticsPr
                   <Database size={24} className="text-teal-400 shrink-0 mt-0.5" />
                   <div>
                     <span className="text-sm font-bold text-white uppercase tracking-wide block">Strict Client-Server Bridge Security Shield</span>
-                    <p className="text-sm text-slate-300 leading-relaxed mt-1">
+                    <p className="text-sm text-text-primary leading-relaxed mt-1">
                       Postgres Documents emulation enforces server-level multi-tenant sandboxing checks based on dynamic payload <code className="bg-black/30 text-emerald-300 px-1 rounded">serverId</code> schemas. Agents can only access data tied strictly to their provisioned tenant scopes. Cross-tenant leakage detection algorithms return <strong className="text-emerald-400">0 critical violations</strong>.
                     </p>
                   </div>
                 </div>
               </div>
             ) : (
-              <div className="p-4 text-center text-slate-500 text-sm italic">
+              <div className="p-4 text-center text-text-muted text-sm italic">
                 Failed to obtain operational telemetry bounds. Verify Root clearances.
               </div>
             )}

@@ -1,4 +1,4 @@
-import React, { Suspense, lazy } from 'react';
+import React from 'react';
 import { LoginScreen } from '../../views/LoginScreen';
 import { SyncOverlay } from '../ui/Feedback';
 import { Toast } from '../ui/Toast';
@@ -15,8 +15,8 @@ import { GhostModeBanner } from './GhostModeBanner';
 import { useAppInitialization } from '../../hooks/useAppInitialization';
 import { GlobalWorkers } from './GlobalWorkers';
 
-const AgentPortal = lazy(() => import('../../views/AgentPortal').then(m => ({ default: m.AgentPortal })));
-const AdminPortal = lazy(() => import('../../views/AdminPortal').then(m => ({ default: m.AdminPortal })));
+import { AgentPortal } from '../../views/AgentPortal';
+import { AdminPortal } from '../../views/AdminPortal';
 
 export const MainContent: React.FC = () => {
     const { activeServer } = useSystem();
@@ -55,10 +55,8 @@ export const MainContent: React.FC = () => {
                             <ServerGateway />
                         )}
                         
-                        <Suspense fallback={<SystemBootSequence />}>
-                            {view === 'agent_dashboard' && currentUser && (currentUser.role === 'agent' || (currentUser.level || 0) < 5) && <AgentPortal />}
-                            {view === 'admin_dashboard' && currentUser && (currentUser.role === 'admin' || (currentUser.level || 0) >= 5) && <AdminPortal onGhostLogin={handleGhostLogin} />}
-                        </Suspense>
+                        {view === 'agent_dashboard' && currentUser && (currentUser.role === 'agent' || (currentUser.level || 0) < 5) && <AgentPortal />}
+                        {view === 'admin_dashboard' && currentUser && (currentUser.role === 'admin' || (currentUser.level || 0) >= 5) && <AdminPortal onGhostLogin={handleGhostLogin} />}
                     </div>
                 </div>
             </VibeLayout>

@@ -15,7 +15,7 @@ import { AudioPlayer } from '../ui/Base';
 const CRMLeadBlock = ({ title, details }: { title: string, details: any[] }) => {
     const [opened, setOpened] = useState(false);
     return (
-        <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 my-2 w-full max-w-[300px] font-sans break-words shadow-sm text-gray-800">
+        <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 my-2 w-full max-w-[300px] font-sans break-words shadow-sm text-text-primary">
             <div className="flex items-center gap-2 mb-3 pb-3 border-b border-amber-200/60">
                 <div className="p-2 bg-amber-400 text-amber-900 rounded-full">
                     <FileText size={16} />
@@ -26,7 +26,7 @@ const CRMLeadBlock = ({ title, details }: { title: string, details: any[] }) => 
                 {details.map((d, i) => (
                     <div key={i} className="flex justify-between items-start text-sm">
                         <span className="text-amber-700/80 font-medium shrink-0 mr-2">{d.key}:</span>
-                        <span className="text-gray-900 font-semibold text-right break-words">{d.value || '-'}</span>
+                        <span className="text-text-primary font-semibold text-right break-words">{d.value || '-'}</span>
                     </div>
                 ))}
             </div>
@@ -43,7 +43,7 @@ const CRMLeadBlock = ({ title, details }: { title: string, details: any[] }) => 
 const TeamsStackBlock = ({ title, details }: { title: string, details: any[] }) => {
     const [sent, setSent] = useState(false);
     return (
-        <div className="bg-sky-50 border border-sky-200 rounded-xl p-4 my-2 w-full max-w-[320px] font-sans break-words shadow-sm relative overflow-hidden text-gray-800">
+        <div className="bg-sky-50 border border-sky-200 rounded-xl p-4 my-2 w-full max-w-[320px] font-sans break-words shadow-sm relative overflow-hidden text-text-primary">
             <div className="absolute -right-4 -top-4 text-sky-200/40">
                 <Globe size={80} />
             </div>
@@ -57,7 +57,7 @@ const TeamsStackBlock = ({ title, details }: { title: string, details: any[] }) 
                 {details.map((d, i) => (
                     <div key={i} className="flex justify-between items-start text-sm">
                         <span className="text-sky-700/80 font-medium shrink-0 mr-2">{d.key}:</span>
-                        <span className="text-gray-900 font-semibold text-right break-words">{d.value || '-'}</span>
+                        <span className="text-text-primary font-semibold text-right break-words">{d.value || '-'}</span>
                     </div>
                 ))}
             </div>
@@ -74,7 +74,7 @@ const TeamsStackBlock = ({ title, details }: { title: string, details: any[] }) 
 const DNCBlock = ({ title, details }: { title: string, details: any[] }) => {
     const [confirmed, setConfirmed] = useState(false);
     return (
-        <div className="bg-rose-50 border border-rose-200 rounded-xl p-4 my-2 w-full max-w-[300px] font-sans break-words shadow-sm text-gray-800">
+        <div className="bg-rose-50 border border-rose-200 rounded-xl p-4 my-2 w-full max-w-[300px] font-sans break-words shadow-sm text-text-primary">
             <div className="flex items-center gap-2 mb-3 pb-3 border-b border-rose-200/60">
                 <div className="p-2 bg-rose-400 text-white rounded-full shadow-sm">
                     <PhoneOff size={16} />
@@ -85,7 +85,7 @@ const DNCBlock = ({ title, details }: { title: string, details: any[] }) => {
                 {details.map((d, i) => (
                     <div key={i} className="flex justify-between items-start text-sm">
                         <span className="text-rose-700/80 font-medium mr-2">{d.key}:</span>
-                        <span className="text-gray-900 font-semibold break-words">{d.value || '-'}</span>
+                        <span className="text-text-primary font-semibold break-words">{d.value || '-'}</span>
                     </div>
                 ))}
             </div>
@@ -102,7 +102,7 @@ const DNCBlock = ({ title, details }: { title: string, details: any[] }) => {
 const CallbackBlock = ({ title, details }: { title: string, details: any[] }) => {
     const [scheduled, setScheduled] = useState(false);
     return (
-        <div className="bg-orange-50 border border-orange-200 rounded-xl p-4 my-2 w-full max-w-[300px] font-sans break-words shadow-sm text-gray-800">
+        <div className="bg-orange-50 border border-orange-200 rounded-xl p-4 my-2 w-full max-w-[300px] font-sans break-words shadow-sm text-text-primary">
             <div className="flex items-center gap-2 mb-3 pb-3 border-b border-orange-200/60">
                 <div className="p-2 bg-orange-400 text-white rounded-full shadow-sm">
                     <CalendarClock size={16} />
@@ -113,7 +113,7 @@ const CallbackBlock = ({ title, details }: { title: string, details: any[] }) =>
                 {details.map((d, i) => (
                     <div key={i} className="flex justify-between items-start text-sm">
                         <span className="text-orange-700/80 font-medium mr-2">{d.key}:</span>
-                        <span className="text-gray-900 font-semibold break-words">{d.value || '-'}</span>
+                        <span className="text-text-primary font-semibold break-words">{d.value || '-'}</span>
                     </div>
                 ))}
             </div>
@@ -189,7 +189,7 @@ const parseMarkdown = (text: string) => {
             // 3. Process Markdown Styles (Bold, Italic, Strike, Code, Blockquote)
             let segments: React.ReactNode[] = [subPart];
             const rules = [
-                { regex: /`([^`]+)`/g, render: (m: string, idx: number) => <code key={`code-${idx}`} className="bg-black/5 text-gray-700 font-mono px-1.5 py-0.5 rounded-md text-[13px] border border-black/5">{m}</code> },
+                { regex: /`([^`]+)`/g, render: (m: string, idx: number) => <code key={`code-${idx}`} className="bg-black/5 text-text-primary font-mono px-1.5 py-0.5 rounded-md text-[13px] border border-black/5">{m}</code> },
                 { regex: /\*\*(.*?)\*\*/g, render: (m: string, idx: number) => <strong key={`bold-${idx}`} className="font-bold">{m}</strong> },
                 { regex: /\*(.*?)\*/g, render: (m: string, idx: number) => <em key={`italic-${idx}`} className="italic">{m}</em> },
                 { regex: /~(.*?)~/g, render: (m: string, idx: number) => <span key={`strike-${idx}`} className="line-through opacity-60">{m}</span> },
@@ -223,7 +223,7 @@ export const RichTextRenderer = React.memo(({ text }: { text: string }) => {
                 // Blockquote support
                 if (line.startsWith('> ')) {
                     return (
-                        <div key={idx} className="border-l-4 border-indigo-400 pl-4 my-2 italic text-gray-600 bg-indigo-50/50 py-2 pr-2 rounded-r-2xl">
+                        <div key={idx} className="border-l-4 border-indigo-400 pl-4 my-2 italic text-text-secondary bg-indigo-50/50 py-2 pr-2 rounded-r-2xl">
                             {parseMarkdown(line.slice(2))}
                         </div>
                     );
@@ -255,7 +255,7 @@ export const MessageAttachments = React.memo(({ attachments, isMe, onViewImage }
                                 alt={at.name} 
                             />
                             {at.isScanning && (
-                                <div className="absolute inset-0 flex flex-col items-center justify-center bg-white/60 ">
+                                <div className="absolute inset-0 flex flex-col items-center justify-center bg-surface-main/60 dark:bg-surface-main/40 ">
                                     <div className="w-12 h-12 border-4 border-indigo-200 border-t-indigo-500 rounded-full animate-spin mb-3 shadow-md"></div>
                                     <span className="text-sm font-semibold text-indigo-700 tracking-wide animate-pulse bg-white/80 px-4 py-1.5 rounded-full shadow-sm">Checking picture...</span>
                                 </div>
@@ -320,16 +320,16 @@ export const MessagePoll = React.memo(({ poll, isMe, currentUserId, onVote }: { 
                                     : (isMe ? 'border-indigo-400/30 hover:bg-white/10' : 'border-border-subtle hover:bg-surface-alt bg-white')
                                 }`}>
                                 <span className="flex items-center gap-3 relative z-10 w-full">
-                                    {isSelected ? <CheckCircle size={18} strokeWidth={2.5} className={isMe ? 'text-white shrink-0' : 'text-indigo-500 shrink-0'} /> : <div className={`w-4 h-4 rounded-full border-2 shrink-0 ${isMe ? 'border-white/50' : 'border-gray-300'}`}></div>}
+                                    {isSelected ? <CheckCircle size={18} strokeWidth={2.5} className={isMe ? 'text-white shrink-0' : 'text-indigo-500 shrink-0'} /> : <div className={`w-4 h-4 rounded-full border-2 shrink-0 ${isMe ? 'border-white/50' : 'border-border-strong'}`}></div>}
                                     <span className="truncate pr-4">{opt.text}</span>
                                 </span>
-                                <span className={`text-[13px] font-bold shrink-0 ${isMe ? 'opacity-90' : 'text-gray-500'}`}>{percentage}%</span>
+                                <span className={`text-[13px] font-bold shrink-0 ${isMe ? 'opacity-90' : 'text-text-muted'}`}>{percentage}%</span>
                             </div>
                         </div>
                     );
                 })}
             </div>
-            <div className={`mt-4 text-sm font-medium text-right ${isMe ? 'opacity-80' : 'text-gray-500'}`}>
+            <div className={`mt-4 text-sm font-medium text-right ${isMe ? 'opacity-80' : 'text-text-muted'}`}>
                 {totalVotes} {totalVotes === 1 ? 'vote' : 'votes'}
             </div>
         </div>
@@ -338,7 +338,7 @@ export const MessagePoll = React.memo(({ poll, isMe, currentUserId, onVote }: { 
 
 export const MessageLocation = React.memo(({ location, isMe }: { location: LocationData, isMe: boolean }) => (
     <div className={`mb-3 p-1.5 rounded-xl border overflow-hidden ${isMe ? 'bg-indigo-500/90 border-indigo-400/50' : 'bg-surface-main border-border-subtle'}`}>
-        <div className="h-32 bg-gray-100 relative items-center justify-center rounded-xl overflow-hidden shadow-inner">
+        <div className="h-32 bg-surface-alt relative items-center justify-center rounded-xl overflow-hidden shadow-inner">
             <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cartographer.png')] opacity-20"></div>
             <div className="absolute inset-0 flex items-center justify-center">
                  <div className="w-10 h-10 bg-indigo-500 rounded-full flex items-center justify-center shadow-xl animate-bounce text-white z-10">
@@ -349,7 +349,7 @@ export const MessageLocation = React.memo(({ location, isMe }: { location: Locat
                 </div>
             </div>
         </div>
-        <div className={`p-4 ${isMe ? 'text-white' : 'text-gray-800'}`}>
+        <div className={`p-4 ${isMe ? 'text-white' : 'text-text-primary'}`}>
             <p className="text-sm font-semibold opacity-80 flex items-center gap-1.5 mb-1">
                 <Globe size={16}/> Shared Location
             </p>
@@ -361,9 +361,9 @@ export const MessageLocation = React.memo(({ location, isMe }: { location: Locat
 export const MessageLinkPreview = React.memo(({ preview, isMe }: { preview: LinkPreview, isMe: boolean }) => (
     <div className={`mt-3 rounded-xl overflow-hidden border transition-shadow hover:shadow-md ${isMe ? 'border-indigo-400/50 bg-indigo-500/30' : 'border-border-subtle bg-surface-main'}`}>
         {preview.image && <div className="h-44 w-full bg-cover bg-center border-b border-black/5" style={{backgroundImage: `url(${preview.image})`}}></div>}
-        <div className={`p-4 ${isMe ? 'text-white' : 'text-gray-800'}`}>
+        <div className={`p-4 ${isMe ? 'text-white' : 'text-text-primary'}`}>
             <p className="text-[15px] font-bold truncate mb-1.5">{preview.title}</p>
-            <p className={`text-[13px] leading-relaxed line-clamp-2 ${isMe ? 'opacity-80' : 'text-gray-500'}`}>{preview.description}</p>
+            <p className={`text-[13px] leading-relaxed line-clamp-2 ${isMe ? 'opacity-80' : 'text-text-muted'}`}>{preview.description}</p>
         </div>
     </div>
 ));
@@ -392,7 +392,7 @@ export const MessageActions = ({
             <div className="relative" ref={pickerRef}>
                 <button 
                     onClick={(e) => { e.stopPropagation(); setShowPicker(!showPicker); }} 
-                    className={`w-9 h-9 flex items-center justify-center rounded-xl transition-colors ${showPicker ? 'bg-indigo-100 text-indigo-600' : 'hover:bg-surface-alt text-gray-400 hover:text-gray-700'}`}
+                    className={`w-9 h-9 flex items-center justify-center rounded-xl transition-colors ${showPicker ? 'bg-indigo-100 text-indigo-600' : 'hover:bg-surface-alt text-text-muted hover:text-text-primary'}`}
                 >
                     <Plus size={18} />
                 </button>
@@ -409,12 +409,12 @@ export const MessageActions = ({
 
             <div className="w-px h-6 bg-border-subtle mx-1"></div>
             
-            <button onClick={(e) => { e.stopPropagation(); onReply(); onClose(); }} className="p-2.5 hover:bg-surface-alt rounded-xl text-gray-500 hover:text-indigo-600 transition-all font-medium flex items-center gap-1.5" title="Reply"><Reply size={16}/> <span className="hidden sm:inline text-sm">Reply</span></button>
+            <button onClick={(e) => { e.stopPropagation(); onReply(); onClose(); }} className="p-2.5 hover:bg-surface-alt rounded-xl text-text-muted hover:text-indigo-600 transition-all font-medium flex items-center gap-1.5" title="Reply"><Reply size={16}/> <span className="hidden sm:inline text-sm">Reply</span></button>
             
             {isMe && (
                 <>
-                    <button onClick={(e) => { e.stopPropagation(); onEdit(); onClose(); }} className="p-2.5 hover:bg-surface-alt rounded-xl text-gray-400 hover:text-gray-700 transition-all" title="Edit"><Edit2 size={16}/></button>
-                    <button onClick={(e) => { e.stopPropagation(); onDelete(); onClose(); }} className="p-2.5 hover:bg-rose-50 rounded-xl text-gray-400 hover:text-rose-500 transition-all" title="Delete"><Trash2 size={16}/></button>
+                    <button onClick={(e) => { e.stopPropagation(); onEdit(); onClose(); }} className="p-2.5 hover:bg-surface-alt rounded-xl text-text-muted hover:text-text-primary transition-all" title="Edit"><Edit2 size={16}/></button>
+                    <button onClick={(e) => { e.stopPropagation(); onDelete(); onClose(); }} className="p-2.5 hover:bg-rose-50 rounded-xl text-text-muted hover:text-rose-500 transition-all" title="Delete"><Trash2 size={16}/></button>
                 </>
             )}
         </div>
@@ -440,12 +440,12 @@ export const ContextBanner = ({
                     <span className={`text-[13px] font-bold ${editingMsg ? 'text-amber-600' : 'text-indigo-600'}`}>
                         {editingMsg ? 'Editing your message' : `Reply to ${replyTo?.senderName}`}
                     </span>
-                    <span className="text-sm text-gray-500 truncate max-w-[200px] md:max-w-md">
+                    <span className="text-sm text-text-muted truncate max-w-[200px] md:max-w-md">
                         {editingMsg ? editingMsg.text : replyTo?.text}
                     </span>
                 </div>
             </div>
-            <button onClick={onCancel} className="p-2 hover:bg-black/5 rounded-full text-gray-400 hover:text-gray-700 transition-colors">
+            <button onClick={onCancel} className="p-2 hover:bg-black/5 rounded-full text-text-muted hover:text-text-primary transition-colors">
                 <X size={20}/>
             </button>
         </div>
@@ -457,8 +457,8 @@ export const DragOverlay = () => (
         <div className="w-28 h-28 bg-indigo-100 rounded-full flex items-center justify-center mb-6 animate-bounce shadow-lg">
             <UploadCloud size={56} className="text-indigo-500" />
         </div>
-        <h3 className="text-xl font-bold text-gray-900 drop-shadow-sm">Drop here!</h3>
-        <p className="text-base font-medium text-gray-500 mt-3">Release your files to add them to the chat</p>
+        <h3 className="text-xl font-bold text-text-primary drop-shadow-sm">Drop here!</h3>
+        <p className="text-base font-medium text-text-muted mt-3">Release your files to add them to the chat</p>
     </div>
 );
 

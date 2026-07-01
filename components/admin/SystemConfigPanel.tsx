@@ -1,10 +1,10 @@
  
 
-import React, { useState, useEffect, useCallback, lazy, Suspense } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { 
     Settings, Clock, DollarSign, Save, Lock, Globe, Database,
-    RefreshCw, Terminal, LayoutGrid, Server, Zap, Loader2
+    RefreshCw, Terminal, LayoutGrid, Server, Zap
 } from 'lucide-react';
 import { Card, Button } from '../ui/Base';
 import { SystemConfig, Sale, Note } from '../../types';
@@ -12,19 +12,13 @@ import { sfx } from '../../lib/soundService';
 import { useSystem } from '../../hooks/useSystem';
 import { useAuth } from '../../hooks/useAuth';
 
-// Lazy load Tabs
-const OperationsTab = lazy(() => import('./system/tabs/OperationsTab').then(m => ({ default: m.OperationsTab })));
-const FinancialsTab = lazy(() => import('./system/FinancialsTab').then(m => ({ default: m.FinancialsTab })));
-const ClearanceTab = lazy(() => import('./system/tabs/ClearanceTab').then(m => ({ default: m.ClearanceTab })));
-const IntegrationsTab = lazy(() => import('./system/tabs/IntegrationsTab').then(m => ({ default: m.IntegrationsTab })));
-const CRMConfigTab = lazy(() => import('./system/tabs/CRMConfigTab').then(m => ({ default: m.CRMConfigTab })));
-const TerminalsConfigTab = lazy(() => import('./system/tabs/TerminalsConfigTab').then(m => ({ default: m.TerminalsConfigTab })));
-
-const ConfigTabLoader = () => (
-    <div className="w-full h-64 flex flex-col items-center justify-center text-text-muted">
-        <Loader2 className="w-6 h-6 animate-spin text-accent-primary" />
-    </div>
-);
+// Standard Imports
+import { OperationsTab } from './system/tabs/OperationsTab';
+import { FinancialsTab } from './system/FinancialsTab';
+import { ClearanceTab } from './system/tabs/ClearanceTab';
+import { IntegrationsTab } from './system/tabs/IntegrationsTab';
+import { CRMConfigTab } from './system/tabs/CRMConfigTab';
+import { TerminalsConfigTab } from './system/tabs/TerminalsConfigTab';
 
 interface SystemConfigPanelProps {
     config: SystemConfig;
@@ -235,7 +229,6 @@ export const SystemConfigPanel = ({ config, onUpdate, sales, notes }: SystemConf
                     <div className="flex-1 overflow-y-auto custom-scrollbar relative bg-surface-main">
                         <div className="absolute inset-0 bg-gradient-to-br from-surface-alt/20 to-transparent pointer-events-none"></div>
                         <div className="max-w-5xl mx-auto h-full p-10 pb-32 relative z-10 w-full">
-                            <Suspense fallback={<ConfigTabLoader />}>
                                 <AnimatePresence mode="wait">
                                     <motion.div
                                         key={activeTab}
@@ -253,7 +246,6 @@ export const SystemConfigPanel = ({ config, onUpdate, sales, notes }: SystemConf
                                         {activeTab === 'terminals' && <TerminalsConfigTab config={localConfig} onChange={handleChange} isSuperAdmin={isSuperAdmin} />}
                                     </motion.div>
                                 </AnimatePresence>
-                            </Suspense>
                         </div>
                     </div>
 

@@ -65,7 +65,7 @@ export const DispositionModal: React.FC<DispositionModalProps> = ({ isOpen, onCl
   const outcomes = [
     { id: 'busy', label: 'Customer Busy', icon: PhoneMissed, color: 'text-amber-500', bg: 'bg-amber-500/10', border: 'border-amber-500/20' },
     { id: 'not_interested', label: 'Not Interested', icon: Ban, color: 'text-rose-500', bg: 'bg-rose-500/10', border: 'border-rose-500/20' },
-    { id: 'disconnected', label: 'Disconnected', icon: PhoneOff, color: 'text-slate-400', bg: 'bg-slate-500/10', border: 'border-slate-500/20' },
+    { id: 'disconnected', label: 'Disconnected', icon: PhoneOff, color: 'text-text-secondary', bg: 'bg-surface-alt', border: 'border-border-subtle' },
     { id: 'callback', label: 'Set Callback (Lead)', icon: CalendarClock, color: 'text-indigo-400', bg: 'bg-indigo-500/10', border: 'border-indigo-500/20' },
     { id: 'hold_order', label: 'Hold / Schedule Charge', icon: DollarSign, color: 'text-emerald-500', bg: 'bg-emerald-500/10', border: 'border-emerald-500/20' },
   ];

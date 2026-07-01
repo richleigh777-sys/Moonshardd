@@ -182,7 +182,7 @@ export const TelephonyPanel = () => {
     });
 
     // Run scraper every 2 seconds in the background
-    setInterval(scrapeAndPush, 2000);
+    setInterval(scrapeAndPush, 10000); // Increased to 10s to prevent constant Cloud Run wakeup
   }, 3000);
 })();`;
 

@@ -44,14 +44,14 @@ export const SmartNotification: React.FC<SmartNotificationProps> = ({
       <div className="flex items-start justify-between">
         <div>
           <h4 className="font-bold text-white">{notification.title}</h4>
-          <p className="text-sm text-gray-200 mt-1">{notification.body}</p>
+          <p className="text-sm text-text-primary mt-1">{notification.body}</p>
         </div>
         <button
           onClick={() => {
             setIsVisible(false);
             onDismiss(notification.id);
           }}
-          className="text-gray-300 hover:text-white ml-3"
+          className="text-text-primary hover:text-white ml-3"
         >
           ✕
         </button>

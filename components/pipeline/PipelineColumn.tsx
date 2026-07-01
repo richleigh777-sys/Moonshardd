@@ -23,7 +23,7 @@ const STAGE_CONFIG: Record<string, { color: string, bg: string, label: string, i
     'Pitching': { color: 'text-purple-500', bg: 'bg-purple-500/10', accent: 'border-purple-500/20', label: 'On The Phone', icon: Clock, strategy: 'Execution: 1-Call Close focus.' },
     'Rebuttal': { color: 'text-rose-500', bg: 'bg-rose-500/10', accent: 'border-rose-500/20', label: 'Overcoming Objections', icon: AlertCircle, strategy: 'Persistence: Loop until yes or firm no.' },
     'Closed Won': { color: 'text-status-success', bg: 'bg-emerald-500/10', accent: 'border-emerald-500/20', label: 'Payment Collected', icon: DollarSign, strategy: 'Growth: Cross-sell & Retention.' },
-    'Closed Lost': { color: 'text-slate-500', bg: 'bg-slate-500/10', accent: 'border-slate-500/20', label: 'Archived Lead', icon: Calendar, strategy: 'Archived / Ghosted.' },
+    'Closed Lost': { color: 'text-text-muted', bg: 'bg-surface-alt', accent: 'border-border-subtle', label: 'Archived Lead', icon: Calendar, strategy: 'Archived / Ghosted.' },
 };
 
 const formatCurrency = (amount: number) => {

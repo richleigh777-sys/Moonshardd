@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { Sale } from '../../../types';
 import { sfx } from '../../../lib/soundService';
 import { useCRM } from '../../../hooks/useCRM';
@@ -6,10 +6,11 @@ import { useSystem } from '../../../hooks/useSystem';
 import { useAuth } from '../../../hooks/useAuth';
 import { useLedgerData, useLedgerLayout } from './hooks';
 import { useImportLogic } from './useImportLogic';
+import { useInfiniteCollection } from '../../../hooks/useInfiniteCollection';
 
 const ITEMS_PER_PAGE = 1000;
 
-export const useSalesLedgerUI = (sales: Sale[], onImport?: (data: any) => Promise<number>, onBulkAction?: (ids: string[], action: string, payload?: any) => void) => {
+export const useSalesLedgerUI = (initialSales: Sale[], onImport?: (data: any) => Promise<number>, onBulkAction?: (ids: string[], action: string, payload?: any) => void) => {
     const { bulkUpdateSales, bulkDeleteSales } = useCRM();
     const { setToast } = useSystem();
     const { currentUser } = useAuth();
@@ -18,18 +19,22 @@ export const useSalesLedgerUI = (sales: Sale[], onImport?: (data: any) => Promis
     const [showColumnConfig, setShowConfig] = useState(false);
     const [currentPage, setCurrentPage] = useState(1);
     const [density, setDensity] = useState<'compact' | 'comfortable'>('comfortable');
-    const [isRefreshing, setIsRefreshing] = useState(false);
     const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
     const [isBulkEdit, setIsBulkEdit] = useState(false);
     const [isSaving, setIsSaving] = useState(false);
     const [activePreset, setActivePreset] = useState<string | null>(null);
 
     const { 
-        processedSales, summary, searchTerm, setSearchTerm, 
+        data: serverSales, loading: isLoading, hasMore, fetchNextPage, total, refresh 
+    } = useInfiniteCollection('sales', {});
 
+    const salesToUse = serverSales.length > 0 ? serverSales : initialSales;
+
+    const { 
+        processedSales, summary, searchTerm, setSearchTerm, 
         filters, setFilters, sortConfig, handleSort,
         uniqueAgents, uniqueProducts, resetFilters 
-    } = useLedgerData(sales);
+    } = useLedgerData(salesToUse);
 
     const [columnPreferences, setColumnPreferences] = useLedgerLayout();
     
@@ -39,12 +44,9 @@ export const useSalesLedgerUI = (sales: Sale[], onImport?: (data: any) => Promis
         handleFileTrigger, handleFileChange, autoMapColumns, executeImport 
     } = useImportLogic(onImport);
 
-    const paginatedSales = useMemo(() => {
-        const start = (currentPage - 1) * ITEMS_PER_PAGE;
-        return processedSales.slice(start, start + ITEMS_PER_PAGE);
-    }, [processedSales, currentPage]);
+    const paginatedSales = processedSales; // We use infinite scroll now, so just pass processedSales
 
-    const totalPages = Math.ceil(processedSales.length / ITEMS_PER_PAGE);
+    const totalPages = Math.ceil(total / ITEMS_PER_PAGE) || 1;
 
     const handlePageChange = (newPage: number) => {
         if (newPage < 1 || newPage > totalPages) return;
@@ -53,9 +55,7 @@ export const useSalesLedgerUI = (sales: Sale[], onImport?: (data: any) => Promis
     };
     
     const handleRefresh = async () => {
-        setIsRefreshing(true);
-        await new Promise(r => setTimeout(r, 1000));
-        setIsRefreshing(false);
+        refresh();
         setToast({ title: 'Ledger', message: "Ledger Synchronized", type: "success" });
         sfx.playSuccess();
     };
@@ -120,7 +120,7 @@ export const useSalesLedgerUI = (sales: Sale[], onImport?: (data: any) => Promis
 
     return {
         showAdvancedFilters, setShowAdvancedFilters, showColumnConfig, setShowConfig,
-        currentPage, setCurrentPage, density, setDensity, isRefreshing, setIsRefreshing,
+        currentPage, setCurrentPage, density, setDensity, isRefreshing: isLoading, setIsRefreshing: () => {},
         selectedIds, setSelectedIds, isBulkEdit, setIsBulkEdit, isSaving, setIsSaving,
         activePreset, setActivePreset,
         processedSales, summary, searchTerm, setSearchTerm, filters, setFilters,
@@ -128,6 +128,6 @@ export const useSalesLedgerUI = (sales: Sale[], onImport?: (data: any) => Promis
         columnPreferences, setColumnPreferences, fileInputRef, importConfig, setImportConfig,
         columnMapping, setColumnMapping, isImporting, handleFileTrigger, handleFileChange,
         autoMapColumns, executeImport, paginatedSales, totalPages, handlePageChange,
-        handleRefresh, handleBulkCommand, handleSaveBulk
+        handleRefresh, handleBulkCommand, handleSaveBulk, isLoading, hasMore, fetchNextPage
     };
 };

@@ -70,7 +70,7 @@ export function Stage3Checkout({ cart, formData, handleIdentityChange, useShippi
                                   <span className="text-text-muted text-sm uppercase tracking-wide font-semibold">Same as Shipping</span>
                                   <div className="relative inline-flex items-center">
                                       <input type="checkbox" className="sr-only peer" checked={useShippingForBilling} onChange={(e) => setUseShippingForBilling(e.target.checked)} />
-                                      <div className="w-11 h-6 bg-surface-main border border-border-strong peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-accent-primary peer-checked:border-accent-primary"></div>
+                                      <div className="w-11 h-6 bg-surface-main border border-border-strong peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-border-strong after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-accent-primary peer-checked:border-accent-primary"></div>
                                   </div>
                               </label>
                           </div>

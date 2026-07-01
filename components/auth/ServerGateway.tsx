@@ -99,18 +99,18 @@ export const ServerGateway: React.FC = () => {
                             <div className="p-2.5 bg-accent-primary/10 rounded-xl border border-accent-primary/20 text-accent-primary shadow-sm">
                                 <Building size={28} strokeWidth={2}/> 
                             </div>
-                            Organization Workspaces
+                            My Workspaces
                         </h1>
                         <div className="flex items-center gap-3 text-sm font-medium text-text-secondary">
                             <span className="flex items-center gap-1.5"><Cpu size={16} className="text-status-success"/> Systems Online</span>
                             <div className="w-1 h-1 bg-border-strong rounded-full"></div>
                             <span>Welcome back, {currentUser?.name || 'Administrator'}</span>
                             <div className="w-1 h-1 bg-border-strong rounded-full"></div>
-                            <span className="text-status-warning flex items-center gap-1.5"><Shield size={16}/> Sec Level 10</span>
+                            <span className="text-status-warning flex items-center gap-1.5"><Shield size={16}/> Admin Access</span>
                         </div>
                     </div>
-                    <Button onClick={openCreateModal} className="h-12 px-6 bg-text-primary hover:bg-black dark:bg-white dark:hover:bg-gray-200 dark:text-black text-white font-bold tracking-wide rounded-xl transition-all shadow-md active:scale-95 flex items-center gap-2">
-                        <Plus size={18} strokeWidth={2}/> Create Instance
+                    <Button onClick={openCreateModal} className="h-12 px-6 bg-text-primary hover:bg-black dark:bg-white dark:hover:bg-surface-highlight dark:text-black text-white font-bold tracking-wide rounded-xl transition-all shadow-md active:scale-95 flex items-center gap-2">
+                        <Plus size={18} strokeWidth={2}/> Create New ✨
                     </Button>
                 </div>
 
@@ -136,7 +136,7 @@ export const ServerGateway: React.FC = () => {
                 onClose={() => setIsCreateOpen(false)}
                 onSave={handleSaveCreate}
                 title="Create Workspace Instance"
-                actionLabel="Initialize Instance"
+                actionLabel="Let's Go!"
             />
 
             {/* Edit Modal */}
@@ -172,14 +172,14 @@ export const ServerGateway: React.FC = () => {
                                     <AlertTriangle size={28} strokeWidth={2} className="animate-pulse" />
                                 </div>
                                 <div>
-                                    <h2 className="text-lg font-bold">Destructive Action</h2>
+                                    <h2 className="text-lg font-bold">Delete Workspace?</h2>
                                     <p className="text-xs font-bold text-status-error/80 uppercase tracking-wide">Cannot be undone</p>
                                 </div>
                             </div>
                             
                             <p className="text-sm font-medium text-text-secondary mb-6 leading-relaxed">
                                 You are about to permanently delete <span className="text-text-primary font-bold">{targetServer?.name}</span>. 
-                                All records, settings, and staff associations inside this workspace will be removed.
+                                This will gently clear out all of its data, settings, and team connections.
                             </p>
 
                             <div className="space-y-2 mb-8">

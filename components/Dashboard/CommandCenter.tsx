@@ -54,7 +54,7 @@ export const CommandCenter: React.FC = () => {
       {/* HEADER */}
       <div className="mb-6">
         <h1 className="text-lg font-bold text-white">Sales Command Center</h1>
-        <p className="text-slate-400 text-sm">Stay focused. Make the calls. Close the deals.</p>
+        <p className="text-text-secondary text-sm">Stay focused. Make the calls. Close the deals.</p>
       </div>
 
       {/* HELP TIP */}
@@ -63,7 +63,7 @@ export const CommandCenter: React.FC = () => {
           <span className="text-lg">{help.icon}</span>
           <div className="flex-1">
             <h3 className="font-semibold text-white">{help.title}</h3>
-            <p className="text-slate-200 text-sm mt-1">{help.message}</p>
+            <p className="text-text-primary text-sm mt-1">{help.message}</p>
             {help.action && (
               <button
                 onClick={help.action.handler}
@@ -140,8 +140,8 @@ export const CommandCenter: React.FC = () => {
         </div>
       ) : (
         <div className="mb-6 bg-slate-700 rounded-lg p-4 border border-slate-600 text-center">
-          <p className="text-slate-300 text-lg font-semibold">No pending callbacks</p>
-          <p className="text-slate-400 text-sm mt-2">Great! Check the lead queue for new opportunities.</p>
+          <p className="text-text-primary text-lg font-semibold">No pending callbacks</p>
+          <p className="text-text-secondary text-sm mt-2">Great! Check the lead queue for new opportunities.</p>
         </div>
       )}
 
@@ -151,10 +151,10 @@ export const CommandCenter: React.FC = () => {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {/* Sales Count */}
           <div className="bg-slate-700 rounded-lg p-4 border border-slate-600">
-            <p className="text-slate-400 text-sm font-semibold uppercase mb-2">Sales Today</p>
+            <p className="text-text-secondary text-sm font-semibold uppercase mb-2">Sales Today</p>
             <p className="text-xl font-bold text-white">
               {stats.salesCount}
-              <span className="text-lg text-slate-400"> / {stats.dailyGoal}</span>
+              <span className="text-lg text-text-secondary"> / {stats.dailyGoal}</span>
             </p>
             <div className="mt-3 w-full bg-slate-600 rounded-full h-2">
               <div
@@ -170,23 +170,23 @@ export const CommandCenter: React.FC = () => {
                 style={{ width: `${stats.progressPercentage}%` }}
               />
             </div>
-            <p className="text-sm text-slate-400 mt-2">
+            <p className="text-sm text-text-secondary mt-2">
               {stats.dailyGoal - stats.salesCount} to go!
             </p>
           </div>
 
           {/* Revenue */}
           <div className="bg-slate-700 rounded-lg p-4 border border-slate-600">
-            <p className="text-slate-400 text-sm font-semibold uppercase mb-2">Revenue</p>
+            <p className="text-text-secondary text-sm font-semibold uppercase mb-2">Revenue</p>
             <p className="text-xl font-bold text-green-400">${stats.totalRevenue.toLocaleString()}</p>
-            <p className="text-sm text-slate-400 mt-2 font-semibold">
+            <p className="text-sm text-text-secondary mt-2 font-semibold">
               Average: ${stats.totalRevenue / Math.max(1, stats.salesCount)}
             </p>
           </div>
 
           {/* Commission */}
           <div className="bg-slate-700 rounded-lg p-4 border border-slate-600">
-            <p className="text-slate-400 text-sm font-semibold uppercase mb-2">Commission Earned</p>
+            <p className="text-text-secondary text-sm font-semibold uppercase mb-2">Commission Earned</p>
             <p className="text-xl font-bold text-blue-400">${stats.commission.toLocaleString()}</p>
             <p className={`text-sm mt-2 font-semibold ${
               stats.commission >= stats.commissionTarget ? 'text-green-400' : 'text-yellow-400'

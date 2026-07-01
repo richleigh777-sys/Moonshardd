@@ -439,7 +439,7 @@ export const useEnrollment = (onSuccess: () => void, customerData?: any) => {
             const cleanEmailSale = formData.email ? formData.email.trim().toLowerCase() : '';
             
             // Deduplication Engine: Gather ALL duplicates from DB to consolidate
-            let allMatches = customers.filter(c => 
+            const allMatches = customers.filter(c => 
                 (cleanPhoneSale.length >= 10 && normalizePhone(c.phone) === cleanPhoneSale) ||
                 (cleanEmailSale.length > 4 && c.email?.trim().toLowerCase() === cleanEmailSale)
             );
@@ -447,11 +447,11 @@ export const useEnrollment = (onSuccess: () => void, customerData?: any) => {
             // Sort by most recently updated so the "master" record is the freshest one
             allMatches.sort((a, b) => (b.updatedAt || b.createdAt || 0) - (a.updatedAt || a.createdAt || 0));
             
-            let existingCustomer = allMatches.length > 0 ? allMatches[0] : null;
+            const existingCustomer = allMatches.length > 0 ? allMatches[0] : null;
             
             // Aggregate all custom fields and medical conditions from all duplicates before purging them
             let aggregatedCustomFields = existingCustomer?.customFields || {};
-            let aggregatedMedicalConditions = new Set<string>(existingCustomer?.medicalConditions || []);
+            const aggregatedMedicalConditions = new Set<string>(existingCustomer?.medicalConditions || []);
             
             if (allMatches.length > 1) {
                 for (let i = 1; i < allMatches.length; i++) {

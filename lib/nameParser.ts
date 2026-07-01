@@ -7,7 +7,7 @@ export interface ParsedName {
 export function parseFullName(fullName: string): ParsedName {
     if (!fullName) return { firstName: '', lastName: '' };
 
-    let cleanedName = fullName.trim();
+    const cleanedName = fullName.trim();
     
     // Check for "Last, First" format
     if (cleanedName.includes(',')) {
@@ -33,10 +33,10 @@ export function parseFullName(fullName: string): ParsedName {
     // Common suffixes
     const suffixes = new Set(['jr', 'sr', 'jr.', 'sr.', 'ii', 'iii', 'iv', 'v', 'phd', 'md', 'dds', 'esq', 'esq.']);
     
-    let lastNameParts = [];
+    const lastNameParts = [];
     let firstNameParts = [];
     
-    let lastPart = nameParts[nameParts.length - 1].toLowerCase();
+    const lastPart = nameParts[nameParts.length - 1].toLowerCase();
     
     if (suffixes.has(lastPart) && nameParts.length > 2) {
         // Last part is a suffix, and we have at least 3 parts (e.g., John Doe Jr.)

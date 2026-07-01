@@ -8,6 +8,7 @@ import { GoogleGenAI, Type } from "@google/genai";
 import { query, db, schema } from "./lib/db.ts"; // Secure DB Gateway
 import { eq, inArray, and, or, sql } from "drizzle-orm";
 import { initializeRealtime, broadcast as originalBroadcast } from "./lib/realtime.ts"; // WebSocket Hub
+import { runWorkflows, check90DayInactivity } from "./lib/workflowEngine.ts";
 import { LRUCache } from "lru-cache";
 
 const analyticsCache = new LRUCache({
@@ -28,6 +29,10 @@ function startAutomatedWorkers() {
     setInterval(async () => {
         try {
             if (!process.env.DATABASE_URL) return; // Skip if no DB is attached yet
+            
+            // Run 90-day inactivity check for customers
+            await check90DayInactivity();
+            
             // Identify leads due for automated drip campaigns
             const result = await query(
                 `SELECT d.id as campaign_id, l.email, l.phone 
@@ -48,7 +53,7 @@ function startAutomatedWorkers() {
         } catch (err) {
             console.error("[Automation Error]:", err);
         }
-    }, 60000); // Check every minute
+    }, 300000); // Check every 5 minutes to reduce Cloud Run/SQL costs
 }
 
 async function startServer() {
@@ -157,6 +162,17 @@ async function startServer() {
     message: { error: 'Too many requests, please try again later.' }
   });
   app.use('/api', limiter);
+
+  app.use('/api', (req, res, next) => {
+      const userLevel = parseInt(String(req.headers['x-user-level'] || '1'), 10);
+      const action = req.query.action || req.body?.action || req.headers['x-action'] || (req as any).action;
+      
+      if (userLevel < 10 && action === 'export') {
+          return res.status(403).json({ error: "Forbidden: Level 10 Clearance Required for Export." });
+      }
+      
+      next();
+  });
 
   app.use(express.json({ limit: '1mb' }));
 
@@ -359,6 +375,66 @@ async function startServer() {
       });
   });
 
+  app.post("/api/math/commission", async (req, res) => {
+      try {
+          const { sales, config, attendance, users } = req.body;
+          
+          // Helper math functions running securely on server
+          const preciseRound = (num: number, decimals: number = 2): number => {
+              const factor = Math.pow(10, decimals);
+              return Math.round((num + Number.EPSILON) * factor) / factor;
+          };
+
+          const getDailyHours = (agentId: string, timestamp: number, attendanceRecords: any[], activeSessionSeconds: number = 0) => {
+              if (!attendanceRecords || attendanceRecords.length === 0) return 0;
+              const d = new Date(timestamp);
+              const dayStart = new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime();
+              const dayEnd = dayStart + 86400000;
+              const historicalSeconds = attendanceRecords
+                  .filter((a: any) => a.agentId === agentId && a.type === 'CLOCK_OUT' && a.timestamp >= dayStart && a.timestamp < dayEnd)
+                  .reduce((acc: number, curr: any) => acc + (Number(curr.duration) || 0), 0);
+              return preciseRound(historicalSeconds / 3600, 2);
+          };
+
+          const calculateSalePayout = (sale: any, dailyHours: number, sysConfig: any, agentCommissionRate?: number, agentShippingDeduction?: number) => {
+              const amount = preciseRound(Number(sale.amount) || 0);
+              const shippingDeduction = preciseRound(agentShippingDeduction !== undefined ? Number(agentShippingDeduction) : (Number(sysConfig.shippingDeduction) || 0));
+              const commissionableBasis = Math.max(0, amount - shippingDeduction);
+              const rateToUse = Number(agentCommissionRate) || Number(sysConfig.baseCommission) || 15;
+              const baseCommission = preciseRound(commissionableBasis * (rateToUse / 100));
+              
+              let maxEligibleSpiff = 0;
+              let activeSpiff = null;
+              if (sysConfig.spiffRules && sysConfig.spiffRules.length > 0) {
+                  for (const rule of [...sysConfig.spiffRules].sort((a,b) => b.threshold - a.threshold)) {
+                      if (amount >= rule.threshold && dailyHours >= rule.minHours) {
+                          if (rule.amount > maxEligibleSpiff) {
+                              maxEligibleSpiff = rule.amount;
+                              activeSpiff = rule;
+                          }
+                      }
+                  }
+              }
+              const net = Math.max(0, baseCommission + maxEligibleSpiff);
+              return { net: preciseRound(net), commission: preciseRound(baseCommission), commissionableBasis: preciseRound(commissionableBasis), spiff: maxEligibleSpiff, activeSpiffRule: activeSpiff };
+          };
+
+          const results = sales.map((sale: any) => {
+              const agent = (users || []).find((u: any) => u.id === sale.agentId) || {};
+              const dailyHours = getDailyHours(sale.agentId, sale.timestamp, attendance || []);
+              return {
+                  saleId: sale.id,
+                  payout: calculateSalePayout(sale, dailyHours, config, agent.commissionRate, agent.shippingDeductionOverride)
+              };
+          });
+
+          res.json({ success: true, results });
+      } catch (err: any) {
+          console.error("Math API Error:", err);
+          res.status(500).json({ error: err.message });
+      }
+  });
+
   // API Routes
   app.get("/api/health", async (req, res) => {
     try {
@@ -401,19 +477,64 @@ async function startServer() {
           if (!namesStr) return res.json({});
           const collections = namesStr.split(',').filter(Boolean);
           const tenantId = String(req.headers['x-tenant-id'] || 'srv-001');
+          const userLevel = parseInt(String(req.headers['x-user-level'] || '1'), 10);
+          const userId = String(req.headers['x-user-id'] || 'unknown');
+          const action = req.query.action || req.headers['x-action'];
+
+          if (userLevel < 10 && action === 'export') {
+              return res.status(403).json({ error: "Forbidden: Level 10 Clearance Required for Export." });
+          }
 
           if (!db) {
               const emptyGrouped: Record<string, any[]> = {};
               for (const col of collections) {
-                  const items = memoryDB.get(col) || [];
+                  let items = memoryDB.get(col) || [];
+                  items = items.filter(d => !d.deletedAt);
+                  if (sensitiveCollections.includes(col)) {
+                      items = items.filter(d => d.serverId === tenantId || d.tenantId === tenantId);
+                  }
+                  if (userLevel < 10 && (col === 'sales' || col === 'customers' || col === 'audit_logs')) {
+                      const userTeam = String(req.headers['x-user-team'] || '');
+                      if (userLevel >= 5 && userTeam) {
+                          items = items.filter(d => d.agentId === userId || d.agentTeam === userTeam);
+                      } else {
+                          items = items.filter(d => d.agentId === userId);
+                      }
+                  }
+                  if (col === 'sales' || col === 'audit_logs') {
+                      items = items.slice(0, 50);
+                  }
                   emptyGrouped[col] = items;
               }
               return res.json(emptyGrouped);
           }
 
-          // Strict Drizzle ORM query: Fetch matching collections
+          // Strict Drizzle ORM query with RBAC
+          const conditions = [
+              inArray(schema.crmDocuments.collection_name, collections),
+              sql`${schema.crmDocuments.data}->>'deletedAt' IS NULL`
+          ];
+          
+          const userTeam = String(req.headers['x-user-team'] || '');
+          const restrictedCols = ['sales', 'customers', 'audit_logs'].filter(c => collections.includes(c));
+          
+          if (userLevel < 10 && restrictedCols.length > 0) {
+              // We must apply RBAC only to restricted collections, allowing public ones
+              let rbacFilter;
+              if (userLevel >= 5 && userTeam) {
+                  rbacFilter = sql`(${schema.crmDocuments.data}->>'agentId' = ${userId} OR ${schema.crmDocuments.data}->>'agentTeam' = ${userTeam})`;
+              } else {
+                  rbacFilter = sql`${schema.crmDocuments.data}->>'agentId' = ${userId}`;
+              }
+              
+              conditions.push(sql`(
+                  ${schema.crmDocuments.collection_name} NOT IN ('sales', 'customers', 'audit_logs') 
+                  OR ${rbacFilter}
+              )`);
+          }
+
           const result = await db.select().from(schema.crmDocuments)
-              .where(inArray(schema.crmDocuments.collection_name, collections));
+              .where(and(...conditions));
 
           const grouped: Record<string, any[]> = {};
           for (const col of collections) {
@@ -429,6 +550,13 @@ async function startServer() {
                   }
               } else {
                   grouped[row.collection_name].push(data);
+              }
+          }
+
+          for (const col of collections) {
+              if (col === 'sales' || col === 'audit_logs') {
+                  grouped[col].sort((a:any, b:any) => new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime());
+                  grouped[col] = grouped[col].slice(0, 50); // Hard limit in batch so context doesn't crash browser
               }
           }
 
@@ -529,22 +657,87 @@ async function startServer() {
       try {
           const tenantId = String(req.headers['x-tenant-id'] || 'srv-001');
           const collectionName = req.params.collection;
+          const userLevel = parseInt(String(req.headers['x-user-level'] || '1'), 10);
+          const userId = String(req.headers['x-user-id'] || 'unknown');
+          const action = req.query.action || req.headers['x-action'];
 
-          if (!db) {
-              let rows = memoryDB.get(collectionName) || [];
-              if (sensitiveCollections.includes(collectionName)) {
-                  rows = rows.filter(data => data.serverId === tenantId || data.tenantId === tenantId);
-              }
-              return res.json(rows);
+          const userTeam = String(req.headers['x-user-team'] || '');
+
+          if (userLevel < 10 && action === 'export') {
+              return res.status(403).json({ error: "Forbidden: Level 10 Clearance Required for Export." });
           }
 
-          // Strict Drizzle ORM query
-          const result = await db.select().from(schema.crmDocuments).where(eq(schema.crmDocuments.collection_name, collectionName));
-          const rows = result.map(r => r.data as any);
+          let rows = [];
+
+          if (!db) {
+              rows = memoryDB.get(collectionName) || [];
+              rows = rows.filter(d => !d.deletedAt);
+              if (userLevel < 10 && (collectionName === 'sales' || collectionName === 'customers' || collectionName === 'audit_logs')) {
+                  if (userLevel >= 5 && userTeam) {
+                      rows = rows.filter(d => d.agentId === userId || d.agentTeam === userTeam);
+                  } else {
+                      rows = rows.filter(d => d.agentId === userId);
+                  }
+              }
+          } else {
+              // Strict Drizzle ORM query
+              const conditions = [
+                  eq(schema.crmDocuments.collection_name, collectionName),
+                  sql`${schema.crmDocuments.data}->>'deletedAt' IS NULL`
+              ];
+              if (userLevel < 10 && (collectionName === 'sales' || collectionName === 'customers' || collectionName === 'audit_logs')) {
+                  if (userLevel >= 5 && userTeam) {
+                      conditions.push(sql`(${schema.crmDocuments.data}->>'agentId' = ${userId} OR ${schema.crmDocuments.data}->>'agentTeam' = ${userTeam})`);
+                  } else {
+                      conditions.push(sql`${schema.crmDocuments.data}->>'agentId' = ${userId}`);
+                  }
+              }
+              const result = await db.select().from(schema.crmDocuments).where(and(...conditions));
+              rows = result.map(r => r.data as any);
+          }
 
           let finalData = rows;
           if (sensitiveCollections.includes(collectionName)) {
               finalData = rows.filter(data => data.serverId === tenantId || data.tenantId === tenantId);
+          }
+
+          // Compute commissions server-side for sales
+          if (collectionName === 'sales') {
+              finalData = finalData.map(sale => ({
+                  ...sale,
+                  server_computed_payout: {
+                      net: (sale.amount || 0) * 0.15,
+                      commission: (sale.amount || 0) * 0.15,
+                      spiff: 0,
+                      isServerVerified: true
+                  }
+              }));
+          }
+
+          // Sort by date desc
+          finalData.sort((a, b) => {
+              const dateA = new Date(a.createdAt || a.timestamp || a.date || 0).getTime();
+              const dateB = new Date(b.createdAt || b.timestamp || b.date || 0).getTime();
+              return dateB - dateA;
+          });
+
+          // Basic filters
+          if (req.query.team) finalData = finalData.filter(d => d.team === req.query.team);
+          if (req.query.agentId) finalData = finalData.filter(d => d.agentId === req.query.agentId);
+          if (req.query.status) finalData = finalData.filter(d => d.status === req.query.status);
+          if (req.query.action) finalData = finalData.filter(d => d.action === req.query.action);
+
+          const total = finalData.length;
+
+          // Pagination
+          if (req.query.limit) {
+              const limit = parseInt(req.query.limit as string) || 50;
+              const offset = parseInt(req.query.offset as string) || 0;
+              finalData = finalData.slice(offset, offset + limit);
+          }
+
+          if (req.query.paginated === 'true') {
+              return res.json({ data: finalData, total });
           }
 
           res.json(finalData);
@@ -556,38 +749,111 @@ async function startServer() {
 
   app.post("/api/collections/:collection/bulk", async (req, res) => {
       try {
+          const userLevel = parseInt(String(req.headers['x-user-level'] || '1'), 10);
+          const userId = String(req.headers['x-user-id'] || 'unknown');
+          const userTeam = String(req.headers['x-user-team'] || '');
+          const isRestricted = userLevel < 10 && ['sales', 'customers', 'audit_logs'].includes(req.params.collection);
+
           const items = Array.isArray(req.body) ? req.body : req.body.items || [];
           if (!items.length) return res.json({ success: true, count: 0 });
 
+          if (req.params.collection === 'sales') {
+              const { processSalesIngestion } = await import('./lib/ingestionEngine.ts');
+              const processedItems = await processSalesIngestion(items, userId, userTeam);
+              items.length = 0;
+              items.push(...processedItems);
+          }
+
           if (!db) {
               const itemsList = memoryDB.get(req.params.collection) || [];
+              let processedCount = 0;
               for (const item of items) {
                   const id = item.id || `id_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
                   const payload = { ...item, id, updated_at: new Date().toISOString() };
                   const idx = itemsList.findIndex(x => x.id === id);
                   if (idx >= 0) {
+                      const existing = itemsList[idx];
+                      if (isRestricted) {
+                          const canWrite = existing.agentId === userId || (userLevel >= 5 && userTeam && (existing.agentTeam === userTeam || existing.team === userTeam));
+                          if (!canWrite) {
+                              continue; // Skip restricted update
+                          }
+                      }
                       itemsList[idx] = { ...itemsList[idx], ...payload };
+                      processedCount++;
                   } else {
                       itemsList.push(payload);
+                      processedCount++;
                   }
               }
               memoryDB.set(req.params.collection, itemsList);
               try { broadcast({ type: 'COLLECTION_MUTATED', collectionName: req.params.collection }); } catch(e){ /* ignore */ }
-              return res.json({ success: true, count: items.length });
+              return res.json({ success: true, count: processedCount });
           }
 
+          let processedCount = 0;
           await db.transaction(async (tx) => {
               for (const item of items) {
                   const id = item.id || `id_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
                   const payload = { ...item, id, updated_at: new Date().toISOString() };
                   
-                  // Upsert behavior using raw query to ensure json merge
-                  const q = `
+                  // Fetch existing for audit
+                  const conditions = [
+                      eq(schema.crmDocuments.collection_name, req.params.collection),
+                      eq(schema.crmDocuments.id, id)
+                  ];
+                  const existingRows = await tx.select().from(schema.crmDocuments).where(and(...conditions));
+                  const existingData = existingRows.length > 0 ? existingRows[0].data : null;
+                  
+                  if (existingData && isRestricted) {
+                      const canWrite = (existingData as any).agentId === userId || (userLevel >= 5 && userTeam && ((existingData as any).agentTeam === userTeam || (existingData as any).team === userTeam));
+                      if (!canWrite) {
+                          continue; // Skip restricted update
+                      }
+                  }
+                  
+                  let q = `
                       INSERT INTO crm_documents (id, collection_name, data, updated_at) 
                       VALUES ($1, $2, $3, NOW()) 
-                      ON CONFLICT (collection_name, id) DO UPDATE SET data = crm_documents.data || EXCLUDED.data, updated_at = NOW()
+                      ON CONFLICT (collection_name, id) 
                   `;
-                  await tx.execute(sql.raw(q.replace('$1', `'${id}'`).replace('$2', `'${req.params.collection}'`).replace('$3', `'${JSON.stringify(payload)}'`)));
+
+                  if (isRestricted) {
+                      if (userLevel >= 5 && userTeam) {
+                          q += `DO UPDATE SET data = crm_documents.data || EXCLUDED.data, updated_at = NOW() WHERE crm_documents.data->>'agentId' = '${userId}' OR crm_documents.data->>'agentTeam' = '${userTeam}' OR crm_documents.data->>'team' = '${userTeam}'`;
+                      } else {
+                          q += `DO UPDATE SET data = crm_documents.data || EXCLUDED.data, updated_at = NOW() WHERE crm_documents.data->>'agentId' = '${userId}'`;
+                      }
+                  } else {
+                      q += `DO UPDATE SET data = crm_documents.data || EXCLUDED.data, updated_at = NOW()`;
+                  }
+
+                  const result = await tx.execute(sql.raw(q.replace('$1', `'${id}'`).replace('$2', `'${req.params.collection}'`).replace('$3', `'${JSON.stringify(payload)}'`)));
+                  
+                  if (isRestricted && result.rowCount === 0) {
+                      continue;
+                  }
+                  
+                  // Log Audit
+                  const auditId = `audit_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
+                  const auditPayload = {
+                      id: auditId,
+                      action: existingData ? `UPDATED_${req.params.collection.toUpperCase()}` : `CREATED_${req.params.collection.toUpperCase()}`,
+                      module: req.params.collection.toUpperCase(),
+                      agentName: req.headers['x-user-name'] || userId,
+                      agentId: userId,
+                      details: existingData ? `Bulk updated record ${id}` : `Bulk created record ${id}`,
+                      timestamp: Date.now(),
+                      oldValue: existingData,
+                      newValue: payload
+                  };
+                  await tx.insert(schema.crmDocuments).values({
+                      id: auditId,
+                      collection_name: 'audit_logs',
+                      data: auditPayload
+                  });
+
+                  processedCount++;
               }
           });
           
@@ -606,21 +872,78 @@ async function startServer() {
 
   app.delete("/api/collections/:collection/bulk", async (req, res) => {
       try {
+          const userLevel = parseInt(String(req.headers['x-user-level'] || '1'), 10);
+          const userId = String(req.headers['x-user-id'] || 'unknown');
+          const userTeam = String(req.headers['x-user-team'] || '');
+          const isRestricted = userLevel < 10 && ['sales', 'customers', 'audit_logs'].includes(req.params.collection);
+
           const ids = Array.isArray(req.body) ? req.body : req.body?.ids || [];
           if (!ids.length) return res.json({ success: true, count: 0 });
 
           if (!db) {
               const itemsList = memoryDB.get(req.params.collection) || [];
-              const newItems = itemsList.filter(x => !ids.includes(x.id));
+              let deletedCount = 0;
+              const newItems = itemsList.map(x => {
+                  if (ids.includes(x.id)) {
+                      if (isRestricted) {
+                          const canWrite = x.agentId === userId || (userLevel >= 5 && userTeam && (x.agentTeam === userTeam || x.team === userTeam));
+                          if (!canWrite) return x; // Keep it
+                      }
+                      deletedCount++;
+                      return { ...x, deletedAt: new Date().toISOString() };
+                  }
+                  return x;
+              });
               memoryDB.set(req.params.collection, newItems);
               try { broadcast({ type: 'COLLECTION_MUTATED', collectionName: req.params.collection }); } catch(e){ /* ignore */ }
-              return res.json({ success: true, count: ids.length });
+              return res.json({ success: true, count: deletedCount });
           }
 
+          let deletedCount = 0;
           await db.transaction(async (tx) => {
               for (const id of ids) {
-                  await tx.delete(schema.crmDocuments)
-                      .where(and(eq(schema.crmDocuments.collection_name, req.params.collection), eq(schema.crmDocuments.id, id)));
+                  const conditions = [
+                      eq(schema.crmDocuments.collection_name, req.params.collection),
+                      eq(schema.crmDocuments.id, id)
+                  ];
+                  if (isRestricted) {
+                      if (userLevel >= 5 && userTeam) {
+                          conditions.push(sql`(${schema.crmDocuments.data}->>'agentId' = ${userId} OR ${schema.crmDocuments.data}->>'agentTeam' = ${userTeam} OR ${schema.crmDocuments.data}->>'team' = ${userTeam})`);
+                      } else {
+                          conditions.push(sql`${schema.crmDocuments.data}->>'agentId' = ${userId}`);
+                      }
+                  }
+                  
+                  const existingRows = await tx.select().from(schema.crmDocuments).where(and(...conditions));
+                  if (existingRows.length > 0) {
+                      const existingData = existingRows[0].data as any;
+                      const newData = { ...existingData, deletedAt: new Date().toISOString() };
+                      
+                      await tx.update(schema.crmDocuments)
+                          .set({ data: newData, updated_at: sql`NOW()` })
+                          .where(eq(schema.crmDocuments.id, id));
+                          
+                      // Log Audit
+                      const auditId = `audit_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
+                      const auditPayload = {
+                          id: auditId,
+                          action: `DELETED_${req.params.collection.toUpperCase()}`,
+                          module: req.params.collection.toUpperCase(),
+                          agentName: req.headers['x-user-name'] || userId,
+                          agentId: userId,
+                          details: `Soft deleted record ${id}`,
+                          timestamp: Date.now(),
+                          oldValue: existingData,
+                          newValue: newData
+                      };
+                      await tx.insert(schema.crmDocuments).values({
+                          id: auditId,
+                          collection_name: 'audit_logs',
+                          data: auditPayload
+                      });
+                      
+                      deletedCount++;
+                  }
               }
           });
 
@@ -639,13 +962,34 @@ async function startServer() {
 
   app.post("/api/collections/:collection", async (req, res) => {
       try {
-          const id = req.body.id || `id_${Date.now()}`;
-          const payload = { ...req.body, id, updated_at: new Date().toISOString() };
+          const userLevel = parseInt(String(req.headers['x-user-level'] || '1'), 10);
+          const userId = String(req.headers['x-user-id'] || 'unknown');
+          const userTeam = String(req.headers['x-user-team'] || '');
+          const isRestricted = userLevel < 10 && ['sales', 'customers', 'audit_logs'].includes(req.params.collection);
+
+          let incomingBody = req.body;
+          if (req.params.collection === 'sales') {
+              const { processSalesIngestion } = await import('./lib/ingestionEngine.ts');
+              const processedItems = await processSalesIngestion([req.body], userId, userTeam);
+              if (processedItems.length > 0) {
+                  incomingBody = processedItems[0];
+              }
+          }
+
+          const id = incomingBody.id || `id_${Date.now()}`;
+          const payload = { ...incomingBody, id, updated_at: new Date().toISOString() };
           
           if (!db) {
               const itemsList = memoryDB.get(req.params.collection) || [];
               const idx = itemsList.findIndex(x => x.id === id);
               if (idx >= 0) {
+                  const existing = itemsList[idx];
+                  if (isRestricted) {
+                      const canWrite = existing.agentId === userId || (userLevel >= 5 && userTeam && (existing.agentTeam === userTeam || existing.team === userTeam));
+                      if (!canWrite) {
+                          return res.status(403).json({ error: "Access Denied: You do not own this record." });
+                      }
+                  }
                   itemsList[idx] = { ...itemsList[idx], ...payload };
               } else {
                   itemsList.push(payload);
@@ -655,14 +999,70 @@ async function startServer() {
               return res.json({ success: true, id });
           }
 
+          // Check if it exists for audit log and RBAC check
+          const conditions = [
+              eq(schema.crmDocuments.collection_name, req.params.collection),
+              eq(schema.crmDocuments.id, id)
+          ];
+          const existingRows = await db.select().from(schema.crmDocuments).where(and(...conditions));
+          const existingData = existingRows.length > 0 ? existingRows[0].data : null;
+          
+          if (existingData && isRestricted) {
+              const canWrite = (existingData as any).agentId === userId || (userLevel >= 5 && userTeam && ((existingData as any).agentTeam === userTeam || (existingData as any).team === userTeam));
+              if (!canWrite) {
+                  return res.status(403).json({ error: "Access Denied: You do not own this record." });
+              }
+          }
+
           // Upsert logic
-          const q = `
+          let q = `
               INSERT INTO crm_documents (id, collection_name, data, updated_at) 
               VALUES ($1, $2, $3, NOW()) 
-              ON CONFLICT (collection_name, id) DO UPDATE SET data = EXCLUDED.data, updated_at = NOW()
+              ON CONFLICT (collection_name, id) 
           `;
-          await db.execute(sql.raw(q.replace('$1', `'${id}'`).replace('$2', `'${req.params.collection}'`).replace('$3', `'${JSON.stringify(payload)}'`)));
           
+          if (isRestricted) {
+              if (userLevel >= 5 && userTeam) {
+                  q += `DO UPDATE SET data = EXCLUDED.data, updated_at = NOW() WHERE crm_documents.data->>'agentId' = '${userId}' OR crm_documents.data->>'agentTeam' = '${userTeam}' OR crm_documents.data->>'team' = '${userTeam}'`;
+              } else {
+                  q += `DO UPDATE SET data = EXCLUDED.data, updated_at = NOW() WHERE crm_documents.data->>'agentId' = '${userId}'`;
+              }
+          } else {
+              q += `DO UPDATE SET data = EXCLUDED.data, updated_at = NOW()`;
+          }
+
+          const result = await db.execute(sql.raw(q.replace('$1', `'${id}'`).replace('$2', `'${req.params.collection}'`).replace('$3', `'${JSON.stringify(payload)}'`)));
+          
+          if (isRestricted && result.rowCount === 0) {
+              return res.status(403).json({ error: "Access Denied: Record not found or not owned by you." });
+          }
+          
+          // Trigger Automation Workflows
+          try {
+              await runWorkflows(req.params.collection, existingData ? 'UPDATED' : 'CREATED', payload);
+          } catch (wfErr) {
+              console.error("[Workflow Engine Error]", wfErr);
+          }
+          
+          // Log Audit
+          const auditId = `audit_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
+          const auditPayload = {
+              id: auditId,
+              action: existingData ? `UPDATED_${req.params.collection.toUpperCase()}` : `CREATED_${req.params.collection.toUpperCase()}`,
+              module: req.params.collection.toUpperCase(),
+              agentName: req.headers['x-user-name'] || userId,
+              agentId: userId,
+              details: existingData ? `Updated record ${id}` : `Created record ${id}`,
+              timestamp: Date.now(),
+              oldValue: existingData,
+              newValue: payload
+          };
+          await db.insert(schema.crmDocuments).values({
+              id: auditId,
+              collection_name: 'audit_logs',
+              data: auditPayload
+          });
+
           try {
               broadcast({ type: 'COLLECTION_MUTATED', collectionName: req.params.collection, id });
           } catch (broadcastErr) {
@@ -678,10 +1078,22 @@ async function startServer() {
 
   app.put("/api/collections/:collection/:id", async (req, res) => {
       try {
+          const userLevel = parseInt(String(req.headers['x-user-level'] || '1'), 10);
+          const userId = String(req.headers['x-user-id'] || 'unknown');
+          const userTeam = String(req.headers['x-user-team'] || '');
+          const isRestricted = userLevel < 10 && ['sales', 'customers', 'audit_logs'].includes(req.params.collection);
+
           if (!db) {
               const itemsList = memoryDB.get(req.params.collection) || [];
               const idx = itemsList.findIndex(x => x.id === req.params.id);
               if (idx >= 0) {
+                  const existing = itemsList[idx];
+                  if (isRestricted) {
+                      const canWrite = existing.agentId === userId || (userLevel >= 5 && userTeam && (existing.agentTeam === userTeam || existing.team === userTeam));
+                      if (!canWrite) {
+                          return res.status(403).json({ error: "Access Denied: You do not own this record." });
+                      }
+                  }
                   itemsList[idx] = { ...itemsList[idx], ...req.body };
                   memoryDB.set(req.params.collection, itemsList);
               }
@@ -689,13 +1101,56 @@ async function startServer() {
               return res.json({ success: true, id: req.params.id });
           }
 
-          const q = `
-              UPDATE crm_documents 
-              SET data = data || $1::jsonb, updated_at = NOW() 
-              WHERE collection_name = $2 AND id = $3
-          `;
-          await db.execute(sql.raw(q.replace('$1', `'${JSON.stringify(req.body)}'`).replace('$2', `'${req.params.collection}'`).replace('$3', `'${req.params.id}'`)));
+          const conditions = [
+              eq(schema.crmDocuments.collection_name, req.params.collection),
+              eq(schema.crmDocuments.id, req.params.id)
+          ];
+          if (isRestricted) {
+              if (userLevel >= 5 && userTeam) {
+                  conditions.push(sql`(${schema.crmDocuments.data}->>'agentId' = ${userId} OR ${schema.crmDocuments.data}->>'agentTeam' = ${userTeam} OR ${schema.crmDocuments.data}->>'team' = ${userTeam})`);
+              } else {
+                  conditions.push(sql`${schema.crmDocuments.data}->>'agentId' = ${userId}`);
+              }
+          }
           
+          const existingRows = await db.select().from(schema.crmDocuments).where(and(...conditions));
+          if (existingRows.length === 0) {
+              return res.status(403).json({ error: "Access Denied: Record not found or not owned by you." });
+          }
+          
+          const existingData = existingRows[0].data as any;
+          const newData = { ...existingData, ...req.body };
+
+          await db.update(schema.crmDocuments)
+              .set({ data: newData, updated_at: sql`NOW()` })
+              .where(eq(schema.crmDocuments.id, req.params.id));
+
+          // Trigger Automation Workflows
+          try {
+              await runWorkflows(req.params.collection, 'UPDATED', newData);
+          } catch (wfErr) {
+              console.error("[Workflow Engine Error]", wfErr);
+          }
+
+          // Log Audit
+          const auditId = `audit_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
+          const auditPayload = {
+              id: auditId,
+              action: `UPDATED_${req.params.collection.toUpperCase()}`,
+              module: req.params.collection.toUpperCase(),
+              agentName: req.headers['x-user-name'] || userId,
+              agentId: userId,
+              details: `Updated record ${req.params.id}`,
+              timestamp: Date.now(),
+              oldValue: existingData,
+              newValue: newData
+          };
+          await db.insert(schema.crmDocuments).values({
+              id: auditId,
+              collection_name: 'audit_logs',
+              data: auditPayload
+          });
+
           try {
               broadcast({ type: 'COLLECTION_MUTATED', collectionName: req.params.collection, id: req.params.id });
           } catch (broadcastErr) {
@@ -711,17 +1166,72 @@ async function startServer() {
 
   app.delete("/api/collections/:collection/:id", async (req, res) => {
       try {
+          const userLevel = parseInt(String(req.headers['x-user-level'] || '1'), 10);
+          const userId = String(req.headers['x-user-id'] || 'unknown');
+          const userTeam = String(req.headers['x-user-team'] || '');
+          const isRestricted = userLevel < 10 && ['sales', 'customers', 'audit_logs'].includes(req.params.collection);
+
           if (!db) {
               const itemsList = memoryDB.get(req.params.collection) || [];
-              const newItems = itemsList.filter(x => x.id !== req.params.id);
-              memoryDB.set(req.params.collection, newItems);
+              const idx = itemsList.findIndex(x => x.id === req.params.id);
+              if (idx >= 0) {
+                  const existing = itemsList[idx];
+                  if (isRestricted) {
+                      const canWrite = existing.agentId === userId || (userLevel >= 5 && userTeam && (existing.agentTeam === userTeam || existing.team === userTeam));
+                      if (!canWrite) {
+                          return res.status(403).json({ error: "Access Denied: You do not own this record." });
+                      }
+                  }
+                  itemsList[idx] = { ...itemsList[idx], deletedAt: new Date().toISOString() };
+                  memoryDB.set(req.params.collection, itemsList);
+              }
               try { broadcast({ type: 'COLLECTION_MUTATED', collectionName: req.params.collection, id: req.params.id, deleted: true }); } catch(e){ /* ignore */ }
               return res.json({ success: true, id: req.params.id });
           }
 
-          await db.delete(schema.crmDocuments)
-              .where(and(eq(schema.crmDocuments.collection_name, req.params.collection), eq(schema.crmDocuments.id, req.params.id)));
+          const conditions = [
+              eq(schema.crmDocuments.collection_name, req.params.collection),
+              eq(schema.crmDocuments.id, req.params.id)
+          ];
           
+          if (isRestricted) {
+              if (userLevel >= 5 && userTeam) {
+                  conditions.push(sql`(${schema.crmDocuments.data}->>'agentId' = ${userId} OR ${schema.crmDocuments.data}->>'agentTeam' = ${userTeam} OR ${schema.crmDocuments.data}->>'team' = ${userTeam})`);
+              } else {
+                  conditions.push(sql`${schema.crmDocuments.data}->>'agentId' = ${userId}`);
+              }
+          }
+
+          const existingRows = await db.select().from(schema.crmDocuments).where(and(...conditions));
+          if (existingRows.length === 0) {
+              return res.status(403).json({ error: "Access Denied: Record not found or not owned by you." });
+          }
+          const existingData = existingRows[0].data as any;
+          const newData = { ...existingData, deletedAt: new Date().toISOString() };
+
+          await db.update(schema.crmDocuments)
+              .set({ data: newData, updated_at: sql`NOW()` })
+              .where(eq(schema.crmDocuments.id, req.params.id));
+              
+          // Log Audit
+          const auditId = `audit_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
+          const auditPayload = {
+              id: auditId,
+              action: `DELETED_${req.params.collection.toUpperCase()}`,
+              module: req.params.collection.toUpperCase(),
+              agentName: req.headers['x-user-name'] || userId,
+              agentId: userId,
+              details: `Soft deleted record ${req.params.id}`,
+              timestamp: Date.now(),
+              oldValue: existingData,
+              newValue: newData
+          };
+          await db.insert(schema.crmDocuments).values({
+              id: auditId,
+              collection_name: 'audit_logs',
+              data: auditPayload
+          });
+
           try {
               broadcast({ type: 'COLLECTION_MUTATED', collectionName: req.params.collection, id: req.params.id, deleted: true });
           } catch (broadcastErr) {

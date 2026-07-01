@@ -22,7 +22,7 @@ export const ContextualHelp: React.FC = () => {
           <span className="text-xl flex-shrink-0">{tip.icon}</span>
           <div className="flex-1">
             <h3 className="font-bold text-white">{tip.title}</h3>
-            <p className="text-sm text-gray-200 mt-1">{tip.message}</p>
+            <p className="text-sm text-text-primary mt-1">{tip.message}</p>
             {tip.action && (
               <button
                 onClick={tip.action.handler}
@@ -35,7 +35,7 @@ export const ContextualHelp: React.FC = () => {
           {tip.dismissible && (
             <button
               onClick={() => setDismissed(tip.id)}
-              className="text-gray-300 hover:text-white flex-shrink-0"
+              className="text-text-primary hover:text-white flex-shrink-0"
             >
               ✕
             </button>

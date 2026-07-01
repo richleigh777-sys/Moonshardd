@@ -16,14 +16,14 @@ export const AddressSelection: React.FC<AddressSelectionProps> = ({ onConfirm })
 
   return (
     <div className="flex h-[500px] w-[300px]">
-      <div className="bg-white box-border h-full w-full p-5 flex flex-col justify-around">
+      <div className="bg-surface-main box-border h-full w-full p-5 flex flex-col justify-around">
         <div>
           <img 
             className="relative top-[-5px]" 
             src="https://fonts.gstatic.com/s/i/googlematerialicons/location_pin/v5/24px.svg" 
             alt="" 
           />
-          <span className="relative top-[-12px] font-sans font-medium text-black">Address Selection</span>
+          <span className="relative top-[-12px] font-sans font-medium text-text-primary">Address Selection</span>
         </div>
         <input 
           type="text" 

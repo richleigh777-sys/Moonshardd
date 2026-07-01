@@ -1,0 +1,7 @@
+components/ui/PanelFrame.tsx
+components/admin/dashboard/financials/DashboardTerminalZone.tsx
+components/admin/dashboard/DashboardApprovalPanel.tsx
+components/admin/dashboard/CompanyHealthScorecard.tsx
+components/admin/dashboard/DashboardAgentSupportPanel.tsx
+components/admin/dashboard/DashboardLiveMetrics.tsx
+components/admin/dashboard/DailyVibesWidget.tsx

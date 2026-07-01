@@ -1,91 +1,6 @@
-import React, { useMemo, useState } from 'react';
-import { Sale, User, SystemConfig } from '../../../types';
-import { AlertTriangle, Send, BarChart3, Zap, Clock, Activity, Target } from 'lucide-react';
-
-interface DashboardAgentSupportPanelProps {
-  sales: Sale[];
-  users: User[];
-  systemConfig: SystemConfig;
-  onSendMessage: (agentId: string, message: string) => void;
-}
-
-export const DashboardAgentSupportPanel: React.FC<DashboardAgentSupportPanelProps> = ({
-  sales,
-  users,
-  systemConfig,
-  onSendMessage,
-}) => {
-  const [expandedAgentId, setExpandedAgentId] = useState<string | null>(null);
-  const [toastMessage, setToastMessage] = useState<string | null>(null);
-
-  const agentsNeedingSupport = useMemo(() => {
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    const todayMs = today.getTime();
-
-    const agents = users.filter((u) => u.role === 'agent' && u.active);
-    const dailyGoal = 5; // Hardcoded for now, could be in config
-
-    return agents
-      .map((agent) => {
-        const todaysSales = sales.filter(
-          (s) => s.agentId === agent.id && s.timestamp >= todayMs
-        );
-        const approvedCount = todaysSales.filter((s) => s.status === 'Approved').length;
-        const totalCount = todaysSales.length;
-        
-        // Calculate basic stats for the expansion panel
-        const pendingCount = todaysSales.filter((s) => s.status === 'Pending').length;
-        const declinedCount = todaysSales.filter((s) => s.status === 'Declined' || s.status === 'Cancelled').length;
-        
-        const isBelow = approvedCount < dailyGoal;
-        const deficit = dailyGoal - approvedCount;
-
-        return {
-          agent,
-          todaysSales: approvedCount,
-          totalCount,
-          pendingCount,
-          declinedCount,
-          deficit,
-          isBelow,
-          revenue: todaysSales.filter(s => s.status === 'Approved').reduce((sum, s) => sum + s.amount, 0),
-          performance: (approvedCount / dailyGoal) * 100,
-        };
-      })
-      .filter((a) => a.isBelow)
-      .sort((a, b) => a.performance - b.performance)
-      .slice(0, 4);
-  }, [sales, users]);
-
-  const getSuggestion = (agent: User, deficit: number, revenue: number) => {
-    if (deficit > 3) {
-      return `${agent.name} needs support - only ${deficit} sales to quota. Consider pairing with top performer.`;
-    } else if (agent.currentStatus !== 'online') {
-      return `${agent.name} is ${agent.currentStatus}. Check if they need assistance.`;
-    } else {
-      return `${agent.name} is close to goal - ${deficit} more sales needed. Send encouragement!`;
-    }
-  };
-
-  const handleSendMessage = (agentId: string, message: string) => {
-    onSendMessage(agentId, message);
-    setToastMessage("Direct encouragement message dispatched to agent console.");
-    setTimeout(() => setToastMessage(null), 3000);
-  };
-
-  if (agentsNeedingSupport.length === 0) {
-    return (
-      <div className="bg-surface-main/60 dark:bg-surface-main/40 backdrop-blur-2xl rounded-[32px] p-8 border border-border-subtle/60 dark:border-border-subtle/20 text-center shadow-panel h-full flex flex-col justify-center items-center group transition-all hover:shadow-float">
-        <Zap className="mx-auto text-emerald-500 mb-3 transition-transform group-hover:scale-125 duration-500" size={48} />
-        <p className="text-xl font-bold text-text-primary mb-1">Dream Team!</p>
-        <p className="text-sm text-text-muted">Everyone is crushing their goals today. Great leadership!</p>
-      </div>
-    );
-  }
-
-  return (
-    <div className="bg-surface-main/60 dark:bg-surface-main/40 backdrop-blur-2xl rounded-[32px] border border-border-subtle/60 dark:border-border-subtle/20 overflow-hidden shadow-panel transition-all hover:shadow-float relative flex flex-col min-h-[400px]">
+const fs = require('fs');
+const content = `    return (
+    <div className="bg-white/60 backdrop-blur-2xl rounded-[32px] border border-white/60 overflow-hidden shadow-[0_8px_30px_rgba(0,0,0,0.04)] transition-all hover:shadow-[0_20px_40px_rgba(0,0,0,0.08)] relative flex flex-col min-h-[400px]">
       {/* Internal Toast Overlay */}
       {toastMessage && (
         <div className="absolute top-4 left-1/2 -translate-x-1/2 z-50 bg-emerald-500/90 text-white text-sm font-bold px-4 py-2 rounded-full shadow-lg flex items-center gap-2 animate-in slide-in-from-top-2">
@@ -117,12 +32,12 @@ export const DashboardAgentSupportPanel: React.FC<DashboardAgentSupportPanelProp
               <div>
                 <div className="flex items-center gap-2">
                   <p className="font-bold text-text-primary">{agent.name}</p>
-                  <span className={`w-2 h-2 rounded-full ${agent.currentStatus === 'online' ? 'bg-status-success animate-pulse' : 'bg-text-muted'}`}></span>
+                  <span className={\`w-2 h-2 rounded-full \${agent.currentStatus === 'online' ? 'bg-status-success animate-pulse' : 'bg-text-muted'}\`}></span>
                 </div>
                 <p className="text-sm font-medium text-text-muted mt-0.5 flex items-center gap-2">
                   <span>{todaysSales}/5 sales</span>
                   <span className="opacity-30">•</span>
-                  <span className="text-emerald-500 font-bold">${revenue.toLocaleString()} rev</span>
+                  <span className="text-emerald-500 font-bold">\${revenue.toLocaleString()} rev</span>
                 </p>
               </div>
               <div className="text-right">
@@ -135,7 +50,7 @@ export const DashboardAgentSupportPanel: React.FC<DashboardAgentSupportPanelProp
             <div className="w-full bg-surface-alt rounded-full h-2 overflow-hidden border border-border-subtle shadow-inner">
               <div
                 className="h-full rounded-full bg-gradient-to-r from-amber-400 to-orange-500 transition-all duration-1000 ease-out"
-                style={{ width: `${Math.min(100, performance)}%` }}
+                style={{ width: \`\${Math.min(100, performance)}%\` }}
               />
             </div>
 
@@ -180,7 +95,7 @@ export const DashboardAgentSupportPanel: React.FC<DashboardAgentSupportPanelProp
                   e.stopPropagation();
                   handleSendMessage(
                     agent.id,
-                    `Hey ${agent.name}! You're ${deficit} sales away from quota. Let's push hard! 💪`
+                    \`Hey \${agent.name}! You're \${deficit} sales away from quota. Let's push hard! 💪\`
                   );
                 }}
                 className="flex-1 flex items-center justify-center gap-2 bg-blue-500 hover:bg-blue-600 text-white text-sm py-2.5 px-3 rounded-xl font-bold transition-all active:scale-95 shadow-md"
@@ -193,11 +108,11 @@ export const DashboardAgentSupportPanel: React.FC<DashboardAgentSupportPanelProp
                   e.stopPropagation();
                   setExpandedAgentId(expandedAgentId === agent.id ? null : agent.id);
                 }}
-                className={`flex-1 flex items-center justify-center gap-2 text-sm py-2.5 px-3 rounded-xl font-bold transition-all active:scale-95 border ${
+                className={\`flex-1 flex items-center justify-center gap-2 text-sm py-2.5 px-3 rounded-xl font-bold transition-all active:scale-95 border \${
                   expandedAgentId === agent.id 
                     ? 'bg-surface-alt text-text-primary border-border-strong' 
                     : 'bg-surface-main text-text-muted border-border-subtle hover:bg-surface-alt hover:text-text-primary'
-                }`}
+                }\`}
               >
                 <BarChart3 size={16} />
                 {expandedAgentId === agent.id ? 'Hide Details' : 'See Details'}
@@ -209,3 +124,7 @@ export const DashboardAgentSupportPanel: React.FC<DashboardAgentSupportPanelProp
     </div>
   );
 };
+`;
+
+const file = fs.readFileSync('components/admin/dashboard/DashboardAgentSupportPanel.tsx', 'utf8');
+fs.writeFileSync('components/admin/dashboard/DashboardAgentSupportPanel.tsx', file.substring(0, file.indexOf('return (')) + content);

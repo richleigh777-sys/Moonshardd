@@ -16,7 +16,7 @@ export const BottomNav: React.FC = () => {
   ];
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 bg-slate-800 border-t border-slate-700 flex md:hidden z-40">
+    <div className="fixed bottom-0 left-0 right-0 bg-slate-800 border-t border-border-subtle flex md:hidden z-40">
       {tabs.map((tab) => (
         <button
           key={tab.id}
@@ -24,7 +24,7 @@ export const BottomNav: React.FC = () => {
           className={`flex-1 py-4 text-center transition-colors ${
             view === tab.id
               ? 'border-t-4 border-blue-500 bg-slate-700 text-blue-400'
-              : 'text-slate-400 hover:text-white'
+              : 'text-text-secondary hover:text-white'
           }`}
         >
           <div className="text-lg mb-1">{tab.icon}</div>

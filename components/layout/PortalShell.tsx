@@ -210,12 +210,10 @@ export const PortalShell: React.FC<PortalShellProps> = ({
 
             {/* DESKTOP SIDEBAR - SAAS DESIGN */}
             <aside 
-                onMouseEnter={() => setIsSidebarCollapsed(false)}
-                onMouseLeave={() => setIsSidebarCollapsed(true)}
                 className={`
                     hidden lg:flex z-50 transition-all duration-300 ease-out flex-col
                     bg-surface-main border-r border-border-subtle
-                    ${isSidebarCollapsed ? 'w-[72px]' : 'w-[240px]'}
+                    w-[144px]
                 `}
                 style={currentThemeStyle}
             >
@@ -223,11 +221,6 @@ export const PortalShell: React.FC<PortalShellProps> = ({
                     <div className="w-8 h-8 flex items-center justify-center rounded-md bg-accent-primary text-white cursor-pointer hover:bg-accent-primary/90 transition-colors shadow-sm relative z-10" onClick={() => setIsTimeSheetOpen(true)}>
                         <LayoutGrid size={18} strokeWidth={2} />
                     </div>
-                    {!isSidebarCollapsed && (
-                        <div className="absolute inset-0 left-16 flex items-center justify-start pointer-events-none fade-in">
-                            <span className="font-semibold text-sm tracking-wide text-text-primary">CRM Workspace</span>
-                        </div>
-                    )}
                 </div>
 
                 <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto custom-scrollbar relative z-10 bg-surface-main">
@@ -235,21 +228,19 @@ export const PortalShell: React.FC<PortalShellProps> = ({
                 </nav>
 
                 <div className="p-3 border-t border-border-subtle bg-surface-main flex flex-col gap-1">
-                    {!isSidebarCollapsed && (
-                        <div className="flex items-center gap-3 px-2 py-2 mb-2 border-b border-border-subtle">
-                            <div className="w-8 h-8 rounded-full bg-accent-primary/20 flex items-center justify-center text-accent-primary font-bold">
-                                {user.name.charAt(0).toUpperCase()}
-                            </div>
-                            <div className="flex flex-col min-w-0">
-                                <span className="text-sm font-bold text-text-primary truncate">{user.name}</span>
-                                <span className="text-xs text-text-muted capitalize truncate">{user.role}</span>
-                            </div>
+                    <div className="flex flex-col items-center gap-1 px-1 py-2 mb-2 border-b border-border-subtle text-center">
+                        <div className="w-8 h-8 rounded-full bg-accent-primary/20 flex items-center justify-center text-accent-primary font-bold">
+                            {user.name.charAt(0).toUpperCase()}
                         </div>
-                    )}
+                        <div className="flex flex-col min-w-0 w-full">
+                            <span className="text-sm font-bold text-text-primary truncate">{user.name}</span>
+                            <span className="text-xs text-text-muted capitalize truncate">{user.role}</span>
+                        </div>
+                    </div>
                     
-                    <button onClick={handleLogout} className="w-full p-2 flex items-center justify-center gap-3 text-text-secondary hover:text-text-primary transition-all rounded-md hover:bg-surface-highlight group">
+                    <button onClick={handleLogout} className="w-full p-2 flex items-center justify-center gap-2 text-text-secondary hover:text-text-primary transition-all rounded-md hover:bg-surface-highlight group">
                         <LogOut size={18} className="group-hover:text-status-error transition-colors shrink-0" />
-                        {!isSidebarCollapsed && <span className="text-sm font-medium truncate flex-1 text-left">Log Out</span>}
+                        <span className="text-sm font-medium truncate text-left">Log Out</span>
                     </button>
                 </div>
             </aside>

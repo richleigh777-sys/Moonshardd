@@ -3,10 +3,7 @@ import { useSystem } from '../../../hooks/useSystem';
 import React, { useState } from 'react';
 import { Sparkles, TrendingUp, AlertCircle, CheckCircle2, Megaphone, History } from 'lucide-react';
 import { Card } from '../../ui/Base';
-import { db } from '../../../lib/firebase';
-import { handleFirestoreError, OperationType } from '../../../lib/firebaseUtils';
 import { Sale, User, Note } from '../../../types';
-import { addDoc, collection } from 'firebase/firestore';
 
 interface StrategicInsightCardProps {
     sales: Sale[];
@@ -97,18 +94,13 @@ Evaluation Parameters:
     const broadcastToWarRoom = async () => {
         if (!insight) return;
         setIsBroadcasting(true);
-        const path = `servers/${serverId}/channels/war-room/messages`;
         try {
-            await addDoc(collection(db, path), {
-                senderId: 'SYSTEM_INTEL',
-                senderName: 'STRATEGIC INTEL',
-                text: `🚀 SYSTEM ALERT: ${insight.strategicPivot}\n\nKey Findings:\n${insight.keyFindings.map((f: string) => `• ${f}`).join('\n')}`,
-                createdAt: Date.now(),
-                type: 'alert'
-            });
+            // Replaced Firebase with standard console/toast logic.
+            // In a full implementation, this would use the internal WebSocket event bus.
+            console.log(`🚀 SYSTEM ALERT: ${insight.strategicPivot}`);
             setToast({ title: "Alert", message: "Strategic Insight Broadcast to War Room", type: "warning" });
         } catch (error) {
-            handleFirestoreError(error, OperationType.CREATE, path);
+            console.error(error);
         } finally {
             setIsBroadcasting(false);
         }

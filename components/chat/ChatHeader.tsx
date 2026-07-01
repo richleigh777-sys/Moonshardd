@@ -75,7 +75,7 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({
             case 'online': return { text: 'Online', color: 'text-status-success', bg: 'bg-emerald-500' };
             case 'break': return { text: 'Away', color: 'text-status-warning', bg: 'bg-amber-500' };
             case 'busy': return { text: 'Do Not Disturb', color: 'text-status-error', bg: 'bg-red-500' };
-            default: return { text: 'Offline', color: 'text-text-muted', bg: 'bg-gray-500' };
+            default: return { text: 'Offline', color: 'text-text-muted', bg: 'bg-surface-alt0' };
         }
     })();
 

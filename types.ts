@@ -480,8 +480,10 @@ export interface AuditEntry {
     action: string;
     category?: string;
     details: string;
-    module: 'AUTH' | 'SALE' | 'SYSTEM' | 'COMM' | 'CRM';
+    module: 'AUTH' | 'SALE' | 'SYSTEM' | 'COMM' | 'CRM' | string;
     ipAddress?: string;
+    oldValue?: any;
+    newValue?: any;
 }
 
 export interface AttendanceRecord {

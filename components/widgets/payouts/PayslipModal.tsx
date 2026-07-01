@@ -201,7 +201,7 @@ export const PayslipModal: React.FC<PayslipModalProps> = ({ cycle, onClose, curr
                             <Button 
                                 variant="primary" 
                                 onClick={handleExport}
-                                className="h-12 px-8 bg-white text-black hover:bg-gray-200 border-none shadow-xl font-bold  tracking-wide"
+                                className="h-12 px-8 bg-white text-black hover:bg-surface-highlight border-none shadow-xl font-bold  tracking-wide"
                             >
                                 <Download size={16} className="mr-2" /> Download PDF
                             </Button>

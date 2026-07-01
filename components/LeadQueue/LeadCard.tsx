@@ -27,11 +27,11 @@ export const LeadCard: React.FC<LeadCardProps> = ({ lead, index }) => {
       <div className="flex items-start justify-between mb-3">
         <div>
           <div className="flex items-center gap-2">
-            <span className="font-bold text-slate-400">#{index}</span>
+            <span className="font-bold text-text-secondary">#{index}</span>
             <h4 className="font-bold text-white text-lg">{lead.customer}</h4>
           </div>
           {lead.callbackTime && (
-            <p className="text-sm text-slate-400 mt-1">
+            <p className="text-sm text-text-secondary mt-1">
               📞 Callback: {new Date(lead.callbackTime).toLocaleTimeString([], {
                 hour: '2-digit',
                 minute: '2-digit',
@@ -43,15 +43,15 @@ export const LeadCard: React.FC<LeadCardProps> = ({ lead, index }) => {
       </div>
 
       {lead.reason && (
-        <p className="text-sm text-slate-300 mb-3">
+        <p className="text-sm text-text-primary mb-3">
           <span className="font-semibold">Status:</span> {lead.reason}
         </p>
       )}
 
       {lead.suggestedScript && (
         <div className="mb-3 bg-slate-900 rounded p-3 border border-slate-600">
-          <p className="text-sm font-semibold text-slate-400 uppercase mb-1">💬 Script</p>
-          <p className="text-sm text-slate-200 italic">"{lead.suggestedScript}"</p>
+          <p className="text-sm font-semibold text-text-secondary uppercase mb-1">💬 Script</p>
+          <p className="text-sm text-text-primary italic">"{lead.suggestedScript}"</p>
         </div>
       )}
 
@@ -76,7 +76,7 @@ export const LeadCard: React.FC<LeadCardProps> = ({ lead, index }) => {
         </button>
       </div>
 
-      <div className="mt-3 flex gap-2 text-sm text-slate-400">
+      <div className="mt-3 flex gap-2 text-sm text-text-secondary">
         <span>Score: {lead.score}/100</span>
         <span>•</span>
         <span>Conversion: {lead.conversionProbability}%</span>

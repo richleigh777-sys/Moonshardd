@@ -181,54 +181,26 @@ export const getDailyHours = (
 };
 
 export const calculateSalePayout = (sale: Sale, dailyHours: number, config: SystemConfig, agentCommissionRate?: number, agentShippingDeduction?: number) => {
-    const amount = preciseRound(Number(sale.amount) || 0);
-    const shippingDeduction = preciseRound(agentShippingDeduction !== undefined ? Number(agentShippingDeduction) : (Number(config.shippingDeduction) || 0));
+    // SERVER-AUTHORITATIVE ARCHITECTURE:
+    // All math has been moved to secure backend API routes (server.ts)
+    // The frontend now only displays what the server tells it.
     
-    const commissionableBasis = Math.max(0, amount - shippingDeduction);
-    const rateToUse = Number(agentCommissionRate) || Number(config.baseCommission) || 15;
-    const baseCommPct = rateToUse / 100;
-    
-    const baseCommission = preciseRound(commissionableBasis * baseCommPct);
-    
-    let activeSpiff: SpiffRule | null = null;
-    let maxEligibleSpiff = 0;
-    let qualifiedForSpiff = false;
-    let missedSpiffAmount = 0;
-
-    if (config.spiffRules && config.spiffRules.length > 0) {
-        const sortedRules = [...config.spiffRules].sort((a,b) => b.threshold - a.threshold);
-        
-        for (const rule of sortedRules) {
-            const meetsValue = amount >= rule.threshold;
-            const meetsHours = dailyHours >= rule.minHours;
-
-            if (meetsValue) {
-                if (meetsHours) {
-                    if (rule.amount > maxEligibleSpiff) {
-                        maxEligibleSpiff = rule.amount;
-                        activeSpiff = rule;
-                        qualifiedForSpiff = true;
-                    }
-                } else {
-                    missedSpiffAmount = Math.max(missedSpiffAmount, rule.amount);
-                }
-            }
-        }
+    if ((sale as any).server_computed_payout) {
+        return (sale as any).server_computed_payout;
     }
 
-    const net = Math.max(0, baseCommission + maxEligibleSpiff);
-
+    // Fallback if server hasn't computed yet
     return {
-        net: preciseRound(net),
-        commission: preciseRound(baseCommission),
-        commissionableBasis: preciseRound(commissionableBasis),
-        grossAmount: amount,
-        spiff: maxEligibleSpiff,
-        activeSpiffRule: activeSpiff,
-        missedSpiff: qualifiedForSpiff ? 0 : missedSpiffAmount,
-        shippingDeduction,
-        rateUsed: rateToUse,
-        qualifiedForSpiff,
+        net: 0,
+        commission: 0,
+        commissionableBasis: 0,
+        grossAmount: sale.amount || 0,
+        spiff: 0,
+        activeSpiffRule: null,
+        missedSpiff: 0,
+        shippingDeduction: 0,
+        rateUsed: 0,
+        qualifiedForSpiff: false,
         dailyHoursAtTimeOfSale: dailyHours
     };
 };

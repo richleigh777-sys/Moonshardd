@@ -65,7 +65,7 @@ export class BaseRepository {
         if (this.globalIntervalId) return;
         this.globalIntervalId = setInterval(() => {
             this.enqueueBatchFetch();
-        }, 30000); // Poll all active subscriptions as a single batch every 30 seconds
+        }, 300000); // Poll all active subscriptions (increased to 5m to save Cloud costs) as a single batch every 30 seconds
     }
 
     public enqueueBatchFetch(collectionName?: string) {
@@ -91,12 +91,18 @@ export class BaseRepository {
     private getRequestHeaders(): Record<string, string> {
         let userLevel = '1';
         let userId = 'unknown';
+        let userName = 'unknown';
+        let userTeam = '';
+        let userManagerId = '';
         try {
             const localUserStr = localStorage.getItem('nexus_session_user');
             if (localUserStr) {
                 const u = JSON.parse(localUserStr);
                 userLevel = String(u.level || '1');
                 userId = String(u.id || 'unknown');
+                userName = String(u.name || 'unknown');
+                userTeam = String(u.team || '');
+                userManagerId = String(u.managerId || '');
             }
         } catch (err: any) {
             console.warn("[Nexus] Failed to parse request headers:", err.message);
@@ -106,6 +112,10 @@ export class BaseRepository {
             'X-Tenant-ID': this.activeServerId || 'srv-001',
             'X-User-Level': userLevel,
             'X-User-ID': userId,
+            'X-User-Name': userName,
+            'X-User-Team': userTeam,
+            'X-User-Manager-ID': userManagerId,
+            'Content-Type': 'application/json'
         };
     }
 

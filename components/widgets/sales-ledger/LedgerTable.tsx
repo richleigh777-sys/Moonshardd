@@ -27,15 +27,13 @@ interface LedgerTableProps {
     onColumnReorder: (newOrder: string[]) => void;
     density: 'compact' | 'comfortable';
     isLoading?: boolean;
+    fetchNextPage?: () => void;
+    hasMore?: boolean;
 }
-
-
-
-
 
 export const LedgerTable: React.FC<LedgerTableProps> = ({
     sales, columnOrder, visibleColumns, sortConfig, handleSort, selectedIds, toggleSelect, toggleSelectAll,
-    allowActions, onAction, onColumnReorder, density, isLoading
+    allowActions, onAction, onColumnReorder, density, isLoading, fetchNextPage, hasMore
 }) => {
     const activeColumns = useMemo(() => {
         return columnOrder.filter(k => visibleColumns[k] && k !== 'cmd');
@@ -45,11 +43,23 @@ export const LedgerTable: React.FC<LedgerTableProps> = ({
     
     const parentRef = useRef<HTMLDivElement>(null);
     const rowVirtualizer = useVirtualizer({
-        count: isLoading ? 10 : sales.length,
+        count: hasMore ? sales.length + 1 : sales.length,
         getScrollElement: () => parentRef.current,
         estimateSize: () => (density === 'compact' ? 44 : 56),
+        overscan: 5,
     });
     
+    const virtualItems = rowVirtualizer.getVirtualItems();
+    
+    React.useEffect(() => {
+        const lastItem = virtualItems[virtualItems.length - 1];
+        if (!lastItem) return;
+        
+        if (hasMore && lastItem.index >= sales.length - 1 && fetchNextPage && !isLoading) {
+            fetchNextPage();
+        }
+    }, [virtualItems, hasMore, fetchNextPage, isLoading, sales.length]);
+
     const handleContextMenu = (e: React.MouseEvent, sale: Sale) => {
         e.preventDefault();
         sfx.playClick();
@@ -160,7 +170,7 @@ export const LedgerTable: React.FC<LedgerTableProps> = ({
                     </tbody>
                 )}
                 {rowVirtualizer.getVirtualItems().map(virtualRow => {
-                    if (isLoading) {
+                    if (isLoading && sales.length === 0) {
                         return (
                             <tbody key={`skeleton-${virtualRow.index}`} ref={rowVirtualizer.measureElement} data-index={virtualRow.index}>
                                 <tr className="animate-pulse border-b border-border-subtle/50">
@@ -171,6 +181,19 @@ export const LedgerTable: React.FC<LedgerTableProps> = ({
                             </tbody>
                         );
                     }
+                    
+                    if (virtualRow.index >= sales.length) {
+                        return (
+                            <tbody key={`skeleton-more-${virtualRow.index}`} ref={rowVirtualizer.measureElement} data-index={virtualRow.index}>
+                                <tr className="animate-pulse border-b border-border-subtle/50 bg-surface-alt/10">
+                                    <td className="p-4 text-center text-text-muted text-xs tracking-wider uppercase font-bold" colSpan={activeColumns.length + 4}>
+                                        Loading more records...
+                                    </td>
+                                </tr>
+                            </tbody>
+                        );
+                    }
+
                     const sale = sales[virtualRow.index];
                     return (
                         <LedgerRow

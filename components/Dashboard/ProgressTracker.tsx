@@ -65,7 +65,7 @@ export const ProgressTracker: React.FC = () => {
             ${stats.totalRevenue.toLocaleString()}
           </span>
         </div>
-        <p className="text-sm text-slate-300">
+        <p className="text-sm text-text-primary">
           Average per sale: ${stats.totalRevenue / Math.max(1, stats.salesCount)}
         </p>
       </div>
@@ -86,7 +86,7 @@ export const ProgressTracker: React.FC = () => {
             }}
           />
         </div>
-        <p className="text-sm text-slate-300 mt-2">
+        <p className="text-sm text-text-primary mt-2">
           {stats.commission >= stats.commissionTarget
             ? '✅ Commission goal reached!'
             : `$${Math.max(0, stats.commissionTarget - stats.commission)} to commission goal`}

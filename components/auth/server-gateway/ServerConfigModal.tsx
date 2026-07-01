@@ -18,16 +18,24 @@ export const ServerConfigModal: React.FC<ServerConfigModalProps> = ({
 }) => {
     const [name, setName] = useState(initialName);
     const [region, setRegion] = useState(initialRegion);
+    const [isSaving, setIsSaving] = useState(false);
 
     useEffect(() => {
         if (isOpen) {
             const t = setTimeout(() => {
                 setName(initialName);
                 setRegion(initialRegion);
+                setIsSaving(false);
             }, 0);
             return () => clearTimeout(t);
         }
     }, [isOpen, initialName, initialRegion]);
+
+    const handleSave = async () => {
+        setIsSaving(true);
+        await onSave(name, region);
+        setIsSaving(false);
+    };
 
     return (
         <Modal isOpen={isOpen} onClose={onClose} title={title}>
@@ -58,14 +66,14 @@ export const ServerConfigModal: React.FC<ServerConfigModalProps> = ({
                     </div>
                 </div>
                 <div className="pt-6 flex justify-end gap-3 border-t border-border-subtle">
-                    <Button variant="secondary" onClick={onClose} className="h-12 px-4">Cancel</Button>
+                    <Button variant="secondary" onClick={onClose} className="h-12 px-4" disabled={isSaving}>Cancel</Button>
                     <Button 
                         variant="primary" 
-                        onClick={() => onSave(name, region)} 
+                        onClick={handleSave} 
                         className="h-12 px-8 bg-indigo-600 hover:bg-indigo-500 shadow-lg shadow-indigo-500/20  tracking-wide font-medium text-sm"
-                        disabled={!name}
+                        disabled={!name || isSaving}
                     >
-                        {actionLabel}
+                        {isSaving ? "Saving..." : actionLabel}
                     </Button>
                 </div>
             </div>

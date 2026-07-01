@@ -1,37 +1,28 @@
-import React, { useMemo, useEffect, useState, lazy, Suspense } from 'react';
-import { TabContent } from '../ui/Tabs';
+import React, { useMemo, useEffect, useState } from 'react';
+import { TabContent, Tabs, TabList, TabTrigger } from '../ui/Tabs';
 import { sfx } from '../../lib/soundService';
 import { User, Sale, Note, AttendanceRecord, ToastMessage } from '../../types';
 import { useCRM } from '../../hooks/useCRM';
 import { realtimeClient } from '../../lib/realtimeClient';
-import { Loader2 } from 'lucide-react';
 
-// Lazy Load Components
-const DashView = lazy(() => import('../../views/DashView').then(m => ({ default: m.DashView })));
-const MessagingLayout = lazy(() => import('../chat/MessagingLayout').then(m => ({ default: m.MessagingLayout })));
-const EnrollmentFormV2 = lazy(() => import('../forms/EnrollmentFormV2'));
-const PipelineBoard = lazy(() => import('../pipeline/PipelineBoard').then(m => ({ default: m.PipelineBoard })));
-const RecoveryEngine = lazy(() => import('../widgets/RecoveryEngine').then(m => ({ default: m.RecoveryEngine })));
-const LeadHub = lazy(() => import('../leads/LeadHub').then(m => ({ default: m.LeadHub })));
-const ContactManager = lazy(() => import('../widgets/ContactManager').then(m => ({ default: m.ContactManager })));
-const SalesLedger = lazy(() => import('../widgets/SalesLedger').then(m => ({ default: m.SalesLedger })));
-const AgentPayouts = lazy(() => import('../widgets/payouts/AgentPayouts').then(m => ({ default: m.AgentPayouts })));
-const TeamLeaderboard = lazy(() => import('../widgets/TeamLeaderboard').then(m => ({ default: m.TeamLeaderboard })));
-const AgentScriptHub = lazy(() => import('../widgets/AgentScriptHub').then(m => ({ default: m.AgentScriptHub })));
-const PerformanceCenter = lazy(() => import('../widgets/PerformanceCenter').then(m => ({ default: m.PerformanceCenter })));
-const OperationalRhythm = lazy(() => import('./OperationalRhythm').then(m => ({ default: m.OperationalRhythm })));
-const SmartQueue = lazy(() => import('../widgets/SmartQueue').then(m => ({ default: m.SmartQueue })));
-const AdaptiveView = lazy(() => import('../Dashboard/AdaptiveView').then(m => ({ default: m.AdaptiveView })));
-const SmartLeadQueue = lazy(() => import('../LeadQueue/SmartLeadQueue').then(m => ({ default: m.SmartLeadQueue })));
-const SmartPitchWorkspace = lazy(() => import('./SmartPitchWorkspace').then(m => ({ default: m.SmartPitchWorkspace })));
-
-// Global Terminal Loader
-const TerminalLoader = () => (
-    <div className="w-full h-full flex flex-col items-center justify-center text-text-muted space-y-4 min-h-[400px]">
-        <Loader2 className="w-8 h-8 animate-spin text-accent-primary" />
-        <div className="text-sm font-mono uppercase tracking-widest animate-pulse">Initializing Terminal Module...</div>
-    </div>
-);
+// Standard Imports (removing lazy to prevent initialization flash)
+import { DashView } from '../../views/DashView';
+import { MessagingLayout } from '../chat/MessagingLayout';
+import EnrollmentFormV2 from '../forms/EnrollmentFormV2';
+import { PipelineBoard } from '../pipeline/PipelineBoard';
+import { RecoveryEngine } from '../widgets/RecoveryEngine';
+import { LeadHub } from '../leads/LeadHub';
+import { ContactManager } from '../widgets/ContactManager';
+import { SalesLedger } from '../widgets/SalesLedger';
+import { AgentPayouts } from '../widgets/payouts/AgentPayouts';
+import { TeamLeaderboard } from '../widgets/TeamLeaderboard';
+import { AgentScriptHub } from '../widgets/AgentScriptHub';
+import { PerformanceCenter } from '../widgets/PerformanceCenter';
+import { OperationalRhythm } from './OperationalRhythm';
+import { SmartQueue } from '../widgets/SmartQueue';
+import { AdaptiveView } from '../Dashboard/AdaptiveView';
+import { SmartLeadQueue } from '../LeadQueue/SmartLeadQueue';
+import { SmartPitchWorkspace } from './SmartPitchWorkspace';
 
 interface AgentTerminalManagerProps {
     isAllowed: (id: string) => boolean;
@@ -52,9 +43,13 @@ export const AgentViewManager: React.FC<AgentTerminalManagerProps> = ({
     const [activeLeadPhone, setActiveLeadPhone] = useState<string | null>(null);
     const [smartPitchContext, setSmartPitchContext] = useState<any>(null);
 
+    const [activeActionTab, setActiveActionTab] = useState('dash');
+    const [activeMoneyTab, setActiveMoneyTab] = useState('payouts');
+
     const handleEngageLead = (lead: any) => {
         setActiveLeadPhone(lead.phone || null);
-        setView('enrollment');
+        setView('action');
+        setActiveActionTab('enrollment');
         setToast({ title: 'Lead Engagement', message: `Initiating sequence for: ${lead.customerName || lead.customer || 'Unknown'}`, type: 'info' });
     };
 
@@ -132,144 +127,104 @@ export const AgentViewManager: React.FC<AgentTerminalManagerProps> = ({
     }, [sales, currentUser.id]);
 
     return (
-        <Suspense fallback={<TerminalLoader />}>
+        <>
             <TabContent value="smart_pitch" className="w-full min-h-full flex flex-col flex-1 p-0 overflow-hidden">
                 {smartPitchContext && (
                     <SmartPitchWorkspace 
                         context={smartPitchContext} 
                         currentUser={currentUser}
-                        onCancel={() => { setSmartPitchContext(null); setView('dash'); }}
-                        onSuccess={() => { setSmartPitchContext(null); setView(isAllowed('ledger') ? 'ledger' : 'pipeline'); }}
+                        onCancel={() => { setSmartPitchContext(null); setView('action'); }}
+                        onSuccess={() => { setSmartPitchContext(null); setView('action'); }}
                     />
                 )}
             </TabContent>
 
-            {/* New UI Implementations Map to standard or new keys */}
-            <TabContent value="home" className="w-full min-h-full flex flex-col flex-1">
-                <DashView sales={sales} />
+            <TabContent value="action" className="w-full min-h-full flex flex-col flex-1">
+                <Tabs value={activeActionTab} onValueChange={setActiveActionTab} className="w-full h-full flex flex-col min-h-0" orientation="horizontal">
+                    <TabList className="mb-2 shrink-0">
+                        <TabTrigger value="dash">My Home</TabTrigger>
+                        <TabTrigger value="rhythm">Ops Rhythm</TabTrigger>
+                        <TabTrigger value="enrollment">Help Customer</TabTrigger>
+                        <TabTrigger value="pipeline">Pipeline</TabTrigger>
+                        <TabTrigger value="callbacks">Callbacks</TabTrigger>
+                        <TabTrigger value="comms">Comms</TabTrigger>
+                    </TabList>
+                    
+                    <TabContent value="dash" className="w-full h-full flex flex-col flex-1 min-h-0">
+                        <DashView sales={sales} />
+                    </TabContent>
+                    
+                    <TabContent value="rhythm" className="w-full h-full flex flex-col flex-1 min-h-0">
+                        <OperationalRhythm 
+                            notes={myNotes} 
+                            sales={mySales}
+                            currentUser={currentUser} 
+                            onLoadLead={handleEngageLead} 
+                        />
+                    </TabContent>
+
+                    <TabContent value="enrollment" className="w-full h-full flex flex-col flex-1 min-h-0">
+                        <EnrollmentFormV2 
+                            currentUser={currentUser}
+                            prefillPhone={activeLeadPhone}
+                            onSuccess={() => { setActiveLeadPhone(null); setActiveActionTab('pipeline'); }} 
+                            onCancel={() => { setActiveLeadPhone(null); setActiveActionTab('dash'); }} 
+                        />
+                    </TabContent>
+
+                    <TabContent value="pipeline" className="w-full h-full flex flex-col flex-1 min-h-0">
+                        <PipelineBoard sales={mySales} onProcessSale={handleEngageLead} />
+                    </TabContent>
+
+                    <TabContent value="callbacks" className="w-full h-full flex flex-col flex-1 min-h-0">
+                        <LeadHub 
+                            notes={myNotes} 
+                            onMarkDone={async (id) => { await deleteNote(id); sfx.playSuccess(); }}
+                            onEngage={handleEngageLead}
+                        />
+                    </TabContent>
+                    
+                    <TabContent value="comms" className="w-full h-full flex flex-col flex-1 min-h-0">
+                        <MessagingLayout />
+                    </TabContent>
+                </Tabs>
             </TabContent>
-            <TabContent value="leads" className="w-full min-h-full flex flex-col flex-1">
-                <SmartLeadQueue />
+
+            <TabContent value="money" className="w-full h-full flex flex-col flex-1 min-h-0">
+                <Tabs value={activeMoneyTab} onValueChange={setActiveMoneyTab} className="w-full h-full flex flex-col min-h-0" orientation="horizontal">
+                    <TabList className="mb-2 shrink-0">
+                        <TabTrigger value="payouts">Earnings</TabTrigger>
+                        <TabTrigger value="ledger">Records</TabTrigger>
+                        <TabTrigger value="standings">Leaderboard</TabTrigger>
+                        <TabTrigger value="analytics">Progress Analytics</TabTrigger>
+                    </TabList>
+                    
+                    <TabContent value="payouts" className="w-full h-full flex flex-col flex-1 min-h-0">
+                        <AgentPayouts />
+                    </TabContent>
+
+                    <TabContent value="ledger" className="w-full h-full flex flex-col flex-1 min-h-0">
+                        <SalesLedger sales={mySales} allowActions={false} />
+                    </TabContent>
+
+                    <TabContent value="standings" className="w-full h-full flex flex-col flex-1 min-h-0">
+                        <TeamLeaderboard 
+                            currentUserName={currentUser.name} 
+                            currentUserRole="agent" 
+                            currentUserTeam={currentUser.team}
+                            currentUserLevel={currentUser.level}
+                        />
+                    </TabContent>
+                    
+                    <TabContent value="analytics" className="w-full h-full flex flex-col gap-4 overflow-y-auto">
+                        <PerformanceCenter 
+                            sales={mySales} 
+                            currentUser={currentUser} 
+                            attendance={attendance} 
+                        />
+                    </TabContent>
+                </Tabs>
             </TabContent>
-            <TabContent value="chat" className="w-full min-h-full flex flex-col flex-1">
-                <MessagingLayout />
-            </TabContent>
-            <TabContent value="me" className="w-full min-h-full flex flex-col flex-1 overflow-auto p-4">
-                <PerformanceCenter sales={mySales} currentUser={currentUser} attendance={attendance} />
-            </TabContent>
-
-            {isAllowed('rhythm') && (
-                <TabContent value="rhythm" className="w-full min-h-full flex flex-col flex-1">
-                    <OperationalRhythm 
-                        notes={myNotes} 
-                        sales={mySales}
-                        currentUser={currentUser} 
-                        onLoadLead={handleEngageLead} 
-                    />
-                </TabContent>
-            )}
-            
-            {isAllowed('dash') && (
-                <TabContent value="dash" className="w-full min-h-full flex flex-col flex-1">
-                    <DashView sales={sales} />
-                </TabContent>
-            )}
-
-            {isAllowed('comms') && (
-                <TabContent value="comms" className="w-full min-h-full flex flex-col flex-1">
-                    <MessagingLayout />
-                </TabContent>
-            )}
-
-
-            {isAllowed('enrollment') && (
-                <TabContent value="enrollment" className="w-full min-h-full flex flex-col flex-1">
-                    <EnrollmentFormV2 
-                        currentUser={currentUser}
-                        prefillPhone={activeLeadPhone}
-                        onSuccess={() => { setActiveLeadPhone(null); setView(isAllowed('ledger') ? 'ledger' : 'pipeline'); }} 
-                        onCancel={() => { setActiveLeadPhone(null); setView('dash'); }} 
-                    />
-                </TabContent>
-            )}
-
-            {isAllowed('pipeline') && (
-                <TabContent value="pipeline" className="w-full min-h-full flex flex-col flex-1">
-                    <PipelineBoard sales={mySales} onProcessSale={handleEngageLead} />
-                </TabContent>
-            )}
-
-            {isAllowed('recovery') && (
-                <TabContent value="recovery" className="w-full min-h-full flex flex-col flex-1">
-                    <RecoveryEngine 
-                        sales={recoverySales} 
-                        onAction={async (sale, action) => {
-                            if (action === 'resurrect') {
-                                await updateSaleStatus(sale.id, 'Pending', { pipelineStatus: 'Rebuttal', systemNotes: (sale.systemNotes || '') + '\n[System]: Recovered from RecoveryEngine. Added to Callback rhythm.' });
-                                setToast({ title: 'Recovery Action', message: `Sale moved to Pending pipeline`, type: 'success' });
-                            } else if (action === 'delete') {
-                                await updateSaleStatus(sale.id, 'Cancelled', { systemNotes: (sale.systemNotes || '') + '\n[System]: Archived from RecoveryEngine.' });
-                                setToast({ title: 'Recovery Action', message: `Sale archived`, type: 'info' });
-                            }
-                        }} 
-                    />
-                </TabContent>
-            )}
-
-            {isAllowed('callbacks') && (
-                <TabContent value="callbacks" className="w-full min-h-full flex flex-col flex-1">
-                    <LeadHub 
-                        notes={myNotes} 
-                        onMarkDone={async (id) => { await deleteNote(id); sfx.playSuccess(); }}
-                        onEngage={handleEngageLead}
-                    />
-                </TabContent>
-            )}
-
-            {isAllowed('contacts') && (
-                <TabContent value="contacts" className="w-full min-h-full flex flex-col flex-1">
-                    <ContactManager />
-                </TabContent>
-            )}
-
-            {isAllowed('ledger') && (
-                <TabContent value="ledger" className="w-full h-full flex flex-col flex-1 min-h-0">
-                    <SalesLedger sales={mySales} allowActions={false} />
-                </TabContent>
-            )}
-
-            {isAllowed('payouts') && (
-                <TabContent value="payouts" className="w-full min-h-full flex flex-col flex-1">
-                    <AgentPayouts />
-                </TabContent>
-            )}
-
-            {isAllowed('standings') && (
-                <TabContent value="standings" className="w-full min-h-full flex flex-col flex-1">
-                    <TeamLeaderboard 
-                        currentUserName={currentUser.name} 
-                        currentUserRole="agent" 
-                        currentUserTeam={currentUser.team}
-                        currentUserLevel={currentUser.level}
-                    />
-                </TabContent>
-            )}
-
-            {isAllowed('scripts') && (
-                <TabContent value="scripts" className="w-full min-h-full flex flex-col flex-1">
-                    <AgentScriptHub />
-                </TabContent>
-            )}
-
-            {isAllowed('analytics') && (
-                <TabContent value="analytics" className="w-full h-full flex flex-col gap-4">
-                    <PerformanceCenter 
-                        sales={mySales} 
-                        currentUser={currentUser} 
-                        attendance={attendance} 
-                    />
-                </TabContent>
-            )}
-        </Suspense>
+        </>
     );
 };

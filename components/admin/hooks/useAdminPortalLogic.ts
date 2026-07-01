@@ -16,7 +16,7 @@ export const useAdminPortalLogic = () => {
         sendDirective, runDiagnostic, testUplink 
     } = useCRM();
     
-    const [view, setView] = useState('overview');
+    const [view, setView] = useState('action');
     const [showTerminals, setShowTerminals] = useState(false);
     const [showCalculator, setShowCalculator] = useState(false);
     const [showScratchpad, setShowScratchpad] = useState(false);
@@ -31,21 +31,8 @@ export const useAdminPortalLogic = () => {
     const isSuperAdmin = useMemo(() => (currentUser?.level || 0) >= 10, [currentUser]);
     
     const allowedTabs = useMemo(() => {
-        let basePerms: string[] = [];
-        if (isSuperAdmin) {
-            basePerms = ['overview', 'nexus', 'enrollment', 'pipeline', 'ledger', 'sales_pool', 'retention', 'roster', 'standings', 'intel', 'comms', 'scripts', 'campaigns', 'automation', 'catalog', 'system', 'sheets', 'payroll', 'audit'];
-        } else {
-            const configuredPerms = systemConfig.permissions?.manager || ['overview', 'enrollment', 'pipeline', 'ledger', 'roster', 'payroll', 'audit'];
-            basePerms = configuredPerms.filter(t => t !== 'nexus');
-        }
-
-        const userLevel = currentUser?.level || currentUser?.accessLevel || 1;
-        const levelClearances = systemConfig.adminLevelClearances || {};
-
-        return basePerms.filter(tab => {
-            const requiredLevel = levelClearances[tab] || 1;
-            return userLevel >= requiredLevel;
-        });
+        const basePerms = ['action', 'money', 'oversight'];
+        return basePerms;
     }, [isSuperAdmin, systemConfig.permissions?.manager, systemConfig.adminLevelClearances, currentUser]);
 
     const isAllowed = useCallback((id: string) => allowedTabs.includes(id), [allowedTabs]);

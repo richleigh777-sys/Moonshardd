@@ -149,7 +149,7 @@ export const VibeLayout: React.FC<VibeLayoutProps> = ({ children }) => {
         className="absolute inset-0 z-0 pointer-events-none opacity-100"
       />
       {/* Vignette Overlay */}
-      <div className="absolute inset-0 z-0 pointer-events-none opacity-60 mix-blend-multiply bg-[radial-gradient(circle_at_center,transparent_0%,var(--color-bg-app)_120%)]"></div>
+      <div className="absolute inset-0 z-0 pointer-events-none opacity-60 mix-blend-multiply bg-[radial-gradient(circle_at_center,transparent_0%,hsl(var(--color-surface-canvas))_120%)]"></div>
       
       <div className="relative z-10 h-full w-full flex flex-col">
         {children}

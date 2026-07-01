@@ -218,7 +218,7 @@ export const EditUserModal: React.FC<EditUserModalProps> = ({ isOpen, onClose, u
                                     <div className="space-y-2">
                                         <label className="text-sm font-medium text-text-muted  tracking-wide ml-1 flex justify-between">
                                             <span>Role Assignment</span>
-                                            <span className={formData.role === 'admin' ? 'text-accent-secondary' : 'text-slate-500'}>
+                                            <span className={formData.role === 'admin' ? 'text-accent-secondary' : 'text-text-muted'}>
                                                 {formData.role === 'admin' ? 'Director Privileges' : 'Operative Level'}
                                             </span>
                                         </label>

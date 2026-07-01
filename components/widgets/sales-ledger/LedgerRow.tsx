@@ -112,7 +112,7 @@ export const LedgerRow: React.FC<LedgerRowProps> = React.memo(({
     const isDeclinedOrCancelled = sale.status === 'Declined' || sale.status === 'Cancelled';
     const isRescue = sale.status === 'Rescue In Progress';
 
-    let statusRowBgClass = 'bg-surface-main';
+    const statusRowBgClass = 'bg-surface-main';
     let statusBorderClass = 'border-l-transparent';
     let statusHoverClass = 'group-hover:bg-surface-alt/40';
 

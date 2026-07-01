@@ -89,7 +89,7 @@ export function ProductQuickSelector({ products, presets, quantities, onAdd, onQ
                         </div>
                         <button 
                             onClick={() => { onQuickAdd(preset); sfx.playSuccess(); }}
-                            className="h-10 px-4 flex items-center gap-2 bg-surface-main hover:bg-white text-text-secondary hover:text-black rounded-xl font-bold text-sm uppercase tracking-wide transition-all shadow-inner border border-border-strong"
+                            className="h-10 px-4 flex items-center gap-2 bg-surface-main hover:bg-surface-highlight text-text-secondary hover:text-text-primary rounded-xl font-bold text-sm uppercase tracking-wide transition-all shadow-inner border border-border-strong"
                         >
                             <Plus size={14} /> Add Bundle
                         </button>
