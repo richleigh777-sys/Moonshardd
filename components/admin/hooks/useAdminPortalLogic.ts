@@ -4,7 +4,6 @@ import { useCRM } from '../../../hooks/useCRM';
 import { useSystem } from '../../../hooks/useSystem';
 import { Sale } from '../../../types';
 import { sfx } from '../../../lib/soundService';
-import { ConflictError } from '../../../nexus/adapters/DataGateway';
 
 export const useAdminPortalLogic = () => {
     const { currentUser } = useAuth();
@@ -13,7 +12,7 @@ export const useAdminPortalLogic = () => {
         sales, users, notes, health, notifications, clearNotification, productConfig, updateProductConfig, 
         systemConfig, updateSystemConfig, updateUser, addUser, 
         updateSaleStatus, updateSale, deleteSale, bulkDeleteSales, bulkUpdateSales, importSales, 
-        sendDirective, runDiagnostic, testUplink 
+        sendDirective, runDiagnostic, testUplink
     } = useCRM();
     
     const [view, setView] = useState('action');
@@ -106,6 +105,49 @@ export const useAdminPortalLogic = () => {
                         await updateSale(sale.id, { trackingId: payload.trackingId, deliveryStatus: 'Shipped' }, expectedUpdatedAt, originalData);
                         sfx.playSuccess();
                         setToast({ title: 'Logistics', message: `Tracking ID ${payload.trackingId} Assigned`, type: 'success' });
+                    }
+                } else if (action === 'copy_row') {
+                    if (!isSuperAdmin) {
+                        setToast({ title: 'Access Denied', message: 'Level 10 Clearance Required to copy row.', type: 'error' });
+                        return;
+                    }
+                    const { generateSheetTsv } = await import('../../widgets/sales-ledger/sheetExport');
+                    const tsv = generateSheetTsv([sale], currentUser?.level || 0);
+                    try {
+                        await navigator.clipboard.writeText(tsv);
+                        setToast({ title: 'System', message: `Row copied for Google Sheets!`, type: "success" });
+                        sfx.playConfirm();
+                    } catch (e) {
+                        console.error(e);
+                        setToast({ title: 'Clipboard Error', message: "Failed to copy.", type: "error" });
+                    }
+                } else if (action === 'duplicate_row') {
+                    if (!isSuperAdmin) {
+                        setToast({ title: 'Access Denied', message: 'Level 10 Clearance Required to duplicate row.', type: 'error' });
+                        return;
+                    }
+                    try {
+                        const localUserStr = localStorage.getItem('nexus_session_user');
+                        const headers: any = { 'Content-Type': 'application/json' };
+                        if (localUserStr) {
+                            const u = JSON.parse(localUserStr);
+                            headers['x-user-level'] = String(u.level || '1');
+                            headers['x-user-id'] = String(u.id || 'unknown');
+                            headers['x-user-name'] = String(u.name || 'unknown');
+                            headers['x-user-team'] = String(u.team || '');
+                            headers['x-tenant-id'] = localStorage.getItem('nexus_server_id') || 'srv-001';
+                        }
+                        const res = await fetch(`/api/collections/sales/${sale.id}/duplicate`, {
+                            method: 'POST',
+                            headers
+                        });
+                        if (!res.ok) {
+                            throw new Error('Failed to duplicate on server');
+                        }
+                        sfx.playConfirm();
+                        setToast({ title: 'Ledger Update', message: 'Record Duplicated Successfully', type: 'success' });
+                    } catch (e) {
+                        setToast({ title: 'Error', message: 'Failed to duplicate row.', type: 'error' });
                     }
                 }
                 setConflict(null);

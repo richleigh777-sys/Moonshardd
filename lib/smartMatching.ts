@@ -141,9 +141,10 @@ export function findBestCustomerMatch(
     customers: Customer[]
 ): MatchingResult {
     const salePhone = normalizePhone(saleData.phone);
+    const saleEmail = normalizeEmail(saleData.email);
     const saleName = saleData.customer || `${saleData.firstName || ''} ${saleData.lastName || ''}`.trim();
     
-    if (!salePhone) {
+    if (!salePhone && !saleEmail) {
         return { matchedCustomer: null, confidence: 'NONE', score: 0 };
     }
 
@@ -156,16 +157,21 @@ export function findBestCustomerMatch(
 
         const cPhone = normalizePhone(c.phone);
         const cAltPhone = normalizePhone((c as any).alternatePhone);
+        const cEmail = normalizeEmail(c.email);
         
-        // 1. Primary Identifiers check: Phone
+        // 1. Primary Identifiers check: Phone or Email
         const phoneMatch = salePhone && (cPhone === salePhone || cAltPhone === salePhone);
+        const emailMatch = saleEmail && (cEmail === saleEmail);
 
         if (phoneMatch) {
             score += 65; // High base weight for exact phone match
             matchedOnIdentity = true;
+        } else if (emailMatch) {
+            score += 65; // High base weight for exact email match
+            matchedOnIdentity = true;
         }
 
-        // If phone does not match, this customer is not a matching candidate. Skip.
+        // If primary identifier does not match, this customer is not a matching candidate. Skip.
         if (!matchedOnIdentity) {
             continue;
         }

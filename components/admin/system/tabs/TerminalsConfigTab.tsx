@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
-import { Terminal, Code, Workflow, ShieldCheck, Zap, Database, Server, Settings, Save, RefreshCw, GitCommit, CheckSquare, Layers, Lock } from 'lucide-react';
+import { Terminal, ShieldCheck, Save, RefreshCw } from 'lucide-react';
 import { Card } from '../../../../ui/Base';
 import { SectionHeader } from '../SectionHeader';
 import { motion } from 'motion/react';
 
 interface TerminalsConfigTabProps { config?: any; onChange?: any; isSuperAdmin?: boolean; }
-export const TerminalsConfigTab: React.FC<TerminalsConfigTabProps> = ({ config, onChange, isSuperAdmin }) => {
+export const TerminalsConfigTab: React.FC<TerminalsConfigTabProps> = ({ config, onChange, _isSuperAdmin }) => {
     const [isSaving, setIsSaving] = useState(false);
     
     // Config state

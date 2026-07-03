@@ -1,4 +1,4 @@
-import { MessageSquare, Hash, Zap, Search } from 'lucide-react';
+import { MessageSquare, Hash, Zap } from 'lucide-react';
 
 export const ChatEmptyState: React.FC = () => (
     <div className="flex-1 flex flex-col items-center justify-center text-center p-12 bg-surface-main select-none h-full">

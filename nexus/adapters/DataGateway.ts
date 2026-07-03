@@ -2,7 +2,7 @@ import { BaseRepository, ConflictError } from '../repositories/BaseRepository';
 import { AuthService } from '../services/AuthService';
 import { SystemOpsService } from '../services/SystemOpsService';
 import { sendToGoogleSheet, testGoogleSheetConnection, validateConfig } from '../../lib/cloud/integrations';
-import { User, Server, Presence } from '../../types';
+import { User } from '../../types';
 
 export { sendToGoogleSheet, testGoogleSheetConnection, validateConfig, ConflictError };
 

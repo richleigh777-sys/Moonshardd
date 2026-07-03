@@ -28,7 +28,6 @@ vi.mock('firebase/firestore', () => {
     }
 });
 
-import { doc, getDoc } from 'firebase/firestore';
 
 describe('AuthService', () => {
     let authService: AuthService;

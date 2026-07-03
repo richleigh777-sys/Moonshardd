@@ -1,6 +1,5 @@
 
 import { useState, useMemo } from 'react';
-import { Send, Speaker } from 'lucide-react';
 import { Button } from '../../../../components/ui/Base';
 import { sfx } from '../../../../lib/soundService';
 import { PanelFrame } from '../../../../components/ui/PanelFrame';

@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import { Sale, User, Note } from '../../../types';
-import { Phone, Users, AlertCircle, TrendingUp, Clock, Zap, Target, Trophy, Workflow, Activity, Repeat, ChevronDown, ChevronUp } from 'lucide-react';
+import { Users, AlertCircle, Clock, Zap, Target, Trophy, Workflow, Activity, Repeat, ChevronDown, ChevronUp } from 'lucide-react';
 import { Card } from '../../../ui/Base';
 
 interface DashboardLiveOpsBoardProps {

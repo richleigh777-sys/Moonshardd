@@ -59,7 +59,7 @@ export const MaskedData: React.FC<MaskedDataProps> = ({ value, type = 'phone' })
                                         } 
                                     }));
                                 }
-                            } catch (err) { /* silent fail */ }
+                            } catch (_err) { /* silent fail */ }
                         }
                         setRevealed(!revealed);
                     }}

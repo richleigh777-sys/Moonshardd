@@ -1,5 +1,5 @@
 
-import { Calculator, PenTool, Phone } from 'lucide-react';
+import { Calculator, PenTool } from 'lucide-react';
 import { sfx } from '../../lib/soundService';
 
 interface AgentHeaderControlsProps {

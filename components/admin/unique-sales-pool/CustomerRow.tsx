@@ -1,8 +1,7 @@
 import React from 'react';
 import { Customer, Sale } from '../../../types';
-import { ChevronUp, Phone, Mail, MapPin, CreditCard, Edit3, Trash2, Clock, ShieldAlert, ShieldCheck, FileText, AlertTriangle } from 'lucide-react';
+import { ChevronUp, Phone, Mail, MapPin, CreditCard, Edit3, Trash2, Clock } from 'lucide-react';
 import { sfx } from '../../../lib/soundService';
-import { useSystem } from '../../../hooks/useSystem';
 
 interface CustomerRowProps {
     customer: Customer;

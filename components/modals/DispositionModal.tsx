@@ -13,7 +13,7 @@ interface DispositionModalProps {
   formData: EnrollmentState;
 }
 
-export const DispositionModal: React.FC<DispositionModalProps> = ({ isOpen, onClose, onSave, formData }) => {
+export const DispositionModal: React.FC<DispositionModalProps> = ({ isOpen, onClose, onSave, _formData }) => {
   const [outcome, setOutcome] = useState<'busy' | 'not_interested' | 'disconnected' | 'callback' | 'hold_order'>('busy');
   const [callbackDate, setCallbackDate] = useState('');
   const [callbackTime, setCallbackTime] = useState('');

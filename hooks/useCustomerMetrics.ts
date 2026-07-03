@@ -11,9 +11,15 @@ export function useCustomerMetrics(customers: Customer[], sales: Sale[]) {
         
         sortedRaw.forEach(c => {
             const cleanPhone = (c.phone || '').replace(/\D/g, '');
-            if (!cleanPhone) return;
-            if (!seen.has(cleanPhone)) {
-                seen.add(cleanPhone);
+            const cleanEmail = (c.email || '').toLowerCase().trim();
+            const uniqueKey = cleanPhone || cleanEmail;
+            
+            if (!uniqueKey) {
+                result.push(c);
+                return;
+            }
+            if (!seen.has(uniqueKey)) {
+                seen.add(uniqueKey);
                 result.push(c);
             }
         });
@@ -37,6 +43,7 @@ export function useCustomerMetrics(customers: Customer[], sales: Sale[]) {
         // High-performance index maps to bypass O(N * M) nested scanning
         const salesByCustId = new Map<string, Sale[]>();
         const salesByPhone = new Map<string, Sale[]>();
+        const salesByEmail = new Map<string, Sale[]>();
 
         sales.forEach(sale => {
             if (sale.customerId) {
@@ -57,10 +64,21 @@ export function useCustomerMetrics(customers: Customer[], sales: Sale[]) {
                 }
                 list.push(sale);
             }
+            
+            const saleEmail = (sale.email || '').toLowerCase().trim();
+            if (saleEmail) {
+                let list = salesByEmail.get(saleEmail);
+                if (!list) {
+                    list = [];
+                    salesByEmail.set(saleEmail, list);
+                }
+                list.push(sale);
+            }
         });
 
         uniqueCustomers.forEach(c => {
             const cleanCustPhone = (c.phone || '').replace(/\D/g, '');
+            const cleanCustEmail = (c.email || '').toLowerCase().trim();
 
             // Set-based deduplication of sales records for this specific customer
             const matchedSalesSet = new Set<Sale>();
@@ -76,6 +94,14 @@ export function useCustomerMetrics(customers: Customer[], sales: Sale[]) {
                 const listByPhone = salesByPhone.get(cleanCustPhone);
                 if (listByPhone) {
                     listByPhone.forEach(s => matchedSalesSet.add(s));
+                }
+            }
+            
+            // 3. Check Email lookup
+            if (cleanCustEmail) {
+                const listByEmail = salesByEmail.get(cleanCustEmail);
+                if (listByEmail) {
+                    listByEmail.forEach(s => matchedSalesSet.add(s));
                 }
             }
 

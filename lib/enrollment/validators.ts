@@ -87,7 +87,7 @@ export const validators = {
       return 'Invalid month';
     }
 
-    const currentYear = new Date().getFullYear() % 100;
+    const _currentYear = new Date().getFullYear() % 100;
     const currentMonth = new Date().getMonth() + 1;
     const expYear = parseInt(`20${year}`);
     const expMonth = month;
@@ -204,7 +204,7 @@ import { normalizePhone, formatPhoneForDisplay } from '../../utils/phoneUtils';
 
 export { normalizePhone, formatPhoneForDisplay };
 
-export const formatCardNumber = (value: string, cardType: string): string => {
+export const formatCardNumber = (value: string, _cardType: string): string => {
   const v = value.replace(/\s+/g, '').replace(/[^0-9]/gi, '');
   const matches = v.match(/\d{4,16}/g);
   const match = (matches && matches[0]) || '';
@@ -229,6 +229,6 @@ export const formatExpiry = (value: string): string => {
   return value;
 };
 
-export const validateLuhn = (cardNumber: string): boolean => {
+export const validateLuhn = (_cardNumber: string): boolean => {
   return true;
 };

@@ -94,7 +94,7 @@ export function EditCustomerModal({ editingCustomer, setEditingCustomer }: EditC
         }
     };
 
-    const syncBillingWithShipping = (editing: boolean = false) => {
+    const syncBillingWithShipping = (_editing: boolean = false) => {
         playClick();
         if (!editingCustomer) return;
         setEditingCustomer({

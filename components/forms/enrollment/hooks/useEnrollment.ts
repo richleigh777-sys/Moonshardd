@@ -268,10 +268,10 @@ export const useEnrollment = (onSuccess: () => void, customerData?: any) => {
             
             // Auto-fill if we found a match. To prevent infinite loops we ensure the form doesn't already match the found customer.
             if (foundCustomer) {
-                const formPhoneRaw = formData.phone?.replace(/\D/g, '') || '';
-                const custPhoneRaw = foundCustomer.phone?.replace(/\D/g, '') || '';
-                const formEmailRaw = (formData.email || '').toLowerCase().trim();
-                const custEmailRaw = (foundCustomer.email || '').toLowerCase().trim();
+                const _formPhoneRaw = formData.phone?.replace(/\D/g, '') || '';
+                const _custPhoneRaw = foundCustomer.phone?.replace(/\D/g, '') || '';
+                const _formEmailRaw = (formData.email || '').toLowerCase().trim();
+                const _custEmailRaw = (foundCustomer.email || '').toLowerCase().trim();
                 
                 // If the form doesn't yet have the customer's name, or if we just matched, fire it.
                 // An easy check is if formData.firstName is blank, OR if it doesn't match the customer.
@@ -466,7 +466,7 @@ export const useEnrollment = (onSuccess: () => void, customerData?: any) => {
             }
             
             const ONE_DAY = 24 * 60 * 60 * 1000;
-            const THIRTY_DAYS = 30 * ONE_DAY;
+            const _THIRTY_DAYS = 30 * ONE_DAY;
 
             let mergedFirstName = (formData.firstName || '').trim();
             let mergedLastName = (formData.lastName || '').trim();

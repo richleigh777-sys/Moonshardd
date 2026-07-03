@@ -221,7 +221,7 @@ export function useEnrollmentLogic(
           unitPrice: first.price,
         }]);
       }
-    } catch (_e) {
+    } catch (__e) {
       // ignore
     }
   }, [initialData, productConfig]);
@@ -624,7 +624,7 @@ export function useEnrollmentLogic(
     };
 
     const fullShippingAddress = formatAddress(formData.shippingAddress, formData.shippingApt, formData.shippingCity, formData.shippingState, formData.shippingZip);
-    const fullBillingAddress = useShippingForBilling 
+    const _fullBillingAddress = useShippingForBilling 
       ? fullShippingAddress 
       : formatAddress(formData.billingAddress, formData.billingApt, formData.billingCity, formData.billingState, formData.billingZip);
 
@@ -697,7 +697,7 @@ export function useEnrollmentLogic(
     }
   }, [validateMinimumFields, addSale, currentUser, formData, financials, cart, manualAmount, notes, useShippingForBilling, onSuccess, calculatedTotal, productConfig.products]);
 
-  const handleClear = useCallback((skipConfirm = false) => {
+  const handleClear = useCallback((_skipConfirm = false) => {
     // if (skipConfirm || confirm('Clear all form data? This cannot be undone.')) {
       draftService.delete(STORAGE_KEY);
       setFormData({
@@ -760,7 +760,7 @@ export function useEnrollmentLogic(
     };
 
     const fullShippingAddress = formatAddress(formData.shippingAddress, formData.shippingApt, formData.shippingCity, formData.shippingState, formData.shippingZip);
-    const fullBillingAddress = useShippingForBilling 
+    const _fullBillingAddress = useShippingForBilling 
       ? fullShippingAddress 
       : formatAddress(formData.billingAddress, formData.billingApt, formData.billingCity, formData.billingState, formData.billingZip);
 

@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import { Sale, User, Note } from '../../../types';
-import { TrendingUp, TrendingDown, AlertCircle, CheckCircle2, Zap } from 'lucide-react';
+import { TrendingUp, TrendingDown, AlertCircle, CheckCircle2 } from 'lucide-react';
 
 interface CompanyHealthScorecardProps {
   sales: Sale[];

@@ -225,7 +225,7 @@ export const ImportWizard: React.FC<ImportWizardProps> = ({
                         variant="primary" 
                         className="h-12 px-12 bg-emerald-600 hover:bg-emerald-500 text-white shadow-xl shadow-emerald-500/20 border border-status-success/30 font-[700]  tracking-[0.2em] relative overflow-hidden group"
                         onClick={() => { sfx.playSubmit(); onExecute(targetAgentId, defaultStatus); }} 
-                        disabled={isProcessing || (!columnMapping['amount'] && !columnMapping['product'])}
+                        disabled={isProcessing || Object.keys(columnMapping).length === 0}
                     >
                         <div className="absolute inset-0 bg-surface-highlight translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000"></div>
                         {isProcessing ? (

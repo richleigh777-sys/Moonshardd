@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { User } from '../../types';
-import { X, User as UserIcon, Bell, Shield, PaintBucket, Monitor, LogOut } from 'lucide-react';
+import { X, User as UserIcon, Bell, Shield, PaintBucket } from 'lucide-react';
 import { sfx } from '../../lib/soundService';
 
 interface UserSettingsModalProps {

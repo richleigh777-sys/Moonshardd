@@ -28,10 +28,10 @@ export const AuditLog: React.FC<{ logs?: AuditEntry[] }> = ({ logs }) => {
             const matchesModule = filterModule === 'ALL' || log.module === filterModule;
             const searchLower = searchTerm.toLowerCase();
             const matchesSearch = 
-                log.action?.toLowerCase().includes(searchLower) ||
-                log.details?.toLowerCase().includes(searchLower) ||
-                log.agentName?.toLowerCase().includes(searchLower) ||
-                log.id?.toLowerCase().includes(searchLower);
+                (log.action || '').toLowerCase().includes(searchLower) ||
+                (log.details || '').toLowerCase().includes(searchLower) ||
+                (log.agentName || '').toLowerCase().includes(searchLower) ||
+                (log.id || '').toLowerCase().includes(searchLower);
             
             return matchesModule && matchesSearch;
         }).sort((a, b) => b.timestamp - a.timestamp);

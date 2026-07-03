@@ -6,7 +6,7 @@ import { parseSmartAddress } from '../../../../lib/addressParser';
 import { parseFullName } from '../../../../lib/nameParser';
 import { MEDICAL_CONDITIONS } from '../../../../constants';
 
-const US_STATES = [
+const _US_STATES = [
     { value: 'AL', label: 'Alabama' }, { value: 'AK', label: 'Alaska' }, { value: 'AZ', label: 'Arizona' },
     { value: 'AR', label: 'Arkansas' }, { value: 'CA', label: 'California' }, { value: 'CO', label: 'Colorado' },
     { value: 'CT', label: 'Connecticut' }, { value: 'DE', label: 'Delaware' }, { value: 'FL', label: 'Florida' },
@@ -22,7 +22,7 @@ const HEIGHT_OPTIONS = Array.from({ length: 48 }, (_, i) => {
     return { value: `${feet}'${inches}"`, label: `${feet}'${inches}"` };
 });
 
-export function Stage1Profile({ formData, setFormData, handleIdentityChange, handleDobChange, handleAgeChange, autoFillFromCustomer, customerNotes, productConfig, onNext, onCallback, wasAutoFilled, useShippingForBilling, setUseShippingForBilling }: any) {
+export function Stage1Profile({ formData, setFormData, handleIdentityChange, handleDobChange, handleAgeChange, _autoFillFromCustomer, customerNotes, productConfig, onNext, onCallback, wasAutoFilled, useShippingForBilling, setUseShippingForBilling }: any) {
     const addressDebounceRef = React.useRef<NodeJS.Timeout | null>(null);
 
     const [addressValidationStatus, setAddressValidationStatus] = React.useState<'idle' | 'validating' | 'verified'>('idle');
@@ -98,7 +98,7 @@ export function Stage1Profile({ formData, setFormData, handleIdentityChange, han
         }
     };
 
-    const handleStateChange = (e: React.ChangeEvent<HTMLInputElement>, isBilling = false) => {
+    const handleStateChange = (e: React.ChangeEvent<HTMLInputElement>, _isBilling = false) => {
         const rawState = e.target.value.replace(/[^a-zA-Z]/g, '').toUpperCase().substring(0, 2);
         e.target.value = rawState;
         handleIdentityChange(e);
@@ -139,7 +139,7 @@ export function Stage1Profile({ formData, setFormData, handleIdentityChange, han
 
     const isEmailValid = !formData.email || /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i.test(formData.email);
     const emailWarning = emailThreatCheck(formData.email);
-    const parsedDate = formData.dob ? new Date(formData.dob + 'T12:00:00Z') : null;
+    const _parsedDate = formData.dob ? new Date(formData.dob + 'T12:00:00Z') : null;
     const isValid = formData.firstName && formData.lastName && formData.phone && formData.shippingAddress && formData.shippingState;
 
     return (

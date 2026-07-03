@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { 
-    Building, Globe, ShieldAlert, Heart, Gift, Volume2, ShieldCheck, 
-    RefreshCw, Sparkles, Wifi, Server, Activity, Users, Radio,
-    Terminal, Plus, Cpu, Lock, Key, Layers, Eye, EyeOff, Play, Check, AlertTriangle, HelpCircle
+    Building, Globe, ShieldAlert, Heart, ShieldCheck, 
+    RefreshCw, Sparkles, Wifi, Server, Activity, Users, Radio, Plus, Cpu, Key, Play, AlertTriangle
 } from 'lucide-react';
 import { sfx } from '../../../../lib/soundService';
 import { useCRM } from '../../../../hooks/useCRM';
@@ -33,7 +32,7 @@ const INITIAL_ORGS: OrganizationNode[] = [
 ];
 
 export const CommandDeckTab = () => {
-    const { users, systemConfig, updateSystemConfig, updateUser, sendDirective, addNote } = useCRM();
+    const { _users, systemConfig, updateSystemConfig, _updateUser, sendDirective, addNote } = useCRM();
     const { setToast } = useSystem();
     const { serverList, createNewServer } = useServerManager();
 
@@ -59,7 +58,7 @@ export const CommandDeckTab = () => {
     const [compilationProgress, setCompilationProgress] = useState(0);
     const [compilerLogs, setCompilerLogs] = useState<string[]>([]);
     const [isCompiling, setIsCompiling] = useState(false);
-    const [visibleKeys, setVisibleKeys] = useState<Record<string, boolean>>({});
+    const [_visibleKeys, _setVisibleKeys] = useState<Record<string, boolean>>({});
 
     const generateNewAccessKey = () => {
         sfx.playClick();
@@ -160,7 +159,7 @@ export const CommandDeckTab = () => {
                     loggingPrivacy: 'strict-gdpr',
                     autoSeedLeads: true
                 });
-            } catch (error) {
+            } catch (_error) {
                 setToast({
                     title: "Deployment Failed",
                     message: "There was a database sync issue creating the node.",

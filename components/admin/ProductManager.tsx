@@ -2,7 +2,6 @@
 import React, { useState, useMemo } from 'react';
 import { ShieldCheck, Activity, PackageOpen, Layers } from 'lucide-react';
 import { ProductConfig, Product } from '../../types';
-import { Card } from '../ui/Base';
 import { sfx } from '../../lib/soundService';
 import { useCRM } from '../../hooks/useCRM';
 import { useSystem } from '../../hooks/useSystem';

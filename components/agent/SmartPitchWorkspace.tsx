@@ -1,10 +1,7 @@
-import React, { useState, useEffect } from 'react';
-import { Card, Button, Input } from '../ui/Base';
+import React from 'react';
 import { useCRM } from '../../hooks/useCRM';
 import EnrollmentFormV2 from '../forms/EnrollmentFormV2';
-import { sfx } from '../../lib/soundService';
-import { ArrowLeft, Target, Key, Phone, Clock, ShoppingCart, RefreshCw, Star, Heart, FileText, ChevronRight } from 'lucide-react';
-import { motion } from 'motion/react';
+import { ArrowLeft, Target, Key, Phone, ShoppingCart, RefreshCw, Heart, FileText, ChevronRight } from 'lucide-react';
 
 interface SmartPitchProps {
     context: any; // The payload from SMART_PITCH event

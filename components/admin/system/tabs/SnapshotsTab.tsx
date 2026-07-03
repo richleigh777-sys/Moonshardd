@@ -2,7 +2,7 @@ import { useSystem } from '../../../../hooks/useSystem';
 import { useCRM } from '../../../../hooks/useCRM';
 import React, { useState, useRef, useEffect } from 'react';
 import { Card, Button } from '../../../ui/Base';
-import { Package, Download, Upload, Copy, Settings, Check, Globe, LayoutTemplate, Share2, Shield, Activity, RefreshCw, Trash2 } from 'lucide-react';
+import { Package, Download, Upload, Copy, Settings, Check, Globe, LayoutTemplate, Share2, Shield, RefreshCw, Trash2 } from 'lucide-react';
 import { sfx } from '../../../../lib/soundService';
 
 interface Snapshot {
@@ -84,14 +84,14 @@ export const SnapshotsTab = () => {
                 setDeployingId(null);
                 setToast({ title: "Alert", message: "Snapshot deployed successfully to the active workspace!", type: "warning" });
             }, 1500);
-        } catch (error) {
+        } catch (_error) {
             setDeployingId(null);
             setToast({ title: "Deploy Failed", message: "Failed to apply system configuration module.", type: "error" });
         }
     };
 
     const handleDelete = (id: string) => {
-        const snap = snapshots.find(s => s.id === id);
+        const _snap = snapshots.find(s => s.id === id);
         // if (window.confirm(`Are you sure you want to permanently delete snapshot "${snap?.name}"?`)) {
             sfx.playDecline();
             setDeletingId(id);
@@ -133,7 +133,7 @@ export const SnapshotsTab = () => {
                 
                 sfx.playConfirm();
                 setToast({ title: "Secure Export", message: "Snapshot configurations serialized to file stream.", type: "success" });
-            } catch (err) {
+            } catch (_err) {
                 setToast({ title: "Export Failed", message: "Unable to serialize snapshot.", type: "error" });
             } finally {
                 setExportingId(null);
@@ -162,7 +162,7 @@ export const SnapshotsTab = () => {
                 } else {
                     throw new Error("Invalid schema");
                 }
-            } catch (error) {
+            } catch (_error) {
                 sfx.playDecline();
                 setToast({ title: "Import Failed", message: "File is not a valid snapshot container.", type: "error" });
             }

@@ -454,10 +454,10 @@ export const TelephonyPanel = () => {
                                                         await fetch(`${crmUrl}/api/telephony/vicidial-push?${params.toString()}`);
                                                         setToast({ title: "Magic Sync Success", message: "Data extracted and pushed to CRM securely.", type: "success" });
                                                         sfx.playSuccess();
-                                                    } catch (_err) {
+                                                    } catch (__err) {
                                                         setToast({ title: "Sync Triggered", message: "Check CRM for new Lead.", type: "info" });
                                                     }
-                                                } catch (_err) {
+                                                } catch (__err) {
                                                     setToast({ title: "Permission Denied", message: "Please allow Clipboard access in your browser.", type: "error" });
                                                 }
                                             }}

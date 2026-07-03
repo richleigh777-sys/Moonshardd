@@ -1,7 +1,6 @@
 
 import React, { useState } from 'react';
 import { ChatWindow } from './ChatWindow';
-import { Button } from '../ui/Base';
 import { Modal } from '../ui/Modal';
 import { ChatEmptyState } from './ChatEmptyState';
 import { ChatSidebarLayout } from './ChatSidebarLayout';

@@ -1,6 +1,6 @@
 
 import React, { useState, useMemo } from 'react';
-import { Search, UserPlus, Phone, Mail, Trash2, ChevronRight, Loader2 } from 'lucide-react';
+import { Search, UserPlus, Phone, Trash2, ChevronRight, Loader2 } from 'lucide-react';
 import { Card, Button, Badge } from '../ui/Base';
 import { useCRM } from '../../hooks/useCRM';
 import { usePaginatedCustomers } from '../../hooks/usePaginatedCustomers';

@@ -1,5 +1,5 @@
 import React from 'react';
-import { ChevronRight, Trash2, Heart, Check, Plus, Minus, Package } from 'lucide-react';
+import { Trash2, Heart, Check, Plus, Minus, Package } from 'lucide-react';
 import { CartItem, ProductConfig } from '../../../../types';
 
 interface Props {

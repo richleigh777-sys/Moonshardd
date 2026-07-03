@@ -1,6 +1,3 @@
-import { db } from '../../lib/firebase';
-import { doc, writeBatch, collection, getDocs, updateDoc, getDoc } from 'firebase/firestore';
-import { User } from '../../types';
 import { seedInfrastructure } from '../../lib/cloud/data/seeder';
 import { BaseRepository, removeUndefinedFields } from '../repositories/BaseRepository';
 
@@ -9,48 +6,26 @@ export class SystemOpsService {
 
     public async seed() {
         const { memoryStore } = seedInfrastructure();
-        const batch = writeBatch(db);
+        
+        await this.repository.addBulk('servers', memoryStore.servers);
+        await this.repository.addBulk('users', memoryStore.users);
+        await this.repository.addBulk('systemConfig', memoryStore.systemConfig);
+        await this.repository.addBulk('channels', memoryStore.channels);
 
-        memoryStore.servers.forEach((s: any) => {
-            batch.set(doc(db, 'servers', s.id), s);
-        });
-
-        memoryStore.users.forEach((u: any) => {
-            batch.set(doc(db, `servers/${u.serverId}/users`, u.id), u);
-        });
-
-        memoryStore.systemConfig.forEach((cfg: any) => {
-            batch.set(doc(db, `servers/${cfg.serverId}/systemConfig`, cfg.id || 'CORE_CONFIG'), cfg);
-        });
-
-        memoryStore.channels.forEach((c: any) => {
-            batch.set(doc(db, `servers/${c.serverId}/channels`, c.id), c);
-        });
-
-        batch.commit().catch(e => console.warn("[Nexus] Seed commit error/offline:", e));
-        console.log("[Nexus] Firestore Seed Fired (Async)");
+        console.log("[Nexus] Postgres Seed Fired (Async)");
     }
 
     public async simulateHighLoadTest() {
         console.warn("[Nexus] INITIATING STRESS TEST / HIGH LOAD SIMULATION...");
         
-        const usersRef = collection(db, `servers/${this.repository.activeServerId}/users`);
-        const usersSnap = await getDocs(usersRef);
-        const agents = usersSnap.docs.map(d => d.data() as User).filter(u => u.role === 'agent' && u.active);
+        const users = await this.repository.get('users');
+        const agents = users.filter((u: any) => u.role === 'agent' && u.active);
         
-        let batch = writeBatch(db);
-        let batchCount = 0;
-
-        const commitBatchIfNeeded = async () => {
-            if (batchCount > 400) {
-                await batch.commit();
-                batch = writeBatch(db);
-                batchCount = 0;
-            }
-        };
+        const salesToInsert: any[] = [];
+        const customersToInsert: any[] = [];
 
         for (const agent of agents) {
-            const createSale = async (status: 'Approved' | 'Declined' | 'Pending', i: number) => {
+            const createSale = (status: 'Approved' | 'Declined' | 'Pending', i: number) => {
                 const uniqueStr = Math.random().toString(36).substr(2, 9);
                 const saleId = `ext-sale-${agent.id}-${status}-${i}-${uniqueStr}`;
                 const custId = `ext-cust-${agent.id}-${status}-${i}-${uniqueStr}`;
@@ -58,8 +33,7 @@ export class SystemOpsService {
                 const customerName = `Mock Client ${status} ${i} (${agent.name})`;
                 const phone = `+1555${Math.floor(1000000 + Math.random() * 9000000)}`;
                 
-                const salePath = this.repository.getPath('sales', saleId);
-                batch.set(doc(db, salePath), removeUndefinedFields({
+                salesToInsert.push(removeUndefinedFields({
                     id: saleId,
                     serverId: this.repository.activeServerId,
                     agentId: agent.id,
@@ -76,11 +50,8 @@ export class SystemOpsService {
                     timestamp: Date.now() - (Math.random() * 1000 * 60 * 60 * 24 * 7),
                     declineReason: status === 'Declined' ? 'Insufficient Funds' : undefined
                 }));
-                batchCount++;
-                await commitBatchIfNeeded();
 
-                const custPath = this.repository.getPath('customers', custId);
-                batch.set(doc(db, custPath), removeUndefinedFields({
+                customersToInsert.push(removeUndefinedFields({
                     id: custId,
                     serverId: this.repository.activeServerId,
                     firstName: 'Mock',
@@ -103,18 +74,15 @@ export class SystemOpsService {
                     emails: [`mock${i}@test.com`],
                     updatedAt: Date.now()
                 }));
-                batchCount++;
-                await commitBatchIfNeeded();
             };
 
-            for (let i = 0; i < 5; i++) await createSale('Approved', i);
-            for (let i = 0; i < 3; i++) await createSale('Declined', i);
-            for (let i = 0; i < 2; i++) await createSale('Pending', i);
+            for (let i = 0; i < 5; i++) createSale('Approved', i);
+            for (let i = 0; i < 3; i++) createSale('Declined', i);
+            for (let i = 0; i < 2; i++) createSale('Pending', i);
         }
 
-        if (batchCount > 0) {
-            await batch.commit();
-        }
+        if (salesToInsert.length > 0) await this.repository.addBulk('sales', salesToInsert);
+        if (customersToInsert.length > 0) await this.repository.addBulk('customers', customersToInsert);
 
         console.warn("[Nexus] STRESS TEST DATA INJECTED.");
         return true;
@@ -123,28 +91,17 @@ export class SystemOpsService {
     public async injectSampleLeads() {
         console.warn("[Nexus] INJECTING SAMPLE LEADS...");
         
-        // Find an active agent to assign these leads to, or fallback to any agent
-        const usersRef = collection(db, `servers/${this.repository.activeServerId}/users`);
-        const usersSnap = await getDocs(usersRef);
-        const agents = usersSnap.docs.map(d => d.data() as User).filter(u => u.role === 'agent');
+        const users = await this.repository.get('users');
+        const agents = users.filter((u: any) => u.role === 'agent');
         const defaultAgent = agents[0] || { id: 'sys', name: 'System' };
         
-        let batch = writeBatch(db);
-        let batchCount = 0;
-
-        const commitBatchIfNeeded = async () => {
-            if (batchCount > 400) {
-                await batch.commit();
-                batch = writeBatch(db);
-                batchCount = 0;
-            }
-        };
+        const salesToInsert: any[] = [];
+        const customersToInsert: any[] = [];
 
         const products = ['Alpha Formula', 'Sigma Protocol', 'Nexus Core', 'Prime Wellness'];
         const bankNames = ['JPMorgan Chase', 'Bank of America', 'Wells Fargo', 'Citigroup'];
         const medicalConds = ['Hypertension', 'Diabetes', 'Arthritis', 'Asthma', 'None'];
 
-        // Generate exactly 20 highly detailed leads
         for (let i = 0; i < 20; i++) {
             const uniqueStr = Math.random().toString(36).substr(2, 9);
             const statusStr = Math.random() > 0.8 ? 'Pending' : 'Cold Lead';
@@ -157,9 +114,7 @@ export class SystemOpsService {
             const bankName = bankNames[Math.floor(Math.random() * bankNames.length)];
             const condition = medicalConds[Math.floor(Math.random() * medicalConds.length)];
 
-            // Sale (Lead) record
-            const salePath = this.repository.getPath('sales', saleId);
-            batch.set(doc(db, salePath), removeUndefinedFields({
+            salesToInsert.push(removeUndefinedFields({
                 id: saleId,
                 serverId: this.repository.activeServerId,
                 agentId: defaultAgent.id,
@@ -175,7 +130,7 @@ export class SystemOpsService {
                 dosage: 'Standard',
                 amount: Math.floor(200 + Math.random() * 800),
                 status: statusStr,
-                timestamp: Date.now() - (Math.random() * 1000 * 60 * 60 * 24 * 2), // Uploaded in last 2 days
+                timestamp: Date.now() - (Math.random() * 1000 * 60 * 60 * 24 * 2),
                 bankName: bankName,
                 cardProvider: ['Visa', 'Mastercard', 'Amex'][Math.floor(Math.random() * 3)],
                 medicalConditions: condition !== 'None' ? [condition] : [],
@@ -184,12 +139,8 @@ export class SystemOpsService {
                 goals: 'General Wellness',
                 communicationPreferences: 'Email/Phone'
             }));
-            batchCount++;
-            await commitBatchIfNeeded();
 
-            // Customer Profile Record
-            const custPath = this.repository.getPath('customers', custId);
-            batch.set(doc(db, custPath), removeUndefinedFields({
+            customersToInsert.push(removeUndefinedFields({
                 id: custId,
                 serverId: this.repository.activeServerId,
                 firstName: 'Lead',
@@ -213,13 +164,10 @@ export class SystemOpsService {
                 updatedAt: Date.now(),
                 leadSource: 'Team Upload'
             }));
-            batchCount++;
-            await commitBatchIfNeeded();
         }
 
-        if (batchCount > 0) {
-            await batch.commit();
-        }
+        if (salesToInsert.length > 0) await this.repository.addBulk('sales', salesToInsert);
+        if (customersToInsert.length > 0) await this.repository.addBulk('customers', customersToInsert);
 
         console.warn("[Nexus] INJECTED 20 DETAILED SAMPLE LEADS.");
         return true;
@@ -228,16 +176,9 @@ export class SystemOpsService {
     public async injectClosedSales() {
         console.warn("[Nexus] INJECTING 10 TEAM AGENTS AND CLOSED SALES...");
         
-        let batch = writeBatch(db);
-        let batchCount = 0;
-
-        const commitBatchIfNeeded = async () => {
-            if (batchCount > 400) {
-                await batch.commit();
-                batch = writeBatch(db);
-                batchCount = 0;
-            }
-        };
+        const usersToInsert: any[] = [];
+        const salesToInsert: any[] = [];
+        const customersToInsert: any[] = [];
 
         const products = ['Alpha Formula', 'Sigma Protocol', 'Nexus Core', 'Prime Wellness'];
         const teamName = 'Delta Force';
@@ -246,9 +187,7 @@ export class SystemOpsService {
             const agentId = `agent-delta-${i+1}`;
             const agentName = `Delta Operative ${i+1}`;
             
-            // Create the agent user
-            const userPath = this.repository.getPath('users', agentId);
-            batch.set(doc(db, userPath), removeUndefinedFields({
+            usersToInsert.push(removeUndefinedFields({
                 id: agentId,
                 serverId: this.repository.activeServerId,
                 name: agentName,
@@ -261,17 +200,13 @@ export class SystemOpsService {
                 createdAt: Date.now() - 86400000,
                 updatedAt: Date.now()
             }));
-            batchCount++;
-            await commitBatchIfNeeded();
 
-            // Create their ONE closed sale
             const uniqueStr = Math.random().toString(36).substr(2, 9);
             const saleId = `closed-sale-${agentId}-${uniqueStr}`;
             const custId = `closed-cust-${agentId}-${uniqueStr}`;
             const customerName = `Client ${i + 1} (Alpha)`;
             
-            const salePath = this.repository.getPath('sales', saleId);
-            batch.set(doc(db, salePath), removeUndefinedFields({
+            salesToInsert.push(removeUndefinedFields({
                 id: saleId,
                 serverId: this.repository.activeServerId,
                 agentId: agentId,
@@ -288,16 +223,13 @@ export class SystemOpsService {
                 dosage: 'Standard',
                 amount: Math.floor(500 + Math.random() * 500),
                 status: 'Approved',
-                timestamp: Date.now() - Math.floor(Math.random() * 10000000), // Randomly closed recently
+                timestamp: Date.now() - Math.floor(Math.random() * 10000000),
                 updatedAt: Date.now(),
                 leadSource: 'Inbound Call',
                 goals: 'Optimization'
             }));
-            batchCount++;
-            await commitBatchIfNeeded();
 
-            const custPath = this.repository.getPath('customers', custId);
-            batch.set(doc(db, custPath), removeUndefinedFields({
+            customersToInsert.push(removeUndefinedFields({
                 id: custId,
                 serverId: this.repository.activeServerId,
                 firstName: `Client ${i + 1}`,
@@ -313,13 +245,11 @@ export class SystemOpsService {
                 updatedAt: Date.now(),
                 leadSource: 'Inbound Call'
             }));
-            batchCount++;
-            await commitBatchIfNeeded();
         }
 
-        if (batchCount > 0) {
-            await batch.commit();
-        }
+        if (usersToInsert.length > 0) await this.repository.addBulk('users', usersToInsert);
+        if (salesToInsert.length > 0) await this.repository.addBulk('sales', salesToInsert);
+        if (customersToInsert.length > 0) await this.repository.addBulk('customers', customersToInsert);
 
         console.warn("[Nexus] INJECTED 10 AGENTS & CLOSED SALES.");
         return true;
@@ -327,43 +257,31 @@ export class SystemOpsService {
 
     public async sweepStalledLeads() {
         console.warn("[Nexus] SWEEPING STALLED LEADS...");
-        const salesRef = collection(db, `servers/${this.repository.activeServerId}/sales`);
-        const salesSnap = await getDocs(salesRef);
+        const sales = await this.repository.get('sales');
         
-        let batch = writeBatch(db);
-        let batchCount = 0;
-        let sweptCount = 0;
         const now = Date.now();
         const SEVEN_DAYS = 7 * 24 * 60 * 60 * 1000;
+        let sweptCount = 0;
+        
+        const updatesToApply: string[] = [];
 
-        const commitBatchIfNeeded = async () => {
-            if (batchCount > 400) {
-                await batch.commit();
-                batch = writeBatch(db);
-                batchCount = 0;
-            }
-        };
-
-        salesSnap.forEach(docSnap => {
-            const sale = docSnap.data();
+        sales.forEach((sale: any) => {
             const isLeaked = sale.status === 'Declined' || sale.pipelineStatus === 'Closed Lost' || sale.status === 'Cancelled';
             const lastUpdate = sale.updatedAt || sale.timestamp || now;
             const isStalled = !isLeaked && (now - lastUpdate > SEVEN_DAYS) && sale.status !== 'Approved' && sale.pipelineStatus !== 'Closed Won';
             
-            // Exclude already penalized items
             if (isStalled && sale.pipelineStatus !== 'SLA Breach (Stalled)') {
-                batch.update(docSnap.ref, {
-                    pipelineStatus: 'SLA Breach (Stalled)',
-                    updatedAt: Date.now(),
-                    systemNotes: 'Automatically flagged via SLA Enforcer due to 7+ days of inactivity.'
-                });
-                batchCount++;
+                updatesToApply.push(sale.id);
                 sweptCount++;
             }
         });
 
-        if (batchCount > 0) {
-            await batch.commit();
+        if (updatesToApply.length > 0) {
+            await this.repository.updateBulk('sales', updatesToApply, {
+                pipelineStatus: 'SLA Breach (Stalled)',
+                updatedAt: Date.now(),
+                systemNotes: 'Automatically flagged via SLA Enforcer due to 7+ days of inactivity.'
+            });
         }
 
         console.warn(`[Nexus] SWEPT ${sweptCount} STALLED LEADS.`);
@@ -371,12 +289,10 @@ export class SystemOpsService {
     }
 
     public async logScriptUsage(scriptId: string, outcome: 'win' | 'loss', amount: number) {
-        const path = this.repository.getPath('scripts', scriptId);
-        const ref = doc(db, path);
-        const snap = await getDoc(ref);
-        if (snap.exists()) {
-            const script = snap.data();
-            await updateDoc(ref, {
+        const scripts = await this.repository.get('scripts');
+        const script = scripts.find((s: any) => s.id === scriptId);
+        if (script) {
+            await this.repository.update('scripts', scriptId, {
                 usageCount: (script.usageCount || 0) + 1,
                 successCount: (script.successCount || 0) + (outcome === 'win' ? 1 : 0),
                 revenueSaved: (script.revenueSaved || 0) + (outcome === 'win' ? amount : 0)
@@ -385,8 +301,8 @@ export class SystemOpsService {
     }
 
     public async validateGhostTarget(id: string) {
-        const path = this.repository.getPath('users', id);
-        const snap = await getDoc(doc(db, path));
-        return snap.exists() ? snap.data() : null;
+        const users = await this.repository.get('users');
+        const user = users.find((u: any) => u.id === id);
+        return user || null;
     }
 }

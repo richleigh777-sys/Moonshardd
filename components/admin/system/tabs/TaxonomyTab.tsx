@@ -1,6 +1,6 @@
 
 import React, { useState, useMemo } from 'react';
-import { Tag, Plus, X, Sparkles, Filter, AlertTriangle, ShieldCheck, HeartPulse } from 'lucide-react';
+import { Tag, Plus, X, Sparkles, HeartPulse } from 'lucide-react';
 import { SectionHeader } from '../SectionHeader';
 import { Button } from '../../../ui/Base';
 import { SystemConfig } from '../../../../types';

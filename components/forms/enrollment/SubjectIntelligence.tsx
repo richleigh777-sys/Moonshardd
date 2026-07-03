@@ -1,9 +1,6 @@
 import React from 'react';
 import { IdentityPanel } from './IdentityPanel';
 import { SalesFormData } from '../../../types';
-import { BiographicalSector } from './sectors/BiographicalSector';
-import { MedicalSector } from './sectors/MedicalSector';
-import { LogisticsSector } from './sectors/LogisticsSector';
 
 interface SubjectIntelligenceProps {
     formData: SalesFormData;

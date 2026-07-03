@@ -1,4 +1,3 @@
-import { handleFirestoreError, OperationType } from '../../lib/firebaseUtils';
 import { Server, Presence } from '../../types';
 
 export class ConflictError extends Error {
@@ -385,7 +384,7 @@ export class BaseRepository {
                 console.warn(`[Nexus] Offline Mode: ${collectionName} cached locally.`);
                 return payload;
             }
-            handleFirestoreError(error, OperationType.CREATE, collectionName);
+            console.error(error); throw new Error(`Create failed in ${collectionName}`);
         }
     }
 
@@ -424,7 +423,7 @@ export class BaseRepository {
         } catch (error: any) {
             if (error.message?.includes('Failed to fetch')) return { id, ...finalUpdates };
             if (error instanceof ConflictError) throw error;
-            handleFirestoreError(error, OperationType.UPDATE, collectionName);
+            console.error(error); throw new Error(`Update failed in ${collectionName}`);
         }
     }
 
@@ -445,7 +444,7 @@ export class BaseRepository {
             if (this.fetchers[collectionName]) this.fetchers[collectionName]();
         } catch (error: any) {
             if (error.message?.includes('Failed to fetch')) return;
-            handleFirestoreError(error, OperationType.DELETE, collectionName);
+            console.error(error); throw new Error(`Delete failed in ${collectionName}`);
         }
     }
 
@@ -481,7 +480,7 @@ export class BaseRepository {
         } catch (error: any) {
             console.error('deleteBulk Error:', error);
             if (error.message?.includes('Failed to fetch')) return;
-            handleFirestoreError(error, OperationType.DELETE, collectionName);
+            console.error(error); throw new Error(`Delete failed in ${collectionName}`);
         }
     }
 
@@ -548,7 +547,7 @@ export class BaseRepository {
         } catch (error: any) {
             console.error('addBulk Error:', error);
             if (error.message?.includes('Failed to fetch')) return payloadItems.length;
-            handleFirestoreError(error, OperationType.CREATE, collectionName);
+            console.error(error); throw new Error(`Create failed in ${collectionName}`);
             return 0;
         }
     }

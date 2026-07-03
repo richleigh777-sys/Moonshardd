@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Card } from '../../ui/Base';
 import { Button, Input } from '../../ui/Base';
-import { Activity, Mail, Phone, Users, Clock, Plus, RefreshCw } from 'lucide-react';
+import { Activity, Mail, Users, Clock, Plus, RefreshCw } from 'lucide-react';
 import { sfx } from '../../../lib/soundService';
 
 export const CampaignManager = () => {

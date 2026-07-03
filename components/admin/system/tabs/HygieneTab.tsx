@@ -1,7 +1,7 @@
 import React, { useMemo, useState } from 'react';
 import { 
     Database, Trash2, Search,
-    CheckCircle, ShieldAlert, Fingerprint, Activity, Clock, Wrench, ShieldCheck, Sparkles, RefreshCw
+    CheckCircle, Fingerprint, Activity, Clock, Wrench, ShieldCheck, Sparkles, RefreshCw
 } from 'lucide-react';
 import { Card, Button } from '../../../ui/Base';
 import { Sale, Note, Customer } from '../../../../types';

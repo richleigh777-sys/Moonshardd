@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { User, Sale, Note, SystemConfig, DataHealthReport } from '../../types';
+import { User, Sale, Note } from '../../types';
 import { 
     AlertTriangle, Activity, Database, Link, Check, RefreshCw, Trash2, Filter, 
     Layers, FileSearch, CheckCircle2, BookOpen, Inbox, CalendarRange, Search, 

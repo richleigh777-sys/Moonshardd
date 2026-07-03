@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { 
     FileText, Download, BarChart2, CheckCircle, 
-    MapPin, Globe, Edit2, Trash2, Reply, Plus, Quote, 
+    MapPin, Globe, Edit2, Trash2, Reply, Plus, 
     UploadCloud, ChevronDown, X, Lock, Zap,
     PhoneOff, CalendarClock
 } from 'lucide-react';

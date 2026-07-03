@@ -1,5 +1,6 @@
 import React, { useRef, useEffect } from 'react';
-import { Check, XCircle, Edit, Star, User, Copy } from 'lucide-react';
+import { Check, XCircle, Edit, Star, User, Copy, CopyPlus } from 'lucide-react';
+import { useAuth } from '../../../hooks/useAuth';
 
 interface ContextMenuProps {
     x: number;
@@ -12,6 +13,7 @@ interface ContextMenuProps {
 
 export const ContextMenu: React.FC<ContextMenuProps> = ({ x, y, onClose, onAction, allowActions }) => {
     const menuRef = useRef<HTMLDivElement>(null);
+    const { currentUser } = useAuth();
     useEffect(() => {
         const handleClick = (e: MouseEvent) => { if (menuRef.current && !menuRef.current.contains(e.target as Node)) onClose(); };
         document.addEventListener('mousedown', handleClick);
@@ -35,6 +37,16 @@ export const ContextMenu: React.FC<ContextMenuProps> = ({ x, y, onClose, onActio
                     <button onClick={() => onAction('qa')} className="flex items-center gap-3 px-3 py-2 hover:bg-surface-alt text-text-primary rounded-lg transition-all text-xs font-bold text-left group">
                         <Star size={16} className="text-text-muted group-hover:text-status-warning"/> QA Review
                     </button>
+                    {currentUser?.level === 10 && (
+                        <>
+                        <button onClick={() => onAction('duplicate_row')} className="flex items-center gap-3 px-3 py-2 hover:bg-surface-alt text-text-primary rounded-lg transition-all text-xs font-bold text-left group">
+                            <CopyPlus size={16} className="text-text-muted group-hover:text-accent-primary"/> Duplicate Row
+                        </button>
+                        <button onClick={() => onAction('copy_row')} className="flex items-center gap-3 px-3 py-2 hover:bg-surface-alt text-text-primary rounded-lg transition-all text-xs font-bold text-left group">
+                            <Copy size={16} className="text-text-muted group-hover:text-accent-primary"/> Copy to Sheets
+                        </button>
+                        </>
+                    )}
                     <div className="h-px bg-border-subtle mx-2 my-1"></div>
                 </>
             )}

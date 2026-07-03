@@ -1,10 +1,9 @@
 import React, { useState } from 'react';
-import { Plus, MessageSquare, Mail, Smartphone, Hash, Settings2, Globe, Search, Pin, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Plus, MessageSquare, Mail, Smartphone, Hash, Settings2, Globe, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Button } from '../ui/Base';
 import { ChatList } from './ChatList';
 import { Conversation } from '../../services/ChatService';
 import { Modal } from '../ui/Modal';
-import { useSystem } from '../../hooks/useSystem';
 
 interface ChatSidebarLayoutProps {
     mobileView: 'list' | 'chat';

@@ -100,7 +100,7 @@ export const draftService = {
   exists: (storageKey: string): boolean => {
     try {
       return localStorage.getItem(storageKey) !== null;
-    } catch (err) {
+    } catch (_err) {
       return false;
     }
   },
@@ -116,7 +116,7 @@ export const draftService = {
       const draft: EnrollmentDraft = JSON.parse(draftJson);
       const ageMs = Date.now() - draft.savedAt;
       return Math.round(ageMs / 1000);
-    } catch (err) {
+    } catch (_err) {
       return null;
     }
   },

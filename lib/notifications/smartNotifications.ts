@@ -1,4 +1,4 @@
-import { SmartNotification, NotificationType } from '../../types/uiState';
+import { SmartNotification } from '../../types/uiState';
 
 export class SmartNotificationService {
   static callbackDue(customerName: string, time: string): SmartNotification {

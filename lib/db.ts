@@ -45,7 +45,7 @@ if (sqlHost && sqlUser && sqlPassword && sqlDbName) {
 if (pool) {
   db = drizzle(pool, { schema });
 
-  pool.on('error', (err, client) => {
+  pool.on('error', (err, _client) => {
     console.error('Unexpected error on idle database client', err);
   });
 } else {

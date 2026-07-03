@@ -27,7 +27,7 @@ export class QueueService {
         try {
             const res = await RPCClient.request<{ locked: boolean }>(`/queue/lock/${leadId}`, { method: 'POST' });
             return res.locked;
-        } catch (e) {
+        } catch (_e) {
             console.warn(`[QueueEngine] Failed to secure lock on ${leadId}`);
             return false;
         }

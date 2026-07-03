@@ -4,7 +4,7 @@ import React, { useMemo, useState } from 'react';
 import { Card } from '../../../ui/Base';
 import { 
     ShieldAlert, Search, AlertTriangle, TrendingDown, Activity, 
-    Send, Sparkles, Award, PhoneCall, Gift, CheckCircle2, RefreshCw, X
+    Send, Sparkles, Award, PhoneCall, Gift, X
 } from 'lucide-react';
 import { useCRM } from '../../../../hooks/useCRM';
 import { getDailyHours } from '../../../../views/utils/crmLogic';
@@ -191,7 +191,7 @@ export const AuditTab: React.FC = () => {
             // Reset forms
             setCustomDirective('');
             setSelectedAgent(null);
-        } catch (err) {
+        } catch (_err) {
             sfx.playError();
             setToast({
                 title: "Dispatch Failed",

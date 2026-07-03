@@ -8,7 +8,7 @@
  * and high-performance cross-component state management without prop drilling.
  */
 import { create } from 'zustand';
-import { Customer, Sale, Note, AppNotification } from '../../types';
+import { Customer, Sale, AppNotification } from '../../types';
 
 interface GlobalCRMState {
     customers: Customer[];
@@ -32,7 +32,7 @@ interface GlobalCRMState {
     setSyncState: (isSyncing: boolean) => void;
 }
 
-export const useGlobalStore = create<GlobalCRMState>((set, get) => ({
+export const useGlobalStore = create<GlobalCRMState>((set, _get) => ({
     customers: [],
     activeCustomersMap: {},
     sales: [],

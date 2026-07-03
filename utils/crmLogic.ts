@@ -1,5 +1,5 @@
 
-import { Sale, User, AgentPerformance, AttendanceRecord, SystemConfig, SpiffRule } from '../types';
+import { Sale, User, AgentPerformance, AttendanceRecord, SystemConfig } from '../types';
 import { getAgentAvatar } from '../constants';
 
 /**
@@ -180,7 +180,7 @@ export const getDailyHours = (
     return preciseRound(totalSeconds / 3600, 2);
 };
 
-export const calculateSalePayout = (sale: Sale, dailyHours: number, config: SystemConfig, agentCommissionRate?: number, agentShippingDeduction?: number) => {
+export const calculateSalePayout = (sale: Sale, dailyHours: number, _config: SystemConfig, _agentCommissionRate?: number, _agentShippingDeduction?: number) => {
     // SERVER-AUTHORITATIVE ARCHITECTURE:
     // All math has been moved to secure backend API routes (server.ts)
     // The frontend now only displays what the server tells it.

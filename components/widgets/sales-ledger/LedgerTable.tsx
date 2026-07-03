@@ -197,7 +197,7 @@ export const LedgerTable: React.FC<LedgerTableProps> = ({
                     const sale = sales[virtualRow.index];
                     return (
                         <LedgerRow
-                            key={sale.id}
+                            key={`${sale.id}-${virtualRow.index}`}
                             sale={sale}
                             activeColumns={activeColumns}
                             frozenCols={frozenCols}

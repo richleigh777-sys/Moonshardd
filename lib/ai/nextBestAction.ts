@@ -51,7 +51,7 @@ export function scoreLead(
   lead: Sale,
   allSales: Sale[],
   notes: Note[],
-  days: number = 7
+  _days: number = 7
 ): number {
   let score = 0;
 

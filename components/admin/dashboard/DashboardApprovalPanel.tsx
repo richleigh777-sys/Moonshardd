@@ -18,7 +18,7 @@ export const DashboardApprovalPanel: React.FC<DashboardApprovalPanelProps> = ({
   onDecline,
 }) => {
   const [expandedId, setExpandedId] = useState<string | null>(null);
-  const [declineReason, setDeclineReason] = useState<string>(DECLINE_REASONS[0]);
+  const [declineReason, _setDeclineReason] = useState<string>(DECLINE_REASONS[0]);
 
   const pendingSales = useMemo(() => {
     return sales

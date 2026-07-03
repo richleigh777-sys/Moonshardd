@@ -9,12 +9,12 @@ export const CommandCenter: React.FC = () => {
   const leads = useSmartLeadQueue();
   const stats = useTodayStats();
   const help = useContextualHelp();
-  const { currentUser } = useContext(AuthContext)!;
+  const { _currentUser } = useContext(AuthContext)!;
   const [skippedIds, setSkippedIds] = useState<string[]>([]);
 
   const nextAction = leads.find(l => !skippedIds.includes(l.id));
 
-  const handleCall = async (leadId: string) => {
+  const handleCall = async (_leadId: string) => {
     if (!nextAction) return;
     sfx.playPhoneRing();
     window.dispatchEvent(new CustomEvent('NAVIGATE', { detail: 'enrollment' }));
@@ -30,7 +30,7 @@ export const CommandCenter: React.FC = () => {
     }));
   };
 
-  const handleText = async (leadId: string) => {
+  const handleText = async (_leadId: string) => {
     if (!nextAction) return;
     sfx.playClick();
     window.dispatchEvent(new CustomEvent('NAVIGATE', { detail: 'chat' }));

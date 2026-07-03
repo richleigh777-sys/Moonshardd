@@ -2,13 +2,11 @@ import { useSystem } from '../../../../hooks/useSystem';
 
 import React from 'react';
 import { motion } from 'motion/react';
-import { ShieldAlert, AlertCircle, ShieldCheck, Leaf, Trash2, ServerCrash, RefreshCw, Database } from 'lucide-react';
+import { ShieldAlert, AlertCircle, ShieldCheck, Leaf, Trash2, ServerCrash } from 'lucide-react';
 import { SectionHeader } from '../SectionHeader';
 import { ConfigToggle } from '../ConfigToggle';
 import { SystemConfig } from '../../../../types';
 import { sfx } from '../../../../lib/soundService';
-import { Button } from '../../../ui/Base';
-import { nexusGateway } from '../../../../nexus/adapters/DataGateway';
 
 interface SystemTabProps {
     config: SystemConfig;
@@ -16,7 +14,7 @@ interface SystemTabProps {
 }
 
 export const SystemTab: React.FC<SystemTabProps> = ({ config, onChange }) => {
-    const { setToast } = useSystem();
+    const { _setToast } = useSystem();
     
     const containerVariants = {
         hidden: { opacity: 0 },

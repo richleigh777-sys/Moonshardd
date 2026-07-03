@@ -14,7 +14,7 @@ const clients = new Map<string, ConnectedClient>();
 export function initializeRealtime(httpServer: Server) {
     const wss = new WebSocketServer({ server: httpServer });
 
-    wss.on('connection', (ws, req) => {
+    wss.on('connection', (ws, _req) => {
         const id = Math.random().toString(36).substring(7);
         
         clients.set(id, { id, ws, role: 'unknown', isAlive: true });

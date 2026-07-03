@@ -15,8 +15,8 @@ interface Props {
     viewMode: 'grid' | 'list';
 }
 
-export const ProductSKUCard: React.FC<Props> = ({ product, volume, onToggle, onEdit, onDuplicate, onDelete, viewMode }) => {
-    const health = getInventoryHealth(product);
+export const ProductSKUCard: React.FC<Props> = ({ product, _volume, onToggle, onEdit, onDuplicate, onDelete, viewMode }) => {
+    const _health = getInventoryHealth(product);
     const margin = calculateMargin(product.price, product.cost || 0);
 
     // --- LIST VIEW ---

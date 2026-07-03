@@ -97,19 +97,27 @@ export const CustomerProfileModal: React.FC<CustomerProfileModalProps> = ({
 
     // 1. Resolve Customer Identity via Smart Guard (Multi-Point Lookup)
     const customerProfile = useMemo(() => {
+        if (!isOpen || !phone) return undefined;
         const cleanPhone = normalizePhone(phone);
         // Safely check phones array existence using optional chaining and includes()
         return customers.find(c => c.phones?.includes(cleanPhone) || c.phone === phone);
-    }, [customers, phone]);
+    }, [customers, phone, isOpen]);
 
     // 2. Fetch History (Intelligence Engine vs Fallback)
     const customerHistory = useMemo(() => {
+        if (!isOpen || !phone) return [];
         let rawHistory: Sale[] = [];
         if (customerProfile && customerProfile.salesHistory && customerProfile.salesHistory.length > 0) {
             rawHistory = [...customerProfile.salesHistory];
         } else {
             const cleanPhone = normalizePhone(phone);
-            rawHistory = allSales.filter(s => normalizePhone(s.phone) === cleanPhone);
+            rawHistory = allSales.filter(s => {
+                const sp = s.phone;
+                if (!sp) return false;
+                // quick check before regex
+                if (sp === phone) return true;
+                return normalizePhone(sp) === cleanPhone;
+            });
         }
 
         // Privacy Filter: Agents only see their own sales OR others' finalized deals
@@ -123,7 +131,7 @@ export const CustomerProfileModal: React.FC<CustomerProfileModalProps> = ({
         }
 
         return rawHistory.sort((a, b) => b.timestamp - a.timestamp);
-    }, [allSales, customerProfile, phone, role, currentUser?.id]);
+    }, [allSales, customerProfile, phone, role, currentUser?.id, isOpen]);
 
     const extractDisplayName = () => {
         if (customerProfile) {

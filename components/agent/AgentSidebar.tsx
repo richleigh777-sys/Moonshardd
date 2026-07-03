@@ -8,7 +8,7 @@ interface AgentSidebarProps {
   isAllowed: (id: string) => boolean;
 }
 
-export const AgentSidebar: React.FC<AgentSidebarProps> = ({ isAllowed }) => {
+export const AgentSidebar: React.FC<AgentSidebarProps> = ({ _isAllowed }) => {
   return (
     <TabList className="flex flex-col gap-2 border-none mt-2 pb-2">
       <TabTrigger value="action" icon={<Zap size={22}/>}>Action</TabTrigger>

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { 
-  Sun, Moon, LogOut, Bell, Coffee, Play, Server, ChevronDown, Menu, X as CloseIcon, LayoutGrid, Terminal, Palette, Check, Settings, HelpCircle, User as UserIcon
+  Sun, Moon, LogOut, Bell, Coffee, Play, Server, ChevronDown, Menu, X as CloseIcon, LayoutGrid, Palette, Check
 } from 'lucide-react';
 import { User, AppNotification } from '../../types';
 import { useAuth, useTimer } from '../../hooks/useAuth';
@@ -37,7 +37,7 @@ export const PortalShell: React.FC<PortalShellProps> = ({
     const { theme, toggleTheme, activeServer, serverList, switchServer, setToast, uiZoom, setUiZoom } = useSystem();
     const { attendance, sales } = useCRM();
 
-    const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(true);
+    const [_isSidebarCollapsed, _setIsSidebarCollapsed] = useState(true);
     const [isNotificationPanelOpen, setIsNotificationPanelOpen] = useState(false);
     const [isTimeSheetOpen, setIsTimeSheetOpen] = useState(false);
     const [isBreakModalOpen, setIsBreakModalOpen] = useState(false);
@@ -48,7 +48,7 @@ export const PortalShell: React.FC<PortalShellProps> = ({
     const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
     const [settingsInitialTab, setSettingsInitialTab] = useState<'profile' | 'preferences' | 'support'>('profile');
 
-    const openSettings = (tab: 'profile' | 'preferences' | 'support') => {
+    const _openSettings = (tab: 'profile' | 'preferences' | 'support') => {
         setSettingsInitialTab(tab);
         setIsSettingsModalOpen(true);
     };

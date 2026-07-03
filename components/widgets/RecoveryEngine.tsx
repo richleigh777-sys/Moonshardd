@@ -1,10 +1,7 @@
 
 import React, { useState, useEffect, useMemo } from 'react';
 import { 
-    ShieldCheck, Heart, AlertTriangle, Clock, Activity, 
-    Calendar, X, Archive, CheckCircle, RefreshCcw, CreditCard,
-    MessageSquare, Mail, Link as LinkIcon, DollarSign, ArrowRight,
-    TrendingUp, Phone, AlertOctagon, TerminalSquare
+    ShieldCheck, AlertTriangle, Archive, CheckCircle, RefreshCcw, Link as LinkIcon, DollarSign, Phone, TerminalSquare
 } from 'lucide-react';
 import { Sale } from '../../types';
 import { Button, Card } from '../ui/Base';
@@ -69,7 +66,7 @@ const useDunningLogic = (sales: Sale[]) => {
 };
 
 export const RecoveryEngine = ({ sales, onAction }: Props) => {
-  const { addNote, currentUser, customers, updateCustomer } = useCRM();
+  const { _addNote, _currentUser, _customers, _updateCustomer } = useCRM();
   const { setToast } = useSystem();
   
   const dunningQueue = useDunningLogic(sales);

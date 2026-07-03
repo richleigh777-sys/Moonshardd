@@ -64,7 +64,7 @@ export const IdentitySection: React.FC<IdentityProps> = ({
       } else {
         setAddressValidationResult({ isValid: false, message: "Validation failed" });
       }
-    } catch (_err) {
+    } catch (__err) {
       setAddressValidationResult({ isValid: false, message: "Error validating address" });
     } finally {
       setIsValidatingAddress(false);
@@ -84,7 +84,7 @@ export const IdentitySection: React.FC<IdentityProps> = ({
             try {
               const str = new Date().toLocaleTimeString('en-US', { timeZone: info.timezone, hour: 'numeric', minute: '2-digit', hour12: true });
               setLocalTimeStr(str);
-            } catch (_e) {
+            } catch (__e) {
               setLocalTimeStr('');
             }
           };

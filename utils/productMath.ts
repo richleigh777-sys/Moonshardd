@@ -34,7 +34,7 @@ export const calculateMargin = (price: number, cost: number): number => {
  * Aggregates revenue data from sales for a specific product name.
  */
 export const getProductPerformance = (productName: string, sales: Sale[]) => {
-    const approved = sales.filter(s => s.status === 'Approved' && s.product.includes(productName));
+    const approved = sales.filter(s => s.status === 'Approved' && (s.product || '').includes(productName));
     return {
         revenue: approved.reduce((acc, s) => acc + Number(s.amount), 0),
         volume: approved.length

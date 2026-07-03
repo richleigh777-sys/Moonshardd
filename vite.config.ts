@@ -26,7 +26,6 @@ export default defineViteConfig(({ mode }) => {
                     if (id.includes('node_modules')) {
                         if (id.includes('react')) return 'vendor-react';
                         if (id.includes('lucide')) return 'vendor-icons';
-                        if (id.includes('firebase')) return 'vendor-firebase';
                         if (id.includes('recharts') || id.includes('d3')) return 'vendor-charts';
                         return 'vendor';
                     }

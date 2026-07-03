@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { User, AttendanceRecord, Sale } from '../../../types';
 import { Modal } from '../../ui/Modal';
 import { Button, Input } from '../../ui/Base';
-import { Save, User as UserIcon, Lock, Percent, AlertTriangle, Activity, Eye, ShieldAlert, FileText, History, Wallet } from 'lucide-react';
+import { Save, User as UserIcon, Lock, Percent, AlertTriangle, Eye, ShieldAlert, FileText, History, Wallet } from 'lucide-react';
 import { sfx } from '../../../lib/soundService';
 import { useAuth } from '../../../hooks/useAuth';
 import { AgentTimeSheet } from '../../modals/AgentTimeSheet';

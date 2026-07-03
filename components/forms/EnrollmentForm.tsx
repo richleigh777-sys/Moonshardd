@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import { DollarSign, Check, Search, AlertTriangle, MessageSquare, Loader, ShoppingCart, X } from 'lucide-react';
+import { Check, Search, AlertTriangle, MessageSquare, Loader, ShoppingCart, X } from 'lucide-react';
 import { useEnrollmentLogic } from '../../hooks/useEnrollmentLogic';
 import { TOP_US_BANKS, CARD_PROVIDERS } from '../../constants';
-import { Button, Card } from '../ui/Base';
+import { Card } from '../ui/Base';
 import { EnrollmentHeader } from './enrollment/v1/EnrollmentHeader';
 import { IdentitySection } from './enrollment/v1/IdentitySection';
 import { MedicalSection } from './enrollment/v1/MedicalSection';
@@ -23,14 +23,14 @@ interface Props {
 
 export default function EnrollmentForm({
   onSuccess,
-  onCancel,
+  _onCancel,
   initialData,
 }: Props) {
-  const { currentUser } = useAuth();
+  const { _currentUser } = useAuth();
   const logic = useEnrollmentLogic(onSuccess, initialData);
   const [isLookupOpen, setIsLookupOpen] = useState(false);
   const [isDispositionOpen, setIsDispositionOpen] = useState(false);
-  const [lookupQuery, setLookupQuery] = useState('');
+  const [_lookupQuery, setLookupQuery] = useState('');
   const [showClearConfirm, setShowClearConfirm] = useState(false);
   const [showPaymentModal, setShowPaymentModal] = useState(false);
 

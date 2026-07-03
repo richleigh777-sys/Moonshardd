@@ -1,9 +1,6 @@
 import { useEffect } from 'react';
-import { Package, Pill, CalendarClock, Plus, Check } from 'lucide-react';
+import { Package, Plus } from 'lucide-react';
 import { sfx } from '../../../lib/soundService';
-import { Product, ProductPreset, CartItem } from '../../../types';
-import { Card } from '../../ui/Base';
-import { getQuantityMultiplier } from '../../../utils/quantityUtils';
 
 export function ProductQuickSelector({ products, presets, quantities, onAdd, onQuickAdd, cart = [], onRemove }: any) {
   useEffect(() => {
@@ -76,7 +73,7 @@ export function ProductQuickSelector({ products, presets, quantities, onAdd, onQ
         <div className="space-y-4 pt-6 border-t border-border-subtle mt-2">
             <h4 className="text-sm font-bold text-white tracking-wide uppercase mt-2">Care Bundles</h4>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {presets.map((preset: any, idx: number) => (
+                {presets.map((preset: any, _idx: number) => (
                     <div key={preset.id} className="p-4 bg-surface-alt/50 border border-border-subtle rounded-[16px] flex justify-between items-center group hover:border-white/20 transition-all shadow-sm">
                         <div className="flex items-center gap-4">
                             <div className="w-12 h-12 rounded-full bg-indigo-500/10 flex items-center justify-center text-indigo-400 shrink-0 border border-indigo-500/20">

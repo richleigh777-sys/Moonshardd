@@ -1,6 +1,6 @@
 
-import { useState, useEffect, useRef } from 'react';
-import { Database, Plus, Shield, Cpu, Trash2, AlertTriangle, Terminal, Building, Key } from 'lucide-react';
+import { useState } from 'react';
+import { Plus, Shield, Cpu, Trash2, AlertTriangle, Building } from 'lucide-react';
 import { Button } from '../ui/Base';
 import { useSystem } from '../../hooks/useSystem';
 import { useAuth } from '../../hooks/useAuth';

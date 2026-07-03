@@ -1,6 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import { Sale } from '../../types';
-import { Target, Zap, Clock, ShieldAlert, ArrowRight, UserCheck, RefreshCw, Filter } from 'lucide-react';
+import { Target, Zap, ShieldAlert, ArrowRight, UserCheck, Filter } from 'lucide-react';
 import { useSystem } from '../../hooks/useSystem';
 import { STAGE_STYLES } from '../../constants';
 import { sfx } from '../../lib/soundService';

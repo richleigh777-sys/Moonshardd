@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { Search, History, ChevronDown } from 'lucide-react';
+import { Search, History } from 'lucide-react';
 import { Modal } from '../../../ui/Modal';
 import { Sale } from '../../../../types';
 import { paginationService } from '../../../../lib/enrollment/paginationService';
@@ -30,9 +30,9 @@ export const CustomerLookup: React.FC<CustomerLookupProps> = ({
     return customers.filter(
       (c) => {
         const normalizedPhone = c.phone.replace(/\D/g, '');
-        return c.customer.toLowerCase().includes(q) || 
+        return (c.customer || '').toLowerCase().includes(q) || 
                (normalizedSearch.length > 0 && normalizedPhone.includes(normalizedSearch)) || 
-               c.address?.toLowerCase().includes(q);
+               (c.address || '').toLowerCase().includes(q);
       }
     );
   }, [customers, searchQuery]);

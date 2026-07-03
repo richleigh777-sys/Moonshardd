@@ -1,11 +1,8 @@
 import React from 'react';
-import { ShoppingCart, Trash2, CheckCircle2 } from 'lucide-react';
-import { sfx } from '../../../lib/soundService';
-import { CartItem } from '../../../types';
-import { Card } from '../../ui/Base';
+import { ShoppingCart, Trash2 } from 'lucide-react';
 import { getQuantityMultiplier } from '../../../utils/quantityUtils';
 
-export function CartPreview({ cart, onRemove, calculatedTotal }: any) {
+export function CartPreview({ cart, onRemove, _calculatedTotal }: any) {
     const groupedCart: any[] = [];
     cart.forEach((item: any) => {
       const key = `${item.product}-${item.dosage || ''}`;

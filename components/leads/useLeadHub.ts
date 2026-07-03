@@ -22,9 +22,9 @@ export const useLeadHub = (notes: Note[] = []) => {
                     const normalizedPhone = n.phone.replace(/[\s\-()+]/g, '');
                     if (normalizedPhone.includes(normalizedQ)) return true;
                 }
-                return n.customerName?.toLowerCase().includes(q) || 
-                       n.phone?.includes(q) ||
-                       n.content?.toLowerCase().includes(q);
+                return (n.customerName || '').toLowerCase().includes(q) || 
+                       (n.phone || '').includes(q) ||
+                       (n.content || '').toLowerCase().includes(q);
             });
         }
 

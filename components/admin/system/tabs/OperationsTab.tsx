@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { motion } from 'motion/react';
-import { Clock, Coffee, Activity, AlertCircle, Calendar, ShieldCheck, Database, Search, Sparkles, ChevronRight, Settings } from 'lucide-react';
+import { Clock, Coffee, Activity, AlertCircle, Calendar, Database, Sparkles, Settings } from 'lucide-react';
 import { SectionHeader } from '../SectionHeader';
 import { ShiftVisualizer } from '../ShiftVisualizer';
 import { Input } from '../../../ui/Base';

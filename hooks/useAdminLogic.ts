@@ -7,7 +7,7 @@ import { sfx } from '../lib/soundService';
 import { nexusGateway } from '../nexus/adapters/DataGateway';
 
 export const useAdminLogic = () => {
-    const { users, addUser, updateUser, sendDirective, updateProductConfig, updateSaleStatus, productConfig, systemConfig } = useCRM();
+    const { users, addUser, updateUser, sendDirective, updateProductConfig, _updateSaleStatus, productConfig, systemConfig } = useCRM();
     const { setToast } = useSystem();
 
     // -- State --

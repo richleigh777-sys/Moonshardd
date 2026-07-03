@@ -22,9 +22,9 @@ export const AuditExplorer: React.FC<AuditExplorerProps> = ({ auditLogs }) => {
         if (selectedModule !== 'all' && (log as any).module !== selectedModule) return false;
         if (
           searchTerm &&
-          !log.action.toLowerCase().includes(searchTerm.toLowerCase()) &&
-          !(log as any).agentName?.toLowerCase().includes(searchTerm.toLowerCase()) &&
-          !log.details.toLowerCase().includes(searchTerm.toLowerCase())
+          !(log.action || '').toLowerCase().includes(searchTerm.toLowerCase()) &&
+          !((log as any).agentName || '').toLowerCase().includes(searchTerm.toLowerCase()) &&
+          !(log.details || '').toLowerCase().includes(searchTerm.toLowerCase())
         ) {
           return false;
         }

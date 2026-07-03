@@ -46,7 +46,7 @@ export const CRMPerformanceProvider: React.FC<{ children: React.ReactNode }> = (
                 localStorage.removeItem('sessionStart');
             }
         }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
+         
     }, [currentUser, crm.attendance]);
 
     useEffect(() => {

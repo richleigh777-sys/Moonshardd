@@ -17,7 +17,7 @@ interface TeamLeaderboardProps {
     currentUserLevel?: number;
 }
 
-export const TeamLeaderboard: React.FC<TeamLeaderboardProps> = ({ currentUserName, currentUserRole, currentUserTeam, currentUserLevel = 1 }) => {
+export const TeamLeaderboard: React.FC<TeamLeaderboardProps> = ({ currentUserName, _currentUserRole, currentUserTeam, currentUserLevel = 1 }) => {
     const { sales, users, systemConfig, attendance } = useCRM();
 
     const [viewDate, setViewDate] = useState(new Date());

@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import { Sale, Customer } from '../../../types';
-import { DollarSign, Users, Target, Activity } from 'lucide-react';
+import { DollarSign, Users, Target } from 'lucide-react';
 
 interface DashboardLiveMetricsProps {
     sales: Sale[];

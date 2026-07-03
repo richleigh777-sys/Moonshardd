@@ -2,7 +2,7 @@ import { useSystem } from '../../hooks/useSystem';
 import React, { useState } from 'react';
 import { Package, Plus, Trash2, Edit2, GripVertical, CheckCircle2, Search, Settings } from 'lucide-react';
 import { ProductPreset, ProductConfig } from '../../types';
-import { Card, Button } from '../ui/Base';
+import { Button } from '../ui/Base';
 import { getQuantityMultiplier } from '../../utils/quantityUtils';
 
 interface Props {
@@ -22,7 +22,7 @@ export function PresetManager({ productConfig, onUpdateConfig }: Props) {
   const [icon, setIcon] = useState('Package');
   const [items, setItems] = useState<{product: string, quantity: string, dosage?: string}[]>([]);
 
-  const filteredPresets = presets.filter(p => p.name.toLowerCase().includes(searchQuery.toLowerCase()));
+  const filteredPresets = presets.filter(p => (p.name || '').toLowerCase().includes((searchQuery || '').toLowerCase()));
 
   const handleSave = () => {
     if (!name.trim()) return setToast({ title: "Alert", message: "Preset name is required", type: "warning" });

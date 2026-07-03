@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { BookOpen, Plus, Database } from 'lucide-react';
+import { BookOpen, Plus } from 'lucide-react';
 import { useCRM } from '../hooks/useCRM';
 import { Card, Button } from '../components/ui/Base';
 import { ScriptItem, ScriptType } from '../types';

@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { DollarSign, List, BarChart2 } from 'lucide-react';
+import { DollarSign, BarChart2 } from 'lucide-react';
 import { Input } from '../../../ui/Base';
 import { Product } from '../../../../types';
 import { ProfitSimulator } from '../ProfitSimulator';

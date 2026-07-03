@@ -41,7 +41,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
   health,
   onRunDiagnostics,
   onTestUplink,
-  onGhostLogin,
+  _onGhostLogin,
   systemConfig: propSystemConfig,
   onApproveSale,
   onDeclineSale,

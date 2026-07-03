@@ -1,4 +1,3 @@
-import { Ghost, LogOut } from 'lucide-react';
 import { User } from '../../types';
 
 interface GhostModeBannerProps {

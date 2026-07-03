@@ -8,7 +8,6 @@ import {
     Calendar, MapPin, ChevronDown, 
     CheckCircle, RotateCcw, XCircle, AlertTriangle, Eye, CreditCard, Plus, AlertCircle, Package, Star, Music, Play, ExternalLink
 } from 'lucide-react';
-import { AudioPlayer } from '../../../ui/Base';
 import { sfx } from '../../../../lib/soundService';
 
 // --- INTERFACES ---
@@ -255,7 +254,6 @@ export const IdentityCell: React.FC<CellProps> = ({ value, row, onAction }) => {
 };
 
 import { MaskedData } from '../../../ui/MaskedData';
-import { maskPII } from '../../../../utils/security';
 
 export const ContactCell: React.FC<CellProps> = ({ value, isEditing, onChange }) => {
     const { currentUser } = useAuth();

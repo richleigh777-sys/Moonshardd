@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react';
 import { useCRM } from './useCRM';
-import { DataHealthReport, DataHealthAction, User, Customer, Sale } from '../types';
+import { DataHealthReport, DataHealthAction, User } from '../types';
 import { nexusGateway } from '../nexus/adapters/DataGateway';
 
 export const useDataHealthWorker = (currentUser: User | null) => {

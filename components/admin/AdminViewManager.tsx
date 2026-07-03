@@ -1,8 +1,7 @@
-import React, { Suspense } from 'react';
+import React from 'react';
 import { TabContent, Tabs, TabList, TabTrigger } from '../ui/Tabs';
 import { sfx } from '../../lib/soundService';
 import { User, Sale, Note, SystemConfig, ProductConfig, SystemHealth, ToastMessage } from '../../types';
-import { Loader2 } from 'lucide-react';
 
 // Standard Imports for fast routing
 import { AdminDashboard } from './AdminDashboard';
@@ -51,7 +50,7 @@ interface AdminTerminalManagerProps {
 }
 
 export const AdminViewManager: React.FC<AdminTerminalManagerProps> = ({
-    isAllowed, setView, currentUser, sales, users, notes, health, productConfig, updateProductConfig,
+    _isAllowed, setView, currentUser, sales, users, notes, health, productConfig, updateProductConfig,
     systemConfig, updateSystemConfig, updateUser, addUser, importSales, sendDirective,
     runDiagnostic, testUplink, handleLedgerAction, handleBulkLedgerAction, setToast,
     onGhostLogin, showTerminals, setShowTerminals

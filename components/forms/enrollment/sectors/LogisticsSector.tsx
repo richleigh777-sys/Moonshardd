@@ -1,5 +1,5 @@
 import React from 'react';
-import { Home, Package, MapPin, Check } from 'lucide-react';
+import { Home, MapPin, Check } from 'lucide-react';
 
 const InputBlock = ({ label, name, value, placeholder, isShort, handleIdentityChange }: any) => (
     <div className={`space-y-2 ${isShort ? 'col-span-1' : 'col-span-2 md:col-span-1'}`}>

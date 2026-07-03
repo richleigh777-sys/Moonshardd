@@ -1,9 +1,8 @@
 
 import React, { useLayoutEffect } from 'react';
-import { Search, Filter, RefreshCw, LayoutList, AlignJustify, Upload, FileSpreadsheet, Database, Settings2, ShieldAlert } from 'lucide-react';
+import { Search, Filter, Upload, Settings2, ShieldAlert } from 'lucide-react';
 import { Button } from '../ui/Base';
 import { Sale } from '../../types';
-import { exportToCSV } from '../../views/utils/crmLogic';
 import { LedgerTable } from './sales-ledger/LedgerTable';
 import { FilterPanel } from './sales-ledger/FilterPanel';
 import { CommandBar } from './sales-ledger/CommandBar';
@@ -34,50 +33,50 @@ export const SalesLedger: React.FC<SalesLedgerProps> = ({ sales = [], onAction, 
     const [pendingAction, setPendingAction] = React.useState<{sale: Sale, action: string, payload?: any} | null>(null);
     const {
         showAdvancedFilters, setShowAdvancedFilters, showColumnConfig, setShowConfig,
-        density, setDensity, isRefreshing, selectedIds, setSelectedIds, isBulkEdit, setIsBulkEdit, 
+        density, _setDensity, isRefreshing, selectedIds, setSelectedIds, isBulkEdit, setIsBulkEdit, 
         isSaving, activePreset, setActivePreset, processedSales, summary, searchTerm, setSearchTerm, filters, setFilters,
         sortConfig, handleSort, uniqueAgents, uniqueProducts, resetFilters,
         columnPreferences, setColumnPreferences, fileInputRef, importConfig, setImportConfig,
         columnMapping, setColumnMapping, isImporting, handleFileTrigger, handleFileChange,
         autoMapColumns, executeImport, paginatedSales, totalPages, currentPage, setCurrentPage,
-        handlePageChange, handleRefresh, handleBulkCommand, handleSaveBulk, isLoading, hasMore, fetchNextPage
+        handlePageChange, _handleRefresh, handleBulkCommand, handleSaveBulk, isLoading, hasMore, fetchNextPage
     } = useSalesLedgerUI(sales, onImport, onBulkAction);
 
     // const { systemConfig } = useCRM();
 
     const [selectedProfilePhone, setSelectedProfilePhone] = React.useState<string | null>(null);
 
-    useLayoutEffect(() => {
-        const handleKeyDown = async (e: KeyboardEvent) => {
-            if ((e.ctrlKey || e.metaKey) && e.key === 'c' && selectedIds.size > 0 && !isBulkEdit) {
-                // Determine if we're focused inside an input or text area
-                if (document.activeElement?.tagName === 'INPUT' || document.activeElement?.tagName === 'TEXTAREA') {
-                    return;
-                }
-                
-                if (!currentUser || currentUser.level < 10) {
-                    setToast({ title: 'Export Denied', message: 'Level 10 Clearance Required to copy spreadsheet data.', type: "error" });
-                    return;
-                }
-                
-                e.preventDefault();
-                const selectedSales = processedSales.filter(s => selectedIds.has(s.id));
-                const { generateSheetTsv } = await import('./sales-ledger/sheetExport');
-                const tsv = generateSheetTsv(selectedSales, currentUser.level);
-                
-                try {
-                    await navigator.clipboard.writeText(tsv);
-                    setToast({ title: 'Spreadsheet Integration', message: `${selectedSales.length} rows copied in strict external spreadsheet format!`, type: "success" });
-                    sfx.playConfirm();
-                } catch (err) {
-                    console.error("Copy failed", err);
-                }
+    const handleKeyDown = React.useCallback(async (e: KeyboardEvent) => {
+        if ((e.ctrlKey || e.metaKey) && e.key === 'c' && selectedIds.size > 0 && !isBulkEdit) {
+            // Determine if we're focused inside an input or text area
+            if (document.activeElement?.tagName === 'INPUT' || document.activeElement?.tagName === 'TEXTAREA') {
+                return;
             }
-        };
+            
+            if (!currentUser || currentUser.level < 10) {
+                setToast({ title: 'Export Denied', message: 'Level 10 Clearance Required to copy spreadsheet data.', type: "error" });
+                return;
+            }
+            
+            e.preventDefault();
+            const selectedSales = processedSales.filter(s => selectedIds.has(s.id));
+            const { generateSheetTsv } = await import('./sales-ledger/sheetExport');
+            const tsv = generateSheetTsv(selectedSales, currentUser.level);
+            
+            try {
+                await navigator.clipboard.writeText(tsv);
+                setToast({ title: 'Spreadsheet Integration', message: `${selectedSales.length} rows copied in strict external spreadsheet format!`, type: "success" });
+                sfx.playConfirm();
+            } catch (err) {
+                console.error("Copy failed", err);
+            }
+        }
+    }, [selectedIds, processedSales, isBulkEdit, currentUser, setToast]);
 
+    useLayoutEffect(() => {
         window.addEventListener('keydown', handleKeyDown);
         return () => window.removeEventListener('keydown', handleKeyDown);
-    }, [selectedIds, processedSales, columnPreferences, isBulkEdit]);
+    }, [handleKeyDown]);
 
     const handleSafeAction = (sale: Sale, action: string, payload?: any) => {
         if (!isSuperAdmin && action !== 'qa' && action !== 'listen_recording' && action !== 'view_profile') {
@@ -172,23 +171,23 @@ export const SalesLedger: React.FC<SalesLedgerProps> = ({ sales = [], onAction, 
                 />
             )}
 
-            <div className={`flex-1 min-h-0 ${activePreset ? 'border-4 border-border-subtle/80 rounded-xl' : 'bg-surface-main '} overflow-hidden flex flex-col relative transition-all duration-300`}>
+            <div className={`flex-1 min-h-0 ${activePreset ? 'border border-border-subtle rounded-lg' : 'bg-surface-main '} overflow-hidden flex flex-col relative transition-none`}>
                 
                 {/* Active View Banner (Google Sheets style) */}
                 {activePreset && (
-                    <div className="bg-slate-800 text-white px-4 py-1.5 flex justify-between items-center text-xs font-bold border-b border-slate-900 shadow-md z-10 shrink-0">
+                    <div className="bg-surface-alt text-text-primary px-4 py-1 flex justify-between items-center text-xs font-medium border-b border-border-subtle z-10 shrink-0">
                         <div className="flex items-center gap-2">
-                            <span className="w-2 h-2 rounded-full bg-accent-primary animate-pulse"></span>
-                            Active View: <span>{activePreset}</span>
+                            <span className="w-1.5 h-1.5 rounded-full bg-accent-primary"></span>
+                            <span>View: {activePreset}</span>
                         </div>
-                        <button onClick={() => { resetFilters(); setActivePreset(null); }} className="text-white hover:text-red-400 transition-colors bg-white/10 hover:bg-white/20 px-2 py-0.5 rounded">
-                            Clear View
+                        <button onClick={() => { resetFilters(); setActivePreset(null); }} className="text-text-muted hover:text-text-primary transition-colors px-2 py-0.5 rounded">
+                            Clear
                         </button>
                     </div>
                 )}
 
                 {/* Compact Toolbar Replacing Legend */}
-                <div className="bg-surface-alt/40 border-b border-border-subtle p-2 px-4 flex flex-wrap items-center justify-between gap-3 text-xs shrink-0 select-none">
+                <div className="bg-surface-main border-b border-border-subtle p-2 px-4 flex flex-wrap items-center justify-between gap-3 text-xs shrink-0 select-none">
                     
                     <div className="flex items-center gap-2 flex-1 min-w-[200px]">
                         <div className="relative group w-[240px] sm:w-[280px]">

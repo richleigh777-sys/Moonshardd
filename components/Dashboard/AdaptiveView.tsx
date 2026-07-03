@@ -3,15 +3,14 @@ import { useCRM } from '../../hooks/useCRM';
 import { useTodayStats } from '../../hooks/useTodayStats';
 import { useAuth } from '../../hooks/useAuth';
 import { 
-    Activity, CircleDashed, Users, CheckCircle2, Search, ArrowUpRight, 
-    TrendingUp, Award, Calendar, DollarSign, Info, ShieldAlert, 
-    HelpCircle, Network, Clock, Sparkles, Filter, Phone, CheckSquare, Zap
+    Activity, CircleDashed, CheckCircle2, Search, ArrowUpRight, 
+    TrendingUp, DollarSign, Clock, Phone
 } from 'lucide-react';
 import { CustomerProfileModal } from '../modals/CustomerProfileModal';
 import { sfx } from '../../lib/soundService';
 
 export const AdaptiveView: React.FC = () => {
-    const stats = useTodayStats();
+    const _stats = useTodayStats();
     const { sales, notes, customers, systemConfig } = useCRM();
     const { currentUser } = useAuth();
 

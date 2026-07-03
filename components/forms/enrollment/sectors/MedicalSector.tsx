@@ -1,5 +1,5 @@
-import React, { useMemo } from 'react';
-import { X, Heart, Activity } from 'lucide-react';
+import React from 'react';
+import { X } from 'lucide-react';
 
 export function MedicalSector({ formData, handleIdentityChange }: any) {
   const commonConditions = [

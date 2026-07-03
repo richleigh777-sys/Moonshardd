@@ -2,11 +2,10 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { 
-    Settings, Clock, DollarSign, Save, Lock, Globe, Database,
+import { Clock, DollarSign, Save, Lock, Globe, Database,
     RefreshCw, Terminal, LayoutGrid, Server, Zap
 } from 'lucide-react';
-import { Card, Button } from '../ui/Base';
+import { Button } from '../ui/Base';
 import { SystemConfig, Sale, Note } from '../../types';
 import { sfx } from '../../lib/soundService';
 import { useSystem } from '../../hooks/useSystem';
@@ -29,13 +28,13 @@ interface SystemConfigPanelProps {
 
 type ConfigTab = 'operations' | 'financials' | 'crm' | 'clearance' | 'integrations' | 'taxonomy' | 'experience' | 'system' | 'command' | 'hygiene' | 'snapshots' | 'playbooks' | 'audit' | 'ecosystem' | 'terminals' | 'extensions';
 
-export const SystemConfigPanel = ({ config, onUpdate, sales, notes }: SystemConfigPanelProps) => {
+export const SystemConfigPanel = ({ config, onUpdate, _sales, _notes }: SystemConfigPanelProps) => {
     const { currentUser } = useAuth();
     const { setToast } = useSystem();
     const [localConfig, setLocalConfig] = useState<SystemConfig>(config);
     const [isDirty, setIsDirty] = useState(false);
     const [isSaving, setIsSaving] = useState(false);
-    const [now] = useState(() => Date.now());
+    const [_now] = useState(() => Date.now());
     const [activeTab, setActiveTab] = useState<ConfigTab>('operations');
     
     const isSuperAdmin = (currentUser?.accessLevel || 0) >= 10;

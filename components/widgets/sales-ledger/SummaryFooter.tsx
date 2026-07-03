@@ -13,7 +13,7 @@ interface SummaryFooterProps {
 }
 
 export const SummaryFooter: React.FC<SummaryFooterProps> = React.memo(({ 
-    count, approved, pending, total, currentPage, totalPages, onPageChange 
+    count, _approved, _pending, total, currentPage, totalPages, onPageChange 
 }) => (
     <div className="bg-surface-alt/80 border-t border-border-subtle p-3 flex justify-between items-center text-xs font-bold  tracking-widest text-text-muted backdrop-blur-md sticky bottom-0 z-20">
         

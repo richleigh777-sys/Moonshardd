@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Activity, ShieldCheck, Zap, Terminal, RefreshCcw } from 'lucide-react';
+import { Activity, ShieldCheck, Zap, RefreshCcw } from 'lucide-react';
 import { SystemHealth } from '../../../types';
 import { sfx } from '../../../lib/soundService';
 

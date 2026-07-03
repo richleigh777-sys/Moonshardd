@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Search, Server, User as UserIcon, Phone, FileText } from 'lucide-react';
+import { Search, Server, User as UserIcon, Phone } from 'lucide-react';
 import { useSystem } from '../../hooks/useSystem';
 import { useAuth } from '../../hooks/useAuth';
 import { Sale } from '../../types';
@@ -45,11 +45,11 @@ export const OmniSearch = () => {
                     if (rawSales) {
                         const parsedSales: Sale[] = Object.values(JSON.parse(rawSales));
                         let matched = parsedSales.filter(s => 
-                            s.phone?.toLowerCase().includes(q) || 
-                            s.customer?.toLowerCase().includes(q) ||
-                            s.email?.toLowerCase().includes(q) ||
-                            s.orderId?.toLowerCase().includes(q) ||
-                            s.agent?.toLowerCase().includes(q)
+                            (s.phone || '').toLowerCase().includes(q) || 
+                            (s.customer || '').toLowerCase().includes(q) ||
+                            (s.email || '').toLowerCase().includes(q) ||
+                            (s.orderId || '').toLowerCase().includes(q) ||
+                            (s.agent || '').toLowerCase().includes(q)
                         );
                         
                         // Sort by timestamp descending and take the top 3

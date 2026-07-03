@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { motion } from 'motion/react';
 import { DollarSign, Zap, Repeat, Star, Plus, Trash2, Award, Clock, ShieldCheck, Activity, Database } from 'lucide-react';
 import { SectionHeader } from './SectionHeader';

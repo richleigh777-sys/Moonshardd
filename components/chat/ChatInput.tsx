@@ -134,7 +134,7 @@ export const ChatInput: React.FC<ChatInputProps> = ({
         setShowSlashCommands(false);
     };
 
-    const bars = [4, 8, 12, 6, 10, 14, 8, 4, 12, 10, 6, 8, 14, 12, 4, 6, 10, 8, 12, 6];
+    const _bars = [4, 8, 12, 6, 10, 14, 8, 4, 12, 10, 6, 8, 14, 12, 4, 6, 10, 8, 12, 6];
 
     return (
         <div className={`relative flex flex-col items-center w-full transition-all duration-300 ${isBlocked ? 'opacity-50 pointer-events-none grayscale' : ''}`}>

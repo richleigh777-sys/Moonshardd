@@ -43,7 +43,7 @@ export function getTimeInfoForPhone(phone: string | undefined | null): { time: s
             time,
             cityState: `${data.city ? data.city + ', ' : ''}${data.state}`
         };
-    } catch (e) {
+    } catch (_e) {
         return null; // fallback if timezone is invalid
     }
 }

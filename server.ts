@@ -6,7 +6,7 @@ import helmet from "helmet";
 import rateLimit from "express-rate-limit";
 import { GoogleGenAI, Type } from "@google/genai";
 import { query, db, schema } from "./lib/db.ts"; // Secure DB Gateway
-import { eq, inArray, and, or, sql } from "drizzle-orm";
+import { eq, inArray, and, sql } from "drizzle-orm";
 import { initializeRealtime, broadcast as originalBroadcast } from "./lib/realtime.ts"; // WebSocket Hub
 import { runWorkflows, check90DayInactivity } from "./lib/workflowEngine.ts";
 import { LRUCache } from "lru-cache";
@@ -217,7 +217,7 @@ async function startServer() {
   // --- 1.5. Lead Ingestion & Campaigns ---
   app.post("/api/leads", async (req, res) => {
       try {
-          const { email, phone, source } = req.body;
+          const { email, phone, _source } = req.body;
           if (!process.env.DATABASE_URL) {
               return res.status(503).json({ error: "Database not connected." });
           }
@@ -254,7 +254,7 @@ async function startServer() {
               ORDER BY l.created_at DESC LIMIT 50
           `);
           res.json(result.rows);
-      } catch (err: any) {
+      } catch (_err: any) {
           res.status(500).json({ error: "Failed to fetch leads." });
       }
   });
@@ -322,7 +322,7 @@ async function startServer() {
                           return res.status(401).json({ error: "Invalid credentials." });
                       }
                   }
-              } catch (e: any) {
+              } catch (_e: any) {
                   // Ignore if crm_documents not set up yet
               }
 
@@ -341,7 +341,8 @@ async function startServer() {
               token: "simulated_jwt_token_for_now",
               user: { id: email, role: user.role, clearance: user.clearance_level, team: user.team }
           });
-      } catch(err) {
+      } catch(err) { 
+          console.error(err);
           res.status(500).json({ error: "Server Error" });
       }
   });
@@ -385,7 +386,7 @@ async function startServer() {
               return Math.round((num + Number.EPSILON) * factor) / factor;
           };
 
-          const getDailyHours = (agentId: string, timestamp: number, attendanceRecords: any[], activeSessionSeconds: number = 0) => {
+          const getDailyHours = (agentId: string, timestamp: number, attendanceRecords: any[], _activeSessionSeconds: number = 0) => {
               if (!attendanceRecords || attendanceRecords.length === 0) return 0;
               const d = new Date(timestamp);
               const dayStart = new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime();
@@ -749,6 +750,7 @@ async function startServer() {
 
   app.post("/api/collections/:collection/bulk", async (req, res) => {
       try {
+          const tenantId = String(req.headers['x-tenant-id'] || 'srv-001');
           const userLevel = parseInt(String(req.headers['x-user-level'] || '1'), 10);
           const userId = String(req.headers['x-user-id'] || 'unknown');
           const userTeam = String(req.headers['x-user-team'] || '');
@@ -759,7 +761,7 @@ async function startServer() {
 
           if (req.params.collection === 'sales') {
               const { processSalesIngestion } = await import('./lib/ingestionEngine.ts');
-              const processedItems = await processSalesIngestion(items, userId, userTeam);
+              const processedItems = await processSalesIngestion(items, userId, userTeam, tenantId);
               items.length = 0;
               items.push(...processedItems);
           }
@@ -787,73 +789,89 @@ async function startServer() {
                   }
               }
               memoryDB.set(req.params.collection, itemsList);
-              try { broadcast({ type: 'COLLECTION_MUTATED', collectionName: req.params.collection }); } catch(e){ /* ignore */ }
+              try { broadcast({ type: 'COLLECTION_MUTATED', collectionName: req.params.collection }); } catch(e) { console.debug("Ignored exception", e); }{ /* ignore */ }
               return res.json({ success: true, count: processedCount });
           }
 
           let processedCount = 0;
           await db.transaction(async (tx) => {
-              for (const item of items) {
-                  const id = item.id || `id_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
-                  const payload = { ...item, id, updated_at: new Date().toISOString() };
-                  
-                  // Fetch existing for audit
-                  const conditions = [
-                      eq(schema.crmDocuments.collection_name, req.params.collection),
-                      eq(schema.crmDocuments.id, id)
-                  ];
-                  const existingRows = await tx.select().from(schema.crmDocuments).where(and(...conditions));
-                  const existingData = existingRows.length > 0 ? existingRows[0].data : null;
+              const itemIds = items.map((item: any) => item.id || `id_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`);
+              
+              const existingDataMap = new Map();
+              if (itemIds.length > 0) {
+                  for (let i = 0; i < itemIds.length; i += 500) {
+                      const chunkIds = itemIds.slice(i, i + 500);
+                      const existingRows = await tx.select().from(schema.crmDocuments)
+                          .where(and(eq(schema.crmDocuments.collection_name, req.params.collection), inArray(schema.crmDocuments.id, chunkIds)));
+                      existingRows.forEach(row => {
+                          existingDataMap.set(row.id, row.data);
+                      });
+                  }
+              }
+
+              const validRecords = [];
+              const auditLogs = [];
+              
+              for (let i = 0; i < items.length; i++) {
+                  const item = items[i];
+                  const id = itemIds[i];
+                  const existingData = existingDataMap.get(id);
                   
                   if (existingData && isRestricted) {
                       const canWrite = (existingData as any).agentId === userId || (userLevel >= 5 && userTeam && ((existingData as any).agentTeam === userTeam || (existingData as any).team === userTeam));
-                      if (!canWrite) {
-                          continue; // Skip restricted update
-                      }
+                      if (!canWrite) continue;
                   }
                   
-                  let q = `
-                      INSERT INTO crm_documents (id, collection_name, data, updated_at) 
-                      VALUES ($1, $2, $3, NOW()) 
-                      ON CONFLICT (collection_name, id) 
-                  `;
-
-                  if (isRestricted) {
-                      if (userLevel >= 5 && userTeam) {
-                          q += `DO UPDATE SET data = crm_documents.data || EXCLUDED.data, updated_at = NOW() WHERE crm_documents.data->>'agentId' = '${userId}' OR crm_documents.data->>'agentTeam' = '${userTeam}' OR crm_documents.data->>'team' = '${userTeam}'`;
-                      } else {
-                          q += `DO UPDATE SET data = crm_documents.data || EXCLUDED.data, updated_at = NOW() WHERE crm_documents.data->>'agentId' = '${userId}'`;
-                      }
-                  } else {
-                      q += `DO UPDATE SET data = crm_documents.data || EXCLUDED.data, updated_at = NOW()`;
-                  }
-
-                  const result = await tx.execute(sql.raw(q.replace('$1', `'${id}'`).replace('$2', `'${req.params.collection}'`).replace('$3', `'${JSON.stringify(payload)}'`)));
+                  const payload = { ...item, id, updated_at: new Date().toISOString() };
+                  validRecords.push({ id, collection_name: req.params.collection, data: payload });
                   
-                  if (isRestricted && result.rowCount === 0) {
-                      continue;
-                  }
-                  
-                  // Log Audit
-                  const auditId = `audit_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
-                  const auditPayload = {
-                      id: auditId,
-                      action: existingData ? `UPDATED_${req.params.collection.toUpperCase()}` : `CREATED_${req.params.collection.toUpperCase()}`,
-                      module: req.params.collection.toUpperCase(),
-                      agentName: req.headers['x-user-name'] || userId,
-                      agentId: userId,
-                      details: existingData ? `Bulk updated record ${id}` : `Bulk created record ${id}`,
-                      timestamp: Date.now(),
-                      oldValue: existingData,
-                      newValue: payload
-                  };
-                  await tx.insert(schema.crmDocuments).values({
+                  const auditId = `audit_${Date.now()}_${Math.random().toString(36).substring(2, 9)}_${i}`;
+                  auditLogs.push({
                       id: auditId,
                       collection_name: 'audit_logs',
-                      data: auditPayload
+                      data: {
+                          id: auditId,
+                          action: existingData ? `UPDATED_${req.params.collection.toUpperCase()}` : `CREATED_${req.params.collection.toUpperCase()}`,
+                          module: req.params.collection.toUpperCase(),
+                          agentName: req.headers['x-user-name'] || userId,
+                          agentId: userId,
+                          details: existingData ? `Bulk updated record ${id}` : `Bulk created record ${id}`,
+                          timestamp: Date.now(),
+                          oldValue: existingData,
+                          newValue: payload
+                      }
                   });
-
                   processedCount++;
+              }
+
+              if (validRecords.length > 0) {
+                  for (let i = 0; i < validRecords.length; i += 500) {
+                      const chunk = validRecords.slice(i, i + 500);
+                      let updateWhere;
+                      if (isRestricted) {
+                          if (userLevel >= 5 && userTeam) {
+                              updateWhere = sql`crm_documents.data->>'agentId' = ${userId} OR crm_documents.data->>'agentTeam' = ${userTeam} OR crm_documents.data->>'team' = ${userTeam}`;
+                          } else {
+                              updateWhere = sql`crm_documents.data->>'agentId' = ${userId}`;
+                          }
+                      }
+                      
+                      await tx.insert(schema.crmDocuments).values(chunk).onConflictDoUpdate({
+                          target: [schema.crmDocuments.collection_name, schema.crmDocuments.id],
+                          set: {
+                              data: sql`crm_documents.data || EXCLUDED.data`,
+                              updated_at: sql`NOW()`
+                          },
+                          where: updateWhere
+                      });
+                  }
+              }
+
+              if (auditLogs.length > 0) {
+                  for (let i = 0; i < auditLogs.length; i += 500) {
+                      const chunk = auditLogs.slice(i, i + 500);
+                      await tx.insert(schema.crmDocuments).values(chunk);
+                  }
               }
           });
           
@@ -863,7 +881,7 @@ async function startServer() {
               console.error("[Realtime Broadcast Error]:", broadcastErr);
           }
 
-          res.json({ success: true, count: items.length });
+          res.json({ success: true, count: processedCount });
       } catch (err: any) {
           console.error("DB Bulk Post Error", err);
           res.status(500).json({ error: err.message });
@@ -895,11 +913,11 @@ async function startServer() {
                   return x;
               });
               memoryDB.set(req.params.collection, newItems);
-              try { broadcast({ type: 'COLLECTION_MUTATED', collectionName: req.params.collection }); } catch(e){ /* ignore */ }
+              try { broadcast({ type: 'COLLECTION_MUTATED', collectionName: req.params.collection }); } catch(e) { console.debug("Ignored exception", e); }{ /* ignore */ }
               return res.json({ success: true, count: deletedCount });
           }
 
-          let deletedCount = 0;
+          const _deletedCount = 0;
           await db.transaction(async (tx) => {
               for (const id of ids) {
                   const conditions = [
@@ -941,8 +959,6 @@ async function startServer() {
                           collection_name: 'audit_logs',
                           data: auditPayload
                       });
-                      
-                      deletedCount++;
                   }
               }
           });
@@ -960,8 +976,48 @@ async function startServer() {
       }
   });
 
+
+  app.post("/api/collections/:collection/:id/duplicate", async (req, res) => {
+      try {
+          const userLevel = parseInt(String(req.headers['x-user-level'] || '1'), 10);
+          if (userLevel < 10) {
+              return res.status(403).json({ error: "Access Denied: Level 10 Clearance Required to duplicate." });
+          }
+
+          if (!db) {
+             return res.status(500).json({ error: "Database not available" });
+          }
+
+          const collectionName = req.params.collection;
+          const id = req.params.id;
+
+          const existingRows = await db.select().from(schema.crmDocuments).where(
+             and(eq(schema.crmDocuments.collection_name, collectionName), eq(schema.crmDocuments.id, id))
+          );
+
+          if (existingRows.length === 0) {
+              return res.status(404).json({ error: "Record not found" });
+          }
+
+          const existingData = existingRows[0].data;
+          const newId = `${collectionName}_${Date.now()}`;
+          const newData = { ...(existingData as any), id: newId, timestamp: Date.now(), updatedAt: Date.now() };
+
+          await db.execute(sql.raw(`INSERT INTO crm_documents (id, collection_name, data, updated_at) VALUES ('${newId}', '${collectionName}', '${JSON.stringify(newData)}', NOW())`));
+          
+          try { broadcast({ type: 'COLLECTION_MUTATED', collectionName: collectionName, id: newId }); } catch(e) { console.debug("Ignored exception", e); }
+
+          return res.json({ success: true, id: newId, data: newData });
+
+      } catch (err) {
+          console.error(err);
+          res.status(500).json({ error: "Internal Server Error" });
+      }
+  });
+
   app.post("/api/collections/:collection", async (req, res) => {
       try {
+          const tenantId = String(req.headers['x-tenant-id'] || 'srv-001');
           const userLevel = parseInt(String(req.headers['x-user-level'] || '1'), 10);
           const userId = String(req.headers['x-user-id'] || 'unknown');
           const userTeam = String(req.headers['x-user-team'] || '');
@@ -970,7 +1026,7 @@ async function startServer() {
           let incomingBody = req.body;
           if (req.params.collection === 'sales') {
               const { processSalesIngestion } = await import('./lib/ingestionEngine.ts');
-              const processedItems = await processSalesIngestion([req.body], userId, userTeam);
+              const processedItems = await processSalesIngestion([req.body], userId, userTeam, tenantId);
               if (processedItems.length > 0) {
                   incomingBody = processedItems[0];
               }
@@ -995,7 +1051,7 @@ async function startServer() {
                   itemsList.push(payload);
               }
               memoryDB.set(req.params.collection, itemsList);
-              try { broadcast({ type: 'COLLECTION_MUTATED', collectionName: req.params.collection, id }); } catch(e){ /* ignore */ }
+              try { broadcast({ type: 'COLLECTION_MUTATED', collectionName: req.params.collection, id }); } catch(e) { console.debug("Ignored exception", e); }{ /* ignore */ }
               return res.json({ success: true, id });
           }
 
@@ -1097,7 +1153,7 @@ async function startServer() {
                   itemsList[idx] = { ...itemsList[idx], ...req.body };
                   memoryDB.set(req.params.collection, itemsList);
               }
-              try { broadcast({ type: 'COLLECTION_MUTATED', collectionName: req.params.collection, id: req.params.id }); } catch(e){ /* ignore */ }
+              try { broadcast({ type: 'COLLECTION_MUTATED', collectionName: req.params.collection, id: req.params.id }); } catch(e) { console.debug("Ignored exception", e); }{ /* ignore */ }
               return res.json({ success: true, id: req.params.id });
           }
 
@@ -1185,7 +1241,7 @@ async function startServer() {
                   itemsList[idx] = { ...itemsList[idx], deletedAt: new Date().toISOString() };
                   memoryDB.set(req.params.collection, itemsList);
               }
-              try { broadcast({ type: 'COLLECTION_MUTATED', collectionName: req.params.collection, id: req.params.id, deleted: true }); } catch(e){ /* ignore */ }
+              try { broadcast({ type: 'COLLECTION_MUTATED', collectionName: req.params.collection, id: req.params.id, deleted: true }); } catch(e) { console.debug("Ignored exception", e); }{ /* ignore */ }
               return res.json({ success: true, id: req.params.id });
           }
 
@@ -1253,9 +1309,9 @@ async function startServer() {
              return res.status(400).json({ error: "Missing CSV data" });
           }
 
-          // In a real scenario, the backend would fetch the customers from Firebase Admin here.
+          // In a real scenario, the backend would fetch the customers from PostgreSQL here.
           // Since we might not have a service account config, we let the client pass it,
-          // OR we would use firebase-admin. For demonstration of ripping it from UI, we do the logic here:
+          // OR we would use postgres queries. For demonstration of ripping it from UI, we do the logic here:
 
           const lines = csvText.split('\n').filter((r: string) => r.trim().length > 0);
           const headers = lines[0].split(',').map((h: string) => h.replace(/^["']|["']$/g, '').trim());

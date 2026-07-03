@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from 'react';
+import { useState } from 'react';
 import { Sale } from '../../../types';
 import { sfx } from '../../../lib/soundService';
 import { useCRM } from '../../../hooks/useCRM';

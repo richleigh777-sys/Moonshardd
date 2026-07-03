@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Database, Plus, X, ListFilter, Type, Hash, Calendar as CalendarIcon, ToggleLeft, GripVertical } from 'lucide-react';
+import { Database, Plus, X, ListFilter, Type, Hash, Calendar as CalendarIcon, ToggleLeft } from 'lucide-react';
 import { SectionHeader } from '../SectionHeader';
 import { Button } from '../../../ui/Base';
 import { SystemConfig, CustomFieldConfig } from '../../../../types';

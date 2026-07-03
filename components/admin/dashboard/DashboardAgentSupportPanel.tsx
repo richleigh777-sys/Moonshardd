@@ -1,6 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import { Sale, User, SystemConfig } from '../../../types';
-import { AlertTriangle, Send, BarChart3, Zap, Clock, Activity, Target } from 'lucide-react';
+import { AlertTriangle, Send, BarChart3, Zap, Activity } from 'lucide-react';
 
 interface DashboardAgentSupportPanelProps {
   sales: Sale[];
@@ -12,7 +12,7 @@ interface DashboardAgentSupportPanelProps {
 export const DashboardAgentSupportPanel: React.FC<DashboardAgentSupportPanelProps> = ({
   sales,
   users,
-  systemConfig,
+  _systemConfig,
   onSendMessage,
 }) => {
   const [expandedAgentId, setExpandedAgentId] = useState<string | null>(null);
@@ -58,7 +58,7 @@ export const DashboardAgentSupportPanel: React.FC<DashboardAgentSupportPanelProp
       .slice(0, 4);
   }, [sales, users]);
 
-  const getSuggestion = (agent: User, deficit: number, revenue: number) => {
+  const getSuggestion = (agent: User, deficit: number, _revenue: number) => {
     if (deficit > 3) {
       return `${agent.name} needs support - only ${deficit} sales to quota. Consider pairing with top performer.`;
     } else if (agent.currentStatus !== 'online') {

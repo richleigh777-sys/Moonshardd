@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import { RotateCcw, Calendar, User, Tag, Filter, Bookmark, Search, Layers, Save, Trash2 } from 'lucide-react';
+import { RotateCcw, Calendar, User, Tag, Bookmark, Layers, Save, Trash2 } from 'lucide-react';
 import { sfx } from '../../../lib/soundService';
 
 interface FilterPanelProps {
@@ -22,7 +22,7 @@ const DEFAULT_PRESETS = [
     { label: 'Today\'s Wins', filters: { status: 'Approved' } },
 ];
 
-const DATE_RANGES = [
+const _DATE_RANGES = [
     { label: 'Today', days: 0 },
     { label: '7 Days', days: 7 },
     { label: '30 Days', days: 30 },
@@ -36,7 +36,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = React.memo(({ filters, se
         if (saved) {
             try {
                 setCustomPresets(JSON.parse(saved));
-            } catch (e) {
+            } catch (_e) {
                 // ignore
             }
         }
@@ -69,7 +69,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = React.memo(({ filters, se
         setActivePreset(preset.label);
     };
 
-    const applyDateRange = (days: number) => {
+    const _applyDateRange = (days: number) => {
         sfx.playClick();
         const end = new Date();
         const start = new Date();

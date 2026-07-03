@@ -35,7 +35,7 @@ export class RPCClient {
         if (isJson && text) {
             try {
                 data = JSON.parse(text);
-            } catch (e) {
+            } catch (_e) {
                 throw new Error("Enterprise RPC Error: Invalid JSON response.");
             }
         } else {

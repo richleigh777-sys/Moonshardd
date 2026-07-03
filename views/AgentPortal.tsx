@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React from 'react';
 import { PortalShell } from '../components/layout/PortalShell';
 import { Tabs } from '../components/ui/Tabs';
 import { EntryView } from './EntryView';
@@ -9,9 +9,7 @@ import { AgentTimeSheet } from '../components/modals/AgentTimeSheet';
 import { QuickCalculator } from '../components/widgets/QuickCalculator';
 import { Scratchpad } from '../components/widgets/Scratchpad';
 import { useAgentPortalLogic } from '../components/agent/hooks/useAgentPortalLogic';
-import { useCRM } from '../hooks/useCRM';
 import { AgentViewManager } from '../components/agent/AgentViewManager';
-import { ArrowUpDown } from 'lucide-react';
 
 // NEW COMPONENTS
 import { ContextualHelp } from '../components/Common/ContextualHelp';
@@ -22,24 +20,19 @@ export const AgentPortal: React.FC = () => {
         currentUser, sales, deleteNote, attendance, notifications, clearNotification,
         view, setView, isFocusMode, setIsFocusMode, showCalculator, setShowCalculator,
         showScratchpad, setShowScratchpad, showTimeSheet, setShowTimeSheet,
-        showDialer, setShowDialer,
         isAllowed, mySales, myNotes, setToast
     } = useAgentPortalLogic();
 
-    const { dialerLists, customers } = useCRM();
+    const handleNavigate = React.useCallback((e: CustomEvent | Event) => {
+        const target = (e as CustomEvent).detail;
+        if (isAllowed(target)) {
+            setView(target);
+        }
+    }, [isAllowed, setView]);
 
-    const isEnrollment = view === 'enrollment';
+    const handleOpenScratchpad = React.useCallback(() => setShowScratchpad(true), [setShowScratchpad]);
 
     React.useEffect(() => {
-        const handleNavigate = (e: CustomEvent) => {
-            const target = e.detail;
-            if (isAllowed(target)) {
-                setView(target);
-            }
-        };
-
-        const handleOpenScratchpad = () => setShowScratchpad(true);
-
         window.addEventListener('NAVIGATE', handleNavigate as EventListener);
         window.addEventListener('OPEN_SCRATCHPAD', handleOpenScratchpad);
 
@@ -47,7 +40,7 @@ export const AgentPortal: React.FC = () => {
             window.removeEventListener('NAVIGATE', handleNavigate as EventListener);
             window.removeEventListener('OPEN_SCRATCHPAD', handleOpenScratchpad);
         };
-    }, [setView, setShowScratchpad, isAllowed]);
+    }, [handleNavigate, handleOpenScratchpad]);
 
     if (!currentUser) return null;
 

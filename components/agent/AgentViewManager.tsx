@@ -10,18 +10,12 @@ import { DashView } from '../../views/DashView';
 import { MessagingLayout } from '../chat/MessagingLayout';
 import EnrollmentFormV2 from '../forms/EnrollmentFormV2';
 import { PipelineBoard } from '../pipeline/PipelineBoard';
-import { RecoveryEngine } from '../widgets/RecoveryEngine';
 import { LeadHub } from '../leads/LeadHub';
-import { ContactManager } from '../widgets/ContactManager';
 import { SalesLedger } from '../widgets/SalesLedger';
 import { AgentPayouts } from '../widgets/payouts/AgentPayouts';
 import { TeamLeaderboard } from '../widgets/TeamLeaderboard';
-import { AgentScriptHub } from '../widgets/AgentScriptHub';
 import { PerformanceCenter } from '../widgets/PerformanceCenter';
 import { OperationalRhythm } from './OperationalRhythm';
-import { SmartQueue } from '../widgets/SmartQueue';
-import { AdaptiveView } from '../Dashboard/AdaptiveView';
-import { SmartLeadQueue } from '../LeadQueue/SmartLeadQueue';
 import { SmartPitchWorkspace } from './SmartPitchWorkspace';
 
 interface AgentTerminalManagerProps {
@@ -37,9 +31,9 @@ interface AgentTerminalManagerProps {
 }
 
 export const AgentViewManager: React.FC<AgentTerminalManagerProps> = ({
-    isAllowed, mySales, myNotes, sales, attendance, currentUser, deleteNote, setToast, setView
+    _isAllowed, mySales, myNotes, sales, attendance, currentUser, deleteNote, setToast, setView
 }) => {
-    const { updateSaleStatus } = useCRM();
+    const { _updateSaleStatus } = useCRM();
     const [activeLeadPhone, setActiveLeadPhone] = useState<string | null>(null);
     const [smartPitchContext, setSmartPitchContext] = useState<any>(null);
 
@@ -112,7 +106,7 @@ export const AgentViewManager: React.FC<AgentTerminalManagerProps> = ({
     }, [setToast]);
 
 
-    const recoverySales = useMemo(() => {
+    const _recoverySales = useMemo(() => {
         const TWO_DAYS_MS = 2 * 24 * 60 * 60 * 1000;
         return sales.filter(s => {
             if (s.status !== 'Declined' && s.status !== 'Rescue In Progress') return false;

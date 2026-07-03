@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { CheckCircle2, Circle, Sparkles, Smile, Coffee, Sun } from 'lucide-react';
+import { CheckCircle2, Circle, Sparkles, Smile, Sun } from 'lucide-react';
 
 interface Task {
     id: string;

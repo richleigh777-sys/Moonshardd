@@ -1,11 +1,10 @@
 import React, { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { 
-    GitMerge, ArrowRight, Map, History, ShieldAlert, Sparkles, 
-    Search, HelpCircle, CheckCircle2, AlertCircle, Info, Play, 
-    RefreshCw, Settings, UserCheck, Calendar, PhoneCall, RefreshCw as LoopIcon
+    GitMerge, Map, History, ShieldAlert, Sparkles, 
+    Search, Info, UserCheck, RefreshCw as LoopIcon
 } from 'lucide-react';
-import { Card, Button, Input } from '../ui/Base';
+import { Button, Input } from '../ui/Base';
 import { Sale, Note, User } from '../../types';
 import { sfx } from '../../lib/soundService';
 import { useCRM } from '../../hooks/useCRM';

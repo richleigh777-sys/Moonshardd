@@ -1,5 +1,4 @@
 import React, { useContext } from 'react';
-import { UIState } from '../../types/uiState';
 
 // Instead of creating a new SystemContext, we'll try to just hook into wherever `view` is available if needed,
 // For now, I'll export a props-based approach or use the provided SystemContext 

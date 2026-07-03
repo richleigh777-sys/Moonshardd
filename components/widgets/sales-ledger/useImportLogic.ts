@@ -158,7 +158,7 @@ export const useImportLogic = (onImport?: (data: Partial<Sale>[]) => Promise<any
                 return entry;
             });
 
-            const validData = mappedData.filter((d: any) => d.amount || d.product || d.customer);
+            const validData = mappedData.filter((d: any) => d.amount || d.product || d.customer || d.phone || d.email);
             const count = await onImport(validData);
             setToast({ title: 'Import Complete', message: `Import Complete: ${count} records`, type: 'success' });
             setImportConfig(null);

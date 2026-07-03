@@ -3,7 +3,7 @@ import { ArrowLeft, History, UserCheck, ChevronDown, ChevronUp, MapPin, Activity
 import { Button, Input } from '../../ui/Base';
 import { CallbackForm } from '../CallbackForm';
 import { sfx } from '../../../lib/soundService';
-import { User, SalesFormData, Customer } from '../../../types';
+import { User, SalesFormData } from '../../../types';
 import { useCRM } from '../../../hooks/useCRM';
 
 interface CallbackProtocolProps {

@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Package, Search, SlidersHorizontal, Plus, LayoutGrid, List } from 'lucide-react';
+import { Search, SlidersHorizontal, Plus, LayoutGrid, List } from 'lucide-react';
 import { Button } from '../../ui/Base';
 import { SortOption } from '../../../hooks/useProductSystem';
 

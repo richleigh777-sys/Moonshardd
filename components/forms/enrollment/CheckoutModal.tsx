@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
-import { motion, AnimatePresence } from 'motion/react';
-import { ShieldCheck, Lock, X, ArrowLeft, Loader2 } from 'lucide-react';
+import React from 'react';
+import { motion } from 'motion/react';
+import { ShieldCheck, Lock, ArrowLeft, Loader2 } from 'lucide-react';
 import { FinancialVault } from './FinancialVault';
 
 export const CheckoutModal = ({
-    isOpen, onClose, onSubmit, loading, error, financials, setFinancials, handleCardInput, cardStatus, formData, cart
+    _isOpen, onClose, onSubmit, loading, error, financials, setFinancials, handleCardInput, cardStatus, _formData, cart
 }: any) => {
     
     const grandTotal = cart.reduce((sum: number, item: any) => sum + (parseInt(item.quantity) || 0) * (item.unitPrice || 0), 0);

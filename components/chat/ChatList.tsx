@@ -1,6 +1,6 @@
 
 import React, { useState, useCallback } from 'react';
-import { Search, Pin, Archive, Inbox, Activity, Signal, Lock, MessageCircle } from 'lucide-react';
+import { Search, Pin, Lock, MessageCircle } from 'lucide-react';
 import { Conversation, ChatService } from '../../services/ChatService';
 import { useCRM } from '../../hooks/useCRM';
 import { sfx } from '../../lib/soundService';
@@ -117,7 +117,7 @@ const ChatListItem = React.memo(({ chat, isActive, isCollapsed, onClick, onActio
 export const ChatList: React.FC<{ conversations: Conversation[], onSelectChat: (convo: Conversation) => void, activeConvoId?: string, isCollapsed?: boolean }> = ({ conversations, onSelectChat, activeConvoId, isCollapsed }) => {
   const { currentUser } = useCRM();
   const [searchTerm, setSearchTerm] = useState("");
-  const [viewMode, setViewMode] = useState<'active' | 'archived'>('active');
+  const [viewMode, _setViewMode] = useState<'active' | 'archived'>('active');
 
   const handleAction = useCallback(async (e: React.MouseEvent, convo: Conversation, action: 'pin' | 'archive' | 'unarchive') => {
       e.stopPropagation();

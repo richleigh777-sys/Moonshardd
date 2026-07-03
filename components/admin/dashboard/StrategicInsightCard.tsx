@@ -13,7 +13,7 @@ interface StrategicInsightCardProps {
 }
 
 export const StrategicInsightCard: React.FC<StrategicInsightCardProps> = ({ 
- sales, users, notes, serverId }) => {
+ sales, users, notes, _serverId }) => {
     const { setToast } = useSystem();
     const [insight, setInsight] = useState<any>(null);
     const [loading, setLoading] = useState(false);

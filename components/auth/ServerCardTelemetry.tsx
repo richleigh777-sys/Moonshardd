@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect, useMemo } from 'react';
-import { ArrowRight, Globe, Shield, Server, Lock, Settings, Trash2, Key, Database as DbIcon, Activity } from 'lucide-react';
+import { ArrowRight, Globe, Server, Lock, Settings, Trash2, Key, Database as DbIcon, Activity } from 'lucide-react';
 
 interface ServerCardTelemetryProps {
     server: any;
@@ -45,7 +45,7 @@ export const ServerCardTelemetry: React.FC<ServerCardTelemetryProps> = React.mem
     }, [server.id, envType]);
 
     const [stats, setStats] = useState<ServerStats>(initialStats);
-    const [loadHistory, setLoadHistory] = useState<number[]>(Array(20).fill(10));
+    const [_loadHistory, setLoadHistory] = useState<number[]>(Array(20).fill(10));
 
     // Isolated Heartbeat & Sparkline Generator
     useEffect(() => {

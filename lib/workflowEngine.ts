@@ -1,5 +1,5 @@
 import { db, schema, query } from './db.ts';
-import { eq, and } from "drizzle-orm";
+import { eq } from "drizzle-orm";
 import { broadcast } from './realtime.ts';
 
 // Core workflow engine that intercepts mutations and runs automation rules

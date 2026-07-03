@@ -255,9 +255,9 @@ export function useBulkImport(uniqueCustomers: Customer[], sales: Sale[], custom
         setIsProcessing(true);
         sfx.playConfirm();
 
-        let added = 0;
-        let updated = 0;
-        const importResultsData: any = { added: 0, stitched: 0, stitchedDetails: [], addedDetails: [] };
+        let _added = 0;
+        let _updated = 0;
+        const _importResultsData: any = { added: 0, stitched: 0, stitchedDetails: [], addedDetails: [] };
         const bulkOps: Partial<Customer>[] = [];
 
         const phoneDbMap = new Map<string, Customer>();
@@ -400,7 +400,7 @@ export function useBulkImport(uniqueCustomers: Customer[], sales: Sale[], custom
                         strategy: 'stitch'
                     } as any);
 
-                    updated++;
+                    _updated++;
                 } else {
                     const id = 'cust_' + Date.now() + Math.random().toString(36).substr(2, 5);
                     const customerPayload: Partial<Customer> = {
@@ -444,7 +444,7 @@ export function useBulkImport(uniqueCustomers: Customer[], sales: Sale[], custom
                     bulkOps.push(customerPayload);
                     phoneDbMap.set(cleanPhone, customerPayload as Customer);
                     
-                    added++;
+                    _added++;
                 }
             }
 

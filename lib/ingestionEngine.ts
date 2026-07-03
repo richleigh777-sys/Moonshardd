@@ -1,5 +1,4 @@
-import { db, schema, query } from './db.ts';
-import { eq, or, and } from "drizzle-orm";
+import { db, query } from './db.ts';
 import { broadcast } from './realtime.ts';
 
 // Normalize phone number to digits only
@@ -20,7 +19,7 @@ export function generateAddressFingerprint(address: string | undefined): string 
     return address.toLowerCase().replace(/[^a-z0-9]/g, '');
 }
 
-export async function processSalesIngestion(payloads: any[], userId: string, userTeam: string): Promise<any[]> {
+export async function processSalesIngestion(payloads: any[], userId: string, userTeam: string, tenantId: string = 'srv-001'): Promise<any[]> {
     if (!db) return payloads; // Fallback if no DB
     const processedSales = [];
 
@@ -32,7 +31,7 @@ export async function processSalesIngestion(payloads: any[], userId: string, use
 
         let customerId = rawSale.customerId;
         let customerProfile: any = null;
-        let isNewCustomer = false;
+        let _isNewCustomer = false;
 
         // Identity Resolution
         let existingCustomer: any = null;
@@ -89,7 +88,7 @@ export async function processSalesIngestion(payloads: any[], userId: string, use
             try { broadcast({ type: 'COLLECTION_MUTATED', collectionName: 'customers', id: customerId }); } catch(e) { console.error(e); }
         } else {
             // Auto-create Pristine Customer profile
-            isNewCustomer = true;
+            _isNewCustomer = true;
             customerId = `cust_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
             customerProfile = {
                 id: customerId,
@@ -108,6 +107,7 @@ export async function processSalesIngestion(payloads: any[], userId: string, use
                 status: 'Active',
                 agentId: userId,
                 agentTeam: userTeam,
+                serverId: tenantId,
                 createdAt: Date.now()
             };
 
@@ -119,11 +119,13 @@ export async function processSalesIngestion(payloads: any[], userId: string, use
         }
 
         // Link the Sale
+        const saleId = rawSale.id || `sale_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
         const saleRecord = {
             ...rawSale,
             id: saleId,
             customerId: customerId,
             customerName: customerProfile.fullName, // cache for easy display
+            serverId: tenantId,
             createdAt: rawSale.createdAt || Date.now(),
             updatedAt: Date.now()
         };

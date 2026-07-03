@@ -1,12 +1,10 @@
 
 import React, { useState } from 'react';
 import { 
-    MoreVertical, ChevronRight, Copy, Check, Mail, MapPin, 
-    FileText, AlertCircle, HeartPulse, CreditCard, CheckSquare, Square, Users 
+    MoreVertical, ChevronRight, CheckSquare, Square 
 } from 'lucide-react';
 import { Sale } from '../../../types';
 import { CellRenderers } from './cells/CellRenderers';
-import { sfx } from '../../../lib/soundService';
 import { usePresence } from '../../../hooks/usePresence';
 import { ExpandedDetail } from './ExpandedDetail';
 

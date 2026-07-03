@@ -37,13 +37,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             tabManager.broadcast('LOGOUT_SYNC', { userId: currentUser.id });
         }
 
-        try {
-            const { getAuth, signOut } = await import('firebase/auth');
-            await signOut(getAuth());
-        } catch (e) {
-            console.error("Firebase signout error:", e);
-        }
-
         setCurrentUser(null);
         setOriginalAdmin(null);
         setSessionStartTime(null);

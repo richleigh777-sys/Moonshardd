@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { ShieldCheck, Zap, Target } from 'lucide-react';
+import { Target } from 'lucide-react';
 import { Card } from '../ui/Base';
 
 interface Props {

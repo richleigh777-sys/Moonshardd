@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react';
-import { Sale, PipelineStage } from '../types';
+import { Sale } from '../types';
 import { useCRM } from '../hooks/useCRM';
 import { sfx } from '../lib/soundService';
 
@@ -12,7 +12,7 @@ export const useNexusOptimizer = (sales: Sale[]) => {
     sfx.playSubmit();
 
     const ids: string[] = [];
-    const updates: Partial<Sale> = {}; // In this specific case, all selected get { pipelineStatus: 'Closed Won' }
+    const _updates: Partial<Sale> = {}; // In this specific case, all selected get { pipelineStatus: 'Closed Won' }
     let count = 0;
 
     sales.forEach(sale => {

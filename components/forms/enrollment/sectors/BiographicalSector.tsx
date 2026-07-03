@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
-import { Mail, Calendar, User, Phone, MapPin, AlertCircle } from 'lucide-react';
+import React from 'react';
+import { AlertCircle } from 'lucide-react';
 import { ModernDatePicker } from '../../../ui/ModernDatePicker';
 
-export function BiographicalSector({ formData, handleIdentityChange, handleDobChange, handleAgeChange, autoFillFromCustomer }: any) {
+export function BiographicalSector({ formData, handleIdentityChange, handleDobChange, handleAgeChange, _autoFillFromCustomer }: any) {
   
   const handleFirstNamePaste = (e: React.ClipboardEvent<HTMLInputElement>) => {
       const paste = e.clipboardData.getData('text');
@@ -18,7 +18,7 @@ export function BiographicalSector({ formData, handleIdentityChange, handleDobCh
   // Simple email regex for visual validation
   const isEmailValid = !formData.email || /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i.test(formData.email);
 
-  const parsedDate = formData.dob ? new Date(formData.dob + 'T12:00:00Z') : null;
+  const _parsedDate = formData.dob ? new Date(formData.dob + 'T12:00:00Z') : null;
 
   return (
     <div className="space-y-6">

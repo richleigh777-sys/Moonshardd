@@ -3,7 +3,7 @@ import { RegistryField } from '../types';
 import { 
     User, CreditCard, MapPin, Activity, Phone, Mail, Package, 
     Hash, Calendar, Shield, FileText, ShoppingBag, Clock, 
-    Truck, Music, ListFilter, Landmark, Heart, Layers, AlertTriangle, RefreshCw, Briefcase
+    Truck, Music, ListFilter, Landmark, Layers, AlertTriangle, RefreshCw, Briefcase
 } from 'lucide-react';
 
 export const GLOBAL_REGISTRY: RegistryField[] = [

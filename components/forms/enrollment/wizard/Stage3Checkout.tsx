@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import { CreditCard, Lock, CheckCircle2, ChevronLeft, MapPin, Search } from 'lucide-react';
+import { CreditCard, Lock, CheckCircle2, ChevronLeft, Search } from 'lucide-react';
 import { InputField } from './InputFields';
 import { motion, AnimatePresence } from 'motion/react';
 
-export function Stage3Checkout({ cart, formData, handleIdentityChange, useShippingForBilling, setUseShippingForBilling, financials, setFinancials, handleCardInput, cardStatus, onSubmit, loading, onBack }: any) {
+export function Stage3Checkout({ cart, formData, handleIdentityChange, useShippingForBilling, setUseShippingForBilling, financials, setFinancials, handleCardInput, _cardStatus, onSubmit, loading, onBack }: any) {
     const runningTotal = cart.reduce((sum: number, item: any) => sum + (parseInt(item.quantity) || 1) * (item.unitPrice || 0), 0);
     const [cardTypeLabel, setCardTypeLabel] = useState('Credit');
     const [showPreview, setShowPreview] = useState(false);

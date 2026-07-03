@@ -1,6 +1,6 @@
  
 import React, { useState, useEffect, useRef } from 'react';
-import { Clock, Bell, Check, Plus, Timer, Calendar, RefreshCw, StickyNote, ChevronDown, Phone, User as UserIcon } from 'lucide-react';
+import { Clock, Bell, Check, Plus, Timer, RefreshCw, StickyNote, ChevronDown, Phone, User as UserIcon } from 'lucide-react';
 import { Card, Input, Button } from '../../components/ui/Base';
 import { formatUSAPhone } from '../../views/utils/crmLogic'; 
 import { User, Note } from '../../types';

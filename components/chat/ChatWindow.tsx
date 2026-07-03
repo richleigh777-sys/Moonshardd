@@ -4,7 +4,7 @@ import { ArrowDown, Lock, FileText, X, UploadCloud, Pin, MapPin } from 'lucide-r
 import { Virtuoso } from 'react-virtuoso';
 import { Conversation } from '../../services/ChatService';
 import { MessageBubble } from './MessageBubble';
-import { ChatMessage, User, Attachment, CallState, CallParticipant } from '../../types';
+import { ChatMessage, User, Attachment, CallState } from '../../types';
 import { sfx } from '../../lib/soundService';
 import { ForwardMessageModal } from '../modals/ForwardMessageModal';
 import { useSystem } from '../../hooks/useSystem';
@@ -47,7 +47,7 @@ interface Props {
 export const ChatWindow: React.FC<Props> = ({ 
     currentUser, activeConversation, messages, onTyping, typingNow, 
     isOffline, onSend, onEdit, onDelete, onPin, onReaction, onVote, 
-    onCreatePoll, onShareLocation,
+    _onCreatePoll, _onShareLocation,
     onStartCall, searchQuery, onSearchChange,
     isMaximized, toggleMaximize, onCreateGroup
 }) => {
@@ -247,7 +247,7 @@ export const ChatWindow: React.FC<Props> = ({
     }
   }, [visibleMessages, currentUser.id, scrollToBottom]);
 
-  const handleScroll = useCallback(() => {
+  const _handleScroll = useCallback(() => {
     if (!scrollContainerRef.current) return;
     const { scrollTop, scrollHeight, clientHeight } = scrollContainerRef.current;
     const isNearBottom = scrollHeight - scrollTop - clientHeight < 300;

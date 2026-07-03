@@ -81,6 +81,7 @@ export const useCrmSales = (
                     communicationPreferences: saleData.communicationPreferences || '',
                     status: 'Active',
                     team: currentUser?.team || 'Alpha',
+                    assignedTo: currentUser?.id || 'system',
                     salesHistory: [],
                     notes: [],
                     createdAt: Date.now(),
@@ -338,6 +339,9 @@ export const useCrmSales = (
                 
                 const existingUpdate = customerUpdates.get(cId) || { ...matchedCust };
                 existingUpdate.salesHistory = existingUpdate.salesHistory || [];
+                if (!existingUpdate.assignedTo) {
+                    existingUpdate.assignedTo = currentUser?.id || 'system';
+                }
                 if (!existingUpdate.salesHistory.find((s: any) => s.id === sale.id)) {
                     existingUpdate.salesHistory.push(sale);
                     existingUpdate.orderCount = (existingUpdate.orderCount || 0) + (sale.status === 'Approved' ? 1 : 0);
@@ -419,6 +423,7 @@ export const useCrmSales = (
                         pastBillingAddresses: [],
                         status: 'Active',
                         team: currentUser?.team || 'Alpha',
+                        assignedTo: currentUser?.id || 'system',
                         salesHistory: [sale],
                         orderCount: sale.status === 'Approved' ? 1 : 0,
                         declineCount: sale.status === 'Declined' ? 1 : 0,

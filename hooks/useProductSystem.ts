@@ -22,8 +22,8 @@ export const useProductSystem = (config: ProductConfig, sales: Sale[], onUpdate:
     // Filtering & Sorting logic
     const filteredProducts = useMemo(() => {
         const prods = config.products.filter(p => {
-            const matchesSearch = p.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
-                                 p.sku?.toLowerCase().includes(searchTerm.toLowerCase());
+            const matchesSearch = (p.name || '').toLowerCase().includes(searchTerm.toLowerCase()) || 
+                                 (p.sku?.toLowerCase() || '').includes(searchTerm.toLowerCase());
             const matchesCategory = activeCategory === 'All' || p.category === activeCategory;
             return matchesSearch && matchesCategory;
         });
@@ -38,7 +38,7 @@ export const useProductSystem = (config: ProductConfig, sales: Sale[], onUpdate:
                     const marginB = calculateMargin(b.price, b.cost || 0);
                     return marginB - marginA;
                 }
-                default: return a.name.localeCompare(b.name);
+                default: return (a.name || '').localeCompare(b.name || '');
             }
         });
     }, [config.products, searchTerm, activeCategory, sortMode]);

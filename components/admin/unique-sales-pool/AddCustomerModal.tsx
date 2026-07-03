@@ -162,7 +162,7 @@ export function AddCustomerModal({ isAddOpen, setIsAddOpen, uniqueCustomers }: A
         }
     };
 
-    const syncBillingWithShipping = (editing: boolean = false) => {
+    const syncBillingWithShipping = (_editing: boolean = false) => {
         playClick();
         setNewCustForm({
             ...newCustForm,
