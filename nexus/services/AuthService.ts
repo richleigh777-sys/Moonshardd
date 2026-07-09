@@ -1,3 +1,4 @@
+import { getStorageItem } from '../../lib/storage';
 import { User } from '../../types';
 import { BaseRepository } from '../repositories/BaseRepository';
 import { RPCClient } from '../rpc';
@@ -11,7 +12,7 @@ export class AuthService {
                 console.warn("[Nexus] Session verification failed: No signature provided.");
                 return null;
             }
-            const localData = localStorage.getItem('nexus_session_user');
+            const localData = getStorageItem('nexus_session_user');
             if (!localData) {
                 console.warn("[Nexus] Session verification failed: Local storage empty.");
                 return null;

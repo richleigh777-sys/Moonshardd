@@ -1,3 +1,4 @@
+import { getStorageItem, setStorageItem, removeStorageItem } from "../../lib/storage";
 import { Server, Presence } from '../../types';
 
 export class ConflictError extends Error {
@@ -24,7 +25,7 @@ export const removeUndefinedFields = (obj: any): any => {
 import { createServer as generateServer } from '../../lib/cloud/logic/crud';
 
 export class BaseRepository {
-    public activeServerId: string = localStorage.getItem('nexus_server_id') || 'srv-001';
+    public activeServerId: string = getStorageItem('nexus_server_id') || 'srv-001';
     protected listeners: Record<string, any> = {};
     protected cache: Record<string, any[]> = {};
     protected fetchers: Record<string, () => void> = {};
@@ -67,24 +68,26 @@ export class BaseRepository {
         }, 300000); // Poll all active subscriptions (increased to 5m to save Cloud costs) as a single batch every 30 seconds
     }
 
-    public enqueueBatchFetch(collectionName?: string) {
+    public enqueueBatchFetch(collectionName?: string, immediate: boolean = false) {
         if (collectionName) {
             this.batchQueue.add(collectionName);
         } else {
             Object.keys(this.subscriberCallbacks).forEach(col => this.batchQueue.add(col));
         }
-
         if (this.debounceTimeout) {
             clearTimeout(this.debounceTimeout);
         }
-
-        this.debounceTimeout = setTimeout(async () => {
+        const execute = async () => {
             const collectionsToFetch = Array.from(this.batchQueue);
             this.batchQueue.clear();
             if (collectionsToFetch.length === 0) return;
-
             await this.performBatchFetch(collectionsToFetch);
-        }, 60);
+        };
+        if (immediate) {
+            execute();
+        } else {
+            this.debounceTimeout = setTimeout(execute, 2000);
+        }
     }
 
     private getRequestHeaders(): Record<string, string> {
@@ -93,8 +96,10 @@ export class BaseRepository {
         let userName = 'unknown';
         let userTeam = '';
         let userManagerId = '';
+        let ghostAdminId = '';
+        let ghostAdminName = '';
         try {
-            const localUserStr = localStorage.getItem('nexus_session_user');
+            const localUserStr = getStorageItem('nexus_session_user');
             if (localUserStr) {
                 const u = JSON.parse(localUserStr);
                 userLevel = String(u.level || '1');
@@ -103,11 +108,17 @@ export class BaseRepository {
                 userTeam = String(u.team || '');
                 userManagerId = String(u.managerId || '');
             }
+            const ghostAdminStr = getStorageItem('nexus_ghost_origin');
+            if (ghostAdminStr) {
+                const ga = JSON.parse(ghostAdminStr);
+                ghostAdminId = String(ga.id || '');
+                ghostAdminName = String(ga.name || '');
+            }
         } catch (err: any) {
             console.warn("[Nexus] Failed to parse request headers:", err.message);
         }
 
-        return {
+        const headers: Record<string, string> = {
             'X-Tenant-ID': this.activeServerId || 'srv-001',
             'X-User-Level': userLevel,
             'X-User-ID': userId,
@@ -116,6 +127,13 @@ export class BaseRepository {
             'X-User-Manager-ID': userManagerId,
             'Content-Type': 'application/json'
         };
+
+        if (ghostAdminId) {
+            headers['X-Impersonated-By-Admin-ID'] = ghostAdminId;
+            headers['X-Impersonated-By-Admin-Name'] = ghostAdminName;
+        }
+
+        return headers;
     }
 
     private async performBatchFetch(collections: string[]) {
@@ -144,7 +162,7 @@ export class BaseRepository {
                 const rawData = batchData[col] || [];
                 
                 try {
-                    localStorage.setItem(`crm_cache_${col}`, JSON.stringify(rawData));
+                    setStorageItem(`crm_cache_${col}`, JSON.stringify(rawData));
                 } catch (e) {
                     console.warn(`Failed to store cache for ${col}`, e);
                 }
@@ -180,7 +198,7 @@ export class BaseRepository {
             }
             
             for (const col of collections) {
-                const localData = localStorage.getItem(`crm_cache_${col}`);
+                const localData = getStorageItem(`crm_cache_${col}`);
                 if (localData) {
                     try {
                         const parsed = JSON.parse(localData);
@@ -217,8 +235,28 @@ export class BaseRepository {
 
     public setActiveServer(id: string) {
         this.activeServerId = id;
-        localStorage.setItem('nexus_server_id', id);
+        setStorageItem('nexus_server_id', id);
+        
+        // Clear caches to prevent old data bleeding over across tenants
+        const collectionsToClear = [
+            'sales', 'users', 'customers', 'notes', 'audit', 'tasks', 'attendance', 
+            'directives', 'messages', 'channels', 'notifications', 'callLogs',
+            'scripts', 'sheets', 'presence', 'dialer_lists', 'systemConfig',
+            'dataHealthReports', 'config'
+        ];
+        for (const col of collectionsToClear) {
+            this.cache[col] = [];
+            removeStorageItem(`crm_cache_${col}`);
+            const subs = this.subscriberCallbacks[col];
+            if (subs) {
+                subs.forEach(({ callback }) => callback([]));
+            }
+        }
+
         window.dispatchEvent(new CustomEvent('nexus_server_changed', { detail: id }));
+        
+        // Immediately fetch the new server's data without debounce
+        this.enqueueBatchFetch(undefined, true);
     }
 
     public getPath(collectionName: string, id?: string) {
@@ -372,9 +410,9 @@ export class BaseRepository {
             });
             
             // Also stash locally for resilience
-            const localList = JSON.parse(localStorage.getItem(`crm_cache_${collectionName}`) || '[]');
+            const localList = JSON.parse(getStorageItem(`crm_cache_${collectionName}`) || '[]');
             localList.push(payload);
-            localStorage.setItem(`crm_cache_${collectionName}`, JSON.stringify(localList));
+            setStorageItem(`crm_cache_${collectionName}`, JSON.stringify(localList));
 
             if (this.fetchers[collectionName]) this.fetchers[collectionName]();
 
@@ -410,11 +448,11 @@ export class BaseRepository {
 
             // Make optimistic update to local resilience cache
             const cacheKey = `crm_cache_${collectionName}`;
-            const localList = JSON.parse(localStorage.getItem(cacheKey) || '[]');
+            const localList = JSON.parse(getStorageItem(cacheKey) || '[]');
             const idx = localList.findIndex((item:any) => item.id === id);
             if (idx !== -1) {
                 localList[idx] = { ...localList[idx], ...finalUpdates };
-                localStorage.setItem(cacheKey, JSON.stringify(localList));
+                setStorageItem(cacheKey, JSON.stringify(localList));
             }
 
             if (this.fetchers[collectionName]) this.fetchers[collectionName]();
@@ -438,8 +476,8 @@ export class BaseRepository {
             });
             // Local resilience clear
             const cacheKey = `crm_cache_${collectionName}`;
-            const localList = JSON.parse(localStorage.getItem(cacheKey) || '[]');
-            localStorage.setItem(cacheKey, JSON.stringify(localList.filter((item:any) => item.id !== id)));
+            const localList = JSON.parse(getStorageItem(cacheKey) || '[]');
+            setStorageItem(cacheKey, JSON.stringify(localList.filter((item:any) => item.id !== id)));
             
             if (this.fetchers[collectionName]) this.fetchers[collectionName]();
         } catch (error: any) {
@@ -473,8 +511,8 @@ export class BaseRepository {
 
             // Local resilience clear
             const cacheKey = `crm_cache_${collectionName}`;
-            const localList = (JSON.parse(localStorage.getItem(cacheKey) || '[]')).filter((item: any) => !ids.includes(item.id));
-            localStorage.setItem(cacheKey, JSON.stringify(localList));
+            const localList = (JSON.parse(getStorageItem(cacheKey) || '[]')).filter((item: any) => !ids.includes(item.id));
+            setStorageItem(cacheKey, JSON.stringify(localList));
             
             if (this.fetchers[collectionName]) this.fetchers[collectionName]();
         } catch (error: any) {
@@ -528,7 +566,7 @@ export class BaseRepository {
 
             // Local cache
             const cacheKey = `crm_cache_${collectionName}`;
-            const localList: any[] = JSON.parse(localStorage.getItem(cacheKey) || '[]');
+            const localList: any[] = JSON.parse(getStorageItem(cacheKey) || '[]');
             
             payloadItems.forEach(item => {
                 const index = localList.findIndex((i: any) => i.id === item.id);
@@ -539,7 +577,7 @@ export class BaseRepository {
                 }
             });
             
-            localStorage.setItem(cacheKey, JSON.stringify(localList));
+            setStorageItem(cacheKey, JSON.stringify(localList));
 
             if (this.fetchers[collectionName]) this.fetchers[collectionName]();
 

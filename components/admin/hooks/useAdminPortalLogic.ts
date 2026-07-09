@@ -1,3 +1,4 @@
+import { getStorageItem } from '../../../lib/storage';
 import { useState, useCallback, useEffect, useMemo } from 'react';
 import { useAuth } from '../../../hooks/useAuth';
 import { useCRM } from '../../../hooks/useCRM';
@@ -127,7 +128,7 @@ export const useAdminPortalLogic = () => {
                         return;
                     }
                     try {
-                        const localUserStr = localStorage.getItem('nexus_session_user');
+                        const localUserStr = getStorageItem('nexus_session_user');
                         const headers: any = { 'Content-Type': 'application/json' };
                         if (localUserStr) {
                             const u = JSON.parse(localUserStr);
@@ -135,7 +136,7 @@ export const useAdminPortalLogic = () => {
                             headers['x-user-id'] = String(u.id || 'unknown');
                             headers['x-user-name'] = String(u.name || 'unknown');
                             headers['x-user-team'] = String(u.team || '');
-                            headers['x-tenant-id'] = localStorage.getItem('nexus_server_id') || 'srv-001';
+                            headers['x-tenant-id'] = getStorageItem('nexus_server_id') || 'srv-001';
                         }
                         const res = await fetch(`/api/collections/sales/${sale.id}/duplicate`, {
                             method: 'POST',

@@ -32,11 +32,17 @@ export async function check90DayInactivity() {
         
         // Find customers who have orders, but haven't ordered in 90 days,
         // and aren't already marked Dead.
-        const result = await db.select().from(schema.crmDocuments).where(eq(schema.crmDocuments.collection_name, 'customers'));
+        const res = await query(`
+            SELECT id, data FROM crm_documents 
+            WHERE collection_name = 'customers' 
+            AND (data->>'orderCount') IS NOT NULL
+            AND (data->>'lastOrderDate') IS NOT NULL
+            AND data->>'status' != 'Dead'
+        `);
         
         let movedCount = 0;
         
-        for (const row of result) {
+        for (const row of res.rows) {
             const customer = row.data as any;
             if (customer.orderCount > 0 && customer.lastOrderDate && customer.lastOrderDate < ninetyDaysAgo && customer.status !== 'Dead') {
                 customer.status = 'Dead';

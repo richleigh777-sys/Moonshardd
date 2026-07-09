@@ -1,3 +1,4 @@
+import { getStorageItem, setStorageItem } from '../../../../lib/storage';
 import { useSystem } from '../../../../hooks/useSystem';
 import { useCRM } from '../../../../hooks/useCRM';
 import React, { useState, useRef, useEffect } from 'react';
@@ -28,7 +29,7 @@ export const SnapshotsTab = () => {
     const fileInputRef = useRef<HTMLInputElement>(null);
 
     const [snapshots, setSnapshots] = useState<Snapshot[]>(() => {
-        const stored = localStorage.getItem('bh_snapshots');
+        const stored = getStorageItem('bh_snapshots');
         if (stored) {
             try { return JSON.parse(stored); } catch (e) { console.error(e); }
         }
@@ -36,7 +37,7 @@ export const SnapshotsTab = () => {
     });
 
     useEffect(() => {
-        localStorage.setItem('bh_snapshots', JSON.stringify(snapshots));
+        setStorageItem('bh_snapshots', JSON.stringify(snapshots));
     }, [snapshots]);
 
     const [deployingId, setDeployingId] = useState<string | null>(null);

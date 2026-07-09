@@ -1,3 +1,4 @@
+import { getStorageItem, setStorageItem } from '../../../lib/storage';
 
 import React, { useState, useEffect } from 'react';
 import { RotateCcw, Calendar, User, Tag, Bookmark, Layers, Save, Trash2 } from 'lucide-react';
@@ -15,6 +16,13 @@ interface FilterPanelProps {
 
 const DEFAULT_PRESETS = [
     { label: 'High Value (>$500)', filters: { status: 'All', minAmount: '500' } },
+    { label: 'Pending Fulfillment', filters: { status: 'Approved', trackingStatus: 'Missing' } },
+    { label: 'Last Wk No Tracking', filters: { 
+        status: 'Approved', 
+        trackingStatus: 'Missing',
+        startDate: new Date(new Date().setDate(new Date().getDate() - 7)).toISOString().split('T')[0],
+        endDate: new Date().toISOString().split('T')[0]
+    } },
     { label: 'Action Required', filters: { status: 'Pending' } },
     { label: 'Rescue Ops', filters: { status: 'Declined' } },
     { label: 'VIP Repeaters', filters: { reorderCount: '2+' } },
@@ -30,9 +38,11 @@ const _DATE_RANGES = [
 
 export const FilterPanel: React.FC<FilterPanelProps> = React.memo(({ filters, setFilters, agents, products, onReset, activePreset, setActivePreset }) => {
     const [customPresets, setCustomPresets] = useState<{label: string, filters: any}[]>([]);
+    const [isSavingPreset, setIsSavingPreset] = useState(false);
+    const [newPresetName, setNewPresetName] = useState('');
 
     useEffect(() => {
-        const saved = localStorage.getItem('nexus_custom_filters');
+        const saved = getStorageItem('nexus_custom_filters');
         if (saved) {
             try {
                 setCustomPresets(JSON.parse(saved));
@@ -42,23 +52,26 @@ export const FilterPanel: React.FC<FilterPanelProps> = React.memo(({ filters, se
         }
     }, []);
 
-    const saveCustomPreset = () => {
-        // const name = prompt("Name this Smart View:");
-        const name = "Custom View " + Math.floor(Math.random() * 1000);
-        if (!name) return;
-        const newPreset = { label: name, filters: { ...filters } };
+    const commitSavePreset = () => {
+        if (!newPresetName.trim()) {
+            setIsSavingPreset(false);
+            return;
+        }
+        const newPreset = { label: newPresetName.trim(), filters: { ...filters } };
         const updated = [...customPresets, newPreset];
         setCustomPresets(updated);
-        localStorage.setItem('nexus_custom_filters', JSON.stringify(updated));
-        setActivePreset(name);
+        setStorageItem('nexus_custom_filters', JSON.stringify(updated));
+        setActivePreset(newPresetName.trim());
         sfx.playConfirm();
+        setIsSavingPreset(false);
+        setNewPresetName('');
     };
 
     const deleteCustomPreset = (label: string, e: React.MouseEvent) => {
         e.stopPropagation();
         const updated = customPresets.filter(p => p.label !== label);
         setCustomPresets(updated);
-        localStorage.setItem('nexus_custom_filters', JSON.stringify(updated));
+        setStorageItem('nexus_custom_filters', JSON.stringify(updated));
         if (activePreset === label) setActivePreset(null);
         sfx.playDecline();
     };
@@ -124,12 +137,29 @@ export const FilterPanel: React.FC<FilterPanelProps> = React.memo(({ filters, se
                     </div>
                     
                     <div className="flex gap-2 shrink-0">
-                        <button 
-                            onClick={saveCustomPreset}
-                            className="flex items-center gap-1 text-[10px] font-bold text-accent-primary hover:text-accent-secondary transition-colors px-2 py-1 hover:bg-surface-alt rounded"
-                        >
-                            <Save size={12}/> Save View
-                        </button>
+                        {isSavingPreset ? (
+                            <div className="flex items-center gap-1 bg-surface-alt border border-accent-primary/50 rounded pl-2">
+                                <input 
+                                    autoFocus
+                                    value={newPresetName}
+                                    onChange={e => setNewPresetName(e.target.value)}
+                                    placeholder="Name view..."
+                                    className="bg-transparent text-[10px] w-24 outline-none font-bold"
+                                    onKeyDown={e => {
+                                        if (e.key === 'Enter') commitSavePreset();
+                                        if (e.key === 'Escape') setIsSavingPreset(false);
+                                    }}
+                                />
+                                <button onClick={commitSavePreset} className="p-1 hover:text-accent-primary"><Save size={12}/></button>
+                            </div>
+                        ) : (
+                            <button 
+                                onClick={() => setIsSavingPreset(true)}
+                                className="flex items-center gap-1 text-[10px] font-bold text-accent-primary hover:text-accent-secondary transition-colors px-2 py-1 hover:bg-surface-alt rounded"
+                            >
+                                <Save size={12}/> Save View
+                            </button>
+                        )}
                         <button 
                             onClick={() => { onReset(); setActivePreset(null); }}
                             className="flex items-center gap-1 text-[10px] font-bold text-text-muted hover:text-status-error transition-colors px-2 py-1 hover:bg-surface-alt rounded"
@@ -140,8 +170,55 @@ export const FilterPanel: React.FC<FilterPanelProps> = React.memo(({ filters, se
                 </div>
 
                 {/* MIDDLE ROW: Core Filters */}
-                <div className="grid grid-cols-2 md:grid-cols-4 xl:grid-cols-8 gap-2">
+                <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-11 gap-2">
                     
+                    {/* Date Preset */}
+                    <div className="space-y-1">
+                        <label className="text-[10px] font-bold text-text-muted tracking-widest uppercase flex items-center gap-1">
+                            <Calendar size={10}/> Date Range
+                        </label>
+                        <select onChange={e => {
+                                const val = e.target.value;
+                                const today = new Date();
+                                let start = '';
+                                let end = today.toISOString().split('T')[0];
+                                if (val === 'today') {
+                                    start = end;
+                                } else if (val === 'yesterday') {
+                                    const y = new Date(today);
+                                    y.setDate(y.getDate() - 1);
+                                    start = y.toISOString().split('T')[0];
+                                    end = start;
+                                } else if (val === '7days') {
+                                    const d = new Date(today);
+                                    d.setDate(d.getDate() - 7);
+                                    start = d.toISOString().split('T')[0];
+                                } else if (val === '30days') {
+                                    const d = new Date(today);
+                                    d.setDate(d.getDate() - 30);
+                                    start = d.toISOString().split('T')[0];
+                                } else if (val === 'thisMonth') {
+                                    start = new Date(today.getFullYear(), today.getMonth(), 1).toISOString().split('T')[0];
+                                } else if (val === 'lastMonth') {
+                                    start = new Date(today.getFullYear(), today.getMonth() - 1, 1).toISOString().split('T')[0];
+                                    end = new Date(today.getFullYear(), today.getMonth(), 0).toISOString().split('T')[0];
+                                }
+                                if (val) {
+                                    setFilters({...filters, startDate: start, endDate: end});
+                                }
+                            }}
+                            className="w-full bg-surface-main border border-border-subtle rounded px-1.5 py-1 text-[10px] font-bold text-text-primary outline-none focus:border-accent-primary transition-all cursor-pointer h-6"
+                        >
+                            <option value="">Custom...</option>
+                            <option value="today">Today</option>
+                            <option value="yesterday">Yesterday</option>
+                            <option value="7days">Last 7 Days</option>
+                            <option value="30days">Last 30 Days</option>
+                            <option value="thisMonth">This Month</option>
+                            <option value="lastMonth">Last Month</option>
+                        </select>
+                    </div>
+
                     {/* Date Range Start */}
                     <div className="space-y-1">
                         <label className="text-[10px] font-bold text-text-muted tracking-widest uppercase flex items-center gap-1">
@@ -210,6 +287,39 @@ export const FilterPanel: React.FC<FilterPanelProps> = React.memo(({ filters, se
                             <option value="Pending">Processing</option>
                             <option value="Declined">Rejected</option>
                             <option value="Cancelled">Voided</option>
+                        </select>
+                    </div>
+
+                    {/* Pipeline Status */}
+                    <div className="space-y-1">
+                        <label className="text-[10px] font-bold text-text-muted tracking-widest uppercase flex items-center gap-1">
+                            <Layers size={10}/> Pipeline
+                        </label>
+                        <select value={filters.pipelineStatus || 'All'} onChange={e => handleChange('pipelineStatus', e.target.value)}
+                            className="w-full bg-surface-main border border-border-subtle rounded px-1.5 py-1 text-[10px] font-bold text-text-primary outline-none focus:border-accent-primary transition-all cursor-pointer h-6"
+                        >
+                            <option value="All">All Stages</option>
+                            <option value="New">New</option>
+                            <option value="Contacted">Contacted</option>
+                            <option value="Follow Up">Follow Up</option>
+                            <option value="Callback">Callback</option>
+                            <option value="Closing">Closing</option>
+                            <option value="Closed Won">Closed Won</option>
+                            <option value="Closed Lost">Closed Lost</option>
+                        </select>
+                    </div>
+
+                    {/* Tracking Status */}
+                    <div className="space-y-1">
+                        <label className="text-[10px] font-bold text-text-muted tracking-widest uppercase flex items-center gap-1">
+                            <Layers size={10}/> Tracking
+                        </label>
+                        <select value={filters.trackingStatus || 'All'} onChange={e => handleChange('trackingStatus', e.target.value)}
+                            className="w-full bg-surface-main border border-border-subtle rounded px-1.5 py-1 text-[10px] font-bold text-text-primary outline-none focus:border-accent-primary transition-all cursor-pointer h-6"
+                        >
+                            <option value="All">All Orders</option>
+                            <option value="Missing">Missing Tracking</option>
+                            <option value="Present">Has Tracking</option>
                         </select>
                     </div>
 

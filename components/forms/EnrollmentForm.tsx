@@ -23,10 +23,10 @@ interface Props {
 
 export default function EnrollmentForm({
   onSuccess,
-  _onCancel,
+  onCancel,
   initialData,
 }: Props) {
-  const { _currentUser } = useAuth();
+  const { currentUser } = useAuth();
   const logic = useEnrollmentLogic(onSuccess, initialData);
   const [isLookupOpen, setIsLookupOpen] = useState(false);
   const [isDispositionOpen, setIsDispositionOpen] = useState(false);

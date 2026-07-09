@@ -1,12 +1,14 @@
+import { getStorageItem, setStorageItem } from '../../lib/storage';
 
 import React, { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import { 
     Search, ArrowRight, LayoutDashboard, PlusCircle, 
     MessageSquare, LogOut, Moon, Volume2, VolumeX,
-    FileText, RotateCcw
+    FileText, RotateCcw, User as UserIcon, Settings
 } from 'lucide-react';
 import { useSystem } from '../../hooks/useSystem';
 import { useAuth } from '../../hooks/useAuth';
+import { useCRM } from '../../hooks/useCRM';
 import { sfx } from '../../lib/soundService';
 
 export const CommandPalette: React.FC = () => {
@@ -14,7 +16,7 @@ export const CommandPalette: React.FC = () => {
     const [query, setQuery] = useState('');
     const [selectedIndex, setSelectedIndex] = useState(0);
     const [recentIds, setRecentIds] = useState<string[]>(() => {
-        const stored = localStorage.getItem('cmd_palette_recent');
+        const stored = getStorageItem('cmd_palette_recent');
         if (stored) {
             try { return JSON.parse(stored); } catch { return []; }
         }
@@ -26,6 +28,7 @@ export const CommandPalette: React.FC = () => {
 
     const { setView, toggleTheme, toggleNotifications, notificationsEnabled } = useSystem();
     const { logout, currentUser } = useAuth();
+    const { sales } = useCRM();
 
 
 
@@ -62,7 +65,7 @@ export const CommandPalette: React.FC = () => {
         // 1. Add to recent list (deduplicated, max 3)
         const newRecents = [item.id, ...recentIds.filter(id => id !== item.id)].slice(0, 3);
         setRecentIds(newRecents);
-        localStorage.setItem('cmd_palette_recent', JSON.stringify(newRecents));
+        setStorageItem('cmd_palette_recent', JSON.stringify(newRecents));
 
         // 2. Execute
         sfx.playSubmit();
@@ -72,22 +75,32 @@ export const CommandPalette: React.FC = () => {
 
     // Command Definition
     const commands = useMemo(() => {
+        const leadCommands = (sales || []).slice(0, 10).map(sale => ({
+            id: `lead-${sale.id}`,
+            label: `Jump to Lead: ${sale.customer.firstName} ${sale.customer.lastName}`,
+            icon: UserIcon,
+            action: () => document.dispatchEvent(new CustomEvent('OPEN_CUSTOMER_DOSSIER', { detail: sale.id }))
+        }));
+
         const base = [
             { 
                 section: 'Navigation', 
                 items: [
                     { id: 'nav-dash', label: 'Go to Dashboard', icon: LayoutDashboard, action: () => setView(currentUser?.role === 'admin' ? 'admin_dashboard' : 'agent_dashboard') },
-                    // Use event dispatch for internal tab navigation instead of global setView
                     { id: 'nav-msgs', label: 'Open Messages', icon: MessageSquare, action: () => document.dispatchEvent(new CustomEvent('NAVIGATE', { detail: 'comms' })) },
+                    { id: 'nav-sys', label: 'System Settings', icon: Settings, action: () => document.dispatchEvent(new CustomEvent('NAVIGATE', { detail: 'system' })) },
                 ]
             },
             {
                 section: 'Actions',
                 items: [
-                    // Use event dispatch for internal tab navigation instead of global setView
                     { id: 'act-new', label: 'New Enrollment', icon: PlusCircle, action: () => document.dispatchEvent(new CustomEvent('NAVIGATE', { detail: 'enrollment' })) },
                     { id: 'act-note', label: 'Scratchpad', icon: FileText, action: () => document.dispatchEvent(new CustomEvent('OPEN_SCRATCHPAD')) }, 
                 ]
+            },
+            {
+                section: 'Recent Leads',
+                items: leadCommands
             },
             {
                 section: 'System',
@@ -126,7 +139,7 @@ export const CommandPalette: React.FC = () => {
 
         return result;
 
-    }, [query, currentUser, notificationsEnabled, recentIds, setView, toggleTheme, toggleNotifications, logout]);
+    }, [query, currentUser, notificationsEnabled, recentIds, setView, toggleTheme, toggleNotifications, logout, sales]);
 
     // Flatten for keyboard nav
     const flatItems = useMemo(() => 

@@ -6,8 +6,8 @@ export default defineConfig({
   dialect: 'postgresql',
   dbCredentials: {
     host: process.env.SQL_HOST!,
-    user: process.env.SQL_USER!,
-    password: process.env.SQL_PASSWORD!,
+    user: process.env.SQL_ADMIN_USER!,
+    password: process.env.SQL_ADMIN_PASSWORD!,
     database: process.env.SQL_DB_NAME!,
     ssl: false,
   }

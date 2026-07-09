@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { 
     Globe, Phone, Activity, Wifi, Key, Server, Hash, UserCheck, Lock, 
-    Network, Link, Zap, Trash2, Plus 
+    Link, Zap, Trash2, Plus 
 } from 'lucide-react';
 import { SectionHeader } from '../SectionHeader';
 import { ConfigToggle } from '../ConfigToggle';
@@ -182,33 +182,6 @@ export const IntegrationsTab: React.FC<IntegrationsTabProps> = ({ config, onChan
         setToast({ title: 'Integration', message: "Payload Delivered", type: "success" });
     };
 
-    const handleTestTeamsWebhook = async () => {
-        if (!config.teamsWebhookUrl) {
-            setToast({ title: 'Configuration', message: "No Teams Endpoint Configured", type: "warning" });
-            return;
-        }
-        setIsWebhookTest(true);
-        sfx.playSubmit();
-        setConsoleLogs([]);
-
-        const steps = [
-            `PREPARING_TEAMS_PAYLOAD --dest=${config.teamsWebhookUrl.substring(0, 20)}...`,
-            "FORMATTING_STACK_MESSAGE...",
-            "POST_REQUEST_SENT",
-            "WAITING_FOR_ACK...",
-            "RESPONSE: 200 OK",
-            "MESSAGE_DELIVERED_TO_CHANNEL"
-        ];
-
-        for (const step of steps) {
-            await new Promise(r => setTimeout(r, 300));
-            addLog(step);
-        }
-
-        setIsWebhookTest(false);
-        sfx.playSuccess();
-        setToast({ title: 'Integration', message: "Teams Message Delivered", type: "success" });
-    };
 
     return (
         <section className="space-y-10 animate-in fade-in slide-in-from-right-4 duration-500">
@@ -548,64 +521,19 @@ export const IntegrationsTab: React.FC<IntegrationsTabProps> = ({ config, onChan
                     )}
                 </div>
 
-                {/* TEAMS WEBHOOK MODULE */}
-                <div className="space-y-4">
-                    <ConfigToggle 
-                        label="Microsoft Teams Integration" 
-                        active={config.teamsWebhookEnabled || false} 
-                        onToggle={() => onChange('teamsWebhookEnabled', !config.teamsWebhookEnabled)}
-                        icon={Network}
-                        description="Automatically push closed deals to a Microsoft Teams channel using Webhooks."
-                    />
-
-                    {config.teamsWebhookEnabled && (
-                        <div className="p-4 bg-surface-alt/30 rounded-xl border border-border-subtle space-y-6">
-                            <div className="flex items-center justify-between">
-                                <h5 className="text-sm font-bold  text-text-primary tracking-wide flex items-center gap-2">
-                                    <Link size={16} className="text-blue-500"/> Teams Configuration
-                                </h5>
-                                <button 
-                                    onClick={handleTestTeamsWebhook}
-                                    disabled={isWebhookTest}
-                                    className="px-3 py-1.5 bg-surface-main border border-border-subtle rounded-xl text-sm font-bold  tracking-wide hover:border-blue-500/50 hover:text-blue-400 transition-all flex items-center gap-2"
-                                >
-                                    {isWebhookTest ? <Activity size={16} className="animate-spin text-blue-500"/> : <Zap size={16} className="text-blue-500"/>}
-                                    Fire Test Event
-                                </button>
-                            </div>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <Input 
-                                    icon={Globe}
-                                    label="Teams Webhook URL" 
-                                    value={config.teamsWebhookUrl || ''} 
-                                    onChange={e => onChange('teamsWebhookUrl', e.target.value)} 
-                                    placeholder="https://YOUR_DOMAIN.webhook.office.com/..." 
-                                    className="font-mono text-sm"
-                                />
-                                <div className="flex items-end">
-                                    <p className="text-sm text-text-muted">
-                                        Sales will automatically be formatted and pushed to this incoming webhook upon closing.
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-                    )}
-                </div>
-
                 {/* WEBHOOK MODULE WITH EXPANDABLE CUSTOM HEADER EDITOR */}
                 <div className="space-y-4">
                     <ConfigToggle 
                         label="Neural Event Webhook" 
                         active={config.webhookEnabled || false} 
                         onToggle={() => onChange('webhookEnabled', !config.webhookEnabled)}
-                        icon={Network}
-                        description="Transmit real-time event payloads to external logic flows (Zapier, Make, n8n)."
+                        description="Push real-time payload events to any remote endpoint (Zapier, Make, Custom Server) when critical system events trigger."
                     />
-
+                    
                     {config.webhookEnabled && (
-                        <div className="p-4 bg-surface-alt/30 rounded-xl border border-border-subtle space-y-6">
-                            <div className="flex items-center justify-between">
-                                <h5 className="text-sm font-bold  text-text-primary tracking-wide flex items-center gap-2">
+                        <div className="pl-14 pr-4 space-y-4 animate-in fade-in duration-300">
+                            <div className="flex items-center justify-between pb-3 border-b border-border-subtle/50">
+                                <h5 className="text-sm font-bold text-text-primary flex items-center gap-2">
                                     <Link size={16} className="text-purple-500"/> Payload Configuration
                                 </h5>
                                 <button 
@@ -618,8 +546,7 @@ export const IntegrationsTab: React.FC<IntegrationsTabProps> = ({ config, onChan
                                 </button>
                             </div>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <Input 
-                                    icon={Globe}
+                                <Input icon={Globe}
                                     label="Endpoint URL" 
                                     value={config.webhookUrl || ''} 
                                     onChange={e => onChange('webhookUrl', e.target.value)} 

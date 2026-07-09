@@ -20,11 +20,30 @@ export const TelephonyPanel = () => {
 
     // ViciDial Credentials extracted state
     const userId = currentUser?.id || 'default';
-    const [agentViciUser, setAgentViciUser] = useState(() => localStorage.getItem(`bh_vici_user_${userId}`) || '');
-    const [agentViciPass, setAgentViciPass] = useState(() => localStorage.getItem(`bh_vici_pass_${userId}`) || '');
-    const [agentPhoneLogin, setAgentPhoneLogin] = useState(() => localStorage.getItem(`bh_vici_phone_${userId}`) || '');
-    const [agentDialerUrl, setAgentDialerUrl] = useState(() => localStorage.getItem(`bh_vici_dialer_url_${userId}`) || '');
-    const [agentCampaignId, setAgentCampaignId] = useState(() => localStorage.getItem(`bh_vici_campaign_id_${userId}`) || 'OUTBOUND');
+    const [agentViciUser, setAgentViciUser] = useState('');
+    const [agentViciPass, setAgentViciPass] = useState('');
+    const [agentPhoneLogin, setAgentPhoneLogin] = useState('');
+    const [agentDialerUrl, setAgentDialerUrl] = useState('');
+    const [agentCampaignId, setAgentCampaignId] = useState('OUTBOUND');
+
+    useEffect(() => {
+        if (!currentUser) return;
+        fetch('/api/collections/telephony_settings', {
+            headers: { 'X-Tenant-ID': 'srv-001', 'X-User-ID': currentUser.id }
+        })
+        .then(r => r.ok ? r.json() : null)
+        .then((data: any) => {
+            if (data && data.data) {
+                const s = data.data;
+                if (s.vici_user) setAgentViciUser(s.vici_user);
+                if (s.vici_pass) setAgentViciPass(s.vici_pass);
+                if (s.vici_phone) setAgentPhoneLogin(s.vici_phone);
+                if (s.vici_dialer_url) setAgentDialerUrl(s.vici_dialer_url);
+                if (s.vici_campaign_id) setAgentCampaignId(s.vici_campaign_id);
+            }
+        })
+        .catch(console.error);
+    }, [currentUser]);
 
     const bookmarkletRef = useRef<HTMLAnchorElement>(null);
 
@@ -51,11 +70,11 @@ export const TelephonyPanel = () => {
   // Wait until UI is somewhat loaded
   setTimeout(() => {
     // Transparent verification prompt for agents
-    if (!sessionStorage.getItem('vici_sync_accepted')) {
+    if (!getSessionStorageItem('vici_sync_accepted')) {
         // const agreed = confirm("Friendly Reminder: Braveheart CRM Sync is active.\\n\\nThis tool automatically syncs your live calls to increase productivity and eliminate manual data entry.\\n\\nPlease click OK to allow the extension and continue your session.");
         const agreed = true;
         if(agreed) { 
-            sessionStorage.setItem('vici_sync_accepted', 'true');
+            setSessionStorageItem('vici_sync_accepted', 'true');
         } else {
             console.log("Please note: The productivity extension is required for this session. Logging out.");
             const logoutLink = document.querySelector('a[href*="LOGout"], a[href*="logout"]');
@@ -272,18 +291,27 @@ export const TelephonyPanel = () => {
 
     const handleSaveAgentCredentials = async () => {
         setIsSavingProfile(true);
-        // Simulate network latency / database write
-        await new Promise(resolve => setTimeout(resolve, 800));
-
-        localStorage.setItem(`bh_vici_user_${userId}`, agentViciUser);
-        localStorage.setItem(`bh_vici_pass_${userId}`, agentViciPass);
-        localStorage.setItem(`bh_vici_phone_${userId}`, agentPhoneLogin);
-        localStorage.setItem(`bh_vici_dialer_url_${userId}`, agentDialerUrl);
-        localStorage.setItem(`bh_vici_campaign_id_${userId}`, agentCampaignId);
         
-        setIsSavingProfile(false);
-        sfx.playSuccess();
-        setToast({ title: "Profile Synced", message: "Your unified Cloud Dialer settings have been securely saved to the database.", type: "success" });
+        try {
+            await fetch('/api/collections/telephony_settings', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'X-Tenant-ID': 'srv-001', 'X-User-ID': userId },
+                body: JSON.stringify({
+                    vici_user: agentViciUser,
+                    vici_pass: agentViciPass,
+                    vici_phone: agentPhoneLogin,
+                    vici_dialer_url: agentDialerUrl,
+                    vici_campaign_id: agentCampaignId
+                })
+            });
+            sfx.playSuccess();
+            setToast({ title: "Profile Synced", message: "Your unified Cloud Dialer settings have been securely saved to the database.", type: "success" });
+        } catch (err) {
+            console.error(err);
+            setToast({ title: "Error", message: "Failed to save settings.", type: "error" });
+        } finally {
+            setIsSavingProfile(false);
+        }
     };
 
     const handleLaunchSplitScreen = () => {

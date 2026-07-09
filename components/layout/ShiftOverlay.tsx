@@ -21,7 +21,7 @@ export const ShiftOverlay: React.FC = () => {
                 
                 <div className="space-y-3">
                     <h1 className="text-lg font-medium text-text-primary tracking-tight">
-                        Welcome back, {currentUser.name.split(' ')[0]}
+                        Welcome back, {(currentUser.name || currentUser.id || 'Agent').split(' ')[0]}
                     </h1>
                     <p className="text-text-muted font-medium text-lg">
                         Your workspace is ready. Let's make today great.

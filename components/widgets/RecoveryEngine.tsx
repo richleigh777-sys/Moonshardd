@@ -66,7 +66,7 @@ const useDunningLogic = (sales: Sale[]) => {
 };
 
 export const RecoveryEngine = ({ sales, onAction }: Props) => {
-  const { _addNote, _currentUser, _customers, _updateCustomer } = useCRM();
+  const { addNote, currentUser, customers, updateCustomer } = useCRM();
   const { setToast } = useSystem();
   
   const dunningQueue = useDunningLogic(sales);

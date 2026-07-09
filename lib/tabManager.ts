@@ -14,10 +14,13 @@ class TabCoordinator {
     private lockController: AbortController | null = null;
 
     constructor() {
-        this.channel = new BroadcastChannel('braveheart_ops_channel');
         this.tabId = Math.random().toString(36).substr(2, 9);
-        
-        this.channel.onmessage = (ev) => this.handleMessage(ev.data);
+        try {
+            this.channel = new BroadcastChannel('braveheart_ops_channel');
+            this.channel.onmessage = (ev) => this.handleMessage(ev.data);
+        } catch(e) {
+            console.warn("BroadcastChannel not supported", e);
+        }
         
         // Use Web Locks API for perfect mutual exclusion
         this.requestLeadership();
@@ -73,11 +76,14 @@ class TabCoordinator {
     }
 
     public broadcast(type: MessageType, payload?: any) {
-        this.channel.postMessage({
-            type,
-            senderId: this.tabId,
-            payload
-        });
+        if (!this.channel) return;
+        try {
+            this.channel.postMessage({
+                type,
+                senderId: this.tabId,
+                payload
+            });
+        } catch(e) { console.error("Broadcast failed", e); }
     }
 
     public get isLeader() {

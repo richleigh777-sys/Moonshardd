@@ -35,7 +35,7 @@ export const useAgentPortalLogic = () => {
     }, [setToast]);
 
     const allowedTerminals = useMemo(() => {
-        return ['action', 'money'];
+        return ['action', 'money', 'settings'];
     }, [systemConfig.permissions]);
 
     const isAllowed = useCallback((id: string) => allowedTerminals.includes(id), [allowedTerminals]);

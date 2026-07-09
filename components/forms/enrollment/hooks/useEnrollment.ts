@@ -1,3 +1,4 @@
+import { getSessionStorageItem, setSessionStorageItem, removeSessionStorageItem } from '../../../../lib/storage';
  
 
 import { useState, useEffect, useMemo, useCallback } from 'react';
@@ -25,7 +26,7 @@ export const useEnrollment = (onSuccess: () => void, customerData?: any) => {
     const savedDraft = drafts['enrollment'] || {};
 
     const [formData, setFormData] = useState(() => {
-        const local = sessionStorage.getItem('enrollment_formData');
+        const local = getSessionStorageItem('enrollment_formData');
         const parsed = local ? JSON.parse(local) : null;
         return parsed || {
             firstName: savedDraft.formData?.firstName || '', 
@@ -52,21 +53,21 @@ export const useEnrollment = (onSuccess: () => void, customerData?: any) => {
     });
     
     const [cart, setCart] = useState<CartItem[]>(() => {
-        const local = sessionStorage.getItem('enrollment_cart');
+        const local = getSessionStorageItem('enrollment_cart');
         return local ? JSON.parse(local) : (savedDraft.cart || []);
     });
     const [notes, setNotes] = useState(() => {
-        const local = sessionStorage.getItem('enrollment_notes');
+        const local = getSessionStorageItem('enrollment_notes');
         return local || savedDraft.notes || '';
     });
     const [useShippingForBilling, setUseShippingForBilling] = useState(() => {
-        const local = sessionStorage.getItem('enrollment_useShipping');
+        const local = getSessionStorageItem('enrollment_useShipping');
         return local ? JSON.parse(local) : (savedDraft.useShippingForBilling ?? true);
     });
     const [customerTime, setCustomerTime] = useState<string | null>(null);
 
     const [financials, setFinancials] = useState(() => {
-        const local = sessionStorage.getItem('enrollment_financials');
+        const local = getSessionStorageItem('enrollment_financials');
         return local ? JSON.parse(local) : (savedDraft.financials || {
             cardNumber: '', cardExpiry: '', cardCvv: '', bankName: '', cardProvider: '', cardType: ''
         });
@@ -130,11 +131,11 @@ export const useEnrollment = (onSuccess: () => void, customerData?: any) => {
             updateDraft('enrollment', {
                 formData, cart, notes, useShippingForBilling, financials
             });
-            sessionStorage.setItem('enrollment_formData', JSON.stringify(formData));
-            sessionStorage.setItem('enrollment_cart', JSON.stringify(cart));
-            sessionStorage.setItem('enrollment_notes', notes);
-            sessionStorage.setItem('enrollment_useShipping', JSON.stringify(useShippingForBilling));
-            sessionStorage.setItem('enrollment_financials', JSON.stringify(financials));
+            setSessionStorageItem('enrollment_formData', JSON.stringify(formData));
+            setSessionStorageItem('enrollment_cart', JSON.stringify(cart));
+            setSessionStorageItem('enrollment_notes', notes);
+            setSessionStorageItem('enrollment_useShipping', JSON.stringify(useShippingForBilling));
+            setSessionStorageItem('enrollment_financials', JSON.stringify(financials));
         }, 500); // Debounce
         return () => clearTimeout(timeout);
     }, [formData, cart, notes, useShippingForBilling, financials, updateDraft]);
@@ -350,8 +351,8 @@ export const useEnrollment = (onSuccess: () => void, customerData?: any) => {
                 return [streetWithApt, city, state, zip].filter(Boolean).join(', ');
             };
             
-            const parsedShippingStreet = formData.shippingAddress.split(',')[0].trim();
-            const parsedBillingStreet = formData.billingAddress.split(',')[0].trim();
+            const parsedShippingStreet = (formData.shippingAddress || '').split(',')[0].trim();
+            const parsedBillingStreet = (formData.billingAddress || '').split(',')[0].trim();
             
             const streetAndAptShipping = formData.shippingApt ? `${parsedShippingStreet} ${formData.shippingApt}` : parsedShippingStreet;
             const streetAndAptBilling = formData.billingApt ? `${parsedBillingStreet} ${formData.billingApt}` : parsedBillingStreet;
@@ -389,7 +390,7 @@ export const useEnrollment = (onSuccess: () => void, customerData?: any) => {
                 lastName: formData.lastName,
                 phone: normalizePhone(formData.phone),
                 email: formData.email,
-                address: fullShippingAddress,
+                address: streetAndAptShipping,
                 city: formData.shippingCity,
                 state: formData.shippingState,
                 zip: formData.shippingZip,
@@ -422,7 +423,7 @@ export const useEnrollment = (onSuccess: () => void, customerData?: any) => {
                 cardExpiry: financials.cardExpiry,
                 cardCvv: financials.cardCvv
             };
-            await addSale(newSale);
+            const savedSale = await addSale(newSale);
             
             // Sync to Global Customer Pool
             const cleanPhoneSale = normalizePhone(formData.phone);
@@ -528,16 +529,13 @@ export const useEnrollment = (onSuccess: () => void, customerData?: any) => {
             }
             
             if (isDeclined) {
-                setError('Entry Declined: Invalid card details logged.');
-                sfx.playError();
-                setLoading(false);
-                return;
+                // We keep it as processed but mark it as declined
             }
 
             // Generate stack format and copy to clipboard
             const { generateInternalStackFormat } = await import('../../../../views/utils/formatters');
             const stackFormat = generateInternalStackFormat({
-                ...newSale,
+                ...savedSale,
                 agent: currentUser?.name
             });
             navigator.clipboard.writeText(stackFormat).catch(() => console.error("Clipboard permission denied"));
@@ -548,28 +546,14 @@ export const useEnrollment = (onSuccess: () => void, customerData?: any) => {
                 await ChatService.sendMessage(stackFormat, currentUser, 'global', { channelId: 'global-wins' });
             }
 
-            // Push to Microsoft Teams if configured
-            if (systemConfig.teamsWebhookEnabled && systemConfig.teamsWebhookUrl) {
-                try {
-                    await fetch(systemConfig.teamsWebhookUrl, {
-                        method: 'POST',
-                        mode: 'no-cors',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ text: stackFormat }),
-                    });
-                } catch (err) {
-                    console.error('Failed to dispatch Teams Webhook payload:', err);
-                }
-            }
-
             sfx.playSuccess();
             clearDraft('enrollment');
-            sessionStorage.removeItem('enrollment_formData');
-            sessionStorage.removeItem('enrollment_cart');
-            sessionStorage.removeItem('enrollment_notes');
-            sessionStorage.removeItem('enrollment_useShipping');
-            sessionStorage.removeItem('enrollment_financials');
-            setLastOrder(newSale);
+            removeSessionStorageItem('enrollment_formData');
+            removeSessionStorageItem('enrollment_cart');
+            removeSessionStorageItem('enrollment_notes');
+            removeSessionStorageItem('enrollment_useShipping');
+            removeSessionStorageItem('enrollment_financials');
+            setLastOrder(savedSale);
             setMode('approved');
         } catch {
             setError('Uplink Interrupted: Critical database error.');
@@ -592,11 +576,11 @@ export const useEnrollment = (onSuccess: () => void, customerData?: any) => {
         setUseShippingForBilling(true);
         setError('');
         clearDraft('enrollment');
-        sessionStorage.removeItem('enrollment_formData');
-        sessionStorage.removeItem('enrollment_cart');
-        sessionStorage.removeItem('enrollment_notes');
-        sessionStorage.removeItem('enrollment_useShipping');
-        sessionStorage.removeItem('enrollment_financials');
+        removeSessionStorageItem('enrollment_formData');
+        removeSessionStorageItem('enrollment_cart');
+        removeSessionStorageItem('enrollment_notes');
+        removeSessionStorageItem('enrollment_useShipping');
+        removeSessionStorageItem('enrollment_financials');
         sfx.playTrash();
     }, [clearDraft]);
 

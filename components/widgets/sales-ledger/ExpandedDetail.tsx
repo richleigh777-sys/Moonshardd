@@ -119,7 +119,7 @@ export const ExpandedDetail = ({ sale, onAction }: { sale: Sale, onAction: (acti
                     </div>
                     <div className="flex justify-between items-center pb-3 border-b border-border-subtle/50">
                         <span className="text-xs font-bold text-text-muted ">Amount</span>
-                        <span className="text-xs font-medium text-text-primary  num-font tracking-wide">${sale.amount.toFixed(2)}</span>
+                        <span className="text-xs font-medium text-text-primary  num-font tracking-wide">${(sale.amount || 0).toFixed(2)}</span>
                     </div>
                     <div className="flex justify-between items-center">
                         <span className="text-xs font-bold text-text-muted ">Order Ref</span>

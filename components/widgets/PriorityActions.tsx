@@ -4,6 +4,8 @@ import { useMemo, useState } from 'react';
 import { Phone, Check, Sparkles, Clock, AlertTriangle, X, ListFilter, ArrowUp, ArrowDown } from 'lucide-react';
 import { Note } from '../../types';
 import { Card, Badge, Button } from '../ui/Base';
+import { useCRM } from '../../hooks/useCRM';
+import { executeDialer } from '../../lib/dialer';
 
 interface PriorityActionsProps {
     callbacks: Note[]; // Changed from CallbackTask to Note
@@ -13,6 +15,7 @@ interface PriorityActionsProps {
 type SortMode = 'priority' | 'date-asc' | 'date-desc';
 
 export const PriorityActions: React.FC<PriorityActionsProps> = ({ callbacks, toggleCallback }) => {
+    const { systemConfig } = useCRM();
     // Safety state to prevent accidental deletions
     const [confirmingId, setConfirmingId] = useState<string | null>(null);
     const [sortMode, setSortMode] = useState<SortMode>('priority');
@@ -128,7 +131,7 @@ export const PriorityActions: React.FC<PriorityActionsProps> = ({ callbacks, tog
                                 <Button 
                                     variant="primary" 
                                     className="flex-1 h-8 text-xs font-bold"
-                                    onClick={() => window.location.href = `tel:${task.phone}`}
+                                    onClick={() => executeDialer(task.phone, { phone: task.phone }, systemConfig)}
                                 >
                                     <Phone size={16}/> Call
                                 </Button>

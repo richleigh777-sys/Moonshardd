@@ -28,7 +28,7 @@ interface SystemConfigPanelProps {
 
 type ConfigTab = 'operations' | 'financials' | 'crm' | 'clearance' | 'integrations' | 'taxonomy' | 'experience' | 'system' | 'command' | 'hygiene' | 'snapshots' | 'playbooks' | 'audit' | 'ecosystem' | 'terminals' | 'extensions';
 
-export const SystemConfigPanel = ({ config, onUpdate, _sales, _notes }: SystemConfigPanelProps) => {
+export const SystemConfigPanel = ({ config, onUpdate, sales, notes }: SystemConfigPanelProps) => {
     const { currentUser } = useAuth();
     const { setToast } = useSystem();
     const [localConfig, setLocalConfig] = useState<SystemConfig>(config);

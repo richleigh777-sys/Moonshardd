@@ -2,7 +2,7 @@
 import React from 'react';
 import { User, AttendanceRecord } from '../../../types';
 
-import { Clock, Zap, FileText, MessageCircle, Eye, Settings, Activity, Star, User as UserIcon } from 'lucide-react';
+import { Clock, Zap, FileText, MessageCircle, Eye, Settings, Activity, Star, User as UserIcon, Power } from 'lucide-react';
 import { getDailyHours } from '../../../views/utils/crmLogic';
 import { getAgentAvatar } from '../../../constants';
 import { ViewMode } from './hooks/useRosterLogic';
@@ -18,6 +18,7 @@ interface OperativeItemProps {
     onChat: (userId: string) => void;
     onGhost: (userId: string) => void;
     onEdit: (user: User) => void;
+    onToggleActive: (userId: string, active: boolean) => void;
     style?: React.CSSProperties;
 }
 
@@ -62,7 +63,7 @@ const OrganicSparkline = ({ data }: { data: number[] }) => {
 
 export const OperativeItem: React.FC<OperativeItemProps> = React.memo(({ 
     user: u, analytics, attendance, currentUser, viewMode,
-    onOpenLedger, onChat, onGhost, onEdit, style 
+    onOpenLedger, onChat, onGhost, onEdit, onToggleActive, style 
 }) => {
     const [now] = React.useState(() => Date.now());
     const hoursToday = getDailyHours(u.id, now, attendance);
@@ -96,6 +97,9 @@ export const OperativeItem: React.FC<OperativeItemProps> = React.memo(({
                                      <MessageCircle size={16}/>
                                  </button>
                              )}
+                             <button onClick={() => onToggleActive(u.id, !u.active)} className={`p-2 rounded-full hover:bg-surface-highlight transition-colors shadow-sm ${u.active ? 'bg-emerald-500/10 text-emerald-500 hover:bg-emerald-500/20' : 'bg-surface-alt text-text-muted hover:text-text-primary'}`} title={u.active ? 'Deactivate Agent' : 'Activate Agent'}>
+                                 <Power size={16}/>
+                             </button>
                              <button onClick={() => onEdit(u)} className="p-2 rounded-full bg-surface-alt hover:bg-surface-highlight text-text-muted hover:text-text-primary transition-colors shadow-sm">
                                  <Settings size={16}/>
                              </button>
@@ -204,6 +208,9 @@ export const OperativeItem: React.FC<OperativeItemProps> = React.memo(({
                     {(currentUser?.level || 0) >= 10 && (
                         <button onClick={() => onGhost(u.id)} className="p-1.5 rounded-full hover:bg-amber-500/10 text-text-muted hover:text-status-warning transition-colors" title="Assist Mode"><Eye size={16}/></button>
                     )}
+                    <button onClick={() => onToggleActive(u.id, !u.active)} className={`p-1.5 rounded-full transition-colors ${u.active ? 'hover:bg-emerald-500/10 text-text-muted hover:text-emerald-500' : 'hover:bg-surface-alt text-status-warning hover:text-text-primary'}`} title={u.active ? 'Deactivate Agent' : 'Activate Agent'}>
+                        <Power size={16}/>
+                    </button>
                     <button onClick={() => onEdit(u)} className="p-1.5 rounded-full hover:bg-surface-alt text-text-muted hover:text-text-primary transition-colors" title="Manage Unit Profile"><Settings size={16}/></button>
                 </div>
             </div>

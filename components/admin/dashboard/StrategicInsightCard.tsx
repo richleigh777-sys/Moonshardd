@@ -13,7 +13,7 @@ interface StrategicInsightCardProps {
 }
 
 export const StrategicInsightCard: React.FC<StrategicInsightCardProps> = ({ 
- sales, users, notes, _serverId }) => {
+ sales, users, notes, serverId }) => {
     const { setToast } = useSystem();
     const [insight, setInsight] = useState<any>(null);
     const [loading, setLoading] = useState(false);
@@ -82,7 +82,7 @@ Evaluation Parameters:
             if (!res.ok) throw new Error("API returned " + res.status);
             const data = await res.json();
             if (data.text) {
-                setInsight(JSON.parse(data.text.trim()));
+                try { setInsight(JSON.parse(data.text.replace(/```json/g, "").replace(/```/g, "").trim())); } catch(e) { console.error("Could not parse insight text", data.text, e); setInsight({summary:"Failed to load insight. " + data.text, riskLevel:"Medium", actions:[]}); }
             }
         } catch (error) {
             console.error("Insight generation failed:", error);

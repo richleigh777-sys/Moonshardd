@@ -172,7 +172,7 @@ export const ForwardMessageModal: React.FC<ForwardMessageModalProps> = ({ isOpen
                                             {target.type === 'channel' ? (
                                                 target.subType === 'private' ? <ShieldAlert size={16}/> : <Hash size={16}/>
                                             ) : (
-                                                target.avatar ? <img src={target.avatar} className="w-full h-full rounded-xl object-cover"/> : <span className="font-medium text-xs">{target.name.charAt(0)}</span>
+                                                target.avatar ? <img src={target.avatar} className="w-full h-full rounded-xl object-cover"/> : <span className="font-medium text-xs">{(target.name || 'U').charAt(0)}</span>
                                             )}
                                         </div>
                                         <div className="text-left min-w-0">

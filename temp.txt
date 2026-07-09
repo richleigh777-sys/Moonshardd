@@ -1,0 +1,26 @@
+
+    public enqueueBatchFetch(collectionName?: string) {
+        if (collectionName) {
+            this.batchQueue.add(collectionName);
+        } else {
+            Object.keys(this.subscriberCallbacks).forEach(col => this.batchQueue.add(col));
+        }
+
+        if (this.debounceTimeout) {
+            clearTimeout(this.debounceTimeout);
+        }
+
+        this.debounceTimeout = setTimeout(async () => {
+            const collectionsToFetch = Array.from(this.batchQueue);
+            this.batchQueue.clear();
+            if (collectionsToFetch.length === 0) return;
+
+            await this.performBatchFetch(collectionsToFetch);
+        }, 2000);
+    }
+
+    private getRequestHeaders(): Record<string, string> {
+        let userLevel = '1';
+        let userId = 'unknown';
+        let userName = 'unknown';
+        let userTeam = '';

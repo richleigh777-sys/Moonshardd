@@ -1,6 +1,6 @@
 {
-  "name": "Braveheart CRM OS",
-  "description": "An ultra-efficient, distraction-free CRM acting as a pure sales engine for agents with automated Teams formatting, pipeline tracking, and RBAC.",
+  "name": "My Pipe",
+  "description": "Enterprise CRM Vanguard for seamless inbound marketing and workflow automation.",
   "requestFramePermissions": [
     "camera",
     "microphone",
@@ -9,5 +9,7 @@
     "clipboard-read",
     "clipboard-write"
   ],
-  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
 }

@@ -74,10 +74,10 @@ export const CallHistory: React.FC<CallHistoryProps> = ({ logs, currentUser }) =
                                     <td className="p-3">
                                         <div className="flex items-center gap-3">
                                             <div className="w-6 h-6 rounded-lg bg-surface-alt flex items-center justify-center text-xs font-bold text-text-secondary border border-border-subtle">
-                                                {log.partnerName.charAt(0)}
+                                                {(log.partnerName || 'Unknown').charAt(0)}
                                             </div>
                                             <div className="flex flex-col">
-                                                <span className="font-bold text-text-primary">{log.partnerName}</span>
+                                                <span className="font-bold text-text-primary">{log.partnerName || 'Unknown'}</span>
                                                 <span className="text-xs text-text-muted  font-mono tracking-wide">ID::{log.partnerId.slice(-6)}</span>
                                             </div>
                                         </div>

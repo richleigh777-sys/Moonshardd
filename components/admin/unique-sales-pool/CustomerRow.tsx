@@ -1,5 +1,7 @@
 import React from 'react';
 import { Customer, Sale } from '../../../types';
+import { executeDialer } from '../../../lib/dialer';
+import { useCRM } from '../../../hooks/useCRM';
 import { ChevronUp, Phone, Mail, MapPin, CreditCard, Edit3, Trash2, Clock } from 'lucide-react';
 import { sfx } from '../../../lib/soundService';
 
@@ -20,6 +22,7 @@ export const CustomerRow: React.FC<CustomerRowProps> = ({
     setEditingCustomer,
     handleDelete
 }) => {
+    const { systemConfig } = useCRM();
     const medConditionsList = customer.medicalConditions || [];
     const ageVal = customer.age || '—';
     const heightVal = customer.height || '—';
@@ -39,7 +42,7 @@ export const CustomerRow: React.FC<CustomerRowProps> = ({
         <React.Fragment>
             <tr className={`hover:bg-surface-alt/40 transition-colors group cursor-pointer ${isExpanded ? 'bg-surface-alt/20 shadow-inner' : ''}`} onClick={() => toggleRow(customer.id)}>
                 {/* Name / Identifiers */}
-                <td className="px-3 py-2">
+                <td className="sticky left-0 z-20 bg-surface-main group-hover:bg-surface-alt/90 px-3 py-2 shadow-[1px_0_0_var(--border-subtle)] min-w-[300px]">
                     <div className="flex items-center gap-3">
                         <div 
                             onClick={(e) => { e.stopPropagation(); toggleRow(customer.id); }}
@@ -60,11 +63,11 @@ export const CustomerRow: React.FC<CustomerRowProps> = ({
                 </td>
 
                 {/* Direct Contact */}
-                <td className="px-3 py-2" onClick={(e) => e.stopPropagation()}>
+                <td className="px-3 py-2 min-w-[160px]" onClick={(e) => e.stopPropagation()}>
                     <div className="space-y-1">
                         <div className="flex items-center gap-2 text-text-secondary font-bold font-mono">
                             <Phone size={12} className="text-accent-primary/60" />
-                            {customer.phone || '—'}
+                            {customer.phone ? <span className="hover:text-accent-primary hover:underline transition-colors cursor-pointer" onClick={(e) => { e.stopPropagation(); executeDialer(customer.phone, customer, systemConfig); }}>{customer.phone}</span> : '—'}
                         </div>
                         {customer.email && (
                             <div className="flex items-center gap-2 text-sm text-text-muted font-medium">
@@ -82,7 +85,7 @@ export const CustomerRow: React.FC<CustomerRowProps> = ({
                 </td>
 
                 {/* Age, DOB, Vitals */}
-                <td className="px-3 py-2" onClick={(e) => e.stopPropagation()}>
+                <td className="px-3 py-2 min-w-[160px]" onClick={(e) => e.stopPropagation()}>
                     <div className="space-y-1">
                         <div className="text-sm font-semibold text-text-secondary">
                             Age: <span className="font-bold text-text-primary">{ageVal}</span>
@@ -259,7 +262,7 @@ export const CustomerRow: React.FC<CustomerRowProps> = ({
                                                                         Source: <span className="text-text-secondary">{sale.sourceType || 'Pipeline'}</span>
                                                                     </span>
                                                                 </div>
-                                                                <span className="text-[11px] text-text-muted font-mono">{new Date(sale.timestamp).toLocaleString()}</span>
+                                                                <span className="text-[11px] text-text-muted font-mono">{sale.timestamp && !isNaN(new Date(sale.timestamp).getTime()) ? new Date(sale.timestamp).toLocaleString() : 'N/A'}</span>
                                                             </div>
                                                             {sale.declineReason && (
                                                                 <div className="text-[11px] font-medium text-status-error italic truncate mt-1">
@@ -296,7 +299,7 @@ export const CustomerRow: React.FC<CustomerRowProps> = ({
                                         <div>
                                             <div className="text-[10px] text-text-muted tracking-wider uppercase mb-0.5">Contact Origination</div>
                                             <div className="text-text-primary">{customer.firstSource || 'Manual CRM Import'}</div>
-                                            <div className="text-[11px] text-text-secondary font-mono mt-0.5">Created: {new Date(customer.createdAt).toLocaleDateString()}</div>
+                                            <div className="text-[11px] text-text-secondary font-mono mt-0.5">Created: {customer.createdAt && !isNaN(new Date(customer.createdAt).getTime()) ? new Date(customer.createdAt).toLocaleDateString() : 'N/A'}</div>
                                         </div>
 
                                         <div className="grid grid-cols-2 gap-4">

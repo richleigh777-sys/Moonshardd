@@ -10,6 +10,7 @@ import { SummaryFooter } from './sales-ledger/SummaryFooter';
 import { ColumnConfigModal } from './sales-ledger/ColumnConfigModal';
 import { ImportWizard } from './sales-ledger/ImportWizard';
 import { CustomerProfileModal } from '../modals/CustomerProfileModal';
+import { LogisticsModal } from '../modals/LogisticsModal';
 import { useSalesLedgerUI } from './sales-ledger/useSalesLedgerUI';
 import { useSystem } from '../../hooks/useSystem';
 import { useAuth } from '../../hooks/useAuth';
@@ -33,18 +34,19 @@ export const SalesLedger: React.FC<SalesLedgerProps> = ({ sales = [], onAction, 
     const [pendingAction, setPendingAction] = React.useState<{sale: Sale, action: string, payload?: any} | null>(null);
     const {
         showAdvancedFilters, setShowAdvancedFilters, showColumnConfig, setShowConfig,
-        density, _setDensity, isRefreshing, selectedIds, setSelectedIds, isBulkEdit, setIsBulkEdit, 
+        density, setDensity, isRefreshing, selectedIds, setSelectedIds, isBulkEdit, setIsBulkEdit, 
         isSaving, activePreset, setActivePreset, processedSales, summary, searchTerm, setSearchTerm, filters, setFilters,
         sortConfig, handleSort, uniqueAgents, uniqueProducts, resetFilters,
         columnPreferences, setColumnPreferences, fileInputRef, importConfig, setImportConfig,
         columnMapping, setColumnMapping, isImporting, handleFileTrigger, handleFileChange,
         autoMapColumns, executeImport, paginatedSales, totalPages, currentPage, setCurrentPage,
-        handlePageChange, _handleRefresh, handleBulkCommand, handleSaveBulk, isLoading, hasMore, fetchNextPage
+        handlePageChange, handleRefresh, handleBulkCommand, handleSaveBulk, isLoading, hasMore, fetchNextPage
     } = useSalesLedgerUI(sales, onImport, onBulkAction);
 
     // const { systemConfig } = useCRM();
 
     const [selectedProfilePhone, setSelectedProfilePhone] = React.useState<string | null>(null);
+    const [logisticsSale, setLogisticsSale] = React.useState<Sale | null>(null);
 
     const handleKeyDown = React.useCallback(async (e: KeyboardEvent) => {
         if ((e.ctrlKey || e.metaKey) && e.key === 'c' && selectedIds.size > 0 && !isBulkEdit) {
@@ -79,13 +81,26 @@ export const SalesLedger: React.FC<SalesLedgerProps> = ({ sales = [], onAction, 
     }, [handleKeyDown]);
 
     const handleSafeAction = (sale: Sale, action: string, payload?: any) => {
-        if (!isSuperAdmin && action !== 'qa' && action !== 'listen_recording' && action !== 'view_profile') {
+        if (action === 'view_profile') {
+            setSelectedProfilePhone(typeof payload === 'string' ? payload : sale.phone);
+            return;
+        }
+        if (action === 'openLogistics') {
+            setLogisticsSale(sale);
+            return;
+        }
+        if (action === 'update' || action === 'edit_field') {
+            if (onAction) onAction(sale, action, payload);
+            return;
+        }
+
+        if (!isSuperAdmin && action !== 'qa' && action !== 'listen_recording' && action !== 'upload_recording') {
             setToast({ title: 'Access Denied', message: 'Clearance level insufficient for ledger mutation.', type: 'error' });
             sfx.playError();
             return;
         }
 
-        if (action === 'update' || action === 'edit_field' || action === 'approve' || action === 'decline' || action === 'delete' || action === 'assign') {
+        if (action === 'approve' || action === 'decline' || action === 'delete' || action === 'assign') {
             if (Date.now() > protectedModeExpiration) {
                 setPendingAction({ sale, action, payload });
                 sfx.playError();
@@ -93,10 +108,6 @@ export const SalesLedger: React.FC<SalesLedgerProps> = ({ sales = [], onAction, 
             }
         }
 
-        if (action === 'view_profile') {
-            setSelectedProfilePhone(typeof payload === 'string' ? payload : sale.phone);
-            return;
-        }
         if (action === 'listen_recording') {
             // Check if mock recording exists, otherwise use a placeholder beep or music
             const url = sale.recording || 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3';
@@ -270,6 +281,7 @@ export const SalesLedger: React.FC<SalesLedgerProps> = ({ sales = [], onAction, 
                     onSave={handleSaveBulk}
                     onCancel={() => setIsBulkEdit(false)}
                     onAction={handleBulkCommand}
+                    agents={uniqueAgents}
                 />
             )}
 
@@ -301,6 +313,17 @@ export const SalesLedger: React.FC<SalesLedgerProps> = ({ sales = [], onAction, 
                     phone={selectedProfilePhone}
                     allSales={sales}
                     role={allowActions ? 'admin' : 'agent'}
+                />
+            )}
+
+            {logisticsSale && (
+                <LogisticsModal
+                    isOpen={!!logisticsSale}
+                    onClose={() => setLogisticsSale(null)}
+                    sale={logisticsSale}
+                    onUpdateStatus={(id, status) => {
+                        if (onAction) onAction(logisticsSale, 'update', { deliveryStatus: status });
+                    }}
                 />
             )}
 

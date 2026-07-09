@@ -6,7 +6,7 @@ interface AdminSidebarContentProps {
     isAllowed: (id: string) => boolean;
 }
 
-export const AdminSidebarContent: React.FC<AdminSidebarContentProps> = ({ _isAllowed }) => (
+export const AdminSidebarContent: React.FC<AdminSidebarContentProps> = ({ isAllowed }) => (
     <div className="pb-4 pt-2">
         <TabList className="flex flex-col gap-2 border-none mb-3">
             <TabTrigger value="action" icon={<Zap size={22}/>}>Action</TabTrigger>

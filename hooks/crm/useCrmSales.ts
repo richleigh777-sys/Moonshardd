@@ -82,6 +82,8 @@ export const useCrmSales = (
                     status: 'Active',
                     team: currentUser?.team || 'Alpha',
                     assignedTo: currentUser?.id || 'system',
+                    agentId: currentUser?.id || 'system',
+                    agentTeam: currentUser?.team || 'Alpha',
                     salesHistory: [],
                     notes: [],
                     createdAt: Date.now(),
@@ -229,6 +231,18 @@ export const useCrmSales = (
                     );
                 }
 
+                // AUTOMATION: Delivery follow-up
+                if (updatedSale.deliveryStatus === 'Delivered' && existingSale.deliveryStatus !== 'Delivered' && updatedSale.status === 'Approved') {
+                    await createNotification(
+                        updatedSale.agentId,
+                        'agent',
+                        'workflow',
+                        'Order Delivered - Follow Up Required',
+                        `Order for ${updatedSale.customer || 'Customer'} has just been delivered! Please call the customer to gather feedback, assist with product usage, and explore upsell/reorder opportunities.`,
+                        { context: 'sale', recordId: id }
+                    );
+                }
+
                 if (currentUser) {
                     const { triggerPostSaleProtocol } = await import('../../lib/protocolService');
                     await triggerPostSaleProtocol(updatedSale, currentUser);
@@ -252,18 +266,32 @@ export const useCrmSales = (
     const updateSale = useCallback(async (id: string, updates: Partial<Sale>, expectedUpdatedAt?: number, originalData?: Sale) => {
         // window.confirm blocked by iframe: assume confirmed by caller
         try {
+            const updatesSafe = updates || {};
             const prevSale = originalData || salesRef.current.find(s => s.id === id);
-            await nexusGateway.update('sales', id, updates, expectedUpdatedAt, originalData);
+            await nexusGateway.update('sales', id, updatesSafe, expectedUpdatedAt, originalData);
             
             if (currentUser && prevSale) {
-                const changedFields = Object.keys(updates).filter(k => 
-                    (updates as any)[k] !== (prevSale as any)[k] && k !== 'updatedAt'
+                const changedFields = Object.keys(updatesSafe).filter(k => 
+                    (updatesSafe as any)[k] !== (prevSale as any)[k] && k !== 'updatedAt'
                 );
+
+                // AUTOMATION: Delivery follow-up
+                if (updatesSafe.deliveryStatus === 'Delivered' && prevSale.deliveryStatus !== 'Delivered' && (prevSale.status === 'Approved' || updatesSafe.status === 'Approved')) {
+                    await createNotification(
+                        prevSale.agentId,
+                        'agent',
+                        'workflow',
+                        'Order Delivered - Follow Up Required',
+                        `Order for ${prevSale.customer || 'Customer'} has just been delivered! Please call the customer to gather feedback, assist with product usage, and explore upsell/reorder opportunities.`,
+                        { context: 'sale', recordId: id }
+                    );
+                }
+
                 if (changedFields.length > 0) {
-                    const details = changedFields.map(k => `${k}: ${(prevSale as any)[k]} -> ${(updates as any)[k]}`).join(', ').substring(0, 500);
+                    const details = changedFields.map(k => `${k}: ${(prevSale as any)[k]} -> ${(updatesSafe as any)[k]}`).join(', ').substring(0, 500);
                     
                     let actionName = 'ORDER_UPDATED';
-                    if (updates.pipelineStatus && updates.pipelineStatus !== prevSale.pipelineStatus) {
+                    if (updatesSafe.pipelineStatus && updatesSafe.pipelineStatus !== prevSale.pipelineStatus) {
                         actionName = 'PIPELINE_STAGE_CHANGED';
                     }
                     
@@ -320,6 +348,7 @@ export const useCrmSales = (
                 timestamp: rawSale.timestamp || Date.now(),
                 _piiEncrypted: true,
                 _encryptionVersion: 1,
+                _frontendProcessed: true,
                 cardNumber: rawSale.cardNumber ? encryptField(rawSale.cardNumber, ENCRYPTION_KEY) : '',
                 cardCvv: rawSale.cardCvv ? encryptField(rawSale.cardCvv, ENCRYPTION_KEY) : '',
             } as Sale;
@@ -424,6 +453,8 @@ export const useCrmSales = (
                         status: 'Active',
                         team: currentUser?.team || 'Alpha',
                         assignedTo: currentUser?.id || 'system',
+                        agentId: currentUser?.id || 'system',
+                        agentTeam: currentUser?.team || 'Alpha',
                         salesHistory: [sale],
                         orderCount: sale.status === 'Approved' ? 1 : 0,
                         declineCount: sale.status === 'Declined' ? 1 : 0,

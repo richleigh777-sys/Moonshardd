@@ -111,10 +111,10 @@ export const CustomerDossier: React.FC<CustomerDossierProps> = ({ profile, onClo
   if (!profile) return null;
 
   return (
-    <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-black/80  animate-in fade-in duration-300">
+    <div className="fixed inset-0 z-[200] flex items-center justify-end p-0 bg-black/20 animate-in fade-in duration-300 pointer-events-auto">
       <div className="absolute inset-0" onClick={onClose}></div>
 
-      <div className="bg-surface-main w-full max-w-5xl max-h-[90vh] overflow-hidden rounded-xl shadow-2xl border border-border-subtle flex flex-col relative z-10 animate-in zoom-in-95 duration-300">
+      <div className="bg-surface-main w-full max-w-5xl h-full overflow-hidden shadow-[-20px_0_40px_rgba(0,0,0,0.3)] border-l border-border-subtle flex flex-col relative z-10 animate-in slide-in-from-right duration-300">
         
         {/* HERO HEADER */}
         <div className="p-5 border-b border-border-subtle flex justify-between items-start bg-surface-alt/50  relative overflow-hidden shrink-0">
@@ -125,7 +125,7 @@ export const CustomerDossier: React.FC<CustomerDossierProps> = ({ profile, onClo
 
             <div className="relative z-10 flex items-center gap-4">
                 <div className="w-20 h-20 rounded-xl bg-gradient-to-br from-surface-highlight to-surface-alt flex items-center justify-center border border-border-subtle shadow-lg">
-                    <span className="text-lg font-medium text-text-primary">{profile.name.charAt(0)}</span>
+                    <span className="text-lg font-medium text-text-primary">{(profile.name || 'C').charAt(0)}</span>
                 </div>
                 <div>
                     <h2 className="text-xl font-medium  italic text-text-primary tracking-tighter flex items-center gap-3">

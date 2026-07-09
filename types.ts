@@ -176,6 +176,7 @@ export interface Sale {
     amount: number;
     probability?: number; // 0-100% based on stage
     status: 'Pending' | 'Approved' | 'Declined' | 'Cancelled' | 'Rescue In Progress';
+    pipelineStatus?: PipelineStage;
     timestamp: number;
     orderId?: string;
     trackingId?: string;
@@ -737,5 +738,6 @@ export interface Presence {
     resourceId: string; // e.g., saleId, customerId
     resourceType: 'sale' | 'customer' | 'dashboard' | 'chat';
     action: 'viewing' | 'editing';
+    subResource?: string;
     timestamp: number;
 }

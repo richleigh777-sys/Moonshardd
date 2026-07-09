@@ -3,6 +3,7 @@ import React, { useState, useMemo } from 'react';
 import { Search, UserPlus, Phone, Trash2, ChevronRight, Loader2 } from 'lucide-react';
 import { Card, Button, Badge } from '../ui/Base';
 import { useCRM } from '../../hooks/useCRM';
+import { executeDialer } from '../../lib/dialer';
 import { usePaginatedCustomers } from '../../hooks/usePaginatedCustomers';
 import { AddContactModal } from '../modals/AddContactModal';
 import { CustomerProfileModal } from '../modals/CustomerProfileModal';
@@ -11,7 +12,7 @@ import { maskPII } from '../../utils/security';
 import { useInView } from 'react-intersection-observer';
 
 export const ContactManager: React.FC = () => {
-    const { deleteCustomer, sales } = useCRM();
+    const { deleteCustomer, sales, systemConfig } = useCRM();
     const [searchQuery, setSearchQuery] = useState('');
     const [selectedCustomerPhone, setSelectedCustomerPhone] = useState<string | null>(null);
     const [isProfileOpen, setIsProfileOpen] = useState(false);
@@ -111,7 +112,7 @@ export const ContactManager: React.FC = () => {
                                         <div>
                                             <h3 className="text-sm font-[700] text-text-primary group-hover:text-accent-primary transition-colors">{maskPII(customer.name, 'text')}</h3>
                                             <div className="flex items-center gap-4 mt-1 text-xs text-text-secondary">
-                                                <span className="flex items-center gap-1.5"><Phone size={16} className="text-text-muted"/> {maskPII(customer.phone, 'phone')}</span>
+                                                <span className="flex items-center gap-1.5 cursor-pointer hover:text-accent-primary" onClick={(e) => { e.stopPropagation(); executeDialer(customer.phone, customer, systemConfig); }}><Phone size={16} className="text-text-muted"/> {maskPII(customer.phone, 'phone')}</span>
                                             </div>
                                         </div>
                                     </div>

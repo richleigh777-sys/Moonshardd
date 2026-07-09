@@ -43,19 +43,11 @@ export const GodModePanel = () => {
         if (isOptimizing) return;
         setIsOptimizing(true);
         sfx.playSubmit();
-        addToUplink('STARTING SYSTEM CALIBRATION...');
-        const steps = ['Refining pointers...', 'Consolidating journals...', 'Cleaning event flows...', 'Updating node cache...', 'SYSTEM HARMONIZED.'];
-        for (const step of steps) {
-            await new Promise(r => setTimeout(r, 600));
-            addToUplink(`- ${step}`);
-        }
+        addToUplink('STARTING DATABASE OPTIMIZATION...');
+        await new Promise(r => setTimeout(r, 1000));
+        addToUplink('DATABASE OPTIMIZED SUCCESSFULLY.');
         sfx.playSuccess();
         setIsOptimizing(false);
-    };
-
-    const handleInspect = (id: string) => {
-        setInspectTarget(prev => prev === id ? null : id as any);
-        sfx.playClick();
     };
 
     const handleResetToggle = () => {

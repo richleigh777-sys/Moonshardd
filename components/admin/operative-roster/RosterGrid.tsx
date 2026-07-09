@@ -16,11 +16,12 @@ interface RosterGridProps {
     onChat: (userId: string) => void;
     onGhost: (userId: string) => void;
     onEdit: (user: User) => void;
+    onToggleActive: (userId: string, active: boolean) => void;
 }
 
 export const RosterGrid: React.FC<RosterGridProps> = ({ 
     users, agentAnalytics, globalMaxRevenue, attendance, currentUser, viewMode,
-    onOpenLedger, onChat, onGhost, onEdit 
+    onOpenLedger, onChat, onGhost, onEdit, onToggleActive 
 }) => {
     
     if (users.length === 0) {
@@ -59,6 +60,7 @@ export const RosterGrid: React.FC<RosterGridProps> = ({
                         onChat={onChat}
                         onGhost={onGhost}
                         onEdit={onEdit}
+                        onToggleActive={onToggleActive}
                     />
                 ))}
             </div>

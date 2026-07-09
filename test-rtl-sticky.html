@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <style>
+        .container {
+            width: 200px;
+            height: 200px;
+            overflow: auto;
+            border: 1px solid black;
+            direction: rtl;
+        }
+        .content {
+            width: 400px;
+            height: 400px;
+            direction: ltr;
+            background: linear-gradient(to right, #ccc, #fff);
+        }
+        th { background: yellow; position: sticky; left: 0; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <table class="content">
+            <tr><th>Sticky Left</th><td>Data</td><td>Data</td><td>Data</td><td>Data</td></tr>
+        </table>
+    </div>
+</body>
+</html>

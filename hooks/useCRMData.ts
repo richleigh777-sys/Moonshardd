@@ -51,7 +51,7 @@ export const useCRMData = (currentUser: User | null) => {
             { id: 'supp_reorderCycleDays', label: 'Reorder Cycle (Days)', type: 'number' },
         ],
         baseCommission: 15, breakDurationMinutes: 60, ecoMode: false, telephonyEnabled: false,
-        customDialerEnabled: false, customDialerType: 'CLIPBOARD_ONLY', customDialerUrlTemplate: 'https://dialer.yourcompany.com/?phone={phone_clean}'
+        customDialerEnabled: false, customDialerType: 'PROTOCOL_URI', customDialerUrlTemplate: 'https://dialer.yourcompany.com/?phone={phone_clean}'
     });
     
     const [health, setHealth] = useState<SystemHealth>(() => ({
@@ -309,7 +309,7 @@ export const useCRMData = (currentUser: User | null) => {
                     })
                 });
                 if (!response.ok) {
-                    const err = await response.json();
+                    const errText = await response.text(); let err = { error: errText }; try { err = JSON.parse(errText); } catch(e){ /* ignore */ }
                     throw new Error(err.error || 'Provisioning failed');
                 }
             } catch (err) {

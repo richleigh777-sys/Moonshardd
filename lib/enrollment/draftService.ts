@@ -1,3 +1,4 @@
+import { getStorageItem, setStorageItem, removeStorageItem, getAllStorageKeys } from '../../lib/storage';
 /**
  * DRAFT SERVICE
  * Manages form draft saving and recovery
@@ -30,7 +31,7 @@ export const draftService = {
         version: DRAFT_VERSION,
       };
 
-      localStorage.setItem(storageKey, JSON.stringify(draft));
+      setStorageItem(storageKey, JSON.stringify(draft));
       console.debug(`[Draft] Saved at ${new Date().toLocaleTimeString()}`);
     } catch (err) {
       console.error('[Draft] Save failed:', err);
@@ -43,7 +44,7 @@ export const draftService = {
    */
   load: (storageKey: string): Omit<EnrollmentDraft, 'savedAt' | 'version'> | null => {
     try {
-      const draftJson = localStorage.getItem(storageKey);
+      const draftJson = getStorageItem(storageKey);
       if (!draftJson) {
         console.debug('[Draft] No draft found');
         return null;
@@ -87,7 +88,7 @@ export const draftService = {
    */
   delete: (storageKey: string) => {
     try {
-      localStorage.removeItem(storageKey);
+      removeStorageItem(storageKey);
       console.debug('[Draft] Deleted');
     } catch (err) {
       console.error('[Draft] Delete failed:', err);
@@ -99,7 +100,7 @@ export const draftService = {
    */
   exists: (storageKey: string): boolean => {
     try {
-      return localStorage.getItem(storageKey) !== null;
+      return getStorageItem(storageKey) !== null;
     } catch (_err) {
       return false;
     }
@@ -110,7 +111,7 @@ export const draftService = {
    */
   getAge: (storageKey: string): number | null => {
     try {
-      const draftJson = localStorage.getItem(storageKey);
+      const draftJson = getStorageItem(storageKey);
       if (!draftJson) return null;
 
       const draft: EnrollmentDraft = JSON.parse(draftJson);
@@ -128,10 +129,10 @@ export const draftService = {
     const drafts: Record<string, EnrollmentDraft> = {};
 
     try {
-      for (let i = 0; i < localStorage.length; i++) {
-        const key = localStorage.key(i);
+      const keys = getAllStorageKeys();
+      for (const key of keys) {
         if (key?.includes('enrollment_draft')) {
-          const draftJson = localStorage.getItem(key);
+          const draftJson = getStorageItem(key);
           if (draftJson) {
             drafts[key] = JSON.parse(draftJson);
           }
@@ -152,10 +153,10 @@ export const draftService = {
       const now = Date.now();
       const keysToDelete: string[] = [];
 
-      for (let i = 0; i < localStorage.length; i++) {
-        const key = localStorage.key(i);
+      const keys = getAllStorageKeys();
+      for (const key of keys) {
         if (key?.includes('enrollment_draft')) {
-          const draftJson = localStorage.getItem(key);
+          const draftJson = getStorageItem(key);
           if (draftJson) {
             const draft: EnrollmentDraft = JSON.parse(draftJson);
             if (now - draft.savedAt > DRAFT_EXPIRY_MS) {
@@ -165,7 +166,7 @@ export const draftService = {
         }
       }
 
-      keysToDelete.forEach((key) => localStorage.removeItem(key));
+      keysToDelete.forEach((key) => removeStorageItem(key));
       console.debug(`[Draft] Cleaned up ${keysToDelete.length} expired drafts`);
     } catch (err) {
       console.error('[Draft] Cleanup failed:', err);

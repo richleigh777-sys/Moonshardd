@@ -48,9 +48,9 @@ export const COLUMN_LABELS: Record<string, string> = {
 export const COLUMN_WIDTHS: Record<string, string> = {
     date: 'w-[100px]',
     agent: 'w-[100px]',
-    customer: 'w-[124px]',
-    phone: 'w-[100px]',
-    email: 'w-[124px]',
+    customer: 'w-[180px]',
+    phone: 'w-[160px]',
+    email: 'w-[180px]',
     age: 'w-[100px]',
     dob: 'w-[100px]',
     ageDob: 'w-[140px]',

@@ -1,8 +1,6 @@
-
 import React, { useState } from 'react';
 import { Globe, ArrowRight, ArrowLeft, Loader2, User as UserIcon } from 'lucide-react';
 import { LoginInput } from './LoginInput';
-import { Button } from '../../ui/Base';
 
 interface UplinkStageProps {
     userId: string;
@@ -22,16 +20,19 @@ export const UplinkStage: React.FC<UplinkStageProps> = ({ userId, onBack, onSubm
 
     return (
         <form onSubmit={handleSubmit} className="space-y-6 animate-in slide-in-from-right-4 duration-500">
-            <div className="p-4 rounded-xl bg-surface-alt border border-border-subtle flex items-center justify-between mb-4">
-                <div className="flex items-center gap-4">
-                    <div className="p-2.5 bg-surface-main rounded-lg shadow-sm border border-border-subtle"><UserIcon size={16} className="text-text-primary" /></div>
+            
+            <div className="p-4 rounded-[14px] bg-[#05110A] border border-emerald-500/20 flex items-center justify-between mb-2">
+                <div className="flex items-center gap-3">
+                    <div className="p-2 bg-emerald-950/50 rounded-lg shadow-sm border border-emerald-500/20 text-emerald-400">
+                        <UserIcon size={16} strokeWidth={2} />
+                    </div>
                     <div>
-                        <p className="text-sm font-bold text-text-primary">{userId}</p>
-                        <p className="text-sm text-text-muted mt-0.5">Authentication verified</p>
+                        <p className="text-sm font-semibold text-white tracking-wide">{userId}</p>
+                        <p className="text-[11px] text-emerald-100/50 uppercase tracking-widest mt-0.5">Verified</p>
                     </div>
                 </div>
-                <button type="button" onClick={onBack} className="text-text-muted hover:text-text-primary transition-colors text-sm font-bold px-3 py-1.5 hover:bg-surface-main/50 rounded-lg">
-                    Change User
+                <button type="button" onClick={onBack} className="text-emerald-100/40 hover:text-white transition-colors text-xs font-semibold px-3 py-1.5 hover:bg-white/5 rounded-lg">
+                    Change
                 </button>
             </div>
 
@@ -50,27 +51,25 @@ export const UplinkStage: React.FC<UplinkStageProps> = ({ userId, onBack, onSubm
             </div>
 
             <div className="flex gap-3 pt-2">
-                <Button 
+                <button 
                     type="button" 
-                    variant="secondary" 
                     onClick={onBack}
-                    className="h-14 w-14 p-0 flex items-center justify-center rounded-xl hover:bg-surface-main transition-colors border border-border-subtle hover:border-text-muted"
+                    className="h-12 w-14 p-0 flex items-center justify-center rounded-[14px] bg-[#05110A] text-white hover:bg-[#07180E] transition-colors border border-emerald-500/20 hover:border-emerald-500/40"
                     disabled={isProcessing}
                 >
                     <ArrowLeft size={18} />
-                </Button>
-                <Button 
+                </button>
+                <button 
                     type="submit" 
-                    variant="primary" 
                     disabled={isProcessing || !companyId}
-                    className="flex-1 h-14 text-sm font-bold shadow-lg shadow-accent-primary/20 rounded-xl"
+                    className="flex-1 h-12 flex items-center justify-center gap-2 text-sm font-semibold bg-[#10b981] hover:bg-[#059669] text-[#022c22] rounded-[14px] transition-all shadow-[0_0_20px_rgba(16,185,129,0.2)] hover:shadow-[0_0_30px_rgba(16,185,129,0.3)] disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                     {isProcessing ? (
-                        <span className="flex items-center justify-center gap-2 w-full"><Loader2 size={16} className="animate-spin" /> Accessing Workspace...</span>
+                        <><Loader2 size={16} className="animate-spin" /> Accessing...</>
                     ) : (
-                        <span className="flex items-center justify-center gap-2 w-full">Access Workspace <ArrowRight size={16} /></span>
+                        <>Access Workspace <ArrowRight size={16} strokeWidth={2.5} /></>
                     )}
-                </Button>
+                </button>
             </div>
         </form>
     );

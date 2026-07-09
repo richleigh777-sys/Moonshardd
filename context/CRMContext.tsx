@@ -1,3 +1,4 @@
+import { getStorageItem, setStorageItem } from '../lib/storage';
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { 
     AuditEntry, SystemConfig
@@ -36,7 +37,7 @@ export const CRMProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
     const [drafts, setDrafts] = useState<Record<string, any>>(() => {
         try {
-            const saved = localStorage.getItem('crm_drafts');
+            const saved = getStorageItem('crm_drafts');
             return saved ? JSON.parse(saved) : {};
         } catch {
             return {};
@@ -46,7 +47,7 @@ export const CRMProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     const updateDraft = useCallback((key: string, data: any) => {
         setDrafts(prev => {
             const next = { ...prev, [key]: data };
-            localStorage.setItem('crm_drafts', JSON.stringify(next));
+            setStorageItem('crm_drafts', JSON.stringify(next));
             return next;
         });
     }, []);
@@ -55,7 +56,7 @@ export const CRMProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         setDrafts(prev => {
             const next = { ...prev };
             delete next[key];
-            localStorage.setItem('crm_drafts', JSON.stringify(next));
+            setStorageItem('crm_drafts', JSON.stringify(next));
             return next;
         });
     }, []);

@@ -1,3 +1,4 @@
+import { getStorageItem } from '../../../lib/storage';
 import { useSystem } from '../../../hooks/useSystem';
 import React, { useMemo, useState, useEffect } from 'react';
 import { Sale, User } from '../../../types';
@@ -38,7 +39,7 @@ export const DashboardStrategicAnalytics: React.FC<DashboardStrategicAnalyticsPr
         setLoadingGlobal(true);
         try {
           const headers: Record<string, string> = {
-            'X-Tenant-ID': localStorage.getItem('nexus_server_id') || 'srv-001',
+            'X-Tenant-ID': getStorageItem('nexus_server_id') || 'srv-001',
             'X-User-Level': String(currentUser?.level || '1'),
             'X-User-ID': String(currentUser?.id || 'unknown'),
           };

@@ -4,13 +4,17 @@ import { ChevronDown } from 'lucide-react';
 export const InputField = ({ label, icon: Icon, error, ...props }: any) => (
     <div className="space-y-1.5 w-full">
         <label className="text-[13px] font-semibold text-text-muted px-1 flex justify-between items-center tracking-wide">
-            {label} 
+            {typeof label === 'string' ? label.split('').join('\u200B') : label} 
             {error && <span className="text-emerald-500 text-sm uppercase font-bold tracking-wider bg-emerald-500/10 px-2 rounded-full py-0.5">{error}</span>}
         </label>
         <div className="relative">
             <input 
                 {...props}
-                className={`w-full bg-surface-main border border-border-strong rounded-xl px-4 py-3 text-[15px] font-medium text-text-primary placeholder-[#A0A0A0]/30 outline-none transition-all focus:border-accent-primary focus:ring-1 focus:ring-[#C4A470] shadow-sm ${Icon ? 'pl-[42px]' : ''} ${props.className || ''}`}
+                autoComplete="chrome-off"
+                data-lpignore="true"
+                data-1p-ignore="true"
+                data-form-type="other"
+                className={`w-full bg-surface-main border border-border-strong rounded-xl px-3.5 py-2.5 text-sm font-medium text-text-primary placeholder-[#A0A0A0]/40 outline-none transition-all focus:border-accent-primary focus:ring-1 focus:ring-accent-primary/20 shadow-sm ${Icon ? 'pl-[40px]' : ''} ${props.className || ''}`}
             />
             {Icon && <Icon className="absolute left-3.5 top-1/2 -translate-y-1/2 text-text-muted/60" size={18} />}
         </div>
@@ -35,19 +39,19 @@ export function CustomSelect({ value, onChange, options, placeholder, name, tabI
                 type="button"
                 tabIndex={tabIndex}
                 onClick={() => setOpen(!open)}
-                className={`w-full bg-surface-main border ${open ? 'border-accent-primary ring-1 ring-[#C4A470]' : 'border-border-strong'} rounded-xl px-4 py-3 text-left text-[15px] font-medium text-text-primary outline-none transition-all flex items-center justify-between shadow-sm`}
+                className={`w-full bg-surface-main border ${open ? 'border-accent-primary ring-1 ring-accent-primary/20' : 'border-border-strong'} rounded-xl px-3.5 py-2.5 text-left text-sm font-medium text-text-primary outline-none transition-all flex items-center justify-between shadow-sm`}
             >
                 {value ? options.find((o:any)=>o.value===value)?.label || value : <span className="text-text-muted/30">{placeholder}</span>}
                 <ChevronDown size={18} className={`text-text-muted/60 transition-transform ${open ? 'rotate-180' : ''}`} />
             </button>
             {open && (
-                <div className="absolute z-50 mt-2 w-full bg-surface-main border border-border-strong rounded-xl shadow-2xl py-1.5 max-h-60 overflow-y-auto custom-scrollbar">
+                <div className="absolute z-50 mt-2 w-full bg-surface-main border border-border-strong rounded-2xl shadow-xl py-2 max-h-60 overflow-y-auto custom-scrollbar">
                     {options.map((opt:any) => (
                         <button
                             key={opt.value}
                             type="button"
                             onClick={() => { onChange({ target: { name, value: opt.value }}); setOpen(false); }}
-                            className="w-full text-left px-4 py-2.5 text-[14px] text-text-primary hover:bg-accent-primary/10 hover:text-accent-primary transition-colors"
+                            className="w-full text-left px-4 py-2 text-sm font-medium text-text-primary hover:bg-surface-highlight transition-colors"
                         >
                             {opt.label}
                         </button>

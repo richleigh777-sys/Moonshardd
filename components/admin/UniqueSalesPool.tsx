@@ -7,7 +7,7 @@ import {
     AlertCircle, Sparkles, Scale, Accessibility, FileText,
     ChevronDown, ChevronUp, RefreshCw, AlertTriangle, CheckCircle2,
     TrendingUp, Zap, Clock, ArrowUpRight, ShieldCheck, ShieldAlert,
-    Upload, Link2, Layers
+    Upload, Download, Link2, Layers, ChevronLeft, ChevronRight
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Customer, Sale } from '../../types';
@@ -123,10 +123,14 @@ interface SmartList {
     };
 }
 
+import { ScrollControls } from '../widgets/sales-ledger/ScrollControls';
+
 export const UniqueSalesPool: React.FC = () => {
     const { customers = [], updateCustomer, deleteCustomer, addCustomer, bulkAddCustomers, sales = [], logAudit, systemConfig } = useCRM();
     const { currentUser: agent } = useAuth();
+    const isSuperAdmin = agent?.role === 'admin' || agent?.level === 10;
     const { setToast } = useSystem();
+    const containerRef = React.useRef<HTMLDivElement>(null);
     const { uniqueCustomers, customerDynamicMetrics } = useCustomerMetrics(customers, sales);
     
     const {
@@ -155,19 +159,50 @@ export const UniqueSalesPool: React.FC = () => {
         autoMapColumns, dryRunAnalysis, executeContactImport, confirmContactImport
     } = useBulkImport(uniqueCustomers, sales, customerDynamicMetrics);
 
+    // Pagination State
+    const [currentPage, setCurrentPage] = React.useState(1);
+    const itemsPerPage = 100; // Can be configurable later if needed
+
+    // Reset to page 1 when filters change
+    React.useEffect(() => {
+        setCurrentPage(1);
+    }, [searchQuery, selectedState, selectedTag, selectedPipelineStage, daysSinceOrderFilter, sortBy, sortOrder, selectedStatusFilter]);
+
+    const totalPages = Math.ceil(filteredCustomers.length / itemsPerPage) || 1;
+    const paginatedCustomers = filteredCustomers.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
+
     // Smart Lists State
-    const [smartLists, setSmartLists] = useState<SmartList[]>(() => {
-        try {
-            return JSON.parse(localStorage.getItem('crm_smart_lists_v1') || '[]');
-        } catch { return []; }
-    });
+    const [smartLists, setSmartLists] = useState<SmartList[]>([]);
+    
+    React.useEffect(() => {
+        const fetchSmartLists = async () => {
+            try {
+                const res = await fetch('/api/collections/smart_lists', {
+                    headers: {
+                        'X-User-ID': agent?.id || 'sys_root',
+                        'X-User-Level': String(agent?.role === 'admin' ? 10 : 1),
+                        'X-Tenant-ID': 'srv-001'
+                    }
+                });
+                if (res.ok) {
+                    const data = await res.json();
+                    if (data && data.data) {
+                        setSmartLists(data.data.map((d: any) => d.data || d));
+                    }
+                }
+            } catch (err) {
+                console.error("Failed to fetch smart lists", err);
+            }
+        };
+        fetchSmartLists();
+    }, [agent]);
     const [activeSmartListId, setActiveSmartListId] = useState<string | null>(null);
     const [isSavingSmartList, setIsSavingSmartList] = useState(false);
     const [newSmartListName, setNewSmartListName] = useState('');
 
     const [expandedCustomers, setExpandedCustomers] = useState<Record<string, boolean>>({});
 
-    const saveSmartList = () => {
+    const saveSmartList = async () => {
         if (!newSmartListName.trim()) return;
         const newList: SmartList = {
             id: 'sl_' + Date.now(),
@@ -185,7 +220,22 @@ export const UniqueSalesPool: React.FC = () => {
         };
         const updated = [...smartLists, newList];
         setSmartLists(updated);
-        localStorage.setItem('crm_smart_lists_v1', JSON.stringify(updated));
+        
+        try {
+            await fetch('/api/collections/smart_lists', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-User-ID': agent?.id || 'sys_root',
+                    'X-User-Level': String(agent?.role === 'admin' ? 10 : 1),
+                    'X-Tenant-ID': 'srv-001'
+                },
+                body: JSON.stringify({ id: newList.id, ...newList })
+            });
+        } catch (err) {
+            console.error(err);
+        }
+        
         setIsSavingSmartList(false);
         setNewSmartListName('');
         setActiveSmartListId(newList.id);
@@ -193,11 +243,24 @@ export const UniqueSalesPool: React.FC = () => {
         setToast({ title: 'Smart List Saved', message: `Saved filter combination as "${newList.name}"`, type: 'success' });
     };
 
-    const deleteSmartList = (id: string, e: React.MouseEvent) => {
+    const deleteSmartList = async (id: string, e: React.MouseEvent) => {
         e.stopPropagation();
         const updated = smartLists.filter(sl => sl.id !== id);
         setSmartLists(updated);
-        localStorage.setItem('crm_smart_lists_v1', JSON.stringify(updated));
+        
+        try {
+            await fetch(`/api/collections/smart_lists/${id}`, {
+                method: 'DELETE',
+                headers: {
+                    'X-User-ID': agent?.id || 'sys_root',
+                    'X-User-Level': String(agent?.role === 'admin' ? 10 : 1),
+                    'X-Tenant-ID': 'srv-001'
+                }
+            });
+        } catch (err) {
+            console.error(err);
+        }
+        
         if (activeSmartListId === id) setActiveSmartListId(null);
         playDecline();
     };
@@ -408,7 +471,7 @@ export const UniqueSalesPool: React.FC = () => {
     return (
         <div 
             id="sales-pool-root" 
-            className={`flex flex-col gap-3 p-3 min-h-[calc(100vh-60px)] bg-surface-main/30 rounded-xl border border-border-subtle animate-in fade-in duration-300 relative transition-colors ${isDraggingOver ? 'ring-2 ring-accent-primary bg-accent-primary/5' : ''}`}
+            className={`flex flex-col gap-2 p-2 flex-1 w-full min-h-0 bg-surface-main/30 rounded-xl border border-border-subtle animate-in fade-in duration-300 relative transition-colors overflow-hidden ${isDraggingOver ? 'ring-2 ring-accent-primary bg-accent-primary/5' : ''}`}
             onDragOver={handleDragOver}
             onDragLeave={handleDragLeave}
             onDrop={handleDrop}
@@ -421,345 +484,143 @@ export const UniqueSalesPool: React.FC = () => {
                     </div>
                 </div>
             )}
-            {/* Header Section */}
-            <div id="sales-pool-header" className="flex flex-col md:flex-row md:items-center justify-between gap-2">
-                <div>
-                    <h1 className="text-lg font-bold text-text-primary tracking-tight flex items-center gap-2">
-                        <Users className="text-accent-primary" size={20} />
-                        Unique Customer Sales Pool
-                    </h1>
-                    <p className="text-sm text-text-muted mt-0.5 font-medium">
-                        Root Super Admin database of distinct customer profiles. Duplicate phone registrations are automatically converged.
-                    </p>
-                </div>
-                <div className="flex items-center gap-2">
-                    <input 
-                        ref={fileInputRef} 
-                        type="file" 
-                        className="hidden" 
-                        accept=".csv" 
-                        onChange={handleFileChange} 
-                    />
-                    <button 
-                        onClick={() => { playClick(); fileInputRef.current?.click(); }}
-                        className="px-3 py-1.5 bg-surface-alt hover:bg-surface-main hover:text-text-primary text-text-muted border border-border-subtle rounded-lg text-sm font-bold tracking-wider uppercase transition-all flex items-center gap-1.5"
-                        id="btn-import-contacts-bulk"
-                    >
-                        <Upload size={12} /> Bulk Import
-                    </button>
-                    <button 
-                        onClick={handleExport}
-                        className="px-3 py-1.5 bg-surface-alt hover:bg-surface-main hover:text-text-primary text-text-muted border border-border-subtle rounded-lg text-sm font-bold tracking-wider uppercase transition-all flex items-center gap-1.5"
-                        id="btn-export-contacts-csv"
-                    >
-                        <Upload size={12} className="rotate-180" /> Export CSV
-                    </button>
-                    <button 
-                        onClick={() => { playClick(); setIsAddOpen(true); }}
-                        className="px-3 py-1.5 bg-accent-primary hover:bg-accent-primary/90 text-white rounded-lg text-sm font-bold tracking-wider uppercase transition-all shadow-md shadow-accent-primary/20 flex items-center gap-1.5"
-                        id="btn-add-unique-customer"
-                    >
-                        <Plus size={14} /> Add Unique Record
-                    </button>
-                </div>
-            </div>
-
-            {/* Live Synchronizing Feed Banner */}
-            <div className="bg-surface-main/80  border border-border-strong/10 rounded-xl p-2 flex flex-col md:flex-row items-start md:items-center justify-between gap-2 overflow-hidden shadow-sm relative before:absolute before:top-0 before:left-0 before:bottom-0 before:w-1 before:bg-accent-primary">
-                <div className="flex items-center gap-3">
-                    <span className="relative flex h-2.5 w-2.5">
-                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-status-success opacity-75"></span>
-                        <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-status-success"></span>
-                    </span>
-                    <div className="flex flex-col">
-                        <span className="text-sm font-bold uppercase tracking-wide text-text-primary">LIVE CRM OUTCOME FEED</span>
-                        <span className="text-sm text-text-muted">Auto-stitch active • Subscribed to real-time sales events</span>
+            {/* Unified Header & Analytics Bar */}
+            <div className="flex flex-col gap-2 shrink-0">
+                <div className="flex flex-col md:flex-row md:items-center justify-between gap-2 p-2 bg-surface-main border border-border-subtle rounded-xl shadow-sm">
+                    <div className="flex items-center gap-3">
+                        <h1 className="text-lg font-bold text-text-primary tracking-tight flex items-center gap-2">
+                            <Users className="text-accent-primary" size={20} /> Sales Pool
+                        </h1>
+                        <div className="w-[1px] h-6 bg-border-subtle hidden md:block" />
+                        <div className="hidden md:flex items-center gap-4 text-xs font-bold text-text-muted">
+                            <span className="flex items-center gap-1"><Users size={12}/> {stats.total} Contacts</span>
+                            <span className="flex items-center gap-1"><CreditCard size={12}/> LTV: <span className="text-status-success">${stats.avgLtv}</span></span>
+                            <span className="flex items-center gap-1"><Sparkles size={12}/> VIP: <span className="text-status-warning">{stats.vipCount}</span></span>
+                        </div>
                     </div>
-                </div>
-                
-                {/* Mini scrolling stream */}
-                <div id="live-scrolling-feed-ticker" className="flex-1 max-w-xl bg-surface-alt/70 border border-border-subtle rounded-xl px-3 py-1.5 overflow-hidden flex items-center justify-start h-8">
-                    <AnimatePresence mode="popLayout">
-                        {sales.slice(0, 1).map((latestSale) => {
-                            const isApp = latestSale.status === 'Approved';
-                            const isDec = latestSale.status === 'Declined';
-                            return (
-                                <motion.div 
-                                    key={latestSale.id}
-                                    initial={{ y: 20, opacity: 0 }}
-                                    animate={{ y: 0, opacity: 1 }}
-                                    exit={{ y: -20, opacity: 0 }}
-                                    transition={{ duration: 0.35 }}
-                                    className="flex items-center gap-2 text-sm font-semibold w-full"
+                    <div className="flex items-center gap-2">
+                        {isSuperAdmin && (
+                            <>
+                                <button
+                                    onClick={() => { playClick(); fileInputRef.current?.click(); }}
+                                    className="px-3 py-1.5 bg-surface-alt hover:bg-border-subtle border border-border-subtle text-text-secondary rounded-lg text-sm font-bold transition-all flex items-center gap-2"
                                 >
-                                    <span className="font-mono text-text-muted">{new Date(latestSale.timestamp || Date.now()).toLocaleTimeString()}</span>
-                                    <span className="font-bold text-text-primary">{latestSale.firstName} {latestSale.lastName ? latestSale.lastName[0] : ''}.</span>
-                                    <span className="text-text-muted">processed</span>
-                                    <span className="font-bold">{latestSale.product}</span>
-                                    <span className="text-text-muted">—</span>
-                                    <span className={`px-1.5 py-0.2 rounded text-sm font-bold uppercase shrink-0 ${isApp ? 'bg-status-success/15 text-status-success border border-status-success/20' : isDec ? 'bg-status-error/15 text-status-error border border-status-error/20' : 'bg-status-warning/15 text-status-warning border border-status-warning/20'}`}>
-                                        {latestSale.status}: ${latestSale.amount}
-                                    </span>
-                                </motion.div>
-                            );
-                        })}
-                        {sales.length === 0 && (
-                            <span className="text-sm text-text-muted italic">Waiting for incoming sales ledger activity...</span>
+                                    <Upload size={14} /> Import
+                                </button>
+                                <input type="file" ref={fileInputRef} onChange={handleFileChange} className="hidden" accept=".csv,.xlsx,.xls" />
+                                <button
+                                    onClick={handleExport}
+                                    className="px-3 py-1.5 bg-surface-alt hover:bg-border-subtle border border-border-subtle text-text-secondary rounded-lg text-sm font-bold transition-all flex items-center gap-2"
+                                >
+                                    <Download size={14} /> Export
+                                </button>
+                            </>
                         )}
-                    </AnimatePresence>
-                </div>
-
-                <div className="flex gap-4 shrink-0 font-mono text-sm font-bold text-text-secondary">
-                    <div>Gross Rev: <span className="text-status-success font-bold">${stats.totalLtv.toLocaleString()}</span></div>
-                    <div>Approved Orders: <span className="text-accent-primary font-bold">{stats.totalApprovedCount}</span></div>
-                    <div>Declined: <span className="text-status-error font-bold">{stats.totalDeclinedCount}</span></div>
-                </div>
-            </div>
-
-            {/* Admin Level 10 Badge Indicators */}
-            <div id="sales-pool-kpi-grid" className="grid grid-cols-2 lg:grid-cols-4 gap-2">
-                <div className="bg-surface-main border border-border-subtle p-3 rounded-xl shadow-sm flex flex-col justify-between">
-                    <span className="text-sm font-bold tracking-wide text-text-muted uppercase flex items-center gap-1"><Users size={12} className="text-accent-primary"/> TOTAL UNIQUE CONTACTS</span>
-                    <h3 className="text-xl font-bold text-text-primary mt-1.5">{stats.total}</h3>
-                    <span className="text-sm text-status-success font-semibold mt-0.5">▲ Unified Directory</span>
-                </div>
-                <div className="bg-surface-main border border-border-subtle p-3 rounded-xl shadow-sm flex flex-col justify-between font-medium">
-                    <span className="text-sm font-bold tracking-wide text-text-muted uppercase flex items-center gap-1"><CreditCard size={12} className="text-accent-primary"/> AVERAGE LTV</span>
-                    <h3 className="text-xl font-bold text-text-primary mt-1.5">${stats.avgLtv}</h3>
-                    <span className="text-sm text-text-muted mt-0.5">Per active profile</span>
-                </div>
-                <div className="bg-surface-main border border-border-subtle p-3 rounded-xl shadow-sm flex flex-col justify-between">
-                    <span className="text-sm font-bold tracking-wide text-text-muted uppercase flex items-center gap-1"><Activity size={12} className="text-accent-primary"/> COMPLETENESS RATE</span>
-                    <h3 className="text-xl font-bold text-text-primary mt-1.5">{stats.completenessRate}%</h3>
-                    <div className="w-full bg-border-subtle h-1 rounded-full mt-1.5 overflow-hidden">
-                        <div className="bg-accent-primary h-full rounded-full transition-all duration-500" style={{ width: `${stats.completenessRate}%` }} />
+                        <button 
+                            id="btn-add-unique-customer"
+                            onClick={() => { playClick(); setIsAddOpen(true); }}
+                            className="px-3 py-1.5 bg-accent-primary hover:bg-accent-secondary text-white rounded-lg text-sm font-bold transition-all flex items-center gap-2"
+                        >
+                            <Plus size={14} /> Add Record
+                        </button>
                     </div>
                 </div>
-                <div className="bg-surface-main border border-border-subtle p-3 rounded-xl shadow-sm flex flex-col justify-between">
-                    <span className="text-sm font-bold tracking-wide text-text-muted uppercase flex items-center gap-1"><Sparkles size={12} className="text-status-warning"/> VIP ACCOUNTS</span>
-                    <h3 className="text-xl font-bold text-text-primary mt-1.5">{stats.vipCount}</h3>
-                    <span className="text-sm text-status-warning font-semibold mt-0.5">★ LTV exceeds $1,000</span>
-                </div>
-            </div>
 
-            {/* SMART LISTS NAV BAR */}
-            {smartLists.length > 0 && (
-                <div className="flex flex-wrap items-center gap-2 mb-1">
-                    <span className="text-xs font-bold uppercase tracking-wide text-text-muted flex items-center gap-1 ml-1 mr-2"><Filter size={12}/> SMART LISTS:</span>
-                    {smartLists.map(sl => (
-                        <div key={sl.id} className="relative group">
-                            <button
-                                onClick={() => loadSmartList(sl)}
-                                className={`pl-3 pr-8 py-1.25 rounded-lg text-sm font-bold tracking-wider transition-all ${activeSmartListId === sl.id ? 'bg-accent-primary text-white shadow-md' : 'bg-surface-main border border-border-subtle text-text-secondary hover:bg-surface-alt hover:text-text-primary'}`}
-                            >
-                                {sl.name}
-                            </button>
-                            <button 
-                                onClick={(e) => deleteSmartList(sl.id, e)}
-                                className={`absolute right-1.5 top-1/2 -translate-y-1/2 p-0.5 rounded-full transition-opacity ${activeSmartListId === sl.id ? 'text-white/70 hover:text-white hover:bg-black/20' : 'text-text-muted hover:text-status-danger hover:bg-status-danger/10 opacity-0 group-hover:opacity-100'}`}
-                            >
-                                <X size={12} />
-                            </button>
-                        </div>
-                    ))}
-                    {activeSmartListId && (
-                        <button onClick={clearFilters} className="text-xs font-bold uppercase tracking-wider text-text-muted hover:text-text-primary transition-colors ml-2 underline decoration-text-muted/30 underline-offset-4">
-                            Clear View
-                        </button>
-                    )}
-                </div>
-            )}
-
-            {/* Realtime Outcome Quick-Filter Pills */}
-            <div className="flex flex-wrap items-center justify-between gap-2 bg-surface-main/40 border border-border-subtle p-1.5 rounded-xl">
-                <div className="flex flex-wrap items-center gap-1.5">
-                <button
-                    onClick={() => { playClick(); setActiveSmartListId(null); setSelectedStatusFilter('all'); }}
-                    className={`px-4 py-1.5 rounded-xl text-sm font-bold tracking-wider uppercase transition-all flex items-center gap-1.5 ${selectedStatusFilter === 'all' ? 'bg-accent-primary text-white shadow-sm' : 'text-text-secondary hover:bg-surface-alt/80'}`}
-                >
-                    <Users size={13} />
-                    All ({uniqueCustomers.length})
-                </button>
-                <button
-                    onClick={() => { playClick(); setActiveSmartListId(null); setSelectedStatusFilter('approved'); }}
-                    className={`px-4 py-1.5 rounded-xl text-sm font-bold tracking-wider uppercase transition-all flex items-center gap-1.5 ${selectedStatusFilter === 'approved' ? 'bg-status-success/20 text-status-success border border-status-success/30 shadow-sm font-bold' : 'text-text-secondary hover:bg-surface-alt/80'}`}
-                >
-                    <CheckCircle2 size={13} />
-                    Approved Accounts ({uniqueCustomers.filter(c => (customerDynamicMetrics.get(c.id)?.ltv ?? 0) > 0).length})
-                </button>
-                <button
-                    onClick={() => { playClick(); setActiveSmartListId(null); setSelectedStatusFilter('declined'); }}
-                    className={`px-4 py-1.5 rounded-xl text-sm font-bold tracking-wider uppercase transition-all flex items-center gap-1.5 ${selectedStatusFilter === 'declined' ? 'bg-status-error/20 text-status-error border border-status-error/30 shadow-sm font-bold' : 'text-text-secondary hover:bg-surface-alt/80'}`}
-                >
-                    <AlertTriangle size={13} />
-                    payment Decline List ({uniqueCustomers.filter(c => (customerDynamicMetrics.get(c.id)?.declineCount ?? 0) > 0).length})
-                </button>
-                <button
-                    onClick={() => { playClick(); setActiveSmartListId(null); setSelectedStatusFilter('incomplete'); }}
-                    className={`px-4 py-1.5 rounded-xl text-sm font-bold tracking-wider uppercase transition-all flex items-center gap-1.5 ${selectedStatusFilter === 'incomplete' ? 'bg-status-warning/20 text-status-warning border border-status-warning/30 shadow-sm font-bold' : 'text-text-secondary hover:bg-surface-alt/80'}`}
-                >
-                    <Activity size={13} />
-                    Incomplete Bios ({uniqueCustomers.filter(c => !(c.firstName && c.lastName && c.phone && c.email && c.shippingAddress && c.billingAddress && c.age && c.dob)).length})
-                </button>
-                <button
-                    onClick={() => { playClick(); setActiveSmartListId(null); setSelectedStatusFilter('cold'); }}
-                    className={`px-4 py-1.5 rounded-xl text-sm font-bold tracking-wider uppercase transition-all flex items-center gap-1.5 ${selectedStatusFilter === 'cold' ? 'bg-surface-alt text-text-muted border border-border-subtle' : 'text-text-secondary hover:bg-surface-alt/80'}`}
-                >
-                    <Clock size={13} />
-                    Cold Leads ({uniqueCustomers.filter(c => (customerDynamicMetrics.get(c.id)?.sales.length ?? 0) === 0).length})
-                </button>
-                <div className="w-[1px] h-6 bg-border-subtle mx-1" />
-                <button
-                    onClick={() => { playClick(); setActiveSmartListId(null); setSelectedStatusFilter('upsell'); }}
-                    className={`px-4 py-1.5 rounded-xl text-sm font-bold tracking-wider uppercase transition-all flex items-center gap-1.5 ${selectedStatusFilter === 'upsell' ? 'bg-amber-500/20 text-amber-500 border border-amber-500/30 shadow-sm font-bold' : 'text-text-secondary hover:bg-surface-alt/80'}`}
-                >
-                    <ArrowUpRight size={13} />
-                    Upsell Cycle
-                </button>
-                <button
-                    onClick={() => { playClick(); setActiveSmartListId(null); setSelectedStatusFilter('reorder'); }}
-                    className={`px-4 py-1.5 rounded-xl text-sm font-bold tracking-wider uppercase transition-all flex items-center gap-1.5 ${selectedStatusFilter === 'reorder' ? 'bg-emerald-500/20 text-emerald-500 border border-emerald-500/30 shadow-sm font-bold' : 'text-text-secondary hover:bg-surface-alt/80'}`}
-                >
-                    <RefreshCw size={13} />
-                    Ready Reorders
-                </button>
-                <button
-                    onClick={() => { playClick(); setActiveSmartListId(null); setSelectedStatusFilter('winback'); }}
-                    className={`px-4 py-1.5 rounded-xl text-sm font-bold tracking-wider uppercase transition-all flex items-center gap-1.5 ${selectedStatusFilter === 'winback' ? 'bg-rose-500/20 text-rose-500 border border-rose-500/30 shadow-sm font-bold' : 'text-text-secondary hover:bg-surface-alt/80'}`}
-                >
-                    <Heart size={13} />
-                    Winback
-                </button>
-                </div>
-                
-                <div className="relative pr-1">
-                    {isSavingSmartList ? (
-                        <div className="flex items-center gap-1 bg-surface-main p-1 rounded-lg border border-accent-primary/30">
+                {/* Filter & Smart Lists Row */}
+                <div className="flex flex-col lg:flex-row gap-2">
+                    <div className="flex-1 flex flex-col md:flex-row items-center gap-2 bg-surface-main border border-border-subtle rounded-xl p-2 shadow-sm min-w-0">
+                        <div className="relative w-full md:w-64 shrink-0">
+                            <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 text-text-muted" size={14} />
                             <input 
-                                autoFocus
-                                type="text" 
-                                value={newSmartListName}
-                                onChange={e => setNewSmartListName(e.target.value)}
-                                onKeyDown={e => e.key === 'Enter' && saveSmartList()}
-                                placeholder="Name this view..."
-                                className="bg-transparent border-none outline-none text-sm font-bold w-[140px] px-2 text-text-primary placeholder:text-text-muted/50"
+                                type="text"
+                                placeholder="Search contacts..."
+                                value={searchQuery}
+                                onChange={(e) => { setSearchQuery(e.target.value); setActiveSmartListId(null); }}
+                                className="w-full bg-surface-alt border border-border-subtle rounded-lg pl-8 pr-3 py-1.5 text-sm text-text-primary outline-none focus:border-accent-primary focus:ring-1 transition-all"
                             />
-                            <button onClick={saveSmartList} className="p-1 bg-accent-primary text-white rounded hover:bg-accent-secondary"><Save size={14}/></button>
-                            <button onClick={() => setIsSavingSmartList(false)} className="p-1 text-text-muted hover:text-status-danger"><X size={14}/></button>
                         </div>
-                    ) : (
-                        <button onClick={() => { playClick(); setIsSavingSmartList(true); }} className="px-3 py-1.5 text-xs font-bold uppercase tracking-wider text-accent-primary hover:bg-accent-primary/10 rounded-lg transition-colors flex items-center gap-1.5 border border-accent-primary/20">
-                            <Save size={12}/> Save View
-                        </button>
-                    )}
-                </div>
-            </div>
+                        
+                        <div className="flex-1 flex items-center gap-2 overflow-x-auto ledger-scrollbar pb-1 md:pb-0 min-w-0">
+                            {/* Smart Lists */}
+                            {smartLists.map(sl => (
+                                <div key={sl.id} className="relative group shrink-0 flex items-center">
+                                    <button
+                                        onClick={() => loadSmartList(sl)}
+                                        className={`px-3 py-1.5 rounded-lg text-sm font-bold tracking-wider transition-all ${activeSmartListId === sl.id ? 'bg-accent-primary text-white shadow-md' : 'bg-surface-alt border border-border-subtle text-text-secondary hover:text-text-primary'}`}
+                                    >
+                                        {sl.name}
+                                    </button>
+                                    <button 
+                                        onClick={(e) => deleteSmartList(sl.id, e)}
+                                        className={`absolute right-1 top-1/2 -translate-y-1/2 p-0.5 rounded-full transition-opacity ${activeSmartListId === sl.id ? 'text-white/70 hover:text-white' : 'text-text-muted hover:text-status-danger opacity-0 group-hover:opacity-100'}`}
+                                    >
+                                        <X size={10} />
+                                    </button>
+                                </div>
+                            ))}
+                            {smartLists.length > 0 && <div className="w-[1px] h-4 bg-border-subtle shrink-0" />}
 
-            {/* Filter Panel / Query Controls */}
-            <div id="sales-pool-filters" className="p-2 bg-surface-main border border-border-subtle rounded-xl flex flex-col lg:flex-row items-center gap-2">
-                <div className="relative w-full lg:flex-1">
-                    <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 text-text-muted" size={14} />
-                    <input 
-                        type="text"
-                        placeholder="Search by first/last/middle name, phone, email, alternative phone, state, or medical condition..."
-                        value={searchQuery}
-                        onChange={(e) => { setSearchQuery(e.target.value); setActiveSmartListId(null); }}
-                        className="w-full bg-surface-alt border border-border-subtle rounded-lg pl-8 pr-3 py-1.5 text-sm text-text-primary outline-none focus:border-accent-primary focus:ring-1 focus:ring-accent-primary/20 transition-all font-medium"
-                    />
-                </div>
-                
-                <div className="flex flex-wrap items-center gap-2 w-full lg:w-auto">
-                    <div className="relative">
-                        <select
-                            value={selectedState}
-                            onChange={(e) => { setSelectedState(e.target.value); setActiveSmartListId(null); }}
-                            className="bg-surface-alt border border-border-subtle rounded-lg px-2 py-1.5 text-sm font-semibold text-text-primary outline-none focus:border-accent-primary focus:ring-1 focus:ring-accent-primary/20 transition-all cursor-pointer appearance-none min-w-[100px]"
-                        >
-                            <option value="">All States</option>
+                            {/* Quick Filters */}
+                            <button onClick={() => { playClick(); setActiveSmartListId(null); setSelectedStatusFilter('all'); }} className={`shrink-0 px-3 py-1.5 rounded-lg text-xs font-bold uppercase transition-all ${selectedStatusFilter === 'all' ? 'bg-accent-primary/20 text-accent-primary' : 'bg-surface-alt text-text-secondary hover:text-text-primary'}`}>All</button>
+                            <button onClick={() => { playClick(); setActiveSmartListId(null); setSelectedStatusFilter('approved'); }} className={`shrink-0 px-3 py-1.5 rounded-lg text-xs font-bold uppercase transition-all ${selectedStatusFilter === 'approved' ? 'bg-status-success/20 text-status-success' : 'bg-surface-alt text-text-secondary hover:text-text-primary'}`}>Approved</button>
+                            <button onClick={() => { playClick(); setActiveSmartListId(null); setSelectedStatusFilter('declined'); }} className={`shrink-0 px-3 py-1.5 rounded-lg text-xs font-bold uppercase transition-all ${selectedStatusFilter === 'declined' ? 'bg-status-error/20 text-status-error' : 'bg-surface-alt text-text-secondary hover:text-text-primary'}`}>Declined</button>
+                            <button onClick={() => { playClick(); setActiveSmartListId(null); setSelectedStatusFilter('incomplete'); }} className={`shrink-0 px-3 py-1.5 rounded-lg text-xs font-bold uppercase transition-all ${selectedStatusFilter === 'incomplete' ? 'bg-status-warning/20 text-status-warning' : 'bg-surface-alt text-text-secondary hover:text-text-primary'}`}>Incomplete</button>
+                        </div>
+                        
+                        {/* Save View */}
+                        <div className="shrink-0 ml-auto flex items-center gap-1">
+                            {isSavingSmartList ? (
+                                <div className="flex items-center gap-1 bg-surface-alt p-1 rounded border border-accent-primary/30">
+                                    <input autoFocus type="text" value={newSmartListName} onChange={e => setNewSmartListName(e.target.value)} onKeyDown={e => e.key === 'Enter' && saveSmartList()} placeholder="Name..." className="bg-transparent border-none outline-none text-xs w-20 text-text-primary" />
+                                    <button onClick={saveSmartList} className="text-accent-primary hover:text-white"><Save size={12}/></button>
+                                    <button onClick={() => setIsSavingSmartList(false)} className="text-status-danger hover:text-white"><X size={12}/></button>
+                                </div>
+                            ) : (
+                                <button onClick={() => { playClick(); setIsSavingSmartList(true); }} className="p-1.5 text-accent-primary hover:bg-accent-primary/10 rounded border border-accent-primary/20" title="Save View"><Save size={14}/></button>
+                            )}
+                            {activeSmartListId && (
+                                <button onClick={clearFilters} className="text-xs font-bold uppercase tracking-wider text-text-muted hover:text-text-primary transition-colors ml-2 underline decoration-text-muted/30 underline-offset-4">
+                                    Clear
+                                </button>
+                            )}
+                        </div>
+                    </div>
+
+                    <div className="flex flex-wrap lg:flex-nowrap items-center gap-2 bg-surface-main border border-border-subtle rounded-xl p-2 shadow-sm shrink-0">
+                        <select value={selectedState} onChange={(e) => { setSelectedState(e.target.value); setActiveSmartListId(null); }} className="bg-surface-alt border border-border-subtle rounded-lg px-2 py-1.5 text-xs font-bold outline-none cursor-pointer">
+                            <option value="">States</option>
                             {allStates.map(st => <option key={st} value={st}>{st}</option>)}
                         </select>
-                    </div>
-
-                    <div className="relative">
-                        <select
-                            value={selectedTag}
-                            onChange={(e) => { setSelectedTag(e.target.value); setActiveSmartListId(null); }}
-                            className="bg-surface-alt border border-border-subtle rounded-lg px-2 py-1.5 text-sm font-semibold text-text-primary outline-none focus:border-accent-primary focus:ring-1 focus:ring-accent-primary/20 transition-all cursor-pointer appearance-none min-w-[120px]"
-                        >
-                            <option value="">All Tags/Medications</option>
+                        <select value={selectedTag} onChange={(e) => { setSelectedTag(e.target.value); setActiveSmartListId(null); }} className="bg-surface-alt border border-border-subtle rounded-lg px-2 py-1.5 text-xs font-bold outline-none cursor-pointer w-24 truncate">
+                            <option value="">Tags</option>
                             {allTags.map(tg => <option key={tg} value={tg}>{tg}</option>)}
                         </select>
-                    </div>
-
-                    <div className="relative">
-                        <select
-                            value={selectedPipelineStage}
-                            onChange={(e) => { setSelectedPipelineStage(e.target.value); setActiveSmartListId(null); }}
-                            className="bg-surface-alt border border-border-subtle rounded-lg px-2 py-1.5 text-sm font-semibold text-text-primary outline-none focus:border-accent-primary focus:ring-1 focus:ring-accent-primary/20 transition-all cursor-pointer appearance-none min-w-[120px]"
-                        >
-                            <option value="">All Pipeline Stages</option>
+                        <select value={selectedPipelineStage} onChange={(e) => { setSelectedPipelineStage(e.target.value); setActiveSmartListId(null); }} className="bg-surface-alt border border-border-subtle rounded-lg px-2 py-1.5 text-xs font-bold outline-none cursor-pointer w-24 truncate">
+                            <option value="">Pipeline</option>
                             {allPipelineStages.map(ps => <option key={ps} value={ps}>{ps}</option>)}
                         </select>
-                    </div>
-
-                    <div className="relative">
-                        <select
-                            value={daysSinceOrderFilter}
-                            onChange={(e) => { setDaysSinceOrderFilter(e.target.value as any); setActiveSmartListId(null); }}
-                            className="bg-surface-alt border border-border-subtle rounded-lg px-2 py-1.5 text-sm font-semibold text-text-primary outline-none focus:border-accent-primary focus:ring-1 focus:ring-accent-primary/20 transition-all cursor-pointer appearance-none min-w-[120px]"
-                        >
-                            <option value="all">Any Order Age</option>
-                            <option value="14">&gt; 14 days ago</option>
-                            <option value="30">&gt; 30 days ago</option>
-                            <option value="60">&gt; 60 days ago</option>
-                            <option value="90">&gt; 90 days ago</option>
-                            <option value="never">Never ordered</option>
-                        </select>
-                    </div>
-
-                    <div className="flex items-center gap-1 border border-border-subtle col-span-1 rounded-lg p-0.5 bg-surface-alt">
-                        <button 
-                            type="button" 
-                            onClick={() => { playClick(); setSortBy('name'); }} 
-                            className={`px-3 py-1 rounded-lg text-sm font-bold uppercase tracking-wider transition-all ${sortBy === 'name' ? 'bg-accent-primary text-white shadow-sm' : 'text-text-muted hover:text-text-primary'}`}
-                        >
-                            Name
-                        </button>
-                        <button 
-                            type="button" 
-                            onClick={() => { playClick(); setSortBy('ltv'); }} 
-                            className={`px-3 py-1 rounded-lg text-sm font-bold uppercase tracking-wider transition-all ${sortBy === 'ltv' ? 'bg-accent-primary text-white shadow-sm' : 'text-text-muted hover:text-text-primary'}`}
-                        >
-                            LTV
-                        </button>
-                        <button 
-                            type="button" 
-                            onClick={() => { playClick(); setSortBy('date'); }} 
-                            className={`px-3 py-1 rounded-lg text-sm font-bold uppercase tracking-wider transition-all ${sortBy === 'date' ? 'bg-accent-primary text-white shadow-sm' : 'text-text-muted hover:text-text-primary'}`}
-                        >
-                            Added
+                        
+                        <div className="w-[1px] h-4 bg-border-subtle hidden md:block" />
+                        
+                        <div className="flex items-center bg-surface-alt rounded-lg border border-border-subtle p-0.5">
+                            <button onClick={() => { playClick(); setSortBy('name'); }} className={`px-2 py-1 rounded text-xs font-bold uppercase transition-all ${sortBy === 'name' ? 'bg-accent-primary text-white' : 'text-text-muted hover:text-text-primary'}`}>N</button>
+                            <button onClick={() => { playClick(); setSortBy('ltv'); }} className={`px-2 py-1 rounded text-xs font-bold uppercase transition-all ${sortBy === 'ltv' ? 'bg-accent-primary text-white' : 'text-text-muted hover:text-text-primary'}`}>$</button>
+                            <button onClick={() => { playClick(); setSortBy('date'); }} className={`px-2 py-1 rounded text-xs font-bold uppercase transition-all ${sortBy === 'date' ? 'bg-accent-primary text-white' : 'text-text-muted hover:text-text-primary'}`}>D</button>
+                        </div>
+                        <button onClick={() => { playClick(); setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc'); }} className="p-1 border border-border-subtle bg-surface-alt rounded hover:bg-border-subtle text-text-secondary transition-colors" title="Invert Sort Order">
+                            <ArrowUpDown size={14} />
                         </button>
                     </div>
-
-                    <button
-                        onClick={() => { playClick(); setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc'); }}
-                        className="p-1.5 border border-border-subtle bg-surface-alt rounded-lg hover:bg-border-subtle text-text-secondary transition-colors"
-                        title="Invert Sort Order"
-                    >
-                        <ArrowUpDown size={14} />
-                    </button>
                 </div>
-            </div>
-
-            {/* Main Table View */}
-            <div id="sales-pool-table-container" className="bg-surface-main border border-border-subtle rounded-xl overflow-hidden shadow-sm flex-1 flex flex-col min-h-0">
-                <div className="overflow-x-auto w-full flex-1 relative">
+            </div>            <div id="sales-pool-table-container" className="bg-surface-main border border-border-subtle rounded-xl overflow-hidden shadow-sm flex-1 flex flex-col min-h-0 relative">
+                <ScrollControls containerRef={containerRef} />
+                <div ref={containerRef} className="overflow-auto ledger-scrollbar w-full flex-1 relative">
                     <table className="w-full text-left border-collapse">
-                        <thead className="sticky top-0 z-10 bg-surface-main">
+                        <thead className="sticky top-0 z-30 bg-surface-main">
                             <tr className="border-b border-border-subtle bg-surface-alt text-sm font-bold tracking-wide text-text-muted uppercase h-8">
-                                <th className="px-3 py-1.5">Client Identifiers</th>
-                                <th className="px-3 py-1.5">Direct Contact</th>
-                                <th className="px-3 py-1.5">Vital Statistics</th>
+                                <th className="sticky left-0 z-40 bg-surface-alt px-3 py-1.5 shadow-[1px_0_0_var(--border-subtle)] min-w-[300px]">Client Identifiers</th>
+                                <th className="px-3 py-1.5 min-w-[160px]">Direct Contact</th>
+                                <th className="px-3 py-1.5 min-w-[160px]">Vital Statistics</th>
                                 <th className="px-3 py-1.5">Profile & Taxonomy</th>
                                 <th className="px-3 py-1.5">Billing & Shipping Locations</th>
                                 <th className="px-3 py-1.5 text-right">LTV Metric</th>
@@ -777,7 +638,7 @@ export const UniqueSalesPool: React.FC = () => {
                                     </td>
                                 </tr>
                             ) : (
-                                filteredCustomers.map(customer => (
+                                paginatedCustomers.map(customer => (
                                     <CustomerRow 
                                         key={customer.id}
                                         customer={customer}
@@ -791,6 +652,32 @@ export const UniqueSalesPool: React.FC = () => {
                             )}
                         </tbody>
                     </table>
+                </div>
+
+                {/* Pagination Footer */}
+                <div className="bg-surface-alt/80 border-t border-border-subtle py-2 px-4 flex justify-between items-center text-xs font-bold tracking-wide text-text-muted backdrop-blur-md sticky bottom-0 z-20">
+                    <div className="flex gap-4 items-center">
+                        <span>Total Records: {filteredCustomers.length}</span>
+                    </div>
+                    <div className="flex items-center gap-4">
+                        <span className="text-text-secondary">Page {currentPage} of {totalPages}</span>
+                        <div className="flex gap-1.5">
+                            <button 
+                                onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                                disabled={currentPage === 1}
+                                className="p-1.5 rounded-md border border-border-subtle hover:bg-surface-main disabled:opacity-30 disabled:cursor-not-allowed transition-all"
+                            >
+                                <ChevronLeft size={16} />
+                            </button>
+                            <button 
+                                onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                                disabled={currentPage === totalPages}
+                                className="p-1.5 rounded-md border border-border-subtle hover:bg-surface-main disabled:opacity-30 disabled:cursor-not-allowed transition-all"
+                            >
+                                <ChevronRight size={16} />
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </div>
 

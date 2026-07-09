@@ -31,10 +31,19 @@ interface LedgerTableProps {
     hasMore?: boolean;
 }
 
+import { ScrollControls } from './ScrollControls';
+import { useAuth } from '../../../hooks/useAuth';
+
 export const LedgerTable: React.FC<LedgerTableProps> = ({
     sales, columnOrder, visibleColumns, sortConfig, handleSort, selectedIds, toggleSelect, toggleSelectAll,
     allowActions, onAction, onColumnReorder, density, isLoading, fetchNextPage, hasMore
 }) => {
+    const { currentUser } = useAuth();
+    const isLevel10 = currentUser?.level === 10;
+    
+    const [selectionRange, setSelectionRange] = useState<{startRow: number, startCol: number, endRow: number, endCol: number} | null>(null);
+    const [isSelecting, setIsSelecting] = useState(false);
+
     const activeColumns = useMemo(() => {
         return columnOrder.filter(k => visibleColumns[k] && k !== 'cmd');
     }, [columnOrder, visibleColumns]);
@@ -51,6 +60,44 @@ export const LedgerTable: React.FC<LedgerTableProps> = ({
     
     const virtualItems = rowVirtualizer.getVirtualItems();
     
+    React.useEffect(() => {
+        const handleMouseUp = () => setIsSelecting(false);
+        window.addEventListener('mouseup', handleMouseUp);
+        return () => window.removeEventListener('mouseup', handleMouseUp);
+    }, []);
+
+    React.useEffect(() => {
+        const handleKeyDown = (e: KeyboardEvent) => {
+            if ((e.ctrlKey || e.metaKey) && e.key === 'c' && selectionRange && isLevel10) {
+                const minRow = Math.min(selectionRange.startRow, selectionRange.endRow);
+                const maxRow = Math.max(selectionRange.startRow, selectionRange.endRow);
+                const minCol = Math.min(selectionRange.startCol, selectionRange.endCol);
+                const maxCol = Math.max(selectionRange.startCol, selectionRange.endCol);
+
+                let clipString = "";
+                for (let r = minRow; r <= maxRow; r++) {
+                    const rowSale = sales[r - 1]; // rowIndex is 1-based
+                    if (!rowSale) continue;
+                    const rowString = [];
+                    for (let c = minCol; c <= maxCol; c++) {
+                        const colKey = activeColumns[c];
+                        if (colKey) {
+                            const val = (rowSale as any)[colKey];
+                            rowString.push(val != null ? String(val).replace(/\t/g, ' ').replace(/\n/g, ' ') : "");
+                        }
+                    }
+                    clipString += rowString.join("\t") + "\n";
+                }
+                if (clipString) {
+                    navigator.clipboard.writeText(clipString);
+                    sfx.playConfirm();
+                }
+            }
+        };
+        window.addEventListener('keydown', handleKeyDown);
+        return () => window.removeEventListener('keydown', handleKeyDown);
+    }, [selectionRange, sales, activeColumns, isLevel10]);
+
     React.useEffect(() => {
         const lastItem = virtualItems[virtualItems.length - 1];
         if (!lastItem) return;
@@ -88,6 +135,7 @@ export const LedgerTable: React.FC<LedgerTableProps> = ({
         setHeaderMenu,
         getColWidth,
         startResize,
+        autoFitColumn,
         handleDragStart,
         handleDragOver,
         handleDragLeave,
@@ -98,7 +146,8 @@ export const LedgerTable: React.FC<LedgerTableProps> = ({
 
     return (
         <div ref={parentRef} className="flex-1 min-h-0 w-full overflow-auto ledger-scrollbar bg-surface-main relative">
-            <table className="w-full text-left border-collapse table-fixed min-w-max">
+            <ScrollControls containerRef={parentRef} />
+            <table className={`w-full text-left border-collapse table-fixed min-w-max ${isSelecting ? 'select-none' : ''}`}>
                 <colgroup>
                     <col className="w-10 bg-surface-main" />
                     <col className="w-12 bg-surface-main" />
@@ -118,7 +167,7 @@ export const LedgerTable: React.FC<LedgerTableProps> = ({
                                 {selectedIds.size > 0 && selectedIds.size === sales.length ? <CheckSquare size={16}/> : <Square size={16}/>}
                             </button>
                         </th>
-                        <th className={`sticky left-[88px] z-40 w-10 bg-surface-main backdrop-blur-md`}></th>
+                        <th className={`sticky left-[88px] z-40 w-10 bg-surface-main backdrop-blur-md shadow-[1px_0_0_var(--border-subtle)]`}></th>
                         {activeColumns.map(col => (
                             <th 
                                 key={col} 
@@ -128,6 +177,7 @@ export const LedgerTable: React.FC<LedgerTableProps> = ({
                                 onDragLeave={handleDragLeave}
                                 onDrop={(e) => handleDrop(e, col)}
                                 onContextMenu={(e) => handleHeaderContextMenu(e, col)}
+                                onDoubleClick={() => autoFitColumn(col)}
                                 className={`
                                     ${density === 'compact' ? 'px-2 py-0.5' : 'px-3 py-1.5'} 
                                     text-[10px] sm:text-[11px] font-[600] tracking-wider text-text-muted uppercase
@@ -155,6 +205,10 @@ export const LedgerTable: React.FC<LedgerTableProps> = ({
                                 <div 
                                     className="resizer absolute right-0 top-0 bottom-0 w-1.5 cursor-col-resize hover:bg-accent-primary z-50 transition-colors"
                                     onMouseDown={(e) => startResize(col, e)}
+                                    onDoubleClick={(e) => {
+                                        e.stopPropagation();
+                                        autoFitColumn(col);
+                                    }}
                                     onClick={(e) => e.stopPropagation()}
                                 />
                             </th>
@@ -217,6 +271,17 @@ export const LedgerTable: React.FC<LedgerTableProps> = ({
                             measureRef={rowVirtualizer.measureElement}
                             dataIndex={virtualRow.index}
                             rowIndex={virtualRow.index + 1}
+                            isLevel10={isLevel10}
+                            selectionRange={selectionRange}
+                            onCellMouseDown={(r, c) => {
+                                setIsSelecting(true);
+                                setSelectionRange({ startRow: r, startCol: c, endRow: r, endCol: c });
+                            }}
+                            onCellMouseEnter={(r, c) => {
+                                if (isSelecting) {
+                                    setSelectionRange(prev => prev ? { ...prev, endRow: r, endCol: c } : null);
+                                }
+                            }}
                         />
                     );
                 })}

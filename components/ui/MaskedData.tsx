@@ -1,3 +1,4 @@
+import { getStorageItem, setStorageItem } from '../../lib/storage';
 import React, { useState, useEffect } from 'react';
 import { Eye, EyeOff } from 'lucide-react';
 import { maskPII } from '../../utils/security';
@@ -44,11 +45,11 @@ export const MaskedData: React.FC<MaskedDataProps> = ({ value, type = 'phone' })
                             try {
                                 const now = Date.now();
                                 const cacheKey = `reveal_tracker_${currentUser?.id}`;
-                                const history: number[] = JSON.parse(localStorage.getItem(cacheKey) || '[]');
+                                const history: number[] = JSON.parse(getStorageItem(cacheKey) || '[]');
                                 const oneHourAgo = now - 60 * 60 * 1000;
                                 const recent = history.filter(t => t > oneHourAgo);
                                 recent.push(now);
-                                localStorage.setItem(cacheKey, JSON.stringify(recent));
+                                setStorageItem(cacheKey, JSON.stringify(recent));
 
                                 if (recent.length > 20) {
                                     window.dispatchEvent(new CustomEvent('DLP_ALERT', { 

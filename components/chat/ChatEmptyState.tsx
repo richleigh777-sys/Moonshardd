@@ -20,7 +20,7 @@ export const ChatEmptyState: React.FC = () => (
                     <p className="text-sm text-text-muted mb-2">Type <code className="bg-surface-main px-1 rounded text-text-primary">/</code> to access CRM functions:</p>
                     <ul className="text-sm text-text-muted space-y-1">
                         <li><span className="text-accent-secondary font-mono">/lead</span> - Share lead file</li>
-                        <li><span className="text-accent-secondary font-mono">/stack</span> - Teams Stack</li>
+                        <li><span className="text-accent-secondary font-mono">/stack</span> - Sales Stack</li>
                         <li><span className="text-accent-secondary font-mono">/dnc</span> - Flag Do Not Call</li>
                         <li><span className="text-accent-secondary font-mono">/callback</span> - Schedule follow-up</li>
                     </ul>

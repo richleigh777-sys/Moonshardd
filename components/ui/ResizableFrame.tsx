@@ -1,3 +1,4 @@
+import { getStorageItem, setStorageItem, removeStorageItem } from '../../lib/storage';
 
 import React, { useState, useEffect, useRef } from 'react';
 import { useAuth } from '../../hooks/useAuth';
@@ -35,7 +36,7 @@ export const ResizableFrame: React.FC<ResizableFrameProps> = ({
     const containerRef = useRef<HTMLDivElement>(null);
     const [dimensions, setDimensions] = useState(() => {
         if (persistenceKey && isSuperAdmin) {
-            const saved = localStorage.getItem(`nexus_frame_${persistenceKey}`);
+            const saved = getStorageItem(`nexus_frame_${persistenceKey}`);
             if (saved) {
                 try {
                     const parsed = JSON.parse(saved);
@@ -90,7 +91,7 @@ export const ResizableFrame: React.FC<ResizableFrameProps> = ({
                         width: direction !== 'vertical' ? rect.width : dimensionsRef.current.width,
                         height: direction !== 'horizontal' ? rect.height : dimensionsRef.current.height
                     };
-                    localStorage.setItem(`nexus_frame_${persistenceKey}`, JSON.stringify(newDims));
+                    setStorageItem(`nexus_frame_${persistenceKey}`, JSON.stringify(newDims));
                 }
             }
         };
@@ -180,7 +181,7 @@ export const ResizableFrame: React.FC<ResizableFrameProps> = ({
         sfx.playDecline(); // Mechanical sound for reset
         setDimensions({ width: defaultWidth, height: defaultHeight });
         if (persistenceKey) {
-            localStorage.removeItem(`nexus_frame_${persistenceKey}`);
+            removeStorageItem(`nexus_frame_${persistenceKey}`);
         }
     };
 
@@ -217,7 +218,7 @@ export const ResizableFrame: React.FC<ResizableFrameProps> = ({
 
         // Save on key release/debounce would be better, but direct save for now
         if (persistenceKey) {
-            localStorage.setItem(`nexus_frame_${persistenceKey}`, JSON.stringify({ width: nextW, height: nextH }));
+            setStorageItem(`nexus_frame_${persistenceKey}`, JSON.stringify({ width: nextW, height: nextH }));
         }
     };
 

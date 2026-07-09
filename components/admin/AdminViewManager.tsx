@@ -2,6 +2,11 @@ import React from 'react';
 import { TabContent, Tabs, TabList, TabTrigger } from '../ui/Tabs';
 import { sfx } from '../../lib/soundService';
 import { User, Sale, Note, SystemConfig, ProductConfig, SystemHealth, ToastMessage } from '../../types';
+import { 
+    LayoutDashboard, UserPlus, ShieldAlert, Megaphone, MessageSquare, 
+    CircleDollarSign, Database, Users, Home, Shield, LineChart, 
+    Trophy, FileText, Package, Settings, Server, GitMerge
+} from 'lucide-react';
 
 // Standard Imports for fast routing
 import { AdminDashboard } from './AdminDashboard';
@@ -22,6 +27,7 @@ import { SystemConfigPanel } from './SystemConfigPanel';
 import { GodModePanel } from '../widgets/GodModePanel';
 import { CRMAuditDashboard } from './CRMAuditDashboard';
 import { UniqueSalesPool } from './UniqueSalesPool';
+import { WorkflowEngine } from './WorkflowEngine';
 
 interface AdminTerminalManagerProps {
     isAllowed: (id: string) => boolean;
@@ -50,7 +56,7 @@ interface AdminTerminalManagerProps {
 }
 
 export const AdminViewManager: React.FC<AdminTerminalManagerProps> = ({
-    _isAllowed, setView, currentUser, sales, users, notes, health, productConfig, updateProductConfig,
+    isAllowed, setView, currentUser, sales, users, notes, health, productConfig, updateProductConfig,
     systemConfig, updateSystemConfig, updateUser, addUser, importSales, sendDirective,
     runDiagnostic, testUplink, handleLedgerAction, handleBulkLedgerAction, setToast,
     onGhostLogin, showTerminals, setShowTerminals
@@ -62,13 +68,13 @@ export const AdminViewManager: React.FC<AdminTerminalManagerProps> = ({
     return (
         <>
             <TabContent value="action" className="w-full h-full flex flex-col flex-1 min-h-0">
-                <Tabs value={activeActionTab} onValueChange={setActiveActionTab} className="w-full h-full flex flex-col min-h-0" orientation="horizontal">
+                <Tabs value={activeActionTab} onValueChange={setActiveActionTab} className="w-full h-full flex flex-col flex-1 min-h-0" orientation="horizontal">
                     <TabList className="mb-2 shrink-0">
-                        <TabTrigger value="pipeline">Pipeline</TabTrigger>
-                        <TabTrigger value="enrollment">Help a Customer</TabTrigger>
-                        <TabTrigger value="retention">Save a Sale</TabTrigger>
-                        <TabTrigger value="campaigns">Drip Campaigns</TabTrigger>
-                        <TabTrigger value="comms">Chat</TabTrigger>
+                        <TabTrigger value="pipeline" icon={<LayoutDashboard size={18} />}>Pipeline</TabTrigger>
+                        <TabTrigger value="enrollment" icon={<UserPlus size={18} />}>Help a Customer</TabTrigger>
+                        <TabTrigger value="retention" icon={<ShieldAlert size={18} />}>Save a Sale</TabTrigger>
+                        <TabTrigger value="campaigns" icon={<Megaphone size={18} />}>Drip Campaigns</TabTrigger>
+                        <TabTrigger value="comms" icon={<MessageSquare size={18} />}>Chat</TabTrigger>
                     </TabList>
                     
                     <TabContent value="pipeline" className="w-full h-full flex flex-col flex-1 min-h-0">
@@ -90,11 +96,11 @@ export const AdminViewManager: React.FC<AdminTerminalManagerProps> = ({
             </TabContent>
 
             <TabContent value="money" className="w-full h-full flex flex-col flex-1 min-h-0">
-                <Tabs value={activeMoneyTab} onValueChange={setActiveMoneyTab} className="w-full h-full flex flex-col min-h-0" orientation="horizontal">
+                <Tabs value={activeMoneyTab} onValueChange={setActiveMoneyTab} className="w-full h-full flex flex-col flex-1 min-h-0" orientation="horizontal">
                     <TabList className="mb-2 shrink-0">
-                        <TabTrigger value="payroll">Team Earnings</TabTrigger>
-                        <TabTrigger value="ledger">All Customers</TabTrigger>
-                        <TabTrigger value="sales_pool">Sales Pool</TabTrigger>
+                        <TabTrigger value="payroll" icon={<CircleDollarSign size={18} />}>Team Earnings</TabTrigger>
+                        <TabTrigger value="ledger" icon={<Database size={18} />}>All Customers</TabTrigger>
+                        <TabTrigger value="sales_pool" icon={<Users size={18} />}>Sales Pool</TabTrigger>
                     </TabList>
                     
                     <TabContent value="payroll" className="w-full h-full flex flex-col flex-1 min-h-0">
@@ -127,17 +133,22 @@ export const AdminViewManager: React.FC<AdminTerminalManagerProps> = ({
             </TabContent>
 
             <TabContent value="oversight" className="w-full h-full flex flex-col flex-1 min-h-0">
-                <Tabs value={activeOversightTab} onValueChange={setActiveOversightTab} className="w-full h-full flex flex-col min-h-0" orientation="horizontal">
+                <Tabs value={activeOversightTab} onValueChange={setActiveOversightTab} className="w-full h-full flex flex-col flex-1 min-h-0" orientation="horizontal">
                     <TabList className="mb-2 shrink-0">
-                        <TabTrigger value="overview">Company Home</TabTrigger>
-                        <TabTrigger value="audit">Security & Audit</TabTrigger>
-                        <TabTrigger value="intel">Insights</TabTrigger>
-                        <TabTrigger value="standings">Team Standings</TabTrigger>
-                        <TabTrigger value="roster">Manage Team</TabTrigger>
-                        <TabTrigger value="scripts">Dialogues</TabTrigger>
-                        <TabTrigger value="catalog">Products</TabTrigger>
-                        <TabTrigger value="system">Settings</TabTrigger>
-                        <TabTrigger value="nexus" className="text-status-warning">Main Settings</TabTrigger>
+                        <TabTrigger value="overview" icon={<Home size={18} />}>Company Home</TabTrigger>
+                        <TabTrigger value="audit" icon={<Shield size={18} />}>Security & Audit</TabTrigger>
+                        <TabTrigger value="intel" icon={<LineChart size={18} />}>Insights</TabTrigger>
+                        <TabTrigger value="standings" icon={<Trophy size={18} />}>Team Standings</TabTrigger>
+                        <TabTrigger value="roster" icon={<Users size={18} />}>Manage Team</TabTrigger>
+                        <TabTrigger value="scripts" icon={<FileText size={18} />}>Dialogues</TabTrigger>
+                        <TabTrigger value="catalog" icon={<Package size={18} />}>Products</TabTrigger>
+                        <TabTrigger value="workflows" icon={<GitMerge size={18} />}>Workflows</TabTrigger>
+                        {(currentUser.level || 0) >= 10 && (
+                            <>
+                                <TabTrigger value="system" icon={<Settings size={18} />}>Settings</TabTrigger>
+                                <TabTrigger value="nexus" icon={<Server size={18} />} className="text-status-warning">Main Settings</TabTrigger>
+                            </>
+                        )}
                     </TabList>
                     
                     <TabContent value="overview" className="w-full h-full overflow-y-auto">
@@ -174,12 +185,19 @@ export const AdminViewManager: React.FC<AdminTerminalManagerProps> = ({
                     <TabContent value="catalog" className="w-full h-full flex flex-col flex-1 min-h-0">
                         <ProductManager configForm={productConfig} setConfigForm={updateProductConfig} onSave={updateProductConfig} />
                     </TabContent>
-                    <TabContent value="system" className="w-full h-full flex flex-col flex-1 min-h-0">
-                        <SystemConfigPanel config={systemConfig} onUpdate={updateSystemConfig} sales={sales} notes={notes} />
+                    <TabContent value="workflows" className="w-full h-full flex flex-col flex-1 min-h-0">
+                        <WorkflowEngine />
                     </TabContent>
-                    <TabContent value="nexus" className="w-full h-full flex flex-col flex-1 min-h-0">
-                        <GodModePanel />
-                    </TabContent>
+                    {(currentUser.level || 0) >= 10 && (
+                        <>
+                            <TabContent value="system" className="w-full h-full flex flex-col flex-1 min-h-0">
+                                <SystemConfigPanel config={systemConfig} onUpdate={updateSystemConfig} sales={sales} notes={notes} />
+                            </TabContent>
+                            <TabContent value="nexus" className="w-full h-full flex flex-col flex-1 min-h-0">
+                                <GodModePanel />
+                            </TabContent>
+                        </>
+                    )}
                 </Tabs>
             </TabContent>
         </>

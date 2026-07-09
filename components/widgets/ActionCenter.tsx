@@ -4,10 +4,11 @@ import { Card, Button, Badge } from '../ui/Base';
 import { useCRM } from '../../hooks/useCRM';
 import { useAuth } from '../../hooks/useAuth';
 import { sfx } from '../../lib/soundService';
+import { executeDialer } from '../../lib/dialer';
 import { MaskedData } from '../ui/MaskedData';
 
 export const ActionCenter: React.FC<{ onEngage?: (data: any) => void }> = ({ onEngage }) => {
-    const { notes, customers, sales, deleteNote } = useCRM();
+    const { notes, customers, sales, deleteNote, systemConfig } = useCRM();
     const { currentUser } = useAuth();
     const [viewMode, setViewMode] = useState<'callbacks' | 'reorder' | 'inbound' | 'recovery' | 'upsell' | 'winback'>('callbacks');
 
@@ -152,8 +153,14 @@ export const ActionCenter: React.FC<{ onEngage?: (data: any) => void }> = ({ onE
             .sort((a,b) => b.addedAt - a.addedAt);
     }, [customers, sales, notes, now]);
 
+
     const handleCall = (person: any, actionType?: string) => {
         sfx.playSubmit();
+        
+        // Execute Universal Dialer
+        if (person.phone) {
+            executeDialer(person.phone, person, systemConfig);
+        }
         
         // Enhance with action context to trigger the SmartPitch overlay
         window.dispatchEvent(new CustomEvent('SMART_PITCH', {

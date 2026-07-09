@@ -6,8 +6,8 @@ import { CRMPerformanceProvider } from './context/CRMPerformanceContext';
 import { AuthProvider } from './context/AuthContext';
 import { SystemProvider } from './context/SystemContext';
 import { MainContent } from './components/app/MainContent';
+import { CustomWebDialerIframe } from './components/widgets/telephony/CustomWebDialerIframe';
 import { GlobalErrorBoundary } from './components/ui/GlobalErrorBoundary';
-import { APIProvider } from '@vis.gl/react-google-maps';
 
 const queryClient = new QueryClient({
     defaultOptions: {
@@ -18,11 +18,9 @@ const queryClient = new QueryClient({
     },
 });
 
-const API_KEY =
-  (import.meta as any).env?.VITE_GOOGLE_MAPS_API_KEY ||
-  '';
 
 import { AutoScaler } from './components/layout/AutoScaler';
+import { DLPWatermark } from './components/security/DLPWatermark';
 
 const App: React.FC = () => {
     const content = (
@@ -32,7 +30,9 @@ const App: React.FC = () => {
                     <CRMProvider>
                         <CRMPerformanceProvider>
                             <AutoScaler>
+                                <DLPWatermark />
                                 <MainContent />
+                                <CustomWebDialerIframe />
                             </AutoScaler>
                         </CRMPerformanceProvider>
                     </CRMProvider>
@@ -43,11 +43,7 @@ const App: React.FC = () => {
 
     return (
         <GlobalErrorBoundary>
-            {API_KEY ? (
-                <APIProvider apiKey={API_KEY} solutionChannel="GMP_QB_addressselection_v4_cAC" version="weekly">
-                    {content}
-                </APIProvider>
-            ) : content}
+            {content}
         </GlobalErrorBoundary>
     );
 };

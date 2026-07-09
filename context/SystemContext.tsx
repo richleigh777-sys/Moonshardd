@@ -1,3 +1,4 @@
+import { getStorageItem, setStorageItem } from '../lib/storage';
 
 import React, { useState, useEffect } from 'react';
 import { ToastMessage, ViewState, Theme } from '../types';
@@ -19,21 +20,21 @@ export const SystemProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     
     // Zoom control with persistence
     const [uiZoom, setUiZoom] = useState<number>(() => {
-        const stored = localStorage.getItem('bh_ui_zoom');
+        const stored = getStorageItem('bh_ui_zoom');
         return stored ? parseFloat(stored) : 1.0;
     });
 
     useEffect(() => {
-        localStorage.setItem('bh_ui_zoom', String(uiZoom));
+        setStorageItem('bh_ui_zoom', String(uiZoom));
         // Apply scaling globally if browser doesn't natively perform well
         // Actually, CSS zoom handles this gracefully or we can use font-size scaling.
         document.documentElement.style.fontSize = `${uiZoom * 100}%`;
     }, [uiZoom]);
     
-    const [theme, setTheme] = useState<Theme>(() => (localStorage.getItem('bh_theme') as Theme) || 'light');
+    const [theme, setTheme] = useState<Theme>(() => (getStorageItem('bh_theme') as Theme) || 'light');
     const [isChromatic, setIsChromatic] = useState(false);
     const [notificationsEnabled, setNotificationsEnabled] = useState<boolean>(() => {
-        const stored = localStorage.getItem('bh_notifs_enabled');
+        const stored = getStorageItem('bh_notifs_enabled');
         return stored === null ? true : stored === 'true';
     });
 
@@ -64,11 +65,11 @@ export const SystemProvider: React.FC<{ children: React.ReactNode }> = ({ childr
             sfx.setEnabled(activeServer.config.enableSoundFx);
         }
 
-        localStorage.setItem('bh_theme', theme);
+        setStorageItem('bh_theme', theme);
     }, [theme, activeServer?.config?.enforceTheme, activeServer?.config?.transitionSpeed, activeServer?.config?.eyeCareFilter]);
 
     useEffect(() => {
-        localStorage.setItem('bh_notifs_enabled', String(notificationsEnabled));
+        setStorageItem('bh_notifs_enabled', String(notificationsEnabled));
     }, [notificationsEnabled]);
 
     useEffect(() => {

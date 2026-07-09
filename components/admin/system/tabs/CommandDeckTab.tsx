@@ -32,9 +32,9 @@ const INITIAL_ORGS: OrganizationNode[] = [
 ];
 
 export const CommandDeckTab = () => {
-    const { _users, systemConfig, updateSystemConfig, _updateUser, sendDirective, addNote } = useCRM();
+    const { users, systemConfig, updateSystemConfig, updateUser, sendDirective, addNote } = useCRM();
     const { setToast } = useSystem();
-    const { serverList, createNewServer } = useServerManager();
+    const { serverList, createNewServer, updateServer } = useServerManager();
 
     const [localOrgs, setLocalOrgs] = useState<OrganizationNode[]>([]);
     const [isPinging, setIsPinging] = useState(false);
@@ -776,6 +776,21 @@ export const CommandDeckTab = () => {
                                      <RefreshCw size={12} className={isPinging ? 'animate-spin text-accent-primary' : ''} />
                                      <span>{isPinging ? "TESTING..." : "TEST PATH PING"}</span>
                                  </Button>
+                                 <button
+                                     onClick={() => {
+                                         const newStatus = activeNode.status === 'online' ? 'offline' : 'active';
+                                         updateServer(activeNode.id, { status: newStatus as any });
+                                         sfx.playConfirm();
+                                     }}
+                                     className={`flex items-center gap-2 px-3 py-1.5 rounded-lg border text-[11px] font-bold tracking-widest transition-all ${
+                                         activeNode.status === 'online' 
+                                         ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-500 hover:bg-emerald-500/20 shadow-[0_0_15px_rgba(16,185,129,0.2)]' 
+                                         : 'bg-surface-alt border-border-subtle text-text-muted hover:text-text-primary'
+                                     }`}
+                                 >
+                                     <div className={`w-2 h-2 rounded-full ${activeNode.status === 'online' ? 'bg-emerald-500 animate-pulse' : 'bg-text-muted'}`} />
+                                     {activeNode.status === 'online' ? 'NODE ACTIVE' : 'ACTIVATE NODE'}
+                                 </button>
                              </div>
                          </div>
                      </Card>

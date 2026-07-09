@@ -1,3 +1,4 @@
+import { getStorageItem, setStorageItem, removeStorageItem } from '../lib/storage';
 
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { User } from '../types';
@@ -42,11 +43,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         setSessionStartTime(null);
         resetTimerState();
         
-        localStorage.removeItem(SESSION_STORAGE_KEY);
-        localStorage.removeItem(SESSION_SIG_KEY);
-        localStorage.removeItem(SESSION_START_KEY);
-        localStorage.removeItem(GHOST_ORIGIN_KEY);
-        localStorage.removeItem('nexus_admin_sig_bkp');
+        removeStorageItem(SESSION_STORAGE_KEY);
+        removeStorageItem(SESSION_SIG_KEY);
+        removeStorageItem(SESSION_START_KEY);
+        removeStorageItem(GHOST_ORIGIN_KEY);
+        removeStorageItem('nexus_admin_sig_bkp');
 
         if (afkTimerRef.current) clearTimeout(afkTimerRef.current);
     }, [currentUser, resetTimerState]);
@@ -58,23 +59,31 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         hasRestored.current = true;
 
         const verify = async () => {
-            const stored = localStorage.getItem(SESSION_STORAGE_KEY);
-            const sig = localStorage.getItem(SESSION_SIG_KEY);
+            const stored = getStorageItem(SESSION_STORAGE_KEY);
+            const sig = getStorageItem(SESSION_SIG_KEY);
             if (stored && sig) {
                 try {
                     const user = JSON.parse(stored);
                     const isValid = await nexusGateway.verifySession(user.id, user.role, user.level, sig);
                     if (!isValid) {
                         console.warn("[Security] Session Signature Invalid or Expired. Purging session.");
-                        localStorage.removeItem(SESSION_STORAGE_KEY);
-                        localStorage.removeItem(SESSION_SIG_KEY);
-                        localStorage.removeItem(SESSION_START_KEY);
-                        localStorage.removeItem(GHOST_ORIGIN_KEY);
+                        removeStorageItem(SESSION_STORAGE_KEY);
+                        removeStorageItem(SESSION_SIG_KEY);
+                        removeStorageItem(SESSION_START_KEY);
+                        removeStorageItem(GHOST_ORIGIN_KEY);
                         setCurrentUser(null);
                     } else {
                         setCurrentUser(user);
-                        const start = localStorage.getItem(SESSION_START_KEY);
+                        const start = getStorageItem(SESSION_START_KEY);
                         if (start) setSessionStartTime(parseInt(start));
+                        const ghostAdminStr = getStorageItem(GHOST_ORIGIN_KEY);
+                        if (ghostAdminStr) {
+                            try {
+                                setOriginalAdmin(JSON.parse(ghostAdminStr));
+                            } catch (e) {
+                                console.error("[Security] Failed to parse ghost admin on restore:", e);
+                            }
+                        }
                     }
                 } catch (error: any) { 
                     if (
@@ -84,8 +93,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
                         console.warn("[Security] Client offline, skipping remote session verification. Using cached user.");
                         const user = JSON.parse(stored);
                         setCurrentUser(user);
-                        const start = localStorage.getItem(SESSION_START_KEY);
+                        const start = getStorageItem(SESSION_START_KEY);
                         if (start) setSessionStartTime(parseInt(start));
+                        const ghostAdminStr = getStorageItem(GHOST_ORIGIN_KEY);
+                        if (ghostAdminStr) {
+                            try {
+                                setOriginalAdmin(JSON.parse(ghostAdminStr));
+                            } catch (e) {
+                                console.warn("[Security] Failed to parse ghost admin on offline restore", e);
+                            }
+                        }
                     } else {
                         setCurrentUser(null);
                     }
@@ -105,7 +122,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         const now = Date.now();
         if (isGhost && currentUser && currentUser.role === 'admin') {
             setOriginalAdmin(currentUser);
-            localStorage.setItem(GHOST_ORIGIN_KEY, JSON.stringify(currentUser));
+            setStorageItem(GHOST_ORIGIN_KEY, JSON.stringify(currentUser));
         }
 
         const userWithLogin = { ...user, loginTimeToday: now, currentStatus: 'online' as const };
@@ -113,25 +130,25 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         setSessionStartTime(now);
         resetTimerState();
         
-        localStorage.setItem(SESSION_STORAGE_KEY, JSON.stringify(userWithLogin));
+        setStorageItem(SESSION_STORAGE_KEY, JSON.stringify(userWithLogin));
         if (sig) {
-            localStorage.setItem(SESSION_SIG_KEY, sig);
+            setStorageItem(SESSION_SIG_KEY, sig);
         } else if (isGhost) {
-            const serverId = localStorage.getItem('nexus_server_id') || 'srv-001';
+            const serverId = getStorageItem('nexus_server_id') || 'srv-001';
             const tempSig = btoa(`${user.id}:${serverId}:${now}`);
-            localStorage.setItem(SESSION_SIG_KEY, tempSig);
+            setStorageItem(SESSION_SIG_KEY, tempSig);
         }
-        localStorage.setItem(SESSION_START_KEY, now.toString());
+        setStorageItem(SESSION_START_KEY, now.toString());
         await nexusGateway.update('users', user.id, { currentStatus: 'online', lastActive: now });
         resetAfk();
     }, [currentUser, resetTimerState, resetAfk]);
 
     const exitGhostMode = useCallback(() => {
         if (originalAdmin) {
-            const sig = localStorage.getItem('nexus_admin_sig_bkp'); 
+            const sig = getStorageItem('nexus_admin_sig_bkp'); 
             login(originalAdmin, sig || undefined, false);
             setOriginalAdmin(null);
-            localStorage.removeItem(GHOST_ORIGIN_KEY);
+            removeStorageItem(GHOST_ORIGIN_KEY);
             sfx.playConfirm();
         }
     }, [originalAdmin, login]);

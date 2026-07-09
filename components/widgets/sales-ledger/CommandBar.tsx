@@ -4,6 +4,7 @@ import { Save, X } from 'lucide-react';
 import { Button } from '../../ui/Base';
 
 interface CommandBarProps {
+    agents?: string[];
     count: number;
     isBulkEdit: boolean;
     isSaving: boolean;
@@ -12,7 +13,7 @@ interface CommandBarProps {
     onAction: (action: string) => void;
 }
 
-export const CommandBar: React.FC<CommandBarProps> = React.memo(({ count, isBulkEdit, isSaving, onSave, onCancel, onAction }) => (
+export const CommandBar: React.FC<CommandBarProps> = React.memo(({ count, isBulkEdit, isSaving, onSave, onCancel, onAction, agents = [] }) => (
     <div className="absolute bottom-12 left-1/2 -translate-x-1/2 z-30 flex flex-col items-center animate-in slide-in-from-bottom-4 duration-300">
         <div className="flex items-center gap-2 p-2 rounded-2xl bg-surface-main/90 backdrop-blur-xl border border-border-subtle shadow-2xl shadow-black/20 ring-1 ring-white/5">
             <div className="bg-surface-alt px-3 py-1.5 rounded-xl border border-border-subtle flex items-center gap-2 mr-1">
@@ -37,10 +38,35 @@ export const CommandBar: React.FC<CommandBarProps> = React.memo(({ count, isBulk
                 >
                     <option value="">Batch Actions...</option>
                     <option value="copy-sheets">Copy for Client Sheets (TSV)</option>
-                    <option value="Approved">Mark Approved</option>
-                    <option value="Declined">Mark Declined</option>
-                    <option value="edit">Bulk Edit</option>
-                    <option value="delete">Delete Selection</option>
+                    
+                    <optgroup label="Update Status">
+                        <option value="Approved">Mark Approved</option>
+                        <option value="Declined">Mark Declined</option>
+                        <option value="Pending">Mark Pending</option>
+                    </optgroup>
+                    
+                    <optgroup label="Update Pipeline">
+                        <option value="pipeline:New">New</option>
+                        <option value="pipeline:Contacted">Contacted</option>
+                        <option value="pipeline:Follow Up">Follow Up</option>
+                        <option value="pipeline:Callback">Callback</option>
+                        <option value="pipeline:Closing">Closing</option>
+                        <option value="pipeline:Closed Won">Closed Won</option>
+                        <option value="pipeline:Closed Lost">Closed Lost</option>
+                    </optgroup>
+                    
+                    {agents.length > 0 && (
+                        <optgroup label="Assign Agent">
+                            {agents.map(a => (
+                                <option key={a} value={`agent:${a}`}>Assign to {a}</option>
+                            ))}
+                        </optgroup>
+                    )}
+
+                    <optgroup label="Other Actions">
+                        {/* <option value="edit">Bulk Edit</option> */}
+                        <option value="delete">Delete Selection</option>
+                    </optgroup>
                 </select>
             )}
         </div>

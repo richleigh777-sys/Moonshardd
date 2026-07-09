@@ -5,7 +5,7 @@ import { CallbackProtocol } from './enrollment/CallbackProtocol';
 import { Stage1Profile } from './enrollment/wizard/Stage1Profile';
 import { Stage2Products } from './enrollment/wizard/Stage2Products';
 import { Stage3Checkout } from './enrollment/wizard/Stage3Checkout';
-import { CheckCircle2 } from 'lucide-react';
+import { CheckCircle2, XCircle } from 'lucide-react';
 
 import { useCRM } from '../../hooks/useCRM';
 
@@ -13,11 +13,11 @@ const StepIndicator = ({ step, current, label }: any) => {
     const isCompleted = step > current;
     const isActive = step === current;
     return (
-        <div className={`flex items-center gap-2 ${isActive ? 'text-text-primary' : isCompleted ? 'text-accent-primary' : 'text-text-muted/50'} transition-colors`}>
-            <div className={`w-6 h-6 rounded-full flex items-center justify-center text-sm font-bold border ${isActive ? 'bg-accent-primary text-black border-accent-primary' : isCompleted ? 'border-accent-primary' : 'border-[#A0A0A0]/50'}`}>
-                {isCompleted ? <CheckCircle2 size={14} /> : current}
+        <div className={`flex items-center gap-3 ${isActive ? 'text-text-primary' : isCompleted ? 'text-accent-primary' : 'text-text-muted/60'} transition-colors`}>
+            <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold shadow-sm transition-all ${isActive ? 'bg-accent-primary text-white ring-4 ring-accent-primary/20' : isCompleted ? 'bg-accent-primary/10 text-accent-primary' : 'bg-surface-alt text-text-muted border border-border-subtle'}`}>
+                {isCompleted ? <CheckCircle2 size={16} /> : current}
             </div>
-            <span className="text-sm font-semibold tracking-wide uppercase">{label}</span>
+            <span className="text-sm font-bold tracking-wide">{label}</span>
         </div>
     );
 };
@@ -71,18 +71,46 @@ export default function EnrollmentFormV2({ onSuccess, onCancel, prefillPhone }: 
         );
     }
 
-    if (mode === 'approved' && lastOrder) {
+        if (mode === 'approved' && lastOrder) {
+        const compliments = lastOrder.status === 'Declined' ? [
+            "Tough break, but you gave it your all!",
+            "Dust it off, the next one is yours.",
+            "Good effort! Let's get the next one.",
+            "Can't win them all. Keep pushing!"
+        ] : [
+            "Outstanding performance! Another win secured.",
+            "You're crushing it! Keep up the great momentum.",
+            "Excellent work closing this one.",
+            "Top tier effort! You're a true closer.",
+            "Boom! Another one on the board.",
+            "Fantastic execution. Way to seal the deal!"
+        ];
+        const randomCompliment = compliments[Math.floor(Math.random() * compliments.length)];
+        
         return (
             <motion.div initial={{opacity:0}} animate={{opacity:1}} className="absolute inset-0 z-50 flex items-center justify-center bg-surface-main/90 p-4 font-sans select-none  rounded-xl">
-                 <div className="bg-surface-alt border border-emerald-500/30 rounded-xl p-12 max-w-lg w-full text-center shadow-2xl space-y-6">
-                     <div className="w-24 h-24 bg-emerald-500/10 rounded-full flex items-center justify-center mx-auto mb-6">
-                         <CheckCircle2 className="text-emerald-500" size={48} />
+                 <div className={`bg-surface-alt border ${lastOrder.status === 'Declined' ? 'border-red-500/30' : 'border-emerald-500/30'} rounded-xl p-12 max-w-lg w-full text-center shadow-2xl space-y-6`}>
+                     <div className={`w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-6 ${lastOrder.status === 'Declined' ? 'bg-red-500/10' : 'bg-emerald-500/10'}`}>
+                         {lastOrder.status === 'Declined' ? (
+                             <XCircle className="text-red-500" size={48} />
+                         ) : (
+                             <CheckCircle2 className="text-emerald-500" size={48} />
+                         )}
                      </div>
-                     <h2 className="text-3xl font-bold text-text-primary">Order Confirmed</h2>
-                     <p className="text-text-muted text-lg">Transaction successfully processed.</p>
-                     <div className="bg-surface-main rounded-xl p-6 font-mono text-sm space-y-3 border border-border-subtle text-left mb-8">
-                         <div className="flex justify-between"><span className="text-text-muted">Order ID:</span> <span className="text-text-primary">{lastOrder?.id?.substring(0,8).toUpperCase()}</span></div>
-                         <div className="flex justify-between"><span className="text-text-muted">Total:</span> <span className="text-accent-primary">${lastOrder.totalAmount?.toFixed(2)}</span></div>
+                     {lastOrder.status === 'Declined' ? (
+                         <h2 className="text-3xl font-bold text-status-error">Order Declined</h2>
+                     ) : (
+                         <h2 className="text-3xl font-bold text-status-success">Order Was Submitted</h2>
+                     )}
+                     <p className="text-text-muted text-lg">{lastOrder.status === 'Declined' ? 'Transaction processed but declined.' : 'Transaction submitted for processing.'}</p>
+                     <div className="bg-surface-main rounded-xl p-6 font-mono text-sm space-y-3 border border-border-subtle text-left mb-6">
+                         <div className="flex justify-between"><span className="text-text-muted">Order ID:</span> <span className="text-text-primary">{lastOrder?.id?.toUpperCase() || 'N/A'}</span></div>
+                         <div className="flex justify-between"><span className="text-text-muted">Agent:</span> <span className="text-text-primary">{lastOrder?.agent || 'Unknown'}</span></div>
+                         <div className="flex justify-between"><span className="text-text-muted">Total:</span> <span className="text-accent-primary">${Number(lastOrder.amount || 0).toFixed(2)}</span></div>
+                         <div className="flex justify-between"><span className="text-text-muted">Status:</span> <span className={lastOrder.status === 'Declined' ? "text-status-error" : "text-status-success"}>{lastOrder.status}</span></div>
+                     </div>
+                     <div className="p-4 bg-accent-primary/10 rounded-xl border border-accent-primary/20 mb-8">
+                         <p className="text-accent-primary font-bold">{randomCompliment}</p>
                      </div>
                      <button onClick={onSuccess} className="w-full py-4 bg-gradient-to-r from-amber-400 to-[#C4A470] text-black font-bold uppercase tracking-wide rounded-xl hover:shadow-sm transition-all">Return to Dashboard</button>
                  </div>
@@ -91,7 +119,7 @@ export default function EnrollmentFormV2({ onSuccess, onCancel, prefillPhone }: 
     }
 
     return (
-        <div className="flex flex-col bg-surface-main font-sans select-none rounded-xl border border-border-subtle relative isolate">
+        <div className="flex flex-col flex-1 h-full min-h-0 bg-surface-main font-sans select-none rounded-xl border border-border-subtle relative isolate">
             <style>{`
               .custom-scrollbar::-webkit-scrollbar { width: 6px; }
               .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
@@ -99,31 +127,31 @@ export default function EnrollmentFormV2({ onSuccess, onCancel, prefillPhone }: 
               .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: var(--color-border-strong); }
             `}</style>
             
-            <header className="sticky top-0 z-[100] h-20 border-b border-border-subtle flex items-center justify-between px-10 shrink-0 bg-surface-alt/90 ">
-                <div className="flex items-center gap-6">
-                    <div className="text-accent-primary font-bold text-xl tracking-wide uppercase">Secure Enrollment</div>
+            <header className="sticky top-0 z-[100] h-24 border-b border-border-subtle flex items-center justify-between px-12 shrink-0 bg-surface-main/90 backdrop-blur-xl">
+                <div className="flex items-center gap-8">
+                    <div className="text-text-primary font-bold text-2xl tracking-tight">Secure Enrollment</div>
                     <div className="h-8 w-[1px] bg-border-subtle mx-2"></div>
-                    <div className="flex items-center gap-4">
+                    <div className="flex items-center gap-6">
                         <StepIndicator step={wizardStep} current={1} label="Profile" />
-                        <div className="w-8 h-[1px] bg-border-subtle" />
+                        <div className="w-12 h-[2px] bg-surface-alt rounded-full" />
                         <StepIndicator step={wizardStep} current={2} label="Products" />
-                        <div className="w-8 h-[1px] bg-border-subtle" />
+                        <div className="w-12 h-[2px] bg-surface-alt rounded-full" />
                         <StepIndicator step={wizardStep} current={3} label="Checkout" />
                     </div>
                 </div>
                 <div className="flex items-center gap-4">
-                    <button onClick={() => { handleClear(); }} className="px-5 py-2.5 border border-rose-500/50 bg-rose-500/20 text-rose-400 hover:bg-rose-500/30 hover:border-rose-500 rounded-xl font-bold tracking-wider transition-all uppercase text-sm shadow-sm" title="Clear or Reset Form Data">
+                    <button onClick={() => { handleClear(); }} className="px-6 py-2.5 bg-surface-alt border border-border-subtle hover:bg-surface-highlight text-text-secondary hover:text-text-primary rounded-full font-bold transition-all text-sm shadow-sm" title="Clear or Reset Form Data">
                         Clear Form
                     </button>
-                    <button onClick={onCancel} className="px-5 py-2.5 border border-accent-primary/50 bg-accent-primary/20 text-accent-primary hover:bg-accent-primary/30 hover:border-accent-primary rounded-xl font-bold tracking-wider transition-all uppercase text-sm shadow-sm">
+                    <button onClick={onCancel} className="px-6 py-2.5 bg-text-primary text-surface-canvas hover:shadow-lg hover:-translate-y-0.5 rounded-full font-bold transition-all text-sm shadow-md">
                         Cancel & Return
                     </button>
                 </div>
             </header>
 
-            <div className="flex flex-col items-center">
+            <div className="flex flex-col flex-1 items-center min-h-0 h-full overflow-hidden">
                 
-                <div className="w-full shrink-0 min-h-[800px] relative isolate">
+                <div className="w-full h-full relative isolate">
                     {error && (
                         <div className="absolute top-4 left-1/2 -translate-x-1/2 z-50 bg-surface-main border border-rose-500/50 text-rose-400 px-6 py-3 rounded-xl shadow-2xl flex items-center gap-3">
                             <span className="font-semibold text-sm">{error}</span>

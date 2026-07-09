@@ -12,6 +12,7 @@ export const OmniSearch = () => {
     const [isOpen, setIsOpen] = useState(false);
     const [isSearching, setIsSearching] = useState(false);
     const searchRef = useRef<HTMLDivElement>(null);
+    const abortControllerRef = useRef<AbortController | null>(null);
 
     const isSuperAdmin = (currentUser?.level || currentUser?.accessLevel || 0) >= 10;
 
@@ -27,51 +28,58 @@ export const OmniSearch = () => {
 
     useEffect(() => {
         if (!query.trim() || query.length < 3) {
-             
             setResults([]);
             return;
         }
 
         const runSearch = async () => {
-            setIsSearching(true);
-            const q = query.toLowerCase();
-            const allResults: {serverName: string, sales: Sale[]}[] = [];
-            
-            for (const server of serverList) {
-                // Read from local storage directly for each server to simulate omni search across silos
-                const prefix = `nexus_${server.id}`;
-                try {
-                    const rawSales = localStorage.getItem(`${prefix}_sales`);
-                    if (rawSales) {
-                        const parsedSales: Sale[] = Object.values(JSON.parse(rawSales));
-                        let matched = parsedSales.filter(s => 
-                            (s.phone || '').toLowerCase().includes(q) || 
-                            (s.customer || '').toLowerCase().includes(q) ||
-                            (s.email || '').toLowerCase().includes(q) ||
-                            (s.orderId || '').toLowerCase().includes(q) ||
-                            (s.agent || '').toLowerCase().includes(q)
-                        );
-                        
-                        // Sort by timestamp descending and take the top 3
-                        matched = matched.sort((a, b) => b.timestamp - a.timestamp).slice(0, 3);
-                        
-                        if (matched.length > 0) {
-                            allResults.push({ serverName: server.name, sales: matched });
-                        }
-                    }
-                } catch (err) {
-                    // ignore format errors in simulated omni search
-                    console.warn("Format error in simulated omni search", err);
-                }
+            if (abortControllerRef.current) {
+                abortControllerRef.current.abort();
             }
-            
-            setResults(allResults);
+            abortControllerRef.current = new AbortController();
+
+            setIsSearching(true);
+            try {
+                const res = await fetch(`/api/omnisearch?q=${encodeURIComponent(query)}`, {
+                    headers: {
+                        'X-User-Level': String(currentUser?.level || 1),
+                        'X-Tenant-ID': 'srv-001'
+                    },
+                    signal: abortControllerRef.current.signal
+                });
+                if (res.ok) {
+                    const data = await res.json();
+                    
+                    // Map the serverId to actual serverNames based on serverList
+                    const mappedResults = data.map((group: any) => {
+                        const serverInfo = serverList.find(s => s.id === group.serverId);
+                        return {
+                            serverName: serverInfo ? serverInfo.name : group.serverId,
+                            sales: group.sales
+                        };
+                    });
+                    
+                    setResults(mappedResults);
+                } else {
+                    console.error("OmniSearch failed", await res.text());
+                }
+            } catch (err: any) {
+                if (err.name === 'AbortError') {
+                    return;
+                }
+                console.error("Failed to execute OmniSearch", err);
+            }
             setIsSearching(false);
         };
 
         const timeout = setTimeout(runSearch, 500);
-        return () => clearTimeout(timeout);
-    }, [query, serverList]);
+        return () => {
+            clearTimeout(timeout);
+            if (abortControllerRef.current) {
+                abortControllerRef.current.abort();
+            }
+        };
+    }, [query, serverList, currentUser]);
 
     if (!isSuperAdmin) return null;
 

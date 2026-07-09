@@ -102,6 +102,22 @@ export const useSalesLedgerUI = (initialSales: Sale[], onImport?: (data: any) =>
             return;
         }
 
+        if (command.startsWith('pipeline:')) {
+            const pipelineStatus = command.split(':')[1];
+            await bulkUpdateSales(Array.from(selectedIds), { pipelineStatus });
+            setToast({ title: 'Bulk Action', message: `Pipeline updated to ${pipelineStatus}`, type: "success" });
+            setSelectedIds(new Set());
+            return;
+        }
+
+        if (command.startsWith('agent:')) {
+            const agent = command.split(':')[1];
+            await bulkUpdateSales(Array.from(selectedIds), { agent });
+            setToast({ title: 'Bulk Action', message: `Assigned to ${agent}`, type: "success" });
+            setSelectedIds(new Set());
+            return;
+        }
+
         if (onBulkAction) {
             onBulkAction(Array.from(selectedIds), command);
             setSelectedIds(new Set());

@@ -1,70 +1,81 @@
 import { useState, useEffect, useCallback } from 'react';
 import { User } from '../types';
 
-const STORAGE_KEYS = {
-    IS_ON_BREAK: 'nexus_timer_is_on_break',
-    BREAK_START: 'nexus_timer_break_start',
-    TOTAL_BREAK: 'nexus_timer_total_break',
-    BREAK_REASON: 'nexus_timer_break_reason'
-};
 
 export const useWorkTimer = (currentUser: User | null, sessionStartTime: number | null) => {
-    const [isOnBreak, setIsOnBreak] = useState(() => {
-        return localStorage.getItem(STORAGE_KEYS.IS_ON_BREAK) === 'true';
-    });
-    
-    const [breakStartTime, setBreakStartTime] = useState<number | null>(() => {
-        const stored = localStorage.getItem(STORAGE_KEYS.BREAK_START);
-        return stored ? parseInt(stored) : null;
-    });
-
-    const [totalBreakTime, setTotalBreakTime] = useState(() => {
-        const stored = localStorage.getItem(STORAGE_KEYS.TOTAL_BREAK);
-        return stored ? parseInt(stored) : 0;
-    });
-
-    const [breakReason, setBreakReason] = useState<string | null>(() => {
-        return localStorage.getItem(STORAGE_KEYS.BREAK_REASON);
-    });
-
+    const [isOnBreak, setIsOnBreak] = useState(false);
+    const [breakStartTime, setBreakStartTime] = useState<number | null>(null);
+    const [totalBreakTime, setTotalBreakTime] = useState(0);
+    const [breakReason, setBreakReason] = useState<string | null>(null);
     const [workTimeSeconds, setWorkTimeSeconds] = useState(0);
     const [currentBreakDuration, setCurrentBreakDuration] = useState(0);
+    
+    useEffect(() => {
+        if (!currentUser) return;
+        fetch('/api/collections/agent_work_states', {
+            headers: { 'X-Tenant-ID': 'srv-001', 'X-User-ID': currentUser.id }
+        })
+        .then(r => r.ok ? r.json() : null)
+        .then((data: any) => {
+            if (data && data.data) {
+                const s = data.data;
+                setIsOnBreak(s.is_on_break);
+                setBreakStartTime(s.break_start_time ? new Date(s.break_start_time).getTime() : null);
+                setTotalBreakTime(s.total_break_time || 0);
+                setBreakReason(s.break_reason || null);
+            }
+        })
+        .catch(console.error);
+    }, [currentUser]);
+
+    const syncState = useCallback((state: any) => {
+        if (!currentUser) return;
+        fetch('/api/collections/agent_work_states', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'X-Tenant-ID': 'srv-001', 'X-User-ID': currentUser.id },
+            body: JSON.stringify(state)
+        }).catch(console.error);
+    }, [currentUser]);
 
     const toggleBreak = useCallback((reason?: string) => {
         if (isOnBreak) {
             // End Break
+            let newTotal = totalBreakTime;
             if (breakStartTime) {
                 const duration = Date.now() - breakStartTime;
-                const newTotal = totalBreakTime + duration;
+                newTotal = totalBreakTime + duration;
                 setTotalBreakTime(newTotal);
-                localStorage.setItem(STORAGE_KEYS.TOTAL_BREAK, newTotal.toString());
             }
             
             setBreakStartTime(null);
-            localStorage.removeItem(STORAGE_KEYS.BREAK_START);
-            
             setIsOnBreak(false);
-            localStorage.setItem(STORAGE_KEYS.IS_ON_BREAK, 'false');
-            
             setBreakReason(null);
-            localStorage.removeItem(STORAGE_KEYS.BREAK_REASON);
-            
             setCurrentBreakDuration(0);
+            
+            syncState({
+                is_on_break: false,
+                break_start_time: null,
+                total_break_time: newTotal,
+                break_reason: null
+            });
         } else {
             // Start Break
             const now = Date.now();
             setBreakStartTime(now);
-            localStorage.setItem(STORAGE_KEYS.BREAK_START, now.toString());
-            
             setIsOnBreak(true);
-            localStorage.setItem(STORAGE_KEYS.IS_ON_BREAK, 'true');
             
             if (reason) {
                 setBreakReason(reason);
-                localStorage.setItem(STORAGE_KEYS.BREAK_REASON, reason);
             }
+            
+            syncState({
+                is_on_break: true,
+                break_start_time: now,
+                total_break_time: totalBreakTime,
+                break_reason: reason || null
+            });
         }
-    }, [isOnBreak, breakStartTime, totalBreakTime]);
+    }, [isOnBreak, breakStartTime, totalBreakTime, syncState]);
 
     const resetTimerState = useCallback(() => {
         setIsOnBreak(false);
@@ -74,11 +85,13 @@ export const useWorkTimer = (currentUser: User | null, sessionStartTime: number 
         setWorkTimeSeconds(0);
         setCurrentBreakDuration(0);
         
-        localStorage.removeItem(STORAGE_KEYS.IS_ON_BREAK);
-        localStorage.removeItem(STORAGE_KEYS.BREAK_START);
-        localStorage.removeItem(STORAGE_KEYS.TOTAL_BREAK);
-        localStorage.removeItem(STORAGE_KEYS.BREAK_REASON);
-    }, []);
+        syncState({
+            is_on_break: false,
+            break_start_time: null,
+            total_break_time: 0,
+            break_reason: null
+        });
+    }, [syncState]);
 
     // Timer Tick (HTML5 Web Worker implementation to bypass aggressive browser-tab sleep sleep-throttling)
     useEffect(() => {

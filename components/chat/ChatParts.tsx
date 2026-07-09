@@ -40,7 +40,7 @@ const CRMLeadBlock = ({ title, details }: { title: string, details: any[] }) => 
     );
 };
 
-const TeamsStackBlock = ({ title, details }: { title: string, details: any[] }) => {
+const SalesStackBlock = ({ title, details }: { title: string, details: any[] }) => {
     const [sent, setSent] = useState(false);
     return (
         <div className="bg-sky-50 border border-sky-200 rounded-xl p-4 my-2 w-full max-w-[320px] font-sans break-words shadow-sm relative overflow-hidden text-text-primary">
@@ -139,15 +139,15 @@ const parseMarkdown = (text: string) => {
         return <CRMLeadBlock title={title} details={details} />;
     }
     
-    // 0.1 MS Teams Sales Stack
-    if (text.startsWith('[TEAMS_STACK:')) {
+    // 0.1 Sales Group Sales Stack
+    if (text.startsWith('[SALES_STACK:')) {
         const lines = text.split('\n');
-        const title = lines[0].replace('[TEAMS_STACK:', '').replace(']', '').trim();
+        const title = lines[0].replace('[SALES_STACK:', '').replace(']', '').trim();
         const details = lines.slice(1).map(l => {
             const [k, ...v] = l.split(':');
             return { key: k?.trim(), value: v.join(':')?.trim() };
         }).filter(d => d.key);
-        return <TeamsStackBlock title={title} details={details} />;
+        return <SalesStackBlock title={title} details={details} />;
     }
 
     // 0.2 DNC Block

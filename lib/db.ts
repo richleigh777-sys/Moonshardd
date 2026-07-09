@@ -30,7 +30,7 @@ if (sqlHost && sqlUser && sqlPassword && sqlDbName) {
     host: sqlHost, // Use the Unix socket path directly
     max: 20,
     idleTimeoutMillis: 30000,
-    connectionTimeoutMillis: 2000,
+    connectionTimeoutMillis: 10000,
   });
 } else if (dbUrl) {
   pool = new Pool({
@@ -38,7 +38,7 @@ if (sqlHost && sqlUser && sqlPassword && sqlDbName) {
     ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : undefined,
     max: 20,
     idleTimeoutMillis: 30000,
-    connectionTimeoutMillis: 2000,
+    connectionTimeoutMillis: 10000,
   });
 }
 
@@ -69,7 +69,7 @@ export const query = async (text: string, params?: any[]) => {
     
     // In a strict production environment, logs shouldn't leak PII. 
     // We only log query execution stats for telemetry.
-    if (process.env.NODE_ENV !== 'production') {
+    if (process.env.DEBUG_SQL === 'true') {
        console.log('Executed query', { text, duration, rows: res.rowCount });
     }
     

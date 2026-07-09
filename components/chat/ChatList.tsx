@@ -52,7 +52,7 @@ const ChatListItem = React.memo(({ chat, isActive, isCollapsed, onClick, onActio
                         <img src={chat.peerAvatar} className="h-full w-full object-cover" alt={chat.peerName} />
                     ) : (
                         <div className={`h-full w-full flex items-center justify-center font-bold text-sm ${isActive ? 'bg-indigo-500/20 text-indigo-300' : 'bg-surface-alt text-text-muted border border-border-subtle'}`}>
-                            {chat.peerName.charAt(0)}
+                            {(chat.peerName || 'U').charAt(0)}
                         </div>
                     )}
                 </div>

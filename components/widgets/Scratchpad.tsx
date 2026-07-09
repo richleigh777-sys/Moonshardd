@@ -1,3 +1,4 @@
+import { getStorageItem, setStorageItem } from '../../lib/storage';
  
 
 import React, { useState, useEffect, useRef, useMemo } from 'react';
@@ -73,53 +74,70 @@ export const Scratchpad: React.FC<ScratchpadProps> = ({ isOpen, onClose }) => {
 
     // --- INITIALIZATION & MIGRATION ---
     useEffect(() => {
-        const storedV3 = localStorage.getItem(STORAGE_KEY_V3);
-        
-        let loadedSheets: ScratchSheet[] = [];
-        let loadedActiveId = '';
-
-        if (storedV3) {
-            try {
-                const parsed = JSON.parse(storedV3);
+        if (!currentUser) return;
+        fetch('/api/collections/agent_scratchpads', {
+            headers: { 'X-Tenant-ID': 'srv-001', 'X-User-ID': currentUser.id }
+        })
+        .then(r => r.ok ? r.json() : null)
+        .then((res: any) => {
+            let loadedSheets: ScratchSheet[] = [];
+            let loadedActiveId = '';
+            
+            if (res && res.data && res.data.data) {
+                const parsed = res.data.data;
                 loadedSheets = parsed.sheets || [];
                 loadedActiveId = parsed.activeId || '';
-            } catch {
-                console.error("Scratchpad V3 Load Error");
             }
-        } else {
-            // Migrate V2
-            const legacyContent = localStorage.getItem(STORAGE_KEY_V2) || '';
-            loadedSheets = [{
-                id: 'default',
-                content: legacyContent,
-                timestamp: Date.now()
-            }];
-            loadedActiveId = 'default';
-        }
-
-        if (loadedSheets.length === 0) {
-            loadedSheets = [{
-                id: `sheet-${Date.now()}`,
-                content: '',
-                timestamp: Date.now()
-            }];
-            loadedActiveId = loadedSheets[0].id;
-        }
-
-        setSheets(loadedSheets);
-        setActiveSheetId(loadedActiveId || loadedSheets[0].id);
-    }, []);
+            
+            if (loadedSheets.length === 0) {
+                // Try legacy migration
+                const storedV3 = getStorageItem(STORAGE_KEY_V3);
+                if (storedV3) {
+                    try {
+                        const parsed = JSON.parse(storedV3);
+                        loadedSheets = parsed.sheets || [];
+                        loadedActiveId = parsed.activeId || '';
+                    } catch (e) { console.error(e); }
+                } else {
+                    const legacyContent = getStorageItem(STORAGE_KEY_V2) || '';
+                    loadedSheets = [{ id: 'default', content: legacyContent, timestamp: Date.now() }];
+                    loadedActiveId = 'default';
+                }
+                
+                if (loadedSheets.length === 0) {
+                    loadedSheets = [{ id: `sheet-${Date.now()}`, content: '', timestamp: Date.now() }];
+                    loadedActiveId = loadedSheets[0].id;
+                }
+            }
+            
+            setSheets(loadedSheets);
+            setActiveSheetId(loadedActiveId || loadedSheets[0].id);
+        })
+        .catch(console.error);
+    }, [currentUser]);
 
     // --- PERSISTENCE ---
     useEffect(() => {
+        if (!currentUser) return;
         if (sheets.length > 0) {
             const data = {
                 activeId: activeSheetId,
                 sheets: sheets
             };
-            localStorage.setItem(STORAGE_KEY_V3, JSON.stringify(data));
+            // Also keep local just in case
+            setStorageItem(STORAGE_KEY_V3, JSON.stringify(data));
+            
+            const timeoutId = setTimeout(() => {
+                fetch('/api/collections/agent_scratchpads', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'X-Tenant-ID': 'srv-001', 'X-User-ID': currentUser.id },
+                    body: JSON.stringify({ data })
+                }).catch(console.error);
+            }, 1000);
+            
+            return () => clearTimeout(timeoutId);
         }
-    }, [sheets, activeSheetId]);
+    }, [sheets, activeSheetId, currentUser]);
 
     // Focus on open
     useEffect(() => {

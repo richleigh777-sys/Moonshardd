@@ -47,7 +47,7 @@ interface Props {
 export const ChatWindow: React.FC<Props> = ({ 
     currentUser, activeConversation, messages, onTyping, typingNow, 
     isOffline, onSend, onEdit, onDelete, onPin, onReaction, onVote, 
-    _onCreatePoll, _onShareLocation,
+    onCreatePoll, onShareLocation,
     onStartCall, searchQuery, onSearchChange,
     isMaximized, toggleMaximize, onCreateGroup
 }) => {

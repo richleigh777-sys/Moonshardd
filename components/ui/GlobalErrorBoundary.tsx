@@ -20,12 +20,10 @@ interface GlobalErrorBoundaryState {
  */
 export class GlobalErrorBoundary extends Component<GlobalErrorBoundaryProps, GlobalErrorBoundaryState> {
   // Fix: Explicitly defining props and state for the class instance to resolve 'Property does not exist' errors in strict environments.
-  public props: GlobalErrorBoundaryProps;
-  public state: GlobalErrorBoundaryState;
+  
 
   constructor(props: GlobalErrorBoundaryProps) {
     super(props);
-    this.props = props;
     this.state = {
       hasError: false,
       error: null,

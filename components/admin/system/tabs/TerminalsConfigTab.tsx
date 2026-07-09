@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
-import { Terminal, ShieldCheck, Save, RefreshCw } from 'lucide-react';
+import { Terminal, ShieldCheck, Save, RefreshCw, Info } from 'lucide-react';
 import { Card } from '../../../../ui/Base';
 import { SectionHeader } from '../SectionHeader';
 import { motion } from 'motion/react';
 
 interface TerminalsConfigTabProps { config?: any; onChange?: any; isSuperAdmin?: boolean; }
-export const TerminalsConfigTab: React.FC<TerminalsConfigTabProps> = ({ config, onChange, _isSuperAdmin }) => {
+export const TerminalsConfigTab: React.FC<TerminalsConfigTabProps> = ({ config, onChange, isSuperAdmin }) => {
     const [isSaving, setIsSaving] = useState(false);
     
     // Config state
@@ -69,7 +69,20 @@ export const TerminalsConfigTab: React.FC<TerminalsConfigTabProps> = ({ config, 
 
                     <div className="space-y-5 relative z-10">
                         <div>
-                            <label className="text-xs font-bold text-text-muted block mb-2 uppercase tracking-wide">Terminal Base Layout (Agent Modal)</label>
+                            <div className="flex items-center gap-2 mb-2">
+                                <label className="text-xs font-bold text-text-muted uppercase tracking-wide">Terminal Base Layout (Agent Modal)</label>
+                                <div className="group relative">
+                                    <Info size={14} className="text-text-muted cursor-help hover:text-[#3B82F6]" />
+                                    <div className="absolute bottom-full left-0 mb-2 w-72 p-3 bg-surface-alt border border-border-strong rounded-xl shadow-2xl opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-50 text-xs text-text-primary">
+                                        <div className="font-bold mb-2 text-[#3B82F6]">Layout Explanations</div>
+                                        <div className="space-y-2 text-text-muted">
+                                            <p><strong className="text-text-primary">Hyper-Focus Modern:</strong> Standard, streamlined view for high-velocity sales.</p>
+                                            <p><strong className="text-text-primary">Split Console View:</strong> Data-dense layout showing context side-by-side.</p>
+                                            <p><strong className="text-text-primary">Minimalist HUD:</strong> Stripped down interface focusing only on core actions.</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                             <select 
                                 value={localTerminalConfig.terminalViews.agentConsole}
                                 onChange={e => setLocalTerminalConfig({...localTerminalConfig, terminalViews: {...localTerminalConfig.terminalViews, agentConsole: e.target.value}})}

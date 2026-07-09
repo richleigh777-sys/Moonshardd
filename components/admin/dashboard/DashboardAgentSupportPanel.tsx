@@ -12,7 +12,7 @@ interface DashboardAgentSupportPanelProps {
 export const DashboardAgentSupportPanel: React.FC<DashboardAgentSupportPanelProps> = ({
   sales,
   users,
-  _systemConfig,
+  systemConfig,
   onSendMessage,
 }) => {
   const [expandedAgentId, setExpandedAgentId] = useState<string | null>(null);

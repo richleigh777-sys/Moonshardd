@@ -46,10 +46,15 @@ export const useServerManager = () => {
         }
     }, [setServerList]);
 
+    const updateServer = useCallback(async (serverId: string, data: Partial<Server>) => {
+        await nexusGateway.updateServer(serverId, data);
+    }, []);
+
     return useMemo(() => ({
         activeServer,
         serverList,
         switchServer,
-        createNewServer
-    }), [activeServer, serverList, switchServer, createNewServer]);
+        createNewServer,
+        updateServer
+    }), [activeServer, serverList, switchServer, createNewServer, updateServer]);
 };

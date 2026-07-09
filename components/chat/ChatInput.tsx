@@ -93,7 +93,7 @@ export const ChatInput: React.FC<ChatInputProps> = ({
     const slashCommands = [
         { cmd: '/lead', desc: 'Share a lead card', text: '[LEAD: New Lead Transfer]\nName: \nPhone: \nStatus: \nNotes: ' },
         { cmd: '/transfer', desc: 'Request transfer', text: 'I need to transfer a call right now. Lead ID: ' },
-        { cmd: '/stack', desc: 'Format sale for MS Teams', text: '[TEAMS_STACK: Sale Block]\nAgent: \nCustomer: \nProduct: $ \nPayment: ' },
+        { cmd: '/stack', desc: 'Format sale for Sales Group', text: '[SALES_STACK: Sale Block]\nAgent: \nCustomer: \nProduct: $ \nPayment: ' },
         { cmd: '/dnc', desc: 'Flag number as Do Not Call', text: '[DNC: Do Not Call Request]\nPhone: \nReason: ' },
         { cmd: '/callback', desc: 'Schedule a callback', text: '[CALLBACK: Scheduled Callback]\nPhone: \nTime: \nNotes: ' },
         { cmd: '/whisper', desc: 'Toggle internal message mode', action: () => setIsInternal(true) },

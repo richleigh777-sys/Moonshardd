@@ -1,12 +1,13 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { useAuth } from '../../../../hooks/useAuth';
 import { 
     Clock, Phone, Mail, Truck, 
     Hash, Landmark, Activity, FileText, 
     User, Heart, Copy,
     Calendar, MapPin, ChevronDown, 
-    CheckCircle, RotateCcw, XCircle, AlertTriangle, Eye, CreditCard, Plus, AlertCircle, Package, Star, Music, Play, ExternalLink
+    CheckCircle, CheckCircle2, Shield, RotateCcw, XCircle, AlertTriangle, Eye, CreditCard, Plus, AlertCircle, Package, Star, Music, Play, ExternalLink
 } from 'lucide-react';
 import { sfx } from '../../../../lib/soundService';
 
@@ -15,6 +16,8 @@ interface CellProps {
     value: any;
     isEditing: boolean;
     onChange: (val: any) => void;
+    onBlur?: () => void;
+    onKeyDown?: (e: React.KeyboardEvent) => void;
     row?: any; 
     onAction?: (action: string, payload?: any) => void;
 }
@@ -37,14 +40,14 @@ const CopyBtn = ({ text }: { text: string }) => {
 
 // --- 1. STATUS & PIPELINE (The Pulse) ---
 
-export const StatusCell: React.FC<CellProps> = ({ value, isEditing, onChange }) => {
+export const StatusCell: React.FC<CellProps> = ({ value, isEditing, onChange, onBlur, onKeyDown }) => {
     if (isEditing) {
         return (
             <div className="relative group">
                 <select 
                     className="w-full bg-surface-alt border border-border-subtle rounded-lg px-3 py-1.5.5 text-xs font-bold outline-none focus:border-accent-primary appearance-none cursor-pointer"
                     value={value} 
-                    onChange={e => onChange(e.target.value)}
+                    onChange={e => onChange(e.target.value)} autoFocus onBlur={onBlur} onKeyDown={onKeyDown}
                 >
                     <option value="Pending">Pending</option>
                     <option value="Approved">Approved</option>
@@ -81,14 +84,14 @@ export const StatusCell: React.FC<CellProps> = ({ value, isEditing, onChange }) 
     );
 };
 
-export const PipelineCell: React.FC<CellProps> = ({ value, isEditing, onChange }) => {
+export const PipelineCell: React.FC<CellProps> = ({ value, isEditing, onChange, onBlur, onKeyDown }) => {
     if (isEditing) {
         return (
             <div className="relative group">
                 <select 
                     className="w-full bg-surface-alt border border-border-subtle rounded-lg px-3 py-1.5.5 text-xs font-bold outline-none focus:border-accent-primary appearance-none"
                     value={value} 
-                    onChange={e => onChange(e.target.value)}
+                    onChange={e => onChange(e.target.value)} autoFocus onBlur={onBlur} onKeyDown={onKeyDown}
                 >
                     <option value="New">New</option>
                     <option value="Contacted – Interested">Interested</option>
@@ -130,7 +133,7 @@ export const PipelineCell: React.FC<CellProps> = ({ value, isEditing, onChange }
 
 // --- 2. FINANCIALS (The Ledger) ---
 
-export const MoneyCell: React.FC<CellProps> = ({ value, isEditing, onChange }) => {
+export const MoneyCell: React.FC<CellProps> = ({ value, isEditing, onChange, onBlur, onKeyDown }) => {
     if (isEditing) {
         return (
             <div className="relative group/cell">
@@ -139,7 +142,7 @@ export const MoneyCell: React.FC<CellProps> = ({ value, isEditing, onChange }) =
                     type="number" 
                     className="w-24 bg-surface-alt border border-border-subtle rounded-lg px-3 py-1.5 pl-5 text-xs font-mono font-bold outline-none focus:border-emerald-500"
                     value={value} 
-                    onChange={e => onChange(e.target.value)} 
+                    onChange={e => onChange(e.target.value)} autoFocus onBlur={onBlur} onKeyDown={onKeyDown} 
                 />
             </div>
         );
@@ -152,9 +155,9 @@ export const MoneyCell: React.FC<CellProps> = ({ value, isEditing, onChange }) =
     );
 };
 
-export const BankCell: React.FC<CellProps> = ({ value, isEditing, onChange, row }) => {
+export const BankCell: React.FC<CellProps> = ({ value, isEditing, onChange, row, onBlur, onKeyDown }) => {
     if (isEditing) {
-        return <input autoComplete="off" data-lpignore="true" data-prevent-autofill="true" spellCheck={false} className="w-full bg-surface-alt border border-border-subtle rounded px-3 py-1.5 text-xs" value={value || ''} onChange={e => onChange(e.target.value)} />;
+        return <input autoComplete="off" data-lpignore="true" data-prevent-autofill="true" spellCheck={false} className="w-full bg-surface-alt border border-border-subtle rounded px-3 py-1.5 text-xs" value={value || ''} onChange={e => onChange(e.target.value)} autoFocus onBlur={onBlur} onKeyDown={onKeyDown} />;
     }
     
     const bankName = value || row?.bankName || 'Unknown';
@@ -173,7 +176,7 @@ export const BankCell: React.FC<CellProps> = ({ value, isEditing, onChange, row 
     );
 };
 
-export const SecureCell: React.FC<CellProps> = ({ value, isEditing, onChange }) => {
+export const SecureCell: React.FC<CellProps> = ({ value, isEditing, onChange, onBlur, onKeyDown }) => {
     const { currentUser } = useAuth();
     const [visible, setVisible] = useState(false);
 
@@ -183,7 +186,7 @@ export const SecureCell: React.FC<CellProps> = ({ value, isEditing, onChange }) 
                 <input autoComplete="off" data-lpignore="true" data-prevent-autofill="true" spellCheck={false} 
                     className="w-full bg-surface-alt border border-border-subtle rounded px-3 py-1.5 text-xs outline-none focus:border-accent-primary font-mono"
                     value={value || ''} 
-                    onChange={e => onChange(e.target.value)} 
+                    onChange={e => onChange(e.target.value)} autoFocus onBlur={onBlur} onKeyDown={onKeyDown} 
                     type={visible ? 'text' : 'password'}
                 />
                 <button onMouseDown={() => { if((currentUser?.level || 0) >= 10) setVisible(true); }} onMouseUp={() => setVisible(false)} onMouseLeave={() => setVisible(false)} className="absolute right-1 top-1.5 text-text-muted hover:text-text-primary"><Eye size={14}/></button>
@@ -255,44 +258,105 @@ export const IdentityCell: React.FC<CellProps> = ({ value, row, onAction }) => {
 
 import { MaskedData } from '../../../ui/MaskedData';
 
-export const ContactCell: React.FC<CellProps> = ({ value, isEditing, onChange }) => {
+export const ContactCell: React.FC<CellProps> = ({ value, isEditing, onChange, onBlur, onKeyDown }) => {
     const { currentUser } = useAuth();
     const isPhone = !value?.includes('@'); 
     const isLevel10 = (currentUser?.level || 0) >= 10;
-    
+    const [contextMenuPos, setContextMenuPos] = useState<{x: number, y: number} | null>(null);
+    const [copyStep, setCopyStep] = useState(0);
+
+    // Auto-hide context menu when clicking outside
+    useEffect(() => {
+        const handleClickOutside = () => {
+            setContextMenuPos(null);
+            setCopyStep(0);
+        };
+        if (contextMenuPos) {
+            document.addEventListener('click', handleClickOutside);
+        }
+        return () => document.removeEventListener('click', handleClickOutside);
+    }, [contextMenuPos]);
+
     if (isEditing) {
         return (
             <input autoComplete="off" data-lpignore="true" data-prevent-autofill="true" spellCheck={false} 
                 className="w-full bg-surface-alt border border-border-subtle rounded px-3 py-1.5 text-xs outline-none focus:border-accent-primary"
                 value={value || ''} 
-                onChange={e => onChange(e.target.value)} 
+                onChange={e => onChange(e.target.value)} autoFocus onBlur={onBlur} onKeyDown={onKeyDown} 
             />
         );
     }
 
-    const canCopy = isPhone || isLevel10;
+    const canCopyDirectly = isLevel10;
 
-    const copyToClipboard = (e: React.MouseEvent) => {
+    const copyToClipboardDirect = (e: React.MouseEvent) => {
         e.stopPropagation();
-        if (canCopy) {
+        if (canCopyDirectly) {
             navigator.clipboard.writeText(value);
             sfx.playConfirm();
         }
     };
 
+    const handleContextMenu = (e: React.MouseEvent) => {
+        if (!isLevel10 && isPhone) {
+            e.preventDefault();
+            e.stopPropagation();
+            setContextMenuPos({ x: e.clientX, y: e.clientY });
+            setCopyStep(0);
+        }
+    };
+
+    const handleMultiStepCopy = (e: React.MouseEvent) => {
+        e.stopPropagation();
+        if (copyStep === 0) {
+            setCopyStep(1);
+        } else if (copyStep === 1) {
+            setCopyStep(2);
+        } else {
+            navigator.clipboard.writeText(value);
+            sfx.playConfirm();
+            setContextMenuPos(null);
+            setCopyStep(0);
+        }
+    };
+
     return (
         <div 
-            className={`flex items-center gap-2 max-w-full p-1.5 -ml-1.5 rounded-lg transition-colors group ${canCopy ? 'cursor-pointer hover:bg-surface-alt/60' : ''}`} 
-            title={canCopy ? "Click to copy" : "Protected"}
-            onClick={canCopy ? copyToClipboard : undefined}
+            className={`flex items-center gap-2 max-w-full p-1.5 -ml-1.5 rounded-lg transition-colors group ${canCopyDirectly ? 'cursor-pointer hover:bg-surface-alt/60' : ''}`} 
+            title={canCopyDirectly ? "Click to copy" : "Protected"}
+            onClick={canCopyDirectly ? copyToClipboardDirect : undefined}
+            onContextMenu={handleContextMenu}
         >
             <div className={`p-1 rounded bg-surface-alt border border-border-subtle ${isPhone ? 'text-status-success' : 'text-blue-500'}`}>
                 {isPhone ? <Phone size={16} fill="currentColor"/> : <Mail size={16} fill="currentColor"/>}
             </div>
             <div className="flex items-center min-w-0 flex-1 group/cell text-xs font-mono font-bold text-text-secondary group-hover:text-text-primary transition-colors select-none" onClick={(e) => e.stopPropagation()}>
                 <div className="truncate min-w-0 flex-1"><MaskedData value={value} type={isPhone ? 'phone' : 'email'} /></div>
-                {canCopy && <CopyBtn text={value} />}
+                {canCopyDirectly && <CopyBtn text={value} />}
             </div>
+
+            {contextMenuPos && (
+                typeof document !== 'undefined' && createPortal(
+                    <div 
+                        className="fixed z-[9999] bg-surface-main border border-border-strong rounded-lg shadow-2xl overflow-hidden py-1 min-w-[160px]"
+                        style={{ top: contextMenuPos.y, left: contextMenuPos.x }}
+                        onClick={(e) => e.stopPropagation()}
+                    >
+                        <div className="px-3 py-2 text-xs text-text-muted border-b border-border-subtle select-none">
+                            Protected Action
+                        </div>
+                        <button 
+                            onClick={handleMultiStepCopy}
+                            className="w-full text-left px-3 py-2 text-sm font-medium hover:bg-surface-hover transition-colors flex items-center gap-2"
+                        >
+                            {copyStep === 0 && <><Eye size={14} className="text-text-muted" /> Intent to Copy</>}
+                            {copyStep === 1 && <><Shield size={14} className="text-amber-500" /> Confirm Request</>}
+                            {copyStep === 2 && <><CheckCircle2 size={14} className="text-emerald-500" /> Click to Copy</>}
+                        </button>
+                    </div>,
+                    document.body
+                )
+            )}
         </div>
     );
 };
@@ -373,13 +437,13 @@ export const ProductCell: React.FC<CellProps> = ({ value, row }) => {
     );
 };
 
-export const TrackingCell: React.FC<CellProps> = ({ value, isEditing, onChange, onAction }) => {
+export const TrackingCell: React.FC<CellProps> = ({ value, isEditing, onChange, onAction, onBlur, onKeyDown }) => {
     if (isEditing) {
         return (
             <input autoComplete="off" data-lpignore="true" data-prevent-autofill="true" spellCheck={false} 
                 className="w-24 bg-surface-alt border border-border-subtle rounded px-3 py-1.5 text-xs font-mono outline-none focus:border-indigo-500"
                 value={value || ''} 
-                onChange={e => onChange(e.target.value)} 
+                onChange={e => onChange(e.target.value)} autoFocus onBlur={onBlur} onKeyDown={onKeyDown} 
                 placeholder="TRACKING ID"
             />
         );
@@ -438,20 +502,26 @@ export const DeliveryStatusCell: React.FC<CellProps> = ({ value }) => {
 
 // --- 5. SYSTEM & META (The Data) ---
 
-export const DateCell: React.FC<CellProps> = ({ value }) => (
-    <div className="flex flex-col leading-tight group cursor-default">
-        <span className="font-bold text-xs text-text-primary whitespace-nowrap group-hover:text-accent-primary transition-colors">
-            {new Date(value).toLocaleDateString(undefined, {month:'short', day:'numeric', year:'2-digit'})}
-        </span>
-        <span className="text-xs opacity-50 flex items-center gap-1 font-mono text-text-muted group-hover:opacity-100 transition-opacity">
-            <Clock size={16}/> {new Date(value).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})}
-        </span>
-    </div>
-);
+export const DateCell: React.FC<CellProps> = ({ value }) => {
+    if (!value) return <span className="text-text-muted opacity-20">-</span>;
+    const d = new Date(value);
+    if (isNaN(d.getTime())) return <span className="text-status-error text-xs">Invalid Date</span>;
+    
+    return (
+        <div className="flex flex-col leading-tight group cursor-default">
+            <span className="font-bold text-xs text-text-primary whitespace-nowrap group-hover:text-accent-primary transition-colors">
+                {d.toLocaleDateString(undefined, {month:'short', day:'numeric', year:'2-digit'})}
+            </span>
+            <span className="text-xs opacity-50 flex items-center gap-1 font-mono text-text-muted group-hover:opacity-100 transition-opacity">
+                <Clock size={16}/> {d.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})}
+            </span>
+        </div>
+    );
+};
 
-export const NoteCell: React.FC<CellProps> = ({ value, row, isEditing, onChange }) => {
+export const NoteCell: React.FC<CellProps> = ({ value, row, isEditing, onChange, onBlur, onKeyDown }) => {
     if (isEditing) {
-        return <input autoComplete="off" data-lpignore="true" data-prevent-autofill="true" spellCheck={false} className="w-full bg-surface-alt border border-border-subtle rounded px-3 py-1.5 text-xs" value={value || ''} onChange={e => onChange(e.target.value)} />;
+        return <input autoComplete="off" data-lpignore="true" data-prevent-autofill="true" spellCheck={false} className="w-full bg-surface-alt border border-border-subtle rounded px-3 py-1.5 text-xs" value={value || ''} onChange={e => onChange(e.target.value)} autoFocus onBlur={onBlur} onKeyDown={onKeyDown} />;
     }
     
     // Aggregating notes, med conditions, height, and weight
@@ -504,13 +574,13 @@ export const TagsCell: React.FC<CellProps> = ({ value, row }) => {
     );
 };
 
-export const AddressCell: React.FC<CellProps> = ({ value, row, isEditing, onChange }) => {
+export const AddressCell: React.FC<CellProps> = ({ value, row, isEditing, onChange, onBlur, onKeyDown }) => {
     if (isEditing) {
         return (
             <input autoComplete="off" data-lpignore="true" data-prevent-autofill="true" spellCheck={false} 
                 className="w-full bg-surface-alt border border-border-subtle rounded px-3 py-1.5 text-xs outline-none focus:border-accent-primary"
                 value={value || ''} 
-                onChange={e => onChange(e.target.value)} 
+                onChange={e => onChange(e.target.value)} autoFocus onBlur={onBlur} onKeyDown={onKeyDown} 
             />
         );
     }
@@ -580,13 +650,13 @@ export const DeclineReasonCell: React.FC<CellProps> = ({ value }) => (
 );
 
 // --- FALLBACK ---
-export const TextCell: React.FC<CellProps> = ({ value, isEditing, onChange }) => {
+export const TextCell: React.FC<CellProps> = ({ value, isEditing, onChange, onBlur, onKeyDown }) => {
     if (isEditing) {
         return (
             <input autoComplete="off" data-lpignore="true" data-prevent-autofill="true" spellCheck={false} 
                 className="w-full bg-surface-alt border border-border-subtle rounded px-3 py-1.5 text-xs outline-none focus:border-accent-primary"
                 value={value || ''} 
-                onChange={e => onChange(e.target.value)} 
+                onChange={e => onChange(e.target.value)} autoFocus onBlur={onBlur} onKeyDown={onKeyDown} 
             />
         );
     }
@@ -601,9 +671,9 @@ export const TextCell: React.FC<CellProps> = ({ value, isEditing, onChange }) =>
 
 // --- NEW CELLS (Added) ---
 
-export const AgentCell: React.FC<CellProps> = ({ value, isEditing, onChange }) => {
+export const AgentCell: React.FC<CellProps> = ({ value, isEditing, onChange, onBlur, onKeyDown }) => {
     if (isEditing) {
-        return <input autoComplete="off" data-lpignore="true" data-prevent-autofill="true" spellCheck={false} className="w-full bg-surface-alt border border-border-subtle rounded px-3 py-1.5 text-xs outline-none focus:border-accent-primary" value={value || ''} onChange={e => onChange(e.target.value)} />;
+        return <input autoComplete="off" data-lpignore="true" data-prevent-autofill="true" spellCheck={false} className="w-full bg-surface-alt border border-border-subtle rounded px-3 py-1.5 text-xs outline-none focus:border-accent-primary" value={value || ''} onChange={e => onChange(e.target.value)} autoFocus onBlur={onBlur} onKeyDown={onKeyDown} />;
     }
     return (
         <div className="flex items-center gap-2">
@@ -615,9 +685,9 @@ export const AgentCell: React.FC<CellProps> = ({ value, isEditing, onChange }) =
     );
 };
 
-export const SpouseCell: React.FC<CellProps> = ({ value, isEditing, onChange }) => {
+export const SpouseCell: React.FC<CellProps> = ({ value, isEditing, onChange, onBlur, onKeyDown }) => {
     if (isEditing) {
-        return <input autoComplete="off" data-lpignore="true" data-prevent-autofill="true" spellCheck={false} className="w-full bg-surface-alt border border-border-subtle rounded px-3 py-1.5 text-xs outline-none focus:border-accent-primary" value={value || ''} onChange={e => onChange(e.target.value)} />;
+        return <input autoComplete="off" data-lpignore="true" data-prevent-autofill="true" spellCheck={false} className="w-full bg-surface-alt border border-border-subtle rounded px-3 py-1.5 text-xs outline-none focus:border-accent-primary" value={value || ''} onChange={e => onChange(e.target.value)} autoFocus onBlur={onBlur} onKeyDown={onKeyDown} />;
     }
     if (!value) return <span className="text-text-muted opacity-20">-</span>;
     return (
@@ -628,16 +698,16 @@ export const SpouseCell: React.FC<CellProps> = ({ value, isEditing, onChange }) 
     );
 };
 
-export const DateStringCell: React.FC<CellProps> = ({ value, isEditing, onChange }) => {
+export const DateStringCell: React.FC<CellProps> = ({ value, isEditing, onChange, onBlur, onKeyDown }) => {
     if (isEditing) {
-        return <input autoComplete="off" data-lpignore="true" data-prevent-autofill="true" spellCheck={false} type="date" className="w-full bg-surface-alt border border-border-subtle rounded px-3 py-1.5 text-xs outline-none focus:border-accent-primary" value={value || ''} onChange={e => onChange(e.target.value)} />;
+        return <input autoComplete="off" data-lpignore="true" data-prevent-autofill="true" spellCheck={false} type="date" className="w-full bg-surface-alt border border-border-subtle rounded px-3 py-1.5 text-xs outline-none focus:border-accent-primary" value={value || ''} onChange={e => onChange(e.target.value)} autoFocus onBlur={onBlur} onKeyDown={onKeyDown} />;
     }
     return <span className="text-xs font-mono text-text-secondary">{value || '-'}</span>;
 };
 
-export const MediaCell: React.FC<CellProps> = ({ value, row, isEditing, onChange, onAction }) => {
+export const MediaCell: React.FC<CellProps> = ({ value, row, isEditing, onChange, onAction, onBlur, onKeyDown }) => {
     if (isEditing) {
-        return <input autoComplete="off" data-lpignore="true" data-prevent-autofill="true" spellCheck={false} className="w-full bg-surface-alt border border-border-subtle rounded px-3 py-1.5 text-xs outline-none focus:border-accent-primary" value={value || ''} onChange={e => onChange(e.target.value)} placeholder="URL" />;
+        return <input autoComplete="off" data-lpignore="true" data-prevent-autofill="true" spellCheck={false} className="w-full bg-surface-alt border border-border-subtle rounded px-3 py-1.5 text-xs outline-none focus:border-accent-primary" value={value || ''} onChange={e => onChange(e.target.value)} autoFocus onBlur={onBlur} onKeyDown={onKeyDown} placeholder="URL" />;
     }
     if (!value) return (
         <button className="flex items-center gap-1.5 px-2 py-1 bg-surface-alt border border-border-subtle hover:border-accent-primary hover:text-accent-primary text-text-muted rounded text-xs transition-colors shrink-0 whitespace-nowrap" onClick={(e) => { e.stopPropagation(); if (onAction) onAction('upload_recording', row); }}>

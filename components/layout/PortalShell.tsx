@@ -1,3 +1,4 @@
+import { getStorageItem, setStorageItem } from '../../lib/storage';
 import React, { useState, useEffect } from 'react';
 import { 
   Sun, Moon, LogOut, Bell, Coffee, Play, Server, ChevronDown, Menu, X as CloseIcon, LayoutGrid, Palette, Check
@@ -54,11 +55,11 @@ export const PortalShell: React.FC<PortalShellProps> = ({
     };
     
     // Zoom-like Theme Selector
-    const [appThemePalette, setAppThemePalette] = useState(() => localStorage.getItem('appThemePalette') || 'Classic');
+    const [appThemePalette, setAppThemePalette] = useState(() => getStorageItem('appThemePalette') || 'Classic');
     const [isThemeSelectorOpen, setIsThemeSelectorOpen] = useState(false);
 
     useEffect(() => {
-        localStorage.setItem('appThemePalette', appThemePalette);
+        setStorageItem('appThemePalette', appThemePalette);
     }, [appThemePalette]);
 
     const themeVars: Record<string, React.CSSProperties> = {
@@ -73,6 +74,8 @@ export const PortalShell: React.FC<PortalShellProps> = ({
             '--color-text-muted': '220 20% 70%',
             '--color-border-subtle': '220 30% 35%',
             '--color-border-strong': '220 30% 45%',
+            '--color-accent-primary': '220 85% 60%',
+            '--color-accent-secondary': '220 80% 50%',
         } as React.CSSProperties,
         Agave: {
             '--color-surface-main': '170 60% 26%',
@@ -84,6 +87,8 @@ export const PortalShell: React.FC<PortalShellProps> = ({
             '--color-text-muted': '170 20% 70%',
             '--color-border-subtle': '170 30% 32%',
             '--color-border-strong': '170 30% 42%',
+            '--color-accent-primary': '170 85% 40%',
+            '--color-accent-secondary': '170 80% 30%',
         } as React.CSSProperties,
         Rose: {
             '--color-surface-main': '345 60% 35%',
@@ -95,6 +100,8 @@ export const PortalShell: React.FC<PortalShellProps> = ({
             '--color-text-muted': '345 20% 75%',
             '--color-border-subtle': '345 30% 40%',
             '--color-border-strong': '345 30% 50%',
+            '--color-accent-primary': '345 85% 60%',
+            '--color-accent-secondary': '345 80% 50%',
         } as React.CSSProperties
     };
 
@@ -136,7 +143,10 @@ export const PortalShell: React.FC<PortalShellProps> = ({
     if (!user) return null;
 
     return (
-        <div className="h-full w-full flex bg-surface-canvas text-text-primary transition-all duration-500 relative font-sans overflow-hidden p-0 gap-0">
+        <div 
+            className="h-full w-full flex bg-surface-canvas text-text-primary transition-all duration-500 relative font-sans overflow-hidden p-0 gap-0"
+            style={currentThemeStyle}
+        >
             
             {/* OVERLAYS */}
             {!isClockedIn && user.role === 'agent' && <ShiftOverlay />}
@@ -191,10 +201,10 @@ export const PortalShell: React.FC<PortalShellProps> = ({
                             <div className="p-4 border-t border-border-subtle flex flex-col gap-2">
                                 <div className="flex items-center gap-3 px-2 py-3 mb-2 border-b border-border-subtle bg-surface-alt rounded-lg">
                                     <div className="w-10 h-10 rounded-full bg-accent-primary flex items-center justify-center text-white font-bold text-lg shadow-sm">
-                                        {user.name.charAt(0).toUpperCase()}
+                                        {(user.name || user.id || 'U').charAt(0).toUpperCase()}
                                     </div>
                                     <div className="flex flex-col min-w-0">
-                                        <span className="text-sm font-bold text-text-primary truncate">{user.name}</span>
+                                        <span className="text-sm font-bold text-text-primary truncate">{user.name || user.id}</span>
                                         <span className="text-xs text-text-muted capitalize truncate">{user.role}</span>
                                     </div>
                                 </div>
@@ -213,7 +223,7 @@ export const PortalShell: React.FC<PortalShellProps> = ({
                 className={`
                     hidden lg:flex z-50 transition-all duration-300 ease-out flex-col
                     bg-surface-main border-r border-border-subtle
-                    w-[144px]
+                    w-[94px]
                 `}
                 style={currentThemeStyle}
             >
@@ -230,10 +240,10 @@ export const PortalShell: React.FC<PortalShellProps> = ({
                 <div className="p-3 border-t border-border-subtle bg-surface-main flex flex-col gap-1">
                     <div className="flex flex-col items-center gap-1 px-1 py-2 mb-2 border-b border-border-subtle text-center">
                         <div className="w-8 h-8 rounded-full bg-accent-primary/20 flex items-center justify-center text-accent-primary font-bold">
-                            {user.name.charAt(0).toUpperCase()}
+                            {(user.name || user.id || 'U').charAt(0).toUpperCase()}
                         </div>
                         <div className="flex flex-col min-w-0 w-full">
-                            <span className="text-sm font-bold text-text-primary truncate">{user.name}</span>
+                            <span className="text-sm font-bold text-text-primary truncate">{user.name || user.id}</span>
                             <span className="text-xs text-text-muted capitalize truncate">{user.role}</span>
                         </div>
                     </div>
@@ -445,12 +455,8 @@ export const PortalShell: React.FC<PortalShellProps> = ({
                 </header>
 
                 {/* WORKSPACE (Dataroom) */}
-                <div className="flex-1 overflow-hidden relative bg-surface-canvas">
-                    <div className="absolute inset-0 overflow-y-auto custom-scrollbar bg-surface-main">
-                        <div className="w-full min-h-full flex flex-col p-0">
-                            {children}
-                        </div>
-                    </div>
+                <div className="flex-1 flex flex-col min-h-0 relative bg-surface-main">
+                    {children}
                 </div>
             </main>
 

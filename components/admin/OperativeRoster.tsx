@@ -117,6 +117,10 @@ export const OperativeRoster: React.FC<OperativeRosterProps> = ({
                     onChat={jumpToChat}
                     onGhost={onGhostLogin}
                     onEdit={handleOpenEdit}
+                    onToggleActive={async (userId, active) => {
+                        await onUpdateUser(userId, { active });
+                        sfx.playConfirm();
+                    }}
                 />
 
                 {/* FOOTER */}

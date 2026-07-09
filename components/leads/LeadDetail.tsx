@@ -7,6 +7,7 @@ import { getPhoneTime } from '../../views/utils/crmLogic';
 import { sfx } from '../../lib/soundService';
 import { LeadTimeline } from './LeadTimeline';
 import { useCRM } from '../../hooks/useCRM';
+import { executeDialer } from '../../lib/dialer';
 import { useAuth } from '../../hooks/useAuth';
 import { getCustomerStrategicBriefing, BriefingResponse } from '../../services/aiService';
 
@@ -20,7 +21,7 @@ type Tab = 'Briefing' | 'History' | 'Details';
 
 export const LeadDetail: React.FC<LeadDetailProps> = ({ activeLead, onMarkDone, onEngage }) => {
     const { currentUser } = useAuth();
-    const { callLogs, notes: rawNotes, customers, updateNote, sales } = useCRM();
+    const { callLogs, notes: rawNotes, customers, updateNote, sales, systemConfig } = useCRM();
 
     const [activeLocks, setActiveLocks] = useState<Record<string, { agentId: string; agentName: string; expiresAt: number }>>({});
 
@@ -223,7 +224,7 @@ export const LeadDetail: React.FC<LeadDetailProps> = ({ activeLead, onMarkDone, 
                             <div className="flex items-center gap-2 justify-end">
                                 <div className="text-lg font-mono font-medium text-text-primary tracking-wider">{activeLead.phone}</div>
                                 <button 
-                                    onClick={(e) => { e.stopPropagation(); navigator.clipboard.writeText(activeLead.phone || ''); }}
+                                    onClick={(e) => { e.stopPropagation(); executeDialer(activeLead.phone || '', activeLead, systemConfig); }}
                                     className="p-1.5 text-text-muted hover:text-accent-primary hover:bg-surface-alt rounded transition-colors"
                                     title="Copy to clipboard"
                                 >
@@ -428,7 +429,7 @@ export const LeadDetail: React.FC<LeadDetailProps> = ({ activeLead, onMarkDone, 
                                                     <div className="flex items-center gap-2">
                                                         <p className="text-xs font-bold text-text-primary">{activeLead.phone}</p>
                                                         <button 
-                                                            onClick={(e) => { e.stopPropagation(); navigator.clipboard.writeText(activeLead.phone || ''); }}
+                                                            onClick={(e) => { e.stopPropagation(); executeDialer(activeLead.phone || '', activeLead, systemConfig); }}
                                                             className="text-text-muted hover:text-accent-primary"
                                                             title="Copy to clipboard"
                                                         >

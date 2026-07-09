@@ -12,7 +12,7 @@ interface ConnectedClient {
 const clients = new Map<string, ConnectedClient>();
 
 export function initializeRealtime(httpServer: Server) {
-    const wss = new WebSocketServer({ server: httpServer });
+    const wss = new WebSocketServer({ server: httpServer, path: '/api/ws' });
 
     wss.on('connection', (ws, _req) => {
         const id = Math.random().toString(36).substring(7);

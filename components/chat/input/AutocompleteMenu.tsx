@@ -28,7 +28,7 @@ export const AutocompleteMenu: React.FC<AutocompleteMenuProps> = ({ items, selec
                         {item.role ? ( // It's a User
                             <>
                                 <div className="w-7 h-7 rounded-lg bg-surface-alt/50 flex items-center justify-center text-sm font-medium border border-border-subtle shrink-0">
-                                    {(item as User).name.charAt(0)}
+                                    {((item as User).name || 'U').charAt(0)}
                                 </div>
                                 <div className="min-w-0 flex-1">
                                     <div className="font-bold text-sm truncate">{(item as User).name}</div>

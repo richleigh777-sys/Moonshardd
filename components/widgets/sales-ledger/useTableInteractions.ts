@@ -50,6 +50,7 @@ export const useTableInteractions = ({ sales, columnOrder, activeColumns, onColu
 
     // --- RESIZE & FREEZE ---
     const [columnWidths, setColumnWidths] = useState<Record<string, number>>({});
+    const [userResizedCols, setUserResizedCols] = useState<Set<string>>(new Set());
     const [frozenCols, setFrozenCols] = useState<Set<string>>(new Set());
     const [resizingCol, setResizingCol] = useState<{ col: string, startX: number, startWidth: number } | null>(null);
     const [headerMenu, setHeaderMenu] = useState<{ x: number, y: number, col: string } | null>(null);
@@ -60,7 +61,7 @@ export const useTableInteractions = ({ sales, columnOrder, activeColumns, onColu
         
         activeColumns.forEach(col => {
             let maxChars = (COLUMN_LABELS[col] || col).length + 2;
-            const sampleRows = sales.slice(0, 50); // Sample first 50 rows
+            const sampleRows = sales.slice(0, 100); // Check up to 100 rows
             sampleRows.forEach(sale => {
                 let valStr = '';
                 if (col === 'address' || col === 'shippingAddress' || col === 'billingAddress') {
@@ -84,17 +85,63 @@ export const useTableInteractions = ({ sales, columnOrder, activeColumns, onColu
                 }
                 if (valStr.length > maxChars) maxChars = valStr.length;
             });
-            // Calculate pixel width: roughly 7.5px per char + 50px for padding/icons
-            autoWidths[col] = Math.max(100, Math.min(Math.ceil(maxChars * 7.5) + 50, 400));
+            // Calculate pixel width: roughly 9px per char + 44px for padding/icons
+            autoWidths[col] = Math.max(100, Math.min(Math.ceil(maxChars * 9) + 44, 600));
         });
+
         setColumnWidths(prev => {
             const next = { ...prev };
+            let changed = false;
             for (const col in autoWidths) {
-                if (!next[col]) next[col] = autoWidths[col];
+                if (!userResizedCols.has(col)) {
+                    if (next[col] !== autoWidths[col]) {
+                        next[col] = autoWidths[col];
+                        changed = true;
+                    }
+                }
             }
+            return changed ? next : prev;
+        });
+    }, [sales, activeColumns, userResizedCols]);
+
+    const autoFitColumn = useCallback((col: string) => {
+        if (!sales || sales.length === 0) return;
+        
+        let maxChars = (COLUMN_LABELS[col] || col).length + 2;
+        const sampleRows = sales.slice(0, 100);
+        sampleRows.forEach(sale => {
+            let valStr = '';
+            if (col === 'address' || col === 'shippingAddress' || col === 'billingAddress') {
+                const addr = (sale as any)[col] || '';
+                const city = col === 'billingAddress' ? sale.billingCity : (col === 'shippingAddress' ? sale.shippingCity : sale.city);
+                const state = col === 'billingAddress' ? sale.billingState : (col === 'shippingAddress' ? sale.shippingState : sale.state);
+                const zip = col === 'billingAddress' ? sale.billingZip : (col === 'shippingAddress' ? sale.shippingZip : sale.zip);
+                valStr = `${addr ? addr + ', ' : ''}${[city, state].filter(Boolean).join(', ')} ${zip || ''}`.trim();
+            } else if (col === 'product' || col === 'quantity' || col === 'dosage') {
+                if (sale.rawCart && Array.isArray(sale.rawCart) && sale.rawCart.length > 0) {
+                    valStr = sale.rawCart.map((item: any) => item[col] || (col === 'quantity' ? '1' : '-')).join(' + ');
+                } else {
+                    valStr = String((sale as any)[col] || '');
+                }
+            } else if (col === 'customer') {
+                valStr = typeof sale.customer === 'string' ? sale.customer : (sale.firstName || '') + ' ' + (sale.lastName || '');
+            } else if (col === 'ageDob') {
+                valStr = '88 Yrs 12/12/1990';
+            } else {
+                valStr = String((sale as any)[col] || '');
+            }
+            if (valStr.length > maxChars) maxChars = valStr.length;
+        });
+        
+        const width = Math.max(100, Math.min(Math.ceil(maxChars * 9) + 44, 600));
+        
+        setColumnWidths(prev => ({ ...prev, [col]: width }));
+        setUserResizedCols(prev => {
+            const next = new Set(prev);
+            next.delete(col);
             return next;
         });
-    }, [sales, activeColumns]);
+    }, [sales]);
 
     useEffect(() => {
         if (!resizingCol) return;
@@ -102,7 +149,10 @@ export const useTableInteractions = ({ sales, columnOrder, activeColumns, onColu
             const diff = globalEvent.clientX - resizingCol.startX;
             setColumnWidths(prev => ({ ...prev, [resizingCol.col]: Math.max(60, resizingCol.startWidth + diff) }));
         };
-        const handleMouseUp = () => setResizingCol(null);
+        const handleMouseUp = () => {
+            setUserResizedCols(prev => new Set(prev).add(resizingCol.col));
+            setResizingCol(null);
+        };
         document.addEventListener('mousemove', handleMouseMove);
         document.addEventListener('mouseup', handleMouseUp);
         return () => {
@@ -124,7 +174,6 @@ export const useTableInteractions = ({ sales, columnOrder, activeColumns, onColu
 
     const startResize = (col: string, e: MouseEvent) => {
         e.stopPropagation();
-        e.preventDefault();
         setResizingCol({ col, startX: e.clientX, startWidth: getColWidth(col) });
     };
 
@@ -162,6 +211,7 @@ export const useTableInteractions = ({ sales, columnOrder, activeColumns, onColu
         setHeaderMenu,
         getColWidth,
         startResize,
+        autoFitColumn,
         handleDragStart,
         handleDragOver,
         handleDragLeave,

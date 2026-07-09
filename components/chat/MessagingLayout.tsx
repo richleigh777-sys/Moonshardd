@@ -97,7 +97,7 @@ export const MessagingLayout: React.FC = () => {
                                     className="w-full flex items-center gap-3 p-2 rounded-lg hover:bg-surface-alt transition-colors text-left"
                                 >
                                     <div className="h-8 w-8 rounded-full bg-surface-main border border-border-subtle flex items-center justify-center font-bold text-sm text-text-muted overflow-hidden">
-                                        {u.avatar ? <img src={u.avatar} className="w-full h-full object-cover" /> : u.name.charAt(0)}
+                                        {u.avatar ? <img src={u.avatar} className="w-full h-full object-cover" /> : (u.name || 'U').charAt(0)}
                                     </div>
                                     <div className="flex-1">
                                         <div className="text-sm font-bold text-text-primary flex items-center gap-2">

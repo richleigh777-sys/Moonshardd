@@ -12,10 +12,10 @@ export const maskPII = (value: string | undefined | null, type: 'phone' | 'email
     
     switch (type) {
         case 'phone': {
-            // Format: (XXX) XXX-XXXX -> (XXX) ***-****
+            // Format: (XXX) XXX-XXXX -> ***-***-XXXX
             const cleaned = value.replace(/\D/g, '');
-            if (cleaned.length < 7) return value;
-            return `(${cleaned.slice(0, 3)}) ***-****`;
+            if (cleaned.length < 4) return value;
+            return `***-***-${cleaned.slice(-4)}`;
         }
         
         case 'email': {

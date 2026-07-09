@@ -17,8 +17,8 @@ export const rebuildCustomersFromSales = (sales: Sale[], currentCustomers: Custo
             customer = {
                 id: `cust-${phone || email || addressFingerprint}`,
                 serverId,
-                firstName: sale.customer.split(' ')[0] || '',
-                lastName: sale.customer.split(' ').slice(1).join(' ') || '',
+                firstName: (sale.customer || '').split(' ')[0] || '',
+                lastName: (sale.customer || '').split(' ').slice(1).join(' ') || '',
                 fullName: sale.customer,
                 email: sale.email || '',
                 phone: sale.phone,

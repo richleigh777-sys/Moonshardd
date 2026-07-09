@@ -13,46 +13,32 @@ interface DispositionModalProps {
   formData: EnrollmentState;
 }
 
-export const DispositionModal: React.FC<DispositionModalProps> = ({ isOpen, onClose, onSave, _formData }) => {
+export const DispositionModal: React.FC<DispositionModalProps> = ({ isOpen, onClose, onSave, formData }) => {
   const [outcome, setOutcome] = useState<'busy' | 'not_interested' | 'disconnected' | 'callback' | 'hold_order'>('busy');
   const [callbackDate, setCallbackDate] = useState('');
   const [callbackTime, setCallbackTime] = useState('');
   const [notes, setNotes] = useState('');
 
   // Configurable Decline/Un-Converted Reasons persisting in localStorage
-  const [reasons, setReasons] = useState<string[]>(() => {
-    const defaultReasons = [
-      "Call got disconnected",
-      "No Budget / Too Expensive",
-      "Customer was driving / Call back",
-      "Busy / Cannot talk",
-      "Still got a supply (No need yet)",
-      "Don't have card with him/her",
-      "Wants Spouse Approval",
-      "Wants to think about it",
-      "Bank Security Hold",
-      "Insufficient Funds",
-      "Customer wants to cancel",
-      "Already bought from competitor"
-    ];
-    const saved = localStorage.getItem('CRM_UNCONVERTED_REASONS');
-    if (saved) {
-      try {
-        const parsed = JSON.parse(saved);
-        if (Array.isArray(parsed) && parsed.length > 0) {
-          // If the user's saved list doesn't have "Don't have card with him/her", append it dynamically
-          if (!parsed.includes("Don't have card with him/her") && !parsed.includes("Don't have card")) {
-            parsed.push("Don't have card with him/her");
-            localStorage.setItem('CRM_UNCONVERTED_REASONS', JSON.stringify(parsed));
-          }
-          return parsed;
+  const [reasons, setReasons] = useState<{id: string, reason: string}[]>([]);
+   
+
+  React.useEffect(() => {
+    if (isOpen) {
+      
+      fetch('/api/collections/disposition_reasons', {
+        headers: { 'X-Tenant-ID': 'srv-001' }
+      })
+      .then(r => r.ok ? r.json() : null)
+      .then((data: any) => {
+        if (data && data.data) {
+          setReasons(data.data.map((d: any) => d.data || d));
         }
-      } catch (e) {
-        console.warn("Error parsing un-converted reasons:", e);
-      }
+      })
+      .catch(console.error)
+      ;
     }
-    return defaultReasons;
-  });
+  }, [isOpen]);
 
   const [selectedReason, setSelectedReason] = useState<string>('');
   const [showConfig, setShowConfig] = useState(false);
@@ -81,24 +67,46 @@ export const DispositionModal: React.FC<DispositionModalProps> = ({ isOpen, onCl
     "Bad timing - call later"
   ];
 
-  const handleAddReason = () => {
+  const handleAddReason = async () => {
     const clean = newReasonText.trim();
     if (!clean) return;
-    if (reasons.includes(clean)) {
+    if (reasons.some(r => r.reason === clean)) {
       setNewReasonText('');
       return;
     }
-    const updated = [...reasons, clean];
+    
+    const newReason = { id: 'reason_' + Date.now(), reason: clean };
+    const updated = [...reasons, newReason];
     setReasons(updated);
-    localStorage.setItem('CRM_UNCONVERTED_REASONS', JSON.stringify(updated));
+    
+    try {
+      await fetch('/api/collections/disposition_reasons', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'X-Tenant-ID': 'srv-001' },
+        body: JSON.stringify(newReason)
+      });
+    } catch (err) {
+      console.error(err);
+    }
+    
     setNewReasonText('');
   };
 
-  const handleDeleteReason = (itemToDelete: string) => {
-    const updated = reasons.filter(r => r !== itemToDelete);
+  const handleDeleteReason = async (idToDelete: string) => {
+    const updated = reasons.filter(r => r.id !== idToDelete);
     setReasons(updated);
-    localStorage.setItem('CRM_UNCONVERTED_REASONS', JSON.stringify(updated));
-    if (selectedReason === itemToDelete) {
+    
+    try {
+      await fetch(`/api/collections/disposition_reasons/${idToDelete}`, {
+        method: 'DELETE',
+        headers: { 'X-Tenant-ID': 'srv-001' }
+      });
+    } catch (err) {
+      console.error(err);
+    }
+    
+    const deletingItem = reasons.find(r => r.id === idToDelete);
+    if (deletingItem && selectedReason === deletingItem.reason) {
       setSelectedReason('');
     }
   };
@@ -108,16 +116,30 @@ export const DispositionModal: React.FC<DispositionModalProps> = ({ isOpen, onCl
     setEditingText(text);
   };
 
-  const handleSaveEdit = (idx: number) => {
+  const handleSaveEdit = async (idx: number) => {
     const clean = editingText.trim();
     if (!clean) return;
     const updated = [...reasons];
     const oldVal = updated[idx];
-    updated[idx] = clean;
+    
+    // Create new object with updated reason text
+    const updatedReason = { ...oldVal, reason: clean };
+    updated[idx] = updatedReason;
+    
     setReasons(updated);
-    localStorage.setItem('CRM_UNCONVERTED_REASONS', JSON.stringify(updated));
-    if (selectedReason === oldVal) {
-      setSelectedReason(clean);
+    
+    try {
+      await fetch('/api/collections/disposition_reasons', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'X-Tenant-ID': 'srv-001' },
+        body: JSON.stringify(updatedReason)
+      });
+    } catch (err) {
+      console.error(err);
+    }
+    
+    if (selectedReason === oldVal.id) {
+      setSelectedReason(updatedReason.id);
     }
     setEditingIndex(null);
     setEditingText('');
@@ -207,7 +229,7 @@ export const DispositionModal: React.FC<DispositionModalProps> = ({ isOpen, onCl
                     setOutcome(o.id as any);
                     // Autofill first reason if unconverted outcome
                     if ((o.id === 'not_interested' || o.id === 'callback') && reasons.length > 0 && !selectedReason) {
-                      setSelectedReason(reasons[0]);
+                      setSelectedReason(reasons[0].id);
                     }
                   }}
                   className={`flex flex-col items-center justify-center gap-2 p-2.5 rounded-xl border transition-all ${isSelected ? `bg-surface-main ${o.border} shadow-sm ring-1 ring-indigo-500/30` : 'bg-surface-alt border-border-subtle hover:border-text-muted'}`}
@@ -272,11 +294,11 @@ export const DispositionModal: React.FC<DispositionModalProps> = ({ isOpen, onCl
                         </div>
                       ) : (
                         <>
-                          <span className="font-semibold text-text-secondary truncate flex-1">{r}</span>
+                          <span className="font-semibold text-text-secondary truncate flex-1">{r.reason}</span>
                           <div className="flex items-center gap-1 shrink-0">
                             <button
                               type="button"
-                              onClick={() => handleStartEdit(i, r)}
+                              onClick={() => handleStartEdit(i, r.reason)}
                               className="text-text-muted hover:text-indigo-400 p-1 rounded hover:bg-surface-main/85 transition-colors"
                               title="Edit reason"
                             >
@@ -284,7 +306,7 @@ export const DispositionModal: React.FC<DispositionModalProps> = ({ isOpen, onCl
                             </button>
                             <button 
                               type="button"
-                              onClick={() => handleDeleteReason(r)}
+                              onClick={() => handleDeleteReason(r.id)}
                               className="text-text-muted hover:text-rose-500 p-1 rounded hover:bg-surface-main/85 transition-colors"
                               title="Delete reason"
                             >
@@ -325,8 +347,8 @@ export const DispositionModal: React.FC<DispositionModalProps> = ({ isOpen, onCl
                   className="w-full bg-surface-main border border-border-subtle rounded-lg px-3 py-2 text-xs font-semibold text-text-primary outline-none focus:border-indigo-500 appearance-none cursor-pointer"
                 >
                   <option value="">-- Choose pre-configured reason (Optional) --</option>
-                  {reasons.map((r, idx) => (
-                    <option key={idx} value={r}>{r}</option>
+                  {reasons.map((r) => (
+                    <option key={r.id} value={r.reason}>{r.reason}</option>
                   ))}
                 </select>
                 <ChevronDown size={14} className="absolute right-3 top-1/2 -translate-y-1/2 text-text-muted pointer-events-none" />

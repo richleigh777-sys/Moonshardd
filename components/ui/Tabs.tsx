@@ -115,8 +115,8 @@ export const TabTrigger: React.FC<TabTriggerProps> = ({ value, children, classNa
   const getIconColorClass = () => {
       if (colorHint) return colorHint;
       // Default thematic colors based on value if no color hint provided
-      if (value === 'action') return 'text-purple-400';
-      if (value === 'money') return 'text-emerald-400';
+      if (value === 'action') return 'text-rose-400';
+      if (value === 'money') return 'text-teal-400';
       if (value === 'oversight') return 'text-blue-400';
       return isActive ? 'text-accent-primary' : 'text-text-muted group-hover:text-accent-secondary';
   };
@@ -156,9 +156,9 @@ export const TabTrigger: React.FC<TabTriggerProps> = ({ value, children, classNa
               initial={false}
               animate={{
                   scale: isActive ? 1.05 : 1,
-                  color: isActive && getIconColorClass().includes('purple') ? '#c084fc' : 
-                         isActive && getIconColorClass().includes('emerald') ? '#34d399' :
-                         isActive && getIconColorClass().includes('blue') ? '#60a5fa' : undefined
+                  color: isActive && (getIconColorClass() || '').includes('rose') ? '#fb7185' : 
+                         isActive && (getIconColorClass() || '').includes('teal') ? '#2dd4bf' :
+                         isActive && (getIconColorClass() || '').includes('blue') ? '#60a5fa' : undefined
               }}
               className={`${context.orientation === 'vertical' ? 'text-sm font-bold text-center whitespace-normal leading-tight opacity-100 mt-1 max-w-full px-0.5' : 'whitespace-nowrap'} overflow-hidden transition-colors duration-200 tracking-wide relative z-10`}
           >

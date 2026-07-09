@@ -1,5 +1,4 @@
 import { db, query } from './db.ts';
-import { broadcast } from './realtime.ts';
 
 // Normalize phone number to digits only
 export function normalizePhone(phone: string | undefined): string {
@@ -24,6 +23,11 @@ export async function processSalesIngestion(payloads: any[], userId: string, use
     const processedSales = [];
 
     for (const rawSale of payloads) {
+        if (rawSale._frontendProcessed) {
+            processedSales.push(rawSale);
+            continue;
+        }
+
         // Smart Parse
         const normPhone = normalizePhone(rawSale.customerPhone || rawSale.phone);
         const normEmail = normalizeEmail(rawSale.customerEmail || rawSale.email);
@@ -85,7 +89,6 @@ export async function processSalesIngestion(payloads: any[], userId: string, use
                 WHERE collection_name = 'customers' AND id = $2
             `, [JSON.stringify(customerProfile), customerId]);
 
-            try { broadcast({ type: 'COLLECTION_MUTATED', collectionName: 'customers', id: customerId }); } catch(e) { console.error(e); }
         } else {
             // Auto-create Pristine Customer profile
             _isNewCustomer = true;
@@ -115,7 +118,6 @@ export async function processSalesIngestion(payloads: any[], userId: string, use
                 INSERT INTO crm_documents (id, collection_name, data, created_at, updated_at) 
                 VALUES ($1, 'customers', $2, NOW(), NOW())
             `, [customerId, JSON.stringify(customerProfile)]);
-            try { broadcast({ type: 'COLLECTION_MUTATED', collectionName: 'customers', id: customerId }); } catch(e) { console.error(e); }
         }
 
         // Link the Sale

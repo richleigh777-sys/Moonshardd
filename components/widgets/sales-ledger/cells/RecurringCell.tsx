@@ -6,6 +6,8 @@ interface CellProps {
     value: any;
     isEditing: boolean;
     onChange: (val: any) => void;
+    onBlur?: () => void;
+    onKeyDown?: (e: any) => void;
 }
 
 export const RecurringCell: React.FC<CellProps> = ({ value, isEditing, onChange }) => {

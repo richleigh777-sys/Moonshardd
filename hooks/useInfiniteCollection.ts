@@ -40,9 +40,12 @@ export function useInfiniteCollection(collectionName: string, filters: Record<st
                 setTotal(json.total || 0);
                 setData(prev => replace ? items : [...prev, ...items]);
                 setHasMore(items.length >= limit);
+            } else {
+                setHasMore(false);
             }
         } catch (e) {
             console.error('Infinite Fetch Error', e);
+            setHasMore(false);
         } finally {
             setLoading(false);
         }

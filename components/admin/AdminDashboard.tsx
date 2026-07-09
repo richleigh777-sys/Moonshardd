@@ -41,16 +41,18 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
   health,
   onRunDiagnostics,
   onTestUplink,
-  _onGhostLogin,
+  onGhostLogin,
   systemConfig: propSystemConfig,
   onApproveSale,
   onDeclineSale,
   onSendMessage,
 }) => {
-  const { sales, users, notes, auditLogs, systemConfig: crmSystemConfig, updateSaleStatus, customers } = useCRM();
+  const { sales, users, notes, auditLogs, systemConfig: crmSystemConfig, updateSaleStatus, customers, currentUser } = useCRM();
   const [activeTab, setActiveTab] = useState<'overview' | 'operations' | 'analytics' | 'tools'>('overview');
   const [showHealthScorecard, setShowHealthScorecard] = useState(false);
   const [showRevenueOptimization, setShowRevenueOptimization] = useState(false);
+
+  const isLevel10 = (currentUser?.level || 0) >= 10;
 
   usePresence('dashboard', 'dashboard', 'viewing');
   
@@ -83,7 +85,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
           { id: 'overview', label: 'Home' },
           { id: 'operations', label: 'Company' },
           { id: 'analytics', label: 'Progress' },
-          { id: 'tools', label: 'Extra Tools' }
+          ...(isLevel10 ? [{ id: 'tools', label: 'Extra Tools' }] : [])
         ] as const).map((tab) => (
           <button
             key={tab.id}
@@ -180,7 +182,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
         )}
 
         {/* TAB 4: TOOLS */}
-        {activeTab === 'tools' && (
+        {activeTab === 'tools' && isLevel10 && (
           <div className="space-y-4">
             
             {/* System Configuration */}

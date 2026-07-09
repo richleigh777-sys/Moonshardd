@@ -1,3 +1,4 @@
+import { getStorageItem, setStorageItem } from '../lib/storage';
 import { useEffect, useState, useCallback } from 'react';
 import { useAuth } from './useAuth';
 import { useSystem } from '../hooks/useSystem';
@@ -23,7 +24,7 @@ export const useAppInitialization = () => {
     useEffect(() => {
         if (!currentUser) return;
         const interval = setInterval(async () => {
-            const sig = localStorage.getItem('nexus_session_sig');
+            const sig = getStorageItem('nexus_session_sig');
             if (sig) {
                 try {
                     const isValid = await nexusGateway.verifySession(currentUser.id, currentUser.role, currentUser.level || currentUser.accessLevel, sig);
@@ -64,12 +65,12 @@ export const useAppInitialization = () => {
         try {
             const targetUser = await validateGhostTarget(userId);
             if (targetUser) {
-                const currentSig = localStorage.getItem('nexus_session_sig');
-                if (currentSig) localStorage.setItem('nexus_admin_sig_bkp', currentSig);
+                const currentSig = getStorageItem('nexus_session_sig');
+                if (currentSig) setStorageItem('nexus_admin_sig_bkp', currentSig);
                 
                 await logAudit({ action: 'GHOST_MODE_ENGAGED', details: `Target: ${targetUser.name}`, module: 'AUTH' });
                 await login(targetUser, undefined, true); 
-                setView('agent_dashboard');
+                setView(targetUser.role === 'admin' ? 'admin_dashboard' : 'agent_dashboard');
                 setToast({ title: 'Ghost Mode', message: `GHOST MODE: ${targetUser.name}`, type: 'warning' });
             }
         } catch {

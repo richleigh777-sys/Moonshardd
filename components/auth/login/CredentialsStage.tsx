@@ -1,8 +1,6 @@
-
 import React, { useState } from 'react';
 import { User as UserIcon, Lock, ArrowRight, Loader2 } from 'lucide-react';
 import { LoginInput } from './LoginInput';
-import { Button } from '../../ui/Base';
 
 interface CredentialsStageProps {
     onSubmit: (u: string, p: string) => void;
@@ -46,18 +44,17 @@ export const CredentialsStage: React.FC<CredentialsStageProps> = ({ onSubmit, is
                 />
             </div>
 
-            <Button 
+            <button 
                 type="submit" 
-                variant="primary" 
                 disabled={isProcessing || !userId || !password}
-                className="w-full h-12 text-sm font-bold shadow-lg shadow-accent-primary/20 rounded-xl"
+                className="w-full h-12 flex items-center justify-center gap-2 text-sm font-semibold bg-[#10b981] hover:bg-[#059669] text-[#022c22] rounded-[14px] transition-all shadow-[0_0_20px_rgba(16,185,129,0.2)] hover:shadow-[0_0_30px_rgba(16,185,129,0.3)] disabled:opacity-50 disabled:cursor-not-allowed mt-2"
             >
                 {isProcessing ? (
-                    <span className="flex items-center gap-2"><Loader2 size={16} className="animate-spin" /> Authenticating...</span>
+                    <><Loader2 size={16} className="animate-spin" /> Authenticating...</>
                 ) : (
-                    <span className="flex items-center gap-2">Sign In <ArrowRight size={16} /></span>
+                    <>Sign In <ArrowRight size={16} strokeWidth={2.5} /></>
                 )}
-            </Button>
+            </button>
         </form>
     );
 };

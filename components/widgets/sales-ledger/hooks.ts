@@ -1,3 +1,4 @@
+import { getStorageItem, setStorageItem } from '../../../lib/storage';
 
 import { useState, useMemo, useEffect } from 'react';
 import { Sale } from '../../../types';
@@ -13,7 +14,7 @@ export const useLedgerLayout = () => {
     const DEFAULT_VISIBLE = DEFAULT_ORDER.reduce((acc, k) => ({...acc, [k]: true}), {});
 
     const [preferences, setPreferences] = useState<{order: string[], visible: Record<string, boolean>}>(() => {
-        const saved = localStorage.getItem('nexus_ledger_prefs_v9');
+        const saved = getStorageItem('nexus_ledger_prefs_v9');
         if (saved) {
             const parsed = JSON.parse(saved);
             // Ensure any new default columns are merged in if they are missing
@@ -28,7 +29,7 @@ export const useLedgerLayout = () => {
     });
 
     useEffect(() => {
-        localStorage.setItem('nexus_ledger_prefs_v9', JSON.stringify(preferences));
+        setStorageItem('nexus_ledger_prefs_v9', JSON.stringify(preferences));
     }, [preferences]);
 
     return [preferences, setPreferences] as const;
@@ -38,6 +39,7 @@ export const useLedgerData = (sales: Sale[]) => {
     const [searchTerm, setSearchTerm] = useState('');
     const [filters, setFilters] = useState({
         status: 'All',
+        pipelineStatus: 'All',
         agent: 'All',
         product: 'All',
         startDate: '',
@@ -45,7 +47,8 @@ export const useLedgerData = (sales: Sale[]) => {
         minAmount: '',
         maxAmount: '',
         reorderCount: 'All',
-        winback: 'All'
+        winback: 'All',
+        trackingStatus: 'All'
     });
 
     const [sortConfig, setSortConfig] = useState<{ key: string; direction: 'asc' | 'desc' }>({ key: 'date', direction: 'desc' });
@@ -77,6 +80,7 @@ export const useLedgerData = (sales: Sale[]) => {
             }
 
             if (statusFilter && s.status !== statusFilter) return false;
+            if (filters.pipelineStatus !== 'All' && s.pipelineStatus !== filters.pipelineStatus) return false;
             if (agentFilter && s.agent !== agentFilter) return false;
             if (productFilter && s.product !== productFilter) return false;
             
@@ -98,6 +102,9 @@ export const useLedgerData = (sales: Sale[]) => {
                  const daysSinceLastOrder = (now - lastOrderTime) / (1000 * 60 * 60 * 24);
                  if (daysSinceLastOrder <= 45) return false; 
             }
+            
+            if (filters.trackingStatus === 'Missing' && s.trackingId) return false;
+            if (filters.trackingStatus === 'Present' && !s.trackingId) return false;
             
             return true;
         });
@@ -134,9 +141,9 @@ export const useLedgerData = (sales: Sale[]) => {
     const resetFilters = () => {
         sfx.playDecline();
         setFilters({ 
-            status: 'All', agent: 'All', product: 'All', 
+            status: 'All', pipelineStatus: 'All', agent: 'All', product: 'All', 
             startDate: '', endDate: '', minAmount: '', 
-            maxAmount: '', reorderCount: 'All', winback: 'All' 
+            maxAmount: '', reorderCount: 'All', winback: 'All', trackingStatus: 'All' 
         });
     };
 

@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -6,32 +6,32 @@
 
 @layer base {
   :root {
-    --font-sans: "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-    --font-display: "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    --font-sans: "Nunito", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    --font-display: "Nunito", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
 
-    /* Modern SaaS Professional Light Mode (HubSpot/Salesforce Inspired) */
-    --color-surface-canvas: 220 33% 98%; /* Clean fresh canvas */ /* Much darker canvas background to dramatically pop the widgets */
+    /* Premium Modern Light Mode - Pearl & Slate */
+    --color-surface-canvas: 210 40% 96%; /* Cool Alabaster Canvas */
     --color-surface-widget: 0 0% 100%; /* Pure white widgets */
     --color-surface-main: 0 0% 100%; /* Pure white panels */
-    --color-surface-alt: 220 20% 96%; /* Subtle gray for active/hover states */
-    --color-surface-highlight: 250 85% 95%; /* Action highlight */
+    --color-surface-alt: 210 30% 97%; /* Very soft recess for inputs/hovers */
+    --color-surface-highlight: 210 30% 95%; /* Action highlight */
     
-    --color-accent-primary: 250 85% 60%; /* Vibrant fun purple */ /* Trustworthy SaaS Blue */
-    --color-accent-secondary: 330 80% 60%; /* Fun pink */ /* Modern Purple */
+    --color-accent-primary: 250 85% 60%; /* Vibrant fun purple */
+    --color-accent-secondary: 330 80% 60%; /* Fun pink */
     
-    --color-text-primary: 220 40% 15%; /* Soft dark blue-gray */ /* Extremely deep, crisp dark slate font for max readability against white */
-    --color-text-secondary: 220 20% 40%; /* Professional secondary text, higher contrast */
-    --color-text-muted: 220 15% 60%; /* Lighter muted text, but still highly readable */
+    --color-text-primary: 215 25% 15%; /* Deep Slate Black */
+    --color-text-secondary: 215 15% 45%; /* Sophisticated Grey */
+    --color-text-muted: 215 15% 65%; /* Gentle Muted Text */
     
-    --color-border-subtle: 220 20% 90%; /* Stronger definition for borders */
-    --color-border-strong: 220 20% 80%;
+    --color-border-subtle: 214 32% 91%; /* Extremely crisp light borders */
+    --color-border-strong: 214 32% 82%; /* Stronger definition */
 
     /* Standardized SaaS Status Colors */
-    --color-status-success: 150 70% 40%; /* Clear SaaS Green */
-    --color-status-warning: 35 90% 50%; /* Alert Orange */
-    --color-status-error: 350 80% 55%; /* Clean Red */
-    --color-status-info: 210 100% 50%; /* Royal Blue */
+    --color-status-success: 150 70% 40%;
+    --color-status-warning: 35 90% 50%;
+    --color-status-error: 350 80% 55%;
+    --color-status-info: 210 100% 50%;
 
     /* Generic component overrides */
     --color-blue-500: var(--color-status-info);
@@ -44,28 +44,28 @@
     --color-red-500: var(--color-status-error);
     --color-indigo-500: var(--color-accent-secondary);
 
-    /* Clean Subtle Shadows for SaaS */
-    --shadow-panel: 0 8px 30px rgba(0,0,0,0.04);
-    --shadow-float: 0 20px 40px rgba(0,0,0,0.08);
+    /* Premium Elevation Shadows */
+    --shadow-panel: 0 4px 20px -2px rgba(0,0,0,0.03), 0 0 0 1px rgba(0,0,0,0.02);
+    --shadow-float: 0 16px 40px -4px rgba(0,0,0,0.08), 0 0 0 1px rgba(0,0,0,0.02);
   }
 
   html.dark, .dark {
-    /* Sleek Professional Dark Mode (Linear/Vercel Inspired) */
-    --color-surface-canvas: 220 20% 5%;
-    --color-surface-widget: 220 20% 10%;
-    --color-surface-main: 220 20% 12%;
-    --color-surface-alt: 220 20% 18%;
-    --color-surface-highlight: 250 40% 25%;
+    /* Premium Modern Dark Mode - Midnight Obsidian */
+    --color-surface-canvas: 222 47% 7%; /* Extremely deep midnight */
+    --color-surface-widget: 222 47% 10%; /* Subtle elevation */
+    --color-surface-main: 222 47% 12%; /* Cards and Panels */
+    --color-surface-alt: 222 40% 16%; /* Inputs and Hover */
+    --color-surface-highlight: 250 50% 25%;
     
     --color-accent-primary: 250 85% 70%;
     --color-accent-secondary: 330 80% 70%;
     
-    --color-text-primary: 220 20% 98%;
-    --color-text-secondary: 220 20% 80%;
-    --color-text-muted: 220 15% 60%;
+    --color-text-primary: 210 40% 98%; /* Crisp Ice White */
+    --color-text-secondary: 210 20% 75%; /* Soft Silver */
+    --color-text-muted: 210 15% 55%; /* Dimmed Silver */
     
-    --color-border-subtle: 220 20% 20%;
-    --color-border-strong: 220 20% 30%;
+    --color-border-subtle: 222 30% 18%; /* Dark crisp borders */
+    --color-border-strong: 222 30% 28%;
     
     /* Standardized SaaS Status Colors */
     --color-status-success: 150 70% 45%; 
@@ -84,13 +84,13 @@
     --color-red-500: var(--color-status-error);
     --color-indigo-500: var(--color-accent-secondary);
 
-    /* Soft Dark Shadows */
-    --shadow-panel: 0 8px 30px rgba(0,0,0,0.4);
-    --shadow-float: 0 20px 40px rgba(0,0,0,0.6);
+    /* Premium Dark Elevation Shadows */
+    --shadow-panel: 0 8px 30px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.03);
+    --shadow-float: 0 24px 50px rgba(0,0,0,0.8), 0 0 0 1px rgba(255,255,255,0.05);
   }
 
   html {
-    @apply antialiased h-full overflow-hidden font-medium leading-relaxed tracking-normal;
+    @apply antialiased h-full overflow-hidden font-medium leading-loose tracking-wide;
     text-rendering: optimizeLegibility;
     -moz-osx-font-smoothing: grayscale;
   }
@@ -265,7 +265,12 @@
 /* Soften standard inputs */
 @layer components {
   input, textarea, select {
-    @apply rounded-2xl bg-surface-main border-border-subtle focus:ring-4 focus:ring-accent-primary/20 focus:border-accent-primary transition-all;
+    @apply rounded-xl bg-surface-alt border-border-subtle focus:ring-4 focus:ring-accent-primary/20 focus:border-accent-primary focus:bg-surface-main transition-all;
+    box-shadow: inset 0 1px 2px rgba(0,0,0,0.02);
+  }
+  
+  .dark input, .dark textarea, .dark select {
+    box-shadow: inset 0 1px 2px rgba(0,0,0,0.2);
   }
   .glass-panel { @apply shadow-[0_8px_30px_rgba(0,0,0,0.04)] dark:shadow-[0_8px_30px_rgba(0,0,0,0.4)] backdrop-blur-2xl border-border-subtle bg-surface-main/70; }
   /* Fun hover states */
@@ -273,6 +278,9 @@
     @apply shadow-lg -translate-y-0.5;
   }
 }
+
+
+
 
 
 /* Soften standard panels */

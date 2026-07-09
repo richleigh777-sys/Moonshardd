@@ -215,7 +215,7 @@ export const DashView: React.FC<{ sales: Sale[] }> = ({ sales }) => {
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 px-1 mb-2">
             <div className="space-y-1">
                 <h1 className="text-lg font-bold text-text-primary tracking-tight">
-                    Welcome back, {currentUser?.name.split(' ')[0]}
+                    Welcome back, {(currentUser?.name || currentUser?.id || 'Agent').split(' ')[0]}
                 </h1>
                 <p className="text-sm text-text-muted font-medium">
                     You have <span className="text-text-primary font-semibold">{stats.dailyCount} wins</span> today.

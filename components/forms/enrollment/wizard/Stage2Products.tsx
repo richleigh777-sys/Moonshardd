@@ -65,17 +65,17 @@ export function Stage2Products({ cart, setCart, productConfig, onNext, onCallbac
     };
 
     return (
-        <div className="w-full h-full flex items-start justify-center p-8 overflow-y-auto custom-scrollbar">
-            <div className="w-full max-w-[1400px] flex flex-col md:flex-row gap-12 pb-24">
+        <div className="w-full h-full flex items-start justify-center p-4 sm:p-6 overflow-y-auto custom-scrollbar">
+            <div className="w-full max-w-[1400px] flex flex-col md:flex-row gap-6 lg:gap-8 pb-24">
                 
-                 <div className="w-full md:w-[65%] flex flex-col bg-surface-alt border border-border-subtle rounded-xl shadow-2xl overflow-hidden min-h-[600px] h-fit">
-                     <div className="p-8 border-b border-border-subtle shrink-0 flex items-center justify-between">
-                         <h2 className="text-text-primary font-medium text-2xl tracking-wide flex items-center gap-3">
-                           <span className="text-accent-primary">03.</span> Product Catalog
+                 <div className="w-full md:w-[65%] flex flex-col bg-surface-main border border-border-subtle rounded-3xl shadow-panel overflow-hidden min-h-[600px] h-fit">
+                     <div className="p-6 sm:p-8 border-b border-border-subtle shrink-0 flex items-center justify-between">
+                         <h2 className="text-text-primary font-bold text-2xl tracking-tight flex items-center gap-4">
+                           <span className="flex items-center justify-center w-8 h-8 rounded-full bg-accent-primary/10 text-accent-primary text-sm">3</span> Product Catalog
                          </h2>
-                         <button onClick={onBack} className="text-text-muted hover:text-white transition-colors text-sm uppercase tracking-wide">← Back to Profile</button>
+                         <button onClick={onBack} className="text-text-secondary hover:text-text-primary transition-colors text-sm font-bold bg-surface-alt px-4 py-2 rounded-full border border-border-subtle shadow-sm">← Back to Profile</button>
                      </div>
-                     <div className="flex-1 p-8">
+                     <div className="flex-1 p-6 sm:p-8">
                          <CleanProductSelector 
                              products={activeProducts}
                              presets={activePresets}
@@ -86,24 +86,24 @@ export function Stage2Products({ cart, setCart, productConfig, onNext, onCallbac
                      </div>
                  </div>
 
-                 <div className="w-full md:w-[35%] flex flex-col gap-8 h-fit">
+                 <div className="w-full md:w-[35%] flex flex-col gap-6 lg:gap-8 h-fit">
                      
-                     <div className="bg-surface-main border border-border-subtle rounded-xl p-6 shadow-xl">
-                          <h3 className="text-accent-primary font-semibold text-sm tracking-wide uppercase flex items-center gap-2 mb-4">
-                              <Sparkles size={16} /> Recommended Add-ons
+                     <div className="bg-surface-main border border-border-subtle rounded-3xl p-6 sm:p-8 shadow-panel">
+                          <h3 className="text-accent-primary font-bold text-sm tracking-wide flex items-center gap-2 mb-4">
+                              <Sparkles size={16} /> RECOMMENDED ADD-ONS
                           </h3>
                           <div className="space-y-3">
                               {recommendedAddons.map(addon => {
                                   const inCart = cart.some((c:any) => c.product === addon.name);
                                   return (
-                                      <div key={addon.name} className="flex items-center justify-between p-4 rounded-xl border border-border-subtle bg-surface-alt">
-                                          <div className="font-medium text-text-primary">{addon.name} <span className="text-text-muted text-sm ml-2">${addon.price.toFixed(2)}</span></div>
+                                      <div key={addon.name} className="flex items-center justify-between p-4 rounded-2xl border border-border-subtle bg-surface-alt hover:border-accent-primary/50 transition-colors">
+                                          <div className="font-semibold text-text-primary">{addon.name} <span className="text-text-muted text-sm ml-2 font-mono">${addon.price.toFixed(2)}</span></div>
                                           {!inCart ? (
-                                              <button onClick={() => handleAddon(addon)} className="text-accent-primary hover:text-white transition-colors bg-accent-primary/10 p-2 rounded-lg font-mono leading-none">
+                                              <button onClick={() => handleAddon(addon)} className="text-accent-primary hover:text-white hover:bg-accent-primary transition-colors bg-surface-main p-2 rounded-full font-bold leading-none w-8 h-8 flex items-center justify-center shadow-sm border border-border-subtle">
                                                   +
                                               </button>
                                           ) : (
-                                              <span className="text-emerald-500 text-sm font-semibold">Added</span>
+                                              <span className="text-emerald-500 text-sm font-bold bg-emerald-500/10 px-2 py-1 rounded-full">Added</span>
                                           )}
                                       </div>
                                   );
@@ -111,28 +111,28 @@ export function Stage2Products({ cart, setCart, productConfig, onNext, onCallbac
                           </div>
                      </div>
 
-                     <div className="flex-1 bg-surface-alt border border-border-subtle rounded-xl p-8 shadow-2xl flex flex-col min-h-[350px]">
-                         <h3 className="text-text-primary font-medium text-xl tracking-wide mb-6">Current Order</h3>
+                     <div className="flex-1 bg-surface-main border border-border-subtle rounded-3xl p-6 sm:p-8 shadow-panel flex flex-col min-h-[350px]">
+                         <h3 className="text-text-primary font-bold text-xl tracking-tight mb-6">Current Order</h3>
                          <div className="flex-1 overflow-y-auto mb-6 pr-2 space-y-4 font-mono text-sm">
                              {cart.map((item: any) => (
-                                 <div key={item.id} className="flex justify-between text-text-muted pb-2 border-b border-border-subtle">
-                                     <div>{item.product} {item.quantity > 1 ? `(x${item.quantity})` : ''}</div>
-                                     <div className="text-text-primary">${(item.unitPrice * (item.quantity || 1)).toFixed(2)}</div>
+                                 <div key={item.id} className="flex justify-between text-text-muted pb-3 border-b border-border-subtle font-medium">
+                                     <div>{item.product} {item.quantity > 1 ? <span className="text-text-primary font-bold ml-1">x{item.quantity}</span> : ''}</div>
+                                     <div className="text-text-primary font-bold">${(item.unitPrice * (item.quantity || 1)).toFixed(2)}</div>
                                  </div>
                              ))}
-                             {cart.length === 0 && <div className="text-text-muted/50 text-center py-10">No items selected</div>}
+                             {cart.length === 0 && <div className="text-text-muted/50 text-center py-10 font-sans font-medium">No items selected</div>}
                          </div>
-                         <div className="shrink-0 space-y-6">
-                             <div className="flex justify-between items-center text-2xl font-medium tracking-wide border-t border-border-strong pt-6">
+                         <div className="shrink-0 space-y-8">
+                             <div className="flex justify-between items-center text-2xl font-bold tracking-tight border-t border-border-strong pt-6">
                                  <span className="text-text-primary">Total</span>
-                                 <span className="text-accent-primary">${runningTotal.toFixed(2)}</span>
+                                 <span className="text-accent-primary font-mono">${runningTotal.toFixed(2)}</span>
                              </div>
                              <div className="grid grid-cols-2 gap-4">
-                                 <button onClick={onCallback} className="py-4 rounded-xl border border-border-strong text-text-muted font-semibold uppercase tracking-wider text-sm hover:text-white hover:bg-surface-hover transition-all">
+                                 <button onClick={onCallback} className="py-4 rounded-full border border-border-strong text-text-secondary font-bold hover:text-text-primary hover:bg-surface-highlight transition-all">
                                      Save Callback
                                  </button>
-                                 <button onClick={onNext} disabled={!hasItems} className="py-4 rounded-xl bg-gradient-to-r from-amber-400 to-[#C4A470] text-black font-bold uppercase tracking-wider text-sm shadow-xl active:scale-[0.98] transition-all disabled:opacity-50 flex items-center justify-center gap-2">
-                                     Checkout <ArrowRight size={16} />
+                                 <button onClick={onNext} disabled={!hasItems} className="py-4 rounded-full bg-accent-primary text-white font-bold shadow-md hover:shadow-lg hover:-translate-y-0.5 active:scale-95 transition-all disabled:opacity-50 disabled:grayscale disabled:transform-none flex items-center justify-center gap-2">
+                                     Checkout <ArrowRight size={18} />
                                  </button>
                              </div>
                          </div>

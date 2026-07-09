@@ -1,7 +1,7 @@
 import { useEffect, useContext } from 'react';
 import { CRMContext } from '../context/CRMContextCore';
 
-export const usePresence = (resourceId: string, resourceType: 'sale' | 'customer' | 'dashboard' | 'chat', action: 'viewing' | 'editing' = 'viewing') => {
+export const usePresence = (resourceId: string, resourceType: 'sale' | 'customer' | 'dashboard' | 'chat', action: 'viewing' | 'editing' = 'viewing', subResource?: string) => {
     const context = useContext(CRMContext);
     const updatePresence = context?.updatePresence;
     const clearPresence = context?.clearPresence;
@@ -16,7 +16,8 @@ export const usePresence = (resourceId: string, resourceType: 'sale' | 'customer
                 userName: currentUser.name,
                 resourceId,
                 resourceType,
-                action
+                action,
+                subResource
             });
         };
 
@@ -27,5 +28,5 @@ export const usePresence = (resourceId: string, resourceType: 'sale' | 'customer
             clearInterval(interval);
             clearPresence(currentUser.id, resourceId);
         };
-    }, [currentUser, resourceId, resourceType, action, updatePresence, clearPresence]);
+    }, [currentUser, resourceId, resourceType, action, subResource, updatePresence, clearPresence]);
 };

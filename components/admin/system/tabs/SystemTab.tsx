@@ -14,7 +14,7 @@ interface SystemTabProps {
 }
 
 export const SystemTab: React.FC<SystemTabProps> = ({ config, onChange }) => {
-    const { _setToast } = useSystem();
+    const { setToast } = useSystem();
     
     const containerVariants = {
         hidden: { opacity: 0 },

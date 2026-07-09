@@ -43,7 +43,7 @@ export const useImportLogic = (onImport?: (data: Partial<Sale>[]) => Promise<any
             }
 
             const headers = rows[0];
-            const data = rows.slice(1);
+            const data = rows.slice(1).filter(row => row.some(cell => cell && cell.trim() !== ''));
             
             setImportConfig({
                 headers,
@@ -136,17 +136,23 @@ export const useImportLogic = (onImport?: (data: Partial<Sale>[]) => Promise<any
                             value = normalizePhone(value);
                         }
                         
-                        if (sysKey === 'address' && value && typeof value === 'string') {
+                        if ((sysKey === 'address' || sysKey === 'shippingAddress' || sysKey === 'billingAddress') && value && typeof value === 'string') {
                             const parsed = parseFullAddressString(value);
                             value = parsed.street || value;
-                            if (parsed.city && !columnMapping['city'] && !columnMapping['shippingCity']) {
-                                entry['city'] = parsed.city;
+                            
+                            const prefix = sysKey === 'billingAddress' ? 'billing' : (sysKey === 'shippingAddress' ? 'shipping' : '');
+                            const cityKey = prefix ? prefix + 'City' : 'city';
+                            const stateKey = prefix ? prefix + 'State' : 'state';
+                            const zipKey = prefix ? prefix + 'Zip' : 'zip';
+
+                            if (parsed.city && !columnMapping[cityKey]) {
+                                entry[cityKey] = parsed.city;
                             }
-                            if (parsed.state && !columnMapping['state'] && !columnMapping['shippingState']) {
-                                entry['state'] = parsed.state;
+                            if (parsed.state && !columnMapping[stateKey]) {
+                                entry[stateKey] = parsed.state;
                             }
-                            if (parsed.zip && !columnMapping['zip'] && !columnMapping['shippingZip']) {
-                                entry['zip'] = parsed.zip;
+                            if (parsed.zip && !columnMapping[zipKey]) {
+                                entry[zipKey] = parsed.zip;
                             }
                         }
                         
@@ -158,7 +164,7 @@ export const useImportLogic = (onImport?: (data: Partial<Sale>[]) => Promise<any
                 return entry;
             });
 
-            const validData = mappedData.filter((d: any) => d.amount || d.product || d.customer || d.phone || d.email);
+            const validData = mappedData.filter((d: any) => d.amount || d.customer || d.phone || d.email || d.firstName || d.lastName);
             const count = await onImport(validData);
             setToast({ title: 'Import Complete', message: `Import Complete: ${count} records`, type: 'success' });
             setImportConfig(null);

@@ -1,5 +1,5 @@
-import React, { useRef, useEffect } from 'react';
-import { Check, XCircle, Edit, Star, User, Copy, CopyPlus } from 'lucide-react';
+import React, { useRef, useEffect, useState } from 'react';
+import { Check, XCircle, Star, User, Copy, CopyPlus } from 'lucide-react';
 import { useAuth } from '../../../hooks/useAuth';
 
 interface ContextMenuProps {
@@ -14,14 +14,35 @@ interface ContextMenuProps {
 export const ContextMenu: React.FC<ContextMenuProps> = ({ x, y, onClose, onAction, allowActions }) => {
     const menuRef = useRef<HTMLDivElement>(null);
     const { currentUser } = useAuth();
+    const [position, setPosition] = useState({ x, y });
+    const [opacity, setOpacity] = useState(0);
+
     useEffect(() => {
         const handleClick = (e: MouseEvent) => { if (menuRef.current && !menuRef.current.contains(e.target as Node)) onClose(); };
         document.addEventListener('mousedown', handleClick);
         return () => document.removeEventListener('mousedown', handleClick);
     }, [onClose]);
 
+    useEffect(() => {
+        if (menuRef.current) {
+            const rect = menuRef.current.getBoundingClientRect();
+            let newX = x;
+            let newY = y;
+            
+            if (x + rect.width > window.innerWidth) {
+                newX = window.innerWidth - rect.width - 8;
+            }
+            if (y + rect.height > window.innerHeight) {
+                newY = window.innerHeight - rect.height - 8;
+            }
+            
+            setPosition({ x: newX, y: newY });
+            setOpacity(1);
+        }
+    }, [x, y]);
+
     return (
-        <div ref={menuRef} style={{ top: y, left: x }} className="fixed z-[100] w-48 bg-surface-main/95 backdrop-blur-xl border border-border-subtle rounded-xl shadow-2xl p-1.5 flex flex-col gap-0.5 animate-in fade-in zoom-in-95 duration-200">
+        <div ref={menuRef} style={{ top: position.y, left: position.x, opacity }} className="fixed z-[100] w-48 bg-surface-main/95 backdrop-blur-xl border border-border-subtle rounded-xl shadow-2xl p-1.5 flex flex-col gap-0.5 animate-in fade-in zoom-in-95 duration-200">
             {allowActions && (
                 <>
                     <button onClick={() => onAction('approve')} className="flex items-center gap-3 px-3 py-2 hover:bg-emerald-500/10 text-text-primary hover:text-status-success rounded-lg transition-all text-xs font-bold text-left group">
@@ -31,9 +52,6 @@ export const ContextMenu: React.FC<ContextMenuProps> = ({ x, y, onClose, onActio
                         <XCircle size={16} className="text-text-muted group-hover:text-rose-500"/> Decline Order
                     </button>
                     <div className="h-px bg-border-subtle mx-2 my-1"></div>
-                    <button onClick={() => onAction('update')} className="flex items-center gap-3 px-3 py-2 hover:bg-surface-alt text-text-primary rounded-lg transition-all text-xs font-bold text-left group">
-                        <Edit size={16} className="text-text-muted group-hover:text-accent-primary"/> Edit Record
-                    </button>
                     <button onClick={() => onAction('qa')} className="flex items-center gap-3 px-3 py-2 hover:bg-surface-alt text-text-primary rounded-lg transition-all text-xs font-bold text-left group">
                         <Star size={16} className="text-text-muted group-hover:text-status-warning"/> QA Review
                     </button>
@@ -52,8 +70,8 @@ export const ContextMenu: React.FC<ContextMenuProps> = ({ x, y, onClose, onActio
             )}
             <button onClick={() => onAction('view_profile')} className="flex items-center gap-3 px-3 py-2 hover:bg-surface-alt text-text-primary rounded-lg transition-all text-xs font-bold text-left group">
                 <User size={16} className="text-text-muted group-hover:text-accent-primary"/> View Profile
-            </button>
-             <button onClick={() => onAction('copy_id')} className="flex items-center gap-3 px-3 py-2 hover:bg-surface-alt text-text-primary rounded-lg transition-all text-xs font-bold text-left group">
+            </button> 
+            <button onClick={() => onAction('copy_id')} className="flex items-center gap-3 px-3 py-2 hover:bg-surface-alt text-text-primary rounded-lg transition-all text-xs font-bold text-left group">
                 <Copy size={16} className="text-text-muted group-hover:text-accent-primary"/> Copy ID
             </button>
         </div>

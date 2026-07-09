@@ -143,14 +143,14 @@ export function Stage1Profile({ formData, setFormData, handleIdentityChange, han
     const isValid = formData.firstName && formData.lastName && formData.phone && formData.shippingAddress && formData.shippingState;
 
     return (
-        <div className="w-full h-full flex items-start justify-center p-8 overflow-y-auto custom-scrollbar">
-            <div className="w-full max-w-[1400px] grid grid-cols-1 lg:grid-cols-2 gap-12 pb-24">
+        <div className="w-full h-full flex items-start justify-center p-4 sm:p-6 overflow-y-auto custom-scrollbar">
+            <div className="w-full max-w-[1400px] grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8 pb-24">
                 
-                <div className="flex flex-col gap-12">
-                    <div className={`bg-surface-alt border rounded-xl p-8 shadow-2xl space-y-8 h-fit transition-all duration-1000 ${wasAutoFilled ? 'border-emerald-500 shadow-sm/20 bg-emerald-500/5' : 'border-border-subtle'}`}>
+                <div className="flex flex-col gap-6 lg:gap-8">
+                    <div className={`bg-surface-main border rounded-3xl p-6 sm:p-8 shadow-panel space-y-6 h-fit transition-all duration-1000 ${wasAutoFilled ? 'border-emerald-500 shadow-emerald-500/10 bg-emerald-500/5' : 'border-border-subtle'}`}>
                         <div className="flex items-center justify-between">
-                            <h2 className="text-text-primary font-medium text-2xl tracking-wide flex items-center gap-3">
-                               <span className="text-accent-primary">01.</span> Customer Profile
+                            <h2 className="text-text-primary font-bold text-2xl tracking-tight flex items-center gap-4">
+                               <span className="flex items-center justify-center w-8 h-8 rounded-full bg-accent-primary/10 text-accent-primary text-sm">1</span> Customer Profile
                             </h2>
                             <div className="flex items-center gap-3">
                                 <button
@@ -242,22 +242,28 @@ export function Stage1Profile({ formData, setFormData, handleIdentityChange, han
 
                         <div className="space-y-3 pt-2">
                             <label className="text-[13px] font-semibold text-text-muted px-1 tracking-wide">Pre-existing Medical Conditions</label>
-                            <div className="flex flex-wrap gap-2 items-center">
+                            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2">
                                 {[...(productConfig?.medicalConditions || []), ...(formData.medicalConditions || []), ...MEDICAL_CONDITIONS].reduce((acc: string[], cur: string) => acc.includes(cur) ? acc : [...acc, cur], [] as string[]).map((cond: string) => {
                                     const isSelected = formData.medicalConditions?.includes(cond);
                                     return (
-                                        <button
+                                        <label
                                             key={cond}
-                                            type="button"
-                                            onClick={() => {
-                                                const current = formData.medicalConditions || [];
-                                                const newSelection = isSelected ? current.filter((c: string) => c !== cond) : [...current, cond];
-                                                handleIdentityChange({ target: { name: 'medicalConditions', value: newSelection } } as any);
-                                            }}
-                                            className={`px-4 py-2 font-medium tracking-wide border transition-all ${isSelected ? 'bg-accent-primary text-black border-accent-primary shadow-sm rounded-full text-[13px]' : 'bg-surface-main text-text-primary border-white/20 hover:border-accent-primary hover:text-accent-primary hover:bg-accent-primary/10 rounded-full text-[13px] shadow-sm'}`}
+                                            className={`flex items-center gap-2 p-1.5 rounded cursor-pointer transition-colors ${isSelected ? 'bg-accent-primary/10 border-accent-primary/30 border' : 'hover:bg-surface-alt border border-transparent'}`}
                                         >
-                                            {cond}
-                                        </button>
+                                            <input
+                                                type="checkbox"
+                                                checked={isSelected}
+                                                onChange={() => {
+                                                    const current = formData.medicalConditions || [];
+                                                    const newSelection = isSelected ? current.filter((c: string) => c !== cond) : [...current, cond];
+                                                    handleIdentityChange({ target: { name: 'medicalConditions', value: newSelection } } as any);
+                                                }}
+                                                className="w-3.5 h-3.5 accent-accent-primary cursor-pointer"
+                                            />
+                                            <span className={`text-[11px] font-medium leading-tight select-none ${isSelected ? 'text-accent-primary' : 'text-text-primary'}`}>
+                                                {cond}
+                                            </span>
+                                        </label>
                                     )
                                 })}
                                 
@@ -337,10 +343,10 @@ export function Stage1Profile({ formData, setFormData, handleIdentityChange, han
                     )}
                 </div>
 
-                <div className="bg-surface-alt border border-border-subtle rounded-xl p-8 shadow-2xl flex flex-col h-fit">
+                <div className="bg-surface-main border border-border-subtle rounded-3xl p-10 shadow-panel flex flex-col h-fit">
                     <div className="flex items-center justify-between mb-8">
-                        <h2 className="text-text-primary font-medium text-2xl tracking-wide flex items-center gap-3">
-                           <span className="text-accent-primary">02.</span> Shipping Destination
+                        <h2 className="text-text-primary font-bold text-2xl tracking-tight flex items-center gap-4">
+                           <span className="flex items-center justify-center w-8 h-8 rounded-full bg-accent-primary/10 text-accent-primary text-sm">2</span> Shipping Destination
                         </h2>
                         {addressValidationStatus === 'validating' && (
                             <span className="px-3 py-1 bg-blue-500/10 text-blue-400 rounded-full text-sm font-bold uppercase tracking-wide animate-pulse flex items-center gap-1">
@@ -420,7 +426,7 @@ export function Stage1Profile({ formData, setFormData, handleIdentityChange, han
                         <button
                             type="button"
                             onClick={onCallback}
-                            className="w-1/3 py-4 rounded-xl border border-border-strong text-text-muted font-semibold uppercase tracking-wider text-sm hover:text-white hover:border-accent-primary/50 hover:bg-accent-primary/5 transition-all"
+                            className="w-1/3 py-4 rounded-full border border-border-strong text-text-secondary font-bold hover:text-text-primary hover:bg-surface-highlight transition-all"
                             tabIndex={14}
                         >
                             Save Callback
@@ -429,7 +435,7 @@ export function Stage1Profile({ formData, setFormData, handleIdentityChange, han
                             type="button"
                             onClick={onNext} 
                             disabled={!isValid}
-                            className="w-2/3 py-4 bg-gradient-to-r from-amber-400 to-[#C4A470] text-black font-bold text-lg rounded-xl hover:shadow-sm active:scale-[0.98] transition-all disabled:opacity-50 disabled:grayscale disabled:cursor-not-allowed uppercase tracking-wider"
+                            className="w-2/3 py-4 bg-accent-primary text-white font-bold text-lg rounded-full hover:shadow-lg hover:-translate-y-0.5 transition-all disabled:opacity-50 disabled:grayscale disabled:cursor-not-allowed disabled:transform-none"
                             tabIndex={15}
                         >
                             Proceed

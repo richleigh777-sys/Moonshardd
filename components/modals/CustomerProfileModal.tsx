@@ -95,26 +95,71 @@ export const CustomerProfileModal: React.FC<CustomerProfileModalProps> = ({
         });
     };
 
+    const [fetchedProfile, setFetchedProfile] = useState<any>(null);
+    const [fetchedHistory, setFetchedHistory] = useState<Sale[]>([]);
+
+    useEffect(() => {
+        if (!isOpen || !phone) {
+            setFetchedProfile(null);
+            setFetchedHistory([]);
+            return;
+        }
+        
+        let active = true;
+        
+        const fetchCustomerData = async () => {
+            try {
+                const headers = {
+                    'X-Tenant-ID': 'srv-001',
+                    'X-User-Level': String(currentUser?.level || 1),
+                    'X-User-ID': String(currentUser?.id || 'unknown'),
+                };
+                
+                // Fetch profile
+                const profileRes = await fetch(`/api/collections/customers?phone=${encodeURIComponent(phone)}`, { headers });
+                if (profileRes.ok && active) {
+                    const profiles = await profileRes.json();
+                    if (profiles.length > 0) setFetchedProfile(profiles[0]);
+                }
+                
+                // Fetch sales history
+                const salesRes = await fetch(`/api/collections/sales?phone=${encodeURIComponent(phone)}`, { headers });
+                if (salesRes.ok && active) {
+                    const sales = await salesRes.json();
+                    setFetchedHistory(sales);
+                }
+                
+            } catch(e) {
+                console.error(e);
+            }
+        };
+        
+        fetchCustomerData();
+        return () => { active = false; };
+    }, [isOpen, phone, currentUser]);
+
     // 1. Resolve Customer Identity via Smart Guard (Multi-Point Lookup)
     const customerProfile = useMemo(() => {
         if (!isOpen || !phone) return undefined;
+        if (fetchedProfile) return fetchedProfile;
         const cleanPhone = normalizePhone(phone);
-        // Safely check phones array existence using optional chaining and includes()
         return customers.find(c => c.phones?.includes(cleanPhone) || c.phone === phone);
-    }, [customers, phone, isOpen]);
+    }, [customers, phone, isOpen, fetchedProfile]);
 
     // 2. Fetch History (Intelligence Engine vs Fallback)
     const customerHistory = useMemo(() => {
         if (!isOpen || !phone) return [];
         let rawHistory: Sale[] = [];
-        if (customerProfile && customerProfile.salesHistory && customerProfile.salesHistory.length > 0) {
+        
+        if (fetchedHistory.length > 0) {
+            rawHistory = [...fetchedHistory];
+        } else if (customerProfile && customerProfile.salesHistory && customerProfile.salesHistory.length > 0) {
             rawHistory = [...customerProfile.salesHistory];
         } else {
             const cleanPhone = normalizePhone(phone);
             rawHistory = allSales.filter(s => {
                 const sp = s.phone;
                 if (!sp) return false;
-                // quick check before regex
                 if (sp === phone) return true;
                 return normalizePhone(sp) === cleanPhone;
             });
@@ -211,7 +256,7 @@ export const CustomerProfileModal: React.FC<CustomerProfileModalProps> = ({
     };
 
     return (
-        <Modal isOpen={isOpen} onClose={onClose} title="Customer Profile" size="xl">
+        <Modal isOpen={isOpen} onClose={onClose} title="Customer Profile" size="2xl" position="right">
             <div className="space-y-6">
                 {/* HERO SECTION */}
                 <div className="relative overflow-hidden rounded-xl glass-panel p-4 group">

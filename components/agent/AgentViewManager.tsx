@@ -4,6 +4,10 @@ import { sfx } from '../../lib/soundService';
 import { User, Sale, Note, AttendanceRecord, ToastMessage } from '../../types';
 import { useCRM } from '../../hooks/useCRM';
 import { realtimeClient } from '../../lib/realtimeClient';
+import { 
+    Home, Clock, UserPlus, LayoutDashboard, Phone, MessageSquare, 
+    CircleDollarSign, Database, Trophy, LineChart 
+} from 'lucide-react';
 
 // Standard Imports (removing lazy to prevent initialization flash)
 import { DashView } from '../../views/DashView';
@@ -17,6 +21,7 @@ import { TeamLeaderboard } from '../widgets/TeamLeaderboard';
 import { PerformanceCenter } from '../widgets/PerformanceCenter';
 import { OperationalRhythm } from './OperationalRhythm';
 import { SmartPitchWorkspace } from './SmartPitchWorkspace';
+import { AgentSettingsView } from './AgentSettingsView';
 
 interface AgentTerminalManagerProps {
     isAllowed: (id: string) => boolean;
@@ -31,9 +36,9 @@ interface AgentTerminalManagerProps {
 }
 
 export const AgentViewManager: React.FC<AgentTerminalManagerProps> = ({
-    _isAllowed, mySales, myNotes, sales, attendance, currentUser, deleteNote, setToast, setView
+    isAllowed, mySales, myNotes, sales, attendance, currentUser, deleteNote, setToast, setView
 }) => {
-    const { _updateSaleStatus } = useCRM();
+    const { updateSaleStatus } = useCRM();
     const [activeLeadPhone, setActiveLeadPhone] = useState<string | null>(null);
     const [smartPitchContext, setSmartPitchContext] = useState<any>(null);
 
@@ -136,12 +141,12 @@ export const AgentViewManager: React.FC<AgentTerminalManagerProps> = ({
             <TabContent value="action" className="w-full min-h-full flex flex-col flex-1">
                 <Tabs value={activeActionTab} onValueChange={setActiveActionTab} className="w-full h-full flex flex-col min-h-0" orientation="horizontal">
                     <TabList className="mb-2 shrink-0">
-                        <TabTrigger value="dash">My Home</TabTrigger>
-                        <TabTrigger value="rhythm">Ops Rhythm</TabTrigger>
-                        <TabTrigger value="enrollment">Help Customer</TabTrigger>
-                        <TabTrigger value="pipeline">Pipeline</TabTrigger>
-                        <TabTrigger value="callbacks">Callbacks</TabTrigger>
-                        <TabTrigger value="comms">Comms</TabTrigger>
+                        <TabTrigger value="dash" icon={<Home size={18} />}>My Home</TabTrigger>
+                        <TabTrigger value="rhythm" icon={<Clock size={18} />}>Ops Rhythm</TabTrigger>
+                        <TabTrigger value="enrollment" icon={<UserPlus size={18} />}>Help Customer</TabTrigger>
+                        <TabTrigger value="pipeline" icon={<LayoutDashboard size={18} />}>Pipeline</TabTrigger>
+                        <TabTrigger value="callbacks" icon={<Phone size={18} />}>Callbacks</TabTrigger>
+                        <TabTrigger value="comms" icon={<MessageSquare size={18} />}>Comms</TabTrigger>
                     </TabList>
                     
                     <TabContent value="dash" className="w-full h-full flex flex-col flex-1 min-h-0">
@@ -187,10 +192,10 @@ export const AgentViewManager: React.FC<AgentTerminalManagerProps> = ({
             <TabContent value="money" className="w-full h-full flex flex-col flex-1 min-h-0">
                 <Tabs value={activeMoneyTab} onValueChange={setActiveMoneyTab} className="w-full h-full flex flex-col min-h-0" orientation="horizontal">
                     <TabList className="mb-2 shrink-0">
-                        <TabTrigger value="payouts">Earnings</TabTrigger>
-                        <TabTrigger value="ledger">Records</TabTrigger>
-                        <TabTrigger value="standings">Leaderboard</TabTrigger>
-                        <TabTrigger value="analytics">Progress Analytics</TabTrigger>
+                        <TabTrigger value="payouts" icon={<CircleDollarSign size={18} />}>Earnings</TabTrigger>
+                        <TabTrigger value="ledger" icon={<Database size={18} />}>Records</TabTrigger>
+                        <TabTrigger value="standings" icon={<Trophy size={18} />}>Leaderboard</TabTrigger>
+                        <TabTrigger value="analytics" icon={<LineChart size={18} />}>Progress Analytics</TabTrigger>
                     </TabList>
                     
                     <TabContent value="payouts" className="w-full h-full flex flex-col flex-1 min-h-0">
@@ -219,6 +224,11 @@ export const AgentViewManager: React.FC<AgentTerminalManagerProps> = ({
                     </TabContent>
                 </Tabs>
             </TabContent>
+
+            <TabContent value="settings" className="w-full h-full flex flex-col flex-1 min-h-0">
+                <AgentSettingsView />
+            </TabContent>
         </>
+    
     );
 };

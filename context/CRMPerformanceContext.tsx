@@ -1,3 +1,4 @@
+import { getStorageItem, setStorageItem, removeStorageItem } from '../lib/storage';
  
 
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
@@ -10,9 +11,9 @@ export const CRMPerformanceProvider: React.FC<{ children: React.ReactNode }> = (
     const { currentUser } = useAuth();
     const crm = useCRM();
 
-    const [isClockedIn, setIsClockedIn] = useState(() => localStorage.getItem('isClockedIn') === 'true');
+    const [isClockedIn, setIsClockedIn] = useState(() => getStorageItem('isClockedIn') === 'true');
     const [currentSessionStart, setCurrentSessionStart] = useState<number | null>(() => {
-        const saved = localStorage.getItem('sessionStart');
+        const saved = getStorageItem('sessionStart');
         return saved ? parseInt(saved) : null;
     });
     const [shiftDuration, setShiftDuration] = useState(0);
@@ -36,14 +37,14 @@ export const CRMPerformanceProvider: React.FC<{ children: React.ReactNode }> = (
             if (latest.type === 'CLOCK_IN' && !isClockedIn) {
                 setIsClockedIn(true);
                 setCurrentSessionStart(latest.timestamp);
-                localStorage.setItem('isClockedIn', 'true');
-                localStorage.setItem('sessionStart', latest.timestamp.toString());
+                setStorageItem('isClockedIn', 'true');
+                setStorageItem('sessionStart', latest.timestamp.toString());
             } else if (latest.type === 'CLOCK_OUT' && isClockedIn) {
                 setIsClockedIn(false);
                 setCurrentSessionStart(null);
                 setShiftDuration(0);
-                localStorage.removeItem('isClockedIn');
-                localStorage.removeItem('sessionStart');
+                removeStorageItem('isClockedIn');
+                removeStorageItem('sessionStart');
             }
         }
          
@@ -65,8 +66,8 @@ export const CRMPerformanceProvider: React.FC<{ children: React.ReactNode }> = (
         setIsClockedIn(true);
         const now = Date.now();
         setCurrentSessionStart(now);
-        localStorage.setItem('isClockedIn', 'true');
-        localStorage.setItem('sessionStart', now.toString());
+        setStorageItem('isClockedIn', 'true');
+        setStorageItem('sessionStart', now.toString());
         await crm.logAttendance('CLOCK_IN');
         await crm.logAudit({ action: 'CLOCK_IN', details: 'Shift Started', module: 'AUTH' });
     }, [currentUser, crm]);
@@ -83,8 +84,8 @@ export const CRMPerformanceProvider: React.FC<{ children: React.ReactNode }> = (
         
         setCurrentSessionStart(null);
         setShiftDuration(0);
-        localStorage.removeItem('isClockedIn');
-        localStorage.removeItem('sessionStart');
+        removeStorageItem('isClockedIn');
+        removeStorageItem('sessionStart');
     }, [currentUser, crm, currentSessionStart]);
 
     const performance = useMemo(() => {

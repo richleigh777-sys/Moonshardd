@@ -1,3 +1,4 @@
+import { getStorageItem } from '../lib/storage';
 /**
  * NEXT-LEVEL SOLUTION 1: Unified Enterprise RPC Client
  * 
@@ -12,7 +13,7 @@ export class RPCClient {
     private static baseUrl = '/api';
 
     static async request<T = any>(endpoint: string, options: RequestInit = {}): Promise<T> {
-        const token = localStorage.getItem('crm_auth_token') || 'local_dev_token';
+        const token = getStorageItem('crm_auth_token') || 'local_dev_token';
         
         const headers = {
             'Content-Type': 'application/json',
