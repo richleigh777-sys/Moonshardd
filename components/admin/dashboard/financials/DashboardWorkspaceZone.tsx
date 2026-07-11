@@ -3,18 +3,18 @@ import { CommandConsole } from './CommandConsole';
 import { SystemMonitor } from '../../../widgets/SystemMonitor';
 import { SystemHealth } from '../../../../types';
 
-interface DashboardTerminalZoneProps {
-    areTerminalsOpen: boolean;
+interface DashboardWorkspaceZoneProps {
+    areWorkspacesOpen: boolean;
     onBroadcast?: (msg: string, urgency: 'Routine' | 'Immediate' | 'Flash') => Promise<void>;
     health?: SystemHealth;
     onRunDiagnostics?: () => void;
     onTestUplink?: () => Promise<boolean>;
 }
 
-export const DashboardTerminalZone: React.FC<DashboardTerminalZoneProps> = ({
-    areTerminalsOpen, onBroadcast, health, onRunDiagnostics, onTestUplink
+export const DashboardWorkspaceZone: React.FC<DashboardWorkspaceZoneProps> = ({
+    areWorkspacesOpen, onBroadcast, health, onRunDiagnostics, onTestUplink
 }) => {
-    if (!areTerminalsOpen) return null;
+    if (!areWorkspacesOpen) return null;
 
     return (
         <div className="relative shrink-0 animate-in slide-in-from-bottom-6 fade-in duration-500 z-10 my-4 h-auto">

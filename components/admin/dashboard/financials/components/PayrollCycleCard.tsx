@@ -18,10 +18,15 @@ export const PayrollCycleCard: React.FC<PayrollCycleCardProps> = ({ cycle, onIns
     const { currentUser } = useCRM();
     const isSuperAdmin = (currentUser?.level || currentUser?.accessLevel || 0) >= 10;
     
+    // Safely parse date objects
+    const parsedStartDate = React.useMemo(() => new Date(cycle.startDate), [cycle.startDate]);
+    const parsedEndDate = React.useMemo(() => new Date(cycle.endDate), [cycle.endDate]);
+    const parsedPayDate = React.useMemo(() => new Date(cycle.payDate), [cycle.payDate]);
+
     // Progress Calculation
     const [now] = React.useState(() => Date.now());
-    const totalDays = (cycle.endDate.getTime() - cycle.startDate.getTime()) / 86400000;
-    const daysPassed = (now - cycle.startDate.getTime()) / 86400000;
+    const totalDays = (parsedEndDate.getTime() - parsedStartDate.getTime()) / 86400000;
+    const daysPassed = (now - parsedStartDate.getTime()) / 86400000;
     const progress = Math.min(100, Math.max(0, (daysPassed / totalDays) * 100));
 
     const getStatusPill = (status: string) => {
@@ -71,9 +76,9 @@ export const PayrollCycleCard: React.FC<PayrollCycleCardProps> = ({ cycle, onIns
                             {getStatusPill(cycle.status)}
                         </div>
                         <div className="flex items-center gap-4 text-sm font-medium text-text-muted">
-                            <span>{cycle.startDate.toLocaleDateString()} - {cycle.endDate.toLocaleDateString()}</span>
+                            <span>{parsedStartDate.toLocaleDateString()} - {parsedEndDate.toLocaleDateString()}</span>
                             <span className="w-1 h-1 rounded-full bg-border-subtle"></span>
-                            <span className="flex items-center gap-1"><Clock size={16}/> Pay Date: {cycle.payDate.toLocaleDateString()}</span>
+                            <span className="flex items-center gap-1"><Clock size={16}/> Pay Date: {parsedPayDate.toLocaleDateString()}</span>
                         </div>
                     </div>
                 </div>

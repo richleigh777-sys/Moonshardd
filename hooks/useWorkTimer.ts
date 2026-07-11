@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { User } from '../types';
+import { getStorageItem } from '../lib/storage';
 
 
 export const useWorkTimer = (currentUser: User | null, sessionStartTime: number | null) => {
@@ -12,8 +13,9 @@ export const useWorkTimer = (currentUser: User | null, sessionStartTime: number 
     
     useEffect(() => {
         if (!currentUser) return;
+        const tenantId = getStorageItem('nexus_server_id') || currentUser?.serverId || 'srv-001';
         fetch('/api/collections/agent_work_states', {
-            headers: { 'X-Tenant-ID': 'srv-001', 'X-User-ID': currentUser.id }
+            headers: { 'X-Tenant-ID': tenantId, 'X-User-ID': currentUser.id }
         })
         .then(r => r.ok ? r.json() : null)
         .then((data: any) => {
@@ -30,9 +32,10 @@ export const useWorkTimer = (currentUser: User | null, sessionStartTime: number 
 
     const syncState = useCallback((state: any) => {
         if (!currentUser) return;
+        const tenantId = getStorageItem('nexus_server_id') || currentUser?.serverId || 'srv-001';
         fetch('/api/collections/agent_work_states', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json', 'X-Tenant-ID': 'srv-001', 'X-User-ID': currentUser.id },
+            headers: { 'Content-Type': 'application/json', 'X-Tenant-ID': tenantId, 'X-User-ID': currentUser.id },
             body: JSON.stringify(state)
         }).catch(console.error);
     }, [currentUser]);

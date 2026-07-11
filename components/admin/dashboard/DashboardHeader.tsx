@@ -5,11 +5,11 @@ import { sfx } from '../../../lib/soundService';
 
 interface DashboardHeaderProps {
     health?: SystemHealth;
-    onToggleTerminals?: () => void;
-    areTerminalsOpen?: boolean;
+    onToggleControls?: () => void;
+    areControlsOpen?: boolean;
 }
 
-export const DashboardHeader: React.FC<DashboardHeaderProps> = ({ health, onToggleTerminals, areTerminalsOpen }) => {
+export const DashboardHeader: React.FC<DashboardHeaderProps> = ({ health, onToggleControls, areControlsOpen }) => {
     const isOffline = health?.cloudSync === 'OFFLINE';
     const [liveMode, setLiveMode] = useState(false);
 
@@ -60,21 +60,21 @@ export const DashboardHeader: React.FC<DashboardHeaderProps> = ({ health, onTogg
                     <RefreshCcw size={16} className={liveMode ? "animate-spin" : ""} />
                     Live Data: {liveMode ? 'ON' : 'OFF'}
                 </button>
-                {onToggleTerminals && (
+                {onToggleControls && (
                     <button
                         onClick={() => {
                             sfx.playClick();
-                            onToggleTerminals();
+                            onToggleControls();
                         }}
                         className={`group flex items-center gap-2 px-4 py-3 rounded-xl text-sm font-bold tracking-wider border transition-all active:scale-95 ${
-                            areTerminalsOpen 
+                            areControlsOpen 
                                 ? 'bg-surface-alt/50 text-text-primary border-border-strong shadow-inner hover:bg-surface-alt' 
                                 : 'bg-emerald-500/10 text-status-success border-status-success/30 hover:bg-emerald-500 hover:text-white hover:shadow-sm ring-1 ring-transparent hover:ring-white/20'
                         }`}
                         title="Toggle Setup Tools"
                     >
-                        <Activity size={16} className={areTerminalsOpen ? "opacity-50" : "animate-pulse"} />
-                        {areTerminalsOpen ? 'Hide Controls' : 'Open Controls'}
+                        <Activity size={16} className={areControlsOpen ? "opacity-50" : "animate-pulse"} />
+                        {areControlsOpen ? 'Hide Controls' : 'Open Controls'}
                     </button>
                 )}
                 <button

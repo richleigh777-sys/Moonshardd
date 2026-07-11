@@ -4,6 +4,7 @@ export default defineConfig({
   schema: './src/db/schema.ts',
   out: './drizzle',
   dialect: 'postgresql',
+  tablesFilter: ['crm_*'],
   dbCredentials: {
     host: process.env.SQL_HOST!,
     user: process.env.SQL_ADMIN_USER!,

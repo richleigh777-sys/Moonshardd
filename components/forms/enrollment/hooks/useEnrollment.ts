@@ -13,7 +13,7 @@ import { CartItem, Sale } from '../../../../types';
 import { formatUSAPhone } from '../../../../views/utils/formatters';
 
 export const useEnrollment = (onSuccess: () => void, customerData?: any) => {
-    const { addSale, sales, notes: allNotes, productConfig, systemConfig, drafts, updateDraft, clearDraft, customers, updateCustomer, addCustomer, updateSaleStatus, deleteCustomer } = useCRM();
+    const { addSale, sales, notes: allNotes, productConfig, drafts, updateDraft, clearDraft, customers, updateCustomer, addCustomer, updateSaleStatus, deleteCustomer } = useCRM();
     const { currentUser } = useAuth();
     
     const [loading, setLoading] = useState(false);

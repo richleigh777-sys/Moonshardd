@@ -1,7 +1,7 @@
 
 import React, { useEffect, useRef, useMemo } from 'react';
 import { 
-    X, Check, Bell, AlertTriangle, Terminal, 
+    X, Check, Bell, AlertTriangle, Globe, 
     Activity, Zap, ArrowRight, Shield, 
     Layers, Sparkles, Ghost
 } from 'lucide-react';
@@ -43,7 +43,7 @@ export const NotificationPanel: React.FC<NotificationPanelProps> = ({
     const getIcon = (type: string) => {
         switch (type) {
             case 'alert': return <div className="p-2 bg-red-500/10 rounded-lg border border-red-500/20"><AlertTriangle size={16} className="text-status-error animate-pulse" /></div>;
-            case 'system': return <div className="p-2 bg-surface-alt rounded-lg border border-border-subtle"><Terminal size={16} className="text-text-secondary" /></div>;
+            case 'system': return <div className="p-2 bg-surface-alt rounded-lg border border-border-subtle"><Globe size={16} className="text-text-secondary" /></div>;
             case 'vitality': return <div className="p-2 bg-emerald-500/10 rounded-lg border border-emerald-500/20"><Activity size={16} className="text-status-success" /></div>;
             case 'workflow': return <div className="p-2 bg-accent-secondary/10 rounded-lg border border-accent-secondary/20"><Zap size={16} className="text-accent-secondary" /></div>;
             default: return <div className="p-2 bg-accent-primary/10 rounded-lg border border-accent-primary/20"><Bell size={16} className="text-accent-primary" /></div>;

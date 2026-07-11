@@ -1,6 +1,6 @@
 
 import React, { useState, useMemo } from 'react';
-import { Search, Copy, Check, Zap, Terminal, Crosshair, Hash } from 'lucide-react';
+import { Search, Copy, Check, Zap, Globe, Crosshair, Hash } from 'lucide-react';
 import { useCRM } from '../../hooks/useCRM';
 import { ScriptType, ScriptItem } from '../../types';
 import { sfx } from '../../lib/soundService';
@@ -47,7 +47,7 @@ export const AgentScriptHub: React.FC = () => {
             <div className="px-6 py-4 border-b border-border-subtle bg-surface-alt/50 flex flex-col md:flex-row md:justify-between md:items-center gap-4 relative z-20">
                 <div className="flex items-center gap-4">
                     <div className="p-2.5 bg-accent-primary/10 rounded-xl border border-accent-primary/20 text-accent-primary shadow-sm">
-                        <Terminal size={20} strokeWidth={2}/>
+                        <Globe size={20} strokeWidth={2}/>
                     </div>
                     <div>
                         <h3 className="text-base font-bold text-text-primary tracking-tight">
@@ -179,7 +179,7 @@ export const AgentScriptHub: React.FC = () => {
                     ) : (
                          <div className="flex-1 flex flex-col items-center justify-center text-text-muted p-5 text-center">
                             <div className="p-5 bg-surface-alt rounded-2xl border border-border-subtle mb-5">
-                                <Terminal size={40} className="text-text-muted/50" />
+                                <Globe size={40} className="text-text-muted/50" />
                             </div>
                             <p className="text-sm font-bold tracking-widest uppercase text-text-primary mb-2">Awaiting Selection</p>
                             <p className="text-xs font-medium text-text-muted max-w-[250px]">Select a dialogue from the directory panel to view constraints.</p>

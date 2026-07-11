@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from 'motion/react';
 
 export const EcosystemTab: React.FC = () => {
     const [activeNode, setActiveNode] = useState<string | null>(null);
-    const [viewMode, setViewMode] = useState<'core' | 'sustainability' | 'actor' | 'cld' | 'sna' | 'terminals' | 'approved_flow' | 'clm_loop' | 'cx_growth' | 'gamification'>('core');
+    const [viewMode, setViewMode] = useState<'core' | 'sustainability' | 'actor' | 'cld' | 'sna' | 'workspaces' | 'approved_flow' | 'clm_loop' | 'cx_growth' | 'gamification'>('core');
 
     const coreNodes = [
         { id: 'admin', label: 'Command Deck', type: 'actor', icon: ShieldCheck, color: 'text-[#C084FC]', bg: 'bg-[#C084FC]/10', border: 'border-[#C084FC]/30', x: 50, y: 20 },
@@ -48,8 +48,8 @@ export const EcosystemTab: React.FC = () => {
         { id: 'qa_team', label: 'QA / Compliance', type: 'cluster', icon: Target, color: 'text-[#F472B6]', bg: 'bg-[#EC4899]/10', border: 'border-[#EC4899]/50', x: 25, y: 75 },
     ];
 
-    const terminalNodes = [
-        { id: 'admin_root', label: 'Admin Portal', type: 'terminal', icon: ShieldCheck, color: 'text-[#C084FC]', bg: 'bg-[#A855F7]/10', border: 'border-[#A855F7]/50', x: 15, y: 50 },
+    const workspaceNodes = [
+        { id: 'admin_root', label: 'Admin Portal', type: 'workspace', icon: ShieldCheck, color: 'text-[#C084FC]', bg: 'bg-[#A855F7]/10', border: 'border-[#A855F7]/50', x: 15, y: 50 },
         { id: 'sys_config', label: 'System Config', type: 'component', icon: Settings, color: 'text-[#D8B4FE]', bg: 'bg-[#A855F7]/10', border: 'border-[#A855F7]/30', x: 35, y: 20 },
         { id: 'roster_mgr', label: 'Roster Manager', type: 'component', icon: Users, color: 'text-[#D8B4FE]', bg: 'bg-[#A855F7]/10', border: 'border-[#A855F7]/30', x: 35, y: 40 },
         { id: 'audit_dash', label: 'Audit Log', type: 'component', icon: Activity, color: 'text-[#D8B4FE]', bg: 'bg-[#A855F7]/10', border: 'border-[#A855F7]/30', x: 35, y: 60 },
@@ -57,7 +57,7 @@ export const EcosystemTab: React.FC = () => {
         
         { id: 'state_bus', label: 'Global State (CRM)', type: 'state', icon: Server, color: 'text-[#34D399]', bg: 'bg-[#10B981]/10', border: 'border-[#10B981]/50', x: 50, y: 50 },
         
-        { id: 'agent_root', label: 'Agent Portal', type: 'terminal', icon: MonitorSmartphone, color: 'text-[#60A5FA]', bg: 'bg-[#3B82F6]/10', border: 'border-[#3B82F6]/50', x: 85, y: 50 },
+        { id: 'agent_root', label: 'Agent Portal', type: 'workspace', icon: MonitorSmartphone, color: 'text-[#60A5FA]', bg: 'bg-[#3B82F6]/10', border: 'border-[#3B82F6]/50', x: 85, y: 50 },
         { id: 'agent_dash', label: 'Agent Metrics Dash', type: 'component', icon: Activity, color: 'text-[#93C5FD]', bg: 'bg-[#3B82F6]/10', border: 'border-[#3B82F6]/30', x: 65, y: 20 },
         { id: 'smart_queue', label: 'Smart Queue', type: 'component', icon: Workflow, color: 'text-[#93C5FD]', bg: 'bg-[#3B82F6]/10', border: 'border-[#3B82F6]/30', x: 65, y: 40 },
         { id: 'enrollment', label: 'Enrollment Form', type: 'component', icon: GitCommit, color: 'text-[#93C5FD]', bg: 'bg-[#3B82F6]/10', border: 'border-[#3B82F6]/30', x: 65, y: 60 },
@@ -66,7 +66,7 @@ export const EcosystemTab: React.FC = () => {
 
     const approvedFlowNodes = [
         { id: 'pending_sale', label: 'Agent Submits Sale', type: 'event', icon: GitCommit, color: 'text-[#94A3B8]', bg: 'bg-surface-main shadow-inner', border: 'border-border-subtle', x: 50, y: 15 },
-        { id: 'admin_approves', label: 'Admin Approves (Terminal)', type: 'event', icon: ShieldCheck, color: 'text-[#34D399]', bg: 'bg-[#10B981]/10', border: 'border-[#10B981]/50', x: 50, y: 35 },
+        { id: 'admin_approves', label: 'Admin Approves (Workspace)', type: 'event', icon: ShieldCheck, color: 'text-[#34D399]', bg: 'bg-[#10B981]/10', border: 'border-[#10B981]/50', x: 50, y: 35 },
         { id: 'crm_update', label: 'CRM Sync (Status = Approved)', type: 'state', icon: Server, color: 'text-[#60A5FA]', bg: 'bg-[#3B82F6]/10', border: 'border-[#3B82F6]/50', x: 50, y: 55 },
         
         { id: 'admin_dash_rev', label: 'Admin Revenue KPI', type: 'component', icon: Zap, color: 'text-[#4ADE80]', bg: 'bg-[#22C55E]/10', border: 'border-[#22C55E]/50', x: 20, y: 85 },
@@ -110,7 +110,7 @@ export const EcosystemTab: React.FC = () => {
             case 'actor': return coreNodes;
             case 'cld': return cldNodes;
             case 'sna': return snaNodes;
-            case 'terminals': return terminalNodes;
+            case 'workspaces': return workspaceNodes;
             case 'approved_flow': return approvedFlowNodes;
             case 'clm_loop': return clmNodes;
             case 'cx_growth': return cxNodes;
@@ -168,7 +168,7 @@ export const EcosystemTab: React.FC = () => {
         { source: 'team_alpha', target: 'external_vendors', type: 'consults', pulse: true, strokeDasharray: "4 4" },
     ];
 
-    const terminalEdges = [
+    const workspaceEdges = [
         { source: 'admin_root', target: 'sys_config', type: 'accesses', pulse: false, strokeDasharray: "" },
         { source: 'admin_root', target: 'roster_mgr', type: 'accesses', pulse: false, strokeDasharray: "" },
         { source: 'admin_root', target: 'audit_dash', type: 'accesses', pulse: false, strokeDasharray: "" },
@@ -242,7 +242,7 @@ export const EcosystemTab: React.FC = () => {
             case 'actor': return coreEdges.filter(e => e.source === 'admin' || e.source === 'agents' || e.target === 'agents' || e.target === 'admin' || e.source === 'customers' || e.target === 'customers');
             case 'cld': return cldEdges;
             case 'sna': return snaEdges;
-            case 'terminals': return terminalEdges;
+            case 'workspaces': return workspaceEdges;
             case 'approved_flow': return approvedFlowEdges;
             case 'clm_loop': return clmEdges;
             case 'cx_growth': return cxEdges;
@@ -275,7 +275,7 @@ export const EcosystemTab: React.FC = () => {
                     { id: 'actor', label: 'Actor Mapping', color: 'bg-[#3B82F6]' },
                     { id: 'cld', label: 'Causal Loop (CLD)', color: 'bg-[#10B981]' },
                     { id: 'sna', label: 'Network Analysis (SNA)', color: 'bg-[#A855F7]' },
-                    { id: 'terminals', label: 'User Views', color: 'bg-[#6366F1]' },
+                    { id: 'workspaces', label: 'User Views', color: 'bg-[#6366F1]' },
                     { id: 'approved_flow', label: 'Sale Approved Matrix', color: 'bg-[#10B981]' },
                     { id: 'clm_loop', label: 'Customer Lifecycle', color: 'bg-[#F97316]' },
                     { id: 'cx_growth', label: 'CX as Growth Engine', color: 'bg-[#EC4899]' },
@@ -493,7 +493,7 @@ export const EcosystemTab: React.FC = () => {
                         </div>
                     </>
                 )}
-                {viewMode === 'terminals' && (
+                {viewMode === 'workspaces' && (
                     <>
                         <div className="p-6 bg-surface-main/50 border border-border-subtle rounded-xl shadow-inner">
                             <div className="flex items-center gap-3 mb-3">

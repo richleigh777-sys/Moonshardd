@@ -1,3 +1,4 @@
+import { getStorageItem } from "../../lib/storage";
 
 import React, { useState } from 'react';
 import { Modal } from '../ui/Modal';
@@ -27,7 +28,7 @@ export const AddContactModal: React.FC<AddContactModalProps> = ({ isOpen, onClos
         await addCustomer({
             ...formData,
             id: `cust-${Date.now()}`,
-            serverId: currentUser?.serverId || 'global',
+            serverId: getStorageItem('nexus_server_id') || currentUser?.serverId || 'global',
             firstName: formData.name.split(' ')[0],
             lastName: formData.name.split(' ').slice(1).join(' '),
             fullName: formData.name,

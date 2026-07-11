@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { getStorageItem } from '../../lib/storage';
 import { Search, Server, User as UserIcon, Phone } from 'lucide-react';
 import { useSystem } from '../../hooks/useSystem';
 import { useAuth } from '../../hooks/useAuth';
@@ -40,10 +41,11 @@ export const OmniSearch = () => {
 
             setIsSearching(true);
             try {
+                const tenantId = getStorageItem('nexus_server_id') || currentUser?.serverId || 'srv-001';
                 const res = await fetch(`/api/omnisearch?q=${encodeURIComponent(query)}`, {
                     headers: {
                         'X-User-Level': String(currentUser?.level || 1),
-                        'X-Tenant-ID': 'srv-001'
+                        'X-Tenant-ID': tenantId
                     },
                     signal: abortControllerRef.current.signal
                 });

@@ -9,7 +9,7 @@ export const CommandCenter: React.FC = () => {
   const leads = useSmartLeadQueue();
   const stats = useTodayStats();
   const help = useContextualHelp();
-  const { currentUser } = useContext(AuthContext)!;
+  
   const [skippedIds, setSkippedIds] = useState<string[]>([]);
 
   const nextAction = leads.find(l => !skippedIds.includes(l.id));

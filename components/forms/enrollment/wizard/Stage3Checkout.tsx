@@ -166,7 +166,7 @@ export function Stage3Checkout({ cart, formData, handleIdentityChange, useShippi
                                       placeholder="123"
                                       autoComplete="chrome-off" data-lpignore="true" data-1p-ignore="true" data-form-type="other"
                                       name={"fld_" + Math.random().toString(36).substring(2)}
-                                      type="text" style={{ WebkitTextSecurity: 'disc' }}
+                                      type="password"
                                       maxLength={4}
                                       className="w-full bg-surface-main border border-border-strong rounded-2xl px-5 py-4 text-xl font-mono text-text-primary placeholder-[#A0A0A0]/30 outline-none transition-all focus:border-accent-primary focus:ring-1 focus:ring-accent-primary/20 shadow-sm text-center"
                                   />

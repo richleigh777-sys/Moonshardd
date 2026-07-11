@@ -196,7 +196,6 @@ export interface Sale {
     callbackTime?: number;
     deliveryStatus?: string;
     recording?: string;
-    pipelineStatus?: string;
     dealStage?: string;
     metadata?: any;
     createdAt?: number;
@@ -372,7 +371,7 @@ export interface SystemConfig {
     maintenanceMode?: boolean;
     strictIPWhitelist?: boolean;
     ecoMode?: boolean;
-    terminalConfig?: any;
+    workspaceConfig?: any;
     permissions?: {
         agent: string[];
         manager: string[];

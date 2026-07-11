@@ -1,8 +1,11 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useAuth } from './useAuth';
+import { useSystem } from './useSystem';
+import { getStorageItem } from '../lib/storage';
 
 export function useInfiniteCollection(collectionName: string, filters: Record<string, string> = {}) {
     const { currentUser } = useAuth();
+    const { activeServer } = useSystem();
     const [data, setData] = useState<any[]>([]);
     const [loading, setLoading] = useState(false);
     const [hasMore, setHasMore] = useState(true);
@@ -27,9 +30,10 @@ export function useInfiniteCollection(collectionName: string, filters: Record<st
         if (loading || !currentUser) return;
         setLoading(true);
         try {
+            const tenantId = activeServer?.id || getStorageItem('nexus_server_id') || currentUser?.serverId || 'srv-001';
             const res = await fetch(buildUrl(offset), {
                 headers: {
-                    'X-Tenant-ID': 'srv-001',
+                    'X-Tenant-ID': tenantId,
                     'X-User-Level': String(currentUser.level || 1),
                     'X-User-ID': String(currentUser.id || 'unknown'),
                 }
@@ -49,7 +53,7 @@ export function useInfiniteCollection(collectionName: string, filters: Record<st
         } finally {
             setLoading(false);
         }
-    }, [collectionName, currentUser, filtersString]);
+    }, [collectionName, currentUser, filtersString, activeServer?.id]);
 
     useEffect(() => {
         setHasMore(true);

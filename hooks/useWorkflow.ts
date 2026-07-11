@@ -71,7 +71,7 @@ export const useWorkflow = () => {
         
         await updateSaleStatus(sale.id, 'Rescue In Progress', {
             declineReason: reason,
-            pipelineStatus: 'Declined'
+            pipelineStatus: 'Closed Lost'
         });
         
         setToast({ title: 'Rescue Ops', message: "Target moved to Rescue Ops", type: 'warning' });

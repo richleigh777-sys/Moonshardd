@@ -9,14 +9,14 @@ import { Sale, Note, User } from '../../types';
 import { sfx } from '../../lib/soundService';
 import { useCRM } from '../../hooks/useCRM';
 
-interface IntelligentTerminalMapProps {
+interface IntelligentWorkspaceMapProps {
     sales: Sale[];
     notes: Note[];
     currentUser: User;
     onLoadLead: (lead: any) => void;
 }
 
-export const IntelligentTerminalMap: React.FC<IntelligentTerminalMapProps> = ({
+export const IntelligentWorkspaceMap: React.FC<IntelligentWorkspaceMapProps> = ({
     sales,
     notes,
     currentUser,
@@ -86,10 +86,10 @@ export const IntelligentTerminalMap: React.FC<IntelligentTerminalMapProps> = ({
             const updatedFields: Partial<Sale> = { status: newStatus };
             
             if (newStatus === 'Rescue In Progress') {
-                updatedFields.pipelineStatus = 'Rescue';
+                updatedFields.pipelineStatus = 'Winback';
                 updatedFields.dealStage = 'Rescue In Progress';
             } else if (newStatus === 'Declined') {
-                updatedFields.pipelineStatus = 'Declined';
+                updatedFields.pipelineStatus = 'Closed Lost';
                 updatedFields.dealStage = 'Declined';
             } else if (newStatus === 'Pending') {
                 updatedFields.pipelineStatus = 'Pitching';
@@ -106,7 +106,7 @@ export const IntelligentTerminalMap: React.FC<IntelligentTerminalMapProps> = ({
         }
     };
 
-    // Process Sales and determine their Terminal mapping with clear metrics
+    // Process Sales and determine their Workspace mapping with clear metrics
     const mappedEntries = useMemo(() => {
         return sales.map(sale => {
             let destination: 'Pipeline' | 'Callback' | 'HelpQueue';
@@ -154,8 +154,8 @@ export const IntelligentTerminalMap: React.FC<IntelligentTerminalMapProps> = ({
         });
     }, [sales, preferences]);
 
-    // Active stats computed per terminal
-    const terminalCounts = useMemo(() => {
+    // Active stats computed per workspace
+    const workspaceCounts = useMemo(() => {
         return {
             Pipeline: mappedEntries.filter(e => e.destination === 'Pipeline').length,
             Callback: mappedEntries.filter(e => e.destination === 'Callback').length + notes.filter(n => n.type === 'callback' && n.status !== 'Resolved').length,
@@ -190,7 +190,7 @@ export const IntelligentTerminalMap: React.FC<IntelligentTerminalMapProps> = ({
                         CRM Core Routing & Judgment Gateway
                     </h2>
                     <p className="text-sm text-text-muted mt-1 font-medium">
-                        Intelligent mapping matrix coordinating leads to designated Agent Terminals across the system.
+                        Intelligent mapping matrix coordinating leads to designated Agent Workspaces across the system.
                     </p>
                 </div>
                 <div className="flex gap-2">
@@ -213,7 +213,7 @@ export const IntelligentTerminalMap: React.FC<IntelligentTerminalMapProps> = ({
                 </div>
             )}
 
-            {/* Grid Map: The 3 Terminal Diagnostics Channels */}
+            {/* Grid Map: The 3 Workspace Diagnostics Channels */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 {/* 1. Pipeline Board Column */}
                 <div className="bg-gradient-to-b from-surface-main to-surface-alt border border-border-subtle hover:border-blue-500/40 rounded-xl p-3 relative overflow-hidden flex flex-col justify-between h-[110px] shadow-sm group transition-all">
@@ -230,7 +230,7 @@ export const IntelligentTerminalMap: React.FC<IntelligentTerminalMapProps> = ({
                             </div>
                         </div>
                         <div className="px-2 py-0.5 bg-blue-500/10 border border-blue-500/20 rounded-md text-sm font-bold text-blue-400 shadow-sm shrink-0">
-                            {terminalCounts.Pipeline} Active
+                            {workspaceCounts.Pipeline} Active
                         </div>
                     </div>
                     <div className="relative z-10 flex justify-between items-end border-t border-border-subtle/50 pt-2 mt-auto">
@@ -253,7 +253,7 @@ export const IntelligentTerminalMap: React.FC<IntelligentTerminalMapProps> = ({
                             </div>
                         </div>
                         <div className="px-2 py-0.5 bg-indigo-500/10 border border-indigo-500/20 rounded-md text-sm font-bold text-indigo-400 shadow-sm shrink-0">
-                            {terminalCounts.Callback} Mapped
+                            {workspaceCounts.Callback} Mapped
                         </div>
                     </div>
                     <div className="relative z-10 flex justify-between items-end border-t border-border-subtle/50 pt-2 mt-auto">
@@ -276,7 +276,7 @@ export const IntelligentTerminalMap: React.FC<IntelligentTerminalMapProps> = ({
                             </div>
                         </div>
                         <div className="px-2 py-0.5 bg-rose-500/10 border border-rose-500/20 rounded-md text-sm font-bold text-rose-400 shadow-sm shrink-0 animate-pulse">
-                            {terminalCounts.HelpQueue} Critical
+                            {workspaceCounts.HelpQueue} Critical
                         </div>
                     </div>
                     <div className="relative z-10 flex justify-between items-end border-t border-border-subtle/50 pt-2 mt-auto">
@@ -294,7 +294,7 @@ export const IntelligentTerminalMap: React.FC<IntelligentTerminalMapProps> = ({
                         <div>
                             <h3 className="text-sm font-bold text-text-primary tracking-tight">Judgment Directives</h3>
                             <p className="text-sm text-text-muted mt-1 leading-relaxed">
-                                Customize rules explaining how incoming files are vectored to different terminals.
+                                Customize rules explaining how incoming files are vectored to different workspaces.
                             </p>
                         </div>
 
@@ -376,7 +376,7 @@ export const IntelligentTerminalMap: React.FC<IntelligentTerminalMapProps> = ({
                                 Judgment Architecture
                             </p>
                             <p>
-                                When an order form is submitted, the system tests transaction properties. If flagged as Declined, it vectors to Terminal 3. If scheduled, it registers to Terminal 2. Everything else enters the standard Pipeline Tracker.
+                                When an order form is submitted, the system tests transaction properties. If flagged as Declined, it vectors to Workspace 3. If scheduled, it registers to Workspace 2. Everything else enters the standard Pipeline Tracker.
                             </p>
                         </div>
                     </div>
@@ -424,7 +424,7 @@ export const IntelligentTerminalMap: React.FC<IntelligentTerminalMapProps> = ({
                             <thead>
                                 <tr className="border-b border-border-subtle/60 bg-surface-alt/30">
                                     <th className="p-3 text-sm font-bold uppercase tracking-wide text-[#ffffff50] w-[140px]">Record / Customer</th>
-                                    <th className="p-3 text-sm font-bold uppercase tracking-wide text-[#ffffff50] w-[110px]">Active Terminal</th>
+                                    <th className="p-3 text-sm font-bold uppercase tracking-wide text-[#ffffff50] w-[110px]">Active Workspace</th>
                                     <th className="p-3 text-sm font-bold uppercase tracking-wide text-[#ffffff50] w-[80px]">Status</th>
                                     <th className="p-3 text-sm font-bold uppercase tracking-wide text-[#ffffff50]">Routing Condition</th>
                                     <th className="p-3 text-sm font-bold uppercase tracking-wide text-[#ffffff50] text-right w-[180px]">Operations & Override</th>
@@ -503,7 +503,7 @@ export const IntelligentTerminalMap: React.FC<IntelligentTerminalMapProps> = ({
                                                                 </div>
 
                                                                 <div className="space-y-3 bg-surface-main/30 p-3 rounded-xl border border-border-subtle/50">
-                                                                    <p className="font-bold uppercase tracking-wider text-[#ffffff40] text-sm">Manual Terminal Override</p>
+                                                                    <p className="font-bold uppercase tracking-wider text-[#ffffff40] text-sm">Manual Workspace Override</p>
                                                                     
                                                                     <div className="flex flex-wrap gap-1.5">
                                                                         <button 

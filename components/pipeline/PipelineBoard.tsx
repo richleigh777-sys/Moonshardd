@@ -21,7 +21,7 @@ export const PipelineBoard: React.FC<PipelineBoardProps> = ({ sales: propSales, 
     const { currentUser, updateSaleStatus } = useCRM();
     const { setToast } = useSystem();
     
-    const { data: serverSales, loading, hasMore, fetchNextPage } = useInfiniteCollection('sales', {});
+    const { data: serverSales, loading,   } = useInfiniteCollection('sales', {});
     const baseSales = serverSales.length > 0 ? serverSales : propSales;
 
     // Optimistic UI State
@@ -33,7 +33,7 @@ export const PipelineBoard: React.FC<PipelineBoardProps> = ({ sales: propSales, 
 
     const {
         searchQuery, setSearchQuery, sortMode, setSortMode, focusMode, setFocusMode,
-        viewOwn, setViewOwn, pipelineData, stats
+        viewOwn, setViewOwn, pipelineData
     } = usePipelineData(optimisticSales, currentUser?.id);
 
     const { isOptimizing, executeCorrection } = useNexusOptimizer(optimisticSales);

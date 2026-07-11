@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Clock, ListTodo, Copy, Eraser, CheckSquare, Save, Hash, Terminal, Ghost } from 'lucide-react';
+import { Clock, ListTodo, Copy, Eraser, CheckSquare, Save, Hash, Globe, Ghost } from 'lucide-react';
 
 interface ScratchpadEditorProps {
     content: string;
@@ -79,7 +79,7 @@ export const ScratchpadEditor: React.FC<ScratchpadEditorProps> = ({
             {/* Footer Status */}
             <div className={`px-4 py-2 border-t border-border-subtle flex justify-between items-center shrink-0 transition-colors ${isGhostMode ? 'bg-surface-alt/30' : 'bg-surface-alt/50'}`}>
                 <div className="flex items-center gap-2">
-                    <Terminal size={16} className="text-accent-primary opacity-50"/>
+                    <Globe size={16} className="text-accent-primary opacity-50"/>
                     <span className="text-xs font-mono text-text-muted font-bold">{content.length} chars</span>
                 </div>
                 <span className="text-xs font-[700]  tracking-widest text-status-success opacity-80 flex items-center gap-1.5">

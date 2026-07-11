@@ -22,7 +22,8 @@ export const PayrollManager: React.FC = () => {
         metrics,
         selectedAgentId,
         setSelectedAgentId,
-        setAdjustment
+        setAdjustment,
+        loading
     } = usePayrollData();
     
     // UI State
@@ -30,6 +31,17 @@ export const PayrollManager: React.FC = () => {
     const [inspecting, setInspecting] = useState<{cycle: PayoutCycle & { agentPayouts: any[] }, agent: User, sales: any[]} | null>(null);
     const [adjustModal, setAdjustModal] = useState<{isOpen: boolean, cycleId: string, agentId: string, currentVal: number} | null>(null);
     const [adjustAmount, setAdjustAmount] = useState('0');
+
+    if (loading) {
+        return (
+            <div className="flex items-center justify-center h-full">
+                <div className="flex flex-col items-center gap-4 animate-pulse">
+                    <div className="w-12 h-12 rounded-full border-4 border-accent-primary border-t-transparent animate-spin"></div>
+                    <p className="text-sm font-bold text-text-muted tracking-widest uppercase">Calculating Payouts...</p>
+                </div>
+            </div>
+        );
+    }
 
     // Handlers
     const handleSaveAdjustment = () => {

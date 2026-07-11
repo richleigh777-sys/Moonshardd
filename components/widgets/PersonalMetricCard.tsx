@@ -12,7 +12,7 @@ interface Props {
     pending?: number;
 }
 
-export const PersonalMetricTerminal: React.FC<Props> = ({ 
+export const PersonalMetricCard: React.FC<Props> = ({ 
     revenue: _revenue = 0, 
     winRate: _winRate = 0, 
     hours = 0,

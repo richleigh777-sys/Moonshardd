@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Clock, DollarSign, Save, Lock, Globe, Database,
-    RefreshCw, Terminal, LayoutGrid, Server, Zap
+    RefreshCw, Layout, LayoutGrid, Server, Zap
 } from 'lucide-react';
 import { Button } from '../ui/Base';
 import { SystemConfig, Sale, Note } from '../../types';
@@ -17,7 +17,8 @@ import { FinancialsTab } from './system/FinancialsTab';
 import { ClearanceTab } from './system/tabs/ClearanceTab';
 import { IntegrationsTab } from './system/tabs/IntegrationsTab';
 import { CRMConfigTab } from './system/tabs/CRMConfigTab';
-import { TerminalsConfigTab } from './system/tabs/TerminalsConfigTab';
+import { WorkspacesConfigTab } from './system/tabs/WorkspacesConfigTab';
+import { SystemTab } from './system/tabs/SystemTab';
 
 interface SystemConfigPanelProps {
     config: SystemConfig;
@@ -26,7 +27,7 @@ interface SystemConfigPanelProps {
     notes: Note[];
 }
 
-type ConfigTab = 'operations' | 'financials' | 'crm' | 'clearance' | 'integrations' | 'taxonomy' | 'experience' | 'system' | 'command' | 'hygiene' | 'snapshots' | 'playbooks' | 'audit' | 'ecosystem' | 'terminals' | 'extensions';
+type ConfigTab = 'operations' | 'financials' | 'crm' | 'clearance' | 'integrations' | 'taxonomy' | 'experience' | 'system' | 'command' | 'hygiene' | 'snapshots' | 'playbooks' | 'audit' | 'ecosystem' | 'workspaces' | 'extensions';
 
 export const SystemConfigPanel = ({ config, onUpdate, sales, notes }: SystemConfigPanelProps) => {
     const { currentUser } = useAuth();
@@ -95,6 +96,7 @@ export const SystemConfigPanel = ({ config, onUpdate, sales, notes }: SystemConf
             icon: Server,
             items: [
                 { id: 'integrations', label: 'Integrations', icon: Globe, color: 'text-indigo-400' },
+                { id: 'system', label: 'Watchdog & Health', icon: Server, color: 'text-rose-500' },
             ]
         },
         {
@@ -103,7 +105,7 @@ export const SystemConfigPanel = ({ config, onUpdate, sales, notes }: SystemConf
             hidden: !isSuperAdmin,
             items: [
                 { id: 'clearance', label: 'Clearance', icon: Lock, color: 'text-amber-500' },
-                { id: 'terminals', label: 'Terminals', icon: Terminal, color: 'text-blue-500' },
+                { id: 'workspaces', label: 'Workspaces', icon: Layout, color: 'text-blue-500' },
             ]
         }
     ].filter(g => !g.hidden);
@@ -242,7 +244,8 @@ export const SystemConfigPanel = ({ config, onUpdate, sales, notes }: SystemConf
                                         {activeTab === 'financials' && <FinancialsTab config={localConfig} onChange={handleChange} />}
                                         {activeTab === 'clearance' && <ClearanceTab config={localConfig} onChange={handleChange} isSuperAdmin={isSuperAdmin} />}
                                         {activeTab === 'integrations' && <IntegrationsTab config={localConfig} onChange={handleChange} />}
-                                        {activeTab === 'terminals' && <TerminalsConfigTab config={localConfig} onChange={handleChange} isSuperAdmin={isSuperAdmin} />}
+                                        {activeTab === 'system' && <SystemTab config={localConfig} onChange={handleChange} />}
+                                        {activeTab === 'workspaces' && <WorkspacesConfigTab config={localConfig} onChange={handleChange} isSuperAdmin={isSuperAdmin} />}
                                     </motion.div>
                                 </AnimatePresence>
                         </div>

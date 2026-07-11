@@ -9,7 +9,7 @@ import { Card, Badge } from '../components/ui/Base';
 import { VisualEngine } from '../components/widgets/VisualEngine';
 import { ActionCenter } from '../components/widgets/ActionCenter';
 import { MiniLeaderboard } from '../components/widgets/MiniLeaderboard';
-import { PersonalMetricTerminal } from '../components/widgets/PersonalMetricTerminal';
+import { PersonalMetricCard } from '../components/widgets/PersonalMetricCard';
 import { useAgentStats } from '../components/agent/hooks/useAgentStats';
 import { WidgetContainer } from '../components/agent/WidgetContainer';
 
@@ -170,7 +170,7 @@ export const DashView: React.FC<{ sales: Sale[] }> = ({ sales }) => {
           />
       ),
       'personal_terminal': (
-          <PersonalMetricTerminal 
+          <PersonalMetricCard 
               revenue={stats.dailyRev}
               winRate={stats.winRate}
               hours={currentUser?.dailyHours || 8}

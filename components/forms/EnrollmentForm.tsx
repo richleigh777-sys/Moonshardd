@@ -12,7 +12,6 @@ import { CartPreview } from './enrollment/CartPreview';
 import { ReviewModal } from './enrollment/v1/ReviewModal';
 import { CustomerLookup } from './enrollment/v1/CustomerLookup';
 import { DispositionModal } from '../modals/DispositionModal';
-import { useAuth } from '../../hooks/useAuth';
 import { sfx } from '../../lib/soundService';
 
 interface Props {
@@ -26,7 +25,7 @@ export default function EnrollmentForm({
   onCancel,
   initialData,
 }: Props) {
-  const { currentUser } = useAuth();
+  
   const logic = useEnrollmentLogic(onSuccess, initialData);
   const [isLookupOpen, setIsLookupOpen] = useState(false);
   const [isDispositionOpen, setIsDispositionOpen] = useState(false);

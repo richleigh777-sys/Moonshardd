@@ -75,8 +75,9 @@ export const Scratchpad: React.FC<ScratchpadProps> = ({ isOpen, onClose }) => {
     // --- INITIALIZATION & MIGRATION ---
     useEffect(() => {
         if (!currentUser) return;
+        const tenantId = getStorageItem('nexus_server_id') || currentUser?.serverId || 'srv-001';
         fetch('/api/collections/agent_scratchpads', {
-            headers: { 'X-Tenant-ID': 'srv-001', 'X-User-ID': currentUser.id }
+            headers: { 'X-Tenant-ID': tenantId, 'X-User-ID': currentUser.id }
         })
         .then(r => r.ok ? r.json() : null)
         .then((res: any) => {
@@ -119,6 +120,7 @@ export const Scratchpad: React.FC<ScratchpadProps> = ({ isOpen, onClose }) => {
     // --- PERSISTENCE ---
     useEffect(() => {
         if (!currentUser) return;
+        const tenantId = getStorageItem('nexus_server_id') || currentUser?.serverId || 'srv-001';
         if (sheets.length > 0) {
             const data = {
                 activeId: activeSheetId,
@@ -130,7 +132,7 @@ export const Scratchpad: React.FC<ScratchpadProps> = ({ isOpen, onClose }) => {
             const timeoutId = setTimeout(() => {
                 fetch('/api/collections/agent_scratchpads', {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json', 'X-Tenant-ID': 'srv-001', 'X-User-ID': currentUser.id },
+                    headers: { 'Content-Type': 'application/json', 'X-Tenant-ID': tenantId, 'X-User-ID': currentUser.id },
                     body: JSON.stringify({ data })
                 }).catch(console.error);
             }, 1000);

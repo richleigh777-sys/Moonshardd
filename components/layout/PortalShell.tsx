@@ -64,45 +64,69 @@ export const PortalShell: React.FC<PortalShellProps> = ({
 
     const themeVars: Record<string, React.CSSProperties> = {
         Classic: {},
-        Bloom: {
-            '--color-surface-main': '220 70% 30%',
-            '--color-surface-widget': '220 70% 25%',
-            '--color-surface-alt': '220 70% 20%',
-            '--color-surface-highlight': '220 70% 40%',
-            '--color-text-primary': '0 0% 100%',
-            '--color-text-secondary': '220 10% 90%',
-            '--color-text-muted': '220 20% 70%',
-            '--color-border-subtle': '220 30% 35%',
-            '--color-border-strong': '220 30% 45%',
-            '--color-accent-primary': '220 85% 60%',
-            '--color-accent-secondary': '220 80% 50%',
-        } as React.CSSProperties,
-        Agave: {
-            '--color-surface-main': '170 60% 26%',
-            '--color-surface-widget': '170 60% 22%',
-            '--color-surface-alt': '170 60% 18%',
-            '--color-surface-highlight': '170 60% 36%',
-            '--color-text-primary': '0 0% 100%',
-            '--color-text-secondary': '170 10% 90%',
-            '--color-text-muted': '170 20% 70%',
-            '--color-border-subtle': '170 30% 32%',
-            '--color-border-strong': '170 30% 42%',
-            '--color-accent-primary': '170 85% 40%',
-            '--color-accent-secondary': '170 80% 30%',
-        } as React.CSSProperties,
-        Rose: {
-            '--color-surface-main': '345 60% 35%',
-            '--color-surface-widget': '345 60% 30%',
-            '--color-surface-alt': '345 60% 25%',
-            '--color-surface-highlight': '345 60% 45%',
-            '--color-text-primary': '0 0% 100%',
-            '--color-text-secondary': '345 10% 90%',
-            '--color-text-muted': '345 20% 75%',
-            '--color-border-subtle': '345 30% 40%',
-            '--color-border-strong': '345 30% 50%',
-            '--color-accent-primary': '345 85% 60%',
-            '--color-accent-secondary': '345 80% 50%',
-        } as React.CSSProperties
+        Bloom: (theme === 'dark' ? {
+            '--sidebar-accent': 'hsl(220 85% 65%)',
+            '--sidebar-border': 'hsl(220 85% 65% / 0.15)',
+            '--sidebar-bg': 'hsl(220 35% 12%)',
+            '--sidebar-text': 'hsl(220 10% 95%)',
+            '--sidebar-text-muted': 'hsl(220 15% 70%)',
+            '--header-accent': 'hsl(220 80% 55%)',
+            '--header-border': 'hsl(220 80% 55% / 0.15)',
+            '--header-bg': 'hsl(220 35% 15%)',
+            '--header-text': 'hsl(220 10% 95%)',
+        } : {
+            '--sidebar-accent': 'hsl(220 85% 55%)',
+            '--sidebar-border': 'hsl(220 40% 88%)',
+            '--sidebar-bg': 'hsl(220 40% 95%)',
+            '--sidebar-text': 'hsl(220 50% 20%)',
+            '--sidebar-text-muted': 'hsl(220 30% 50%)',
+            '--header-accent': 'hsl(220 85% 55%)',
+            '--header-border': 'hsl(220 40% 90%)',
+            '--header-bg': 'hsl(220 40% 97%)',
+            '--header-text': 'hsl(220 50% 15%)',
+        }) as React.CSSProperties,
+        Agave: (theme === 'dark' ? {
+            '--sidebar-accent': 'hsl(170 80% 55%)',
+            '--sidebar-border': 'hsl(170 80% 55% / 0.15)',
+            '--sidebar-bg': 'hsl(170 30% 10%)',
+            '--sidebar-text': 'hsl(170 10% 95%)',
+            '--sidebar-text-muted': 'hsl(170 15% 70%)',
+            '--header-accent': 'hsl(170 75% 45%)',
+            '--header-border': 'hsl(170 75% 45% / 0.15)',
+            '--header-bg': 'hsl(170 30% 13%)',
+            '--header-text': 'hsl(170 10% 95%)',
+        } : {
+            '--sidebar-accent': 'hsl(170 80% 45%)',
+            '--sidebar-border': 'hsl(170 35% 88%)',
+            '--sidebar-bg': 'hsl(170 30% 95%)',
+            '--sidebar-text': 'hsl(170 50% 20%)',
+            '--sidebar-text-muted': 'hsl(170 30% 50%)',
+            '--header-accent': 'hsl(170 80% 45%)',
+            '--header-border': 'hsl(170 35% 90%)',
+            '--header-bg': 'hsl(170 30% 97%)',
+            '--header-text': 'hsl(170 50% 15%)',
+        }) as React.CSSProperties,
+        Rose: (theme === 'dark' ? {
+            '--sidebar-accent': 'hsl(345 80% 65%)',
+            '--sidebar-border': 'hsl(345 80% 65% / 0.15)',
+            '--sidebar-bg': 'hsl(345 30% 11%)',
+            '--sidebar-text': 'hsl(345 10% 95%)',
+            '--sidebar-text-muted': 'hsl(345 15% 70%)',
+            '--header-accent': 'hsl(345 75% 55%)',
+            '--header-border': 'hsl(345 75% 55% / 0.15)',
+            '--header-bg': 'hsl(345 30% 14%)',
+            '--header-text': 'hsl(345 10% 95%)',
+        } : {
+            '--sidebar-accent': 'hsl(345 80% 55%)',
+            '--sidebar-border': 'hsl(345 35% 90%)',
+            '--sidebar-bg': 'hsl(345 30% 96%)',
+            '--sidebar-text': 'hsl(345 50% 20%)',
+            '--sidebar-text-muted': 'hsl(345 30% 50%)',
+            '--header-accent': 'hsl(345 80% 55%)',
+            '--header-border': 'hsl(345 35% 92%)',
+            '--header-bg': 'hsl(345 30% 97%)',
+            '--header-text': 'hsl(345 50% 15%)',
+        }) as React.CSSProperties
     };
 
     const currentThemeStyle = themeVars[appThemePalette] || themeVars.Classic;
@@ -145,7 +169,6 @@ export const PortalShell: React.FC<PortalShellProps> = ({
     return (
         <div 
             className="h-full w-full flex bg-surface-canvas text-text-primary transition-all duration-500 relative font-sans overflow-hidden p-0 gap-0"
-            style={currentThemeStyle}
         >
             
             {/* OVERLAYS */}
@@ -181,31 +204,31 @@ export const PortalShell: React.FC<PortalShellProps> = ({
                             animate={{ x: 0 }}
                             exit={{ x: '-100%' }}
                             transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-                            className={`fixed inset-y-0 left-0 z-[160] w-72 bg-surface-widget border-r border-border-subtle flex flex-col lg:hidden`}
+                            className={`fixed inset-y-0 left-0 z-[160] w-72 bg-sidebar-bg border-r border-sidebar-border text-sidebar-text flex flex-col lg:hidden`}
                             style={currentThemeStyle}
                         >
-                            <div className="h-[60px] flex items-center justify-between px-4 border-b border-border-subtle bg-surface-main">
+                            <div className="h-[60px] flex items-center justify-between px-4 border-b border-sidebar-border bg-transparent">
                                 <div className="flex items-center gap-3">
-                                    <div className="w-8 h-8 rounded-lg bg-accent-primary flex items-center justify-center text-surface-alt">
+                                    <div className="w-8 h-8 rounded-lg bg-sidebar-accent flex items-center justify-center text-sidebar-bg">
                                         <LayoutGrid size={16} fill="currentColor" />
                                     </div>
-                                    <span className="font-medium  tracking-tighter">Workspace</span>
+                                    <span className="font-medium tracking-tighter text-sidebar-text">Workspace</span>
                                 </div>
-                                <button onClick={() => setIsMobileMenuOpen(false)} className="p-2 text-text-muted">
+                                <button onClick={() => setIsMobileMenuOpen(false)} className="p-2 text-sidebar-text-muted hover:text-sidebar-text transition-colors">
                                     <CloseIcon size={20} />
                                 </button>
                             </div>
-                            <nav className="flex-1 px-4 py-4 space-y-1 overflow-y-auto custom-scrollbar">
+                            <nav className="flex-1 px-4 py-4 space-y-1 overflow-y-auto custom-scrollbar bg-transparent">
                                 {sidebarContent}
                             </nav>
-                            <div className="p-4 border-t border-border-subtle flex flex-col gap-2">
-                                <div className="flex items-center gap-3 px-2 py-3 mb-2 border-b border-border-subtle bg-surface-alt rounded-lg">
-                                    <div className="w-10 h-10 rounded-full bg-accent-primary flex items-center justify-center text-white font-bold text-lg shadow-sm">
+                            <div className="p-4 border-t border-sidebar-border flex flex-col gap-2 bg-transparent">
+                                <div className="flex items-center gap-3 px-2 py-3 mb-2 border-b border-sidebar-border bg-sidebar-accent/10 rounded-lg">
+                                    <div className="w-10 h-10 rounded-full bg-sidebar-accent flex items-center justify-center text-white font-bold text-lg shadow-sm">
                                         {(user.name || user.id || 'U').charAt(0).toUpperCase()}
                                     </div>
                                     <div className="flex flex-col min-w-0">
-                                        <span className="text-sm font-bold text-text-primary truncate">{user.name || user.id}</span>
-                                        <span className="text-xs text-text-muted capitalize truncate">{user.role}</span>
+                                        <span className="text-sm font-bold text-sidebar-text truncate">{user.name || user.id}</span>
+                                        <span className="text-xs text-sidebar-text-muted capitalize truncate">{user.role}</span>
                                     </div>
                                 </div>
                                 <button onClick={handleLogout} className="w-full p-3 flex items-center gap-4 text-status-error bg-status-error/10 hover:bg-status-error/20 transition-colors rounded-xl font-bold mt-2">
@@ -222,33 +245,33 @@ export const PortalShell: React.FC<PortalShellProps> = ({
             <aside 
                 className={`
                     hidden lg:flex z-50 transition-all duration-300 ease-out flex-col
-                    bg-surface-main border-r border-border-subtle
+                    bg-sidebar-bg border-r border-sidebar-border text-sidebar-text
                     w-[94px]
                 `}
                 style={currentThemeStyle}
             >
-                <div className="h-[60px] flex items-center justify-center shrink-0 border-b border-border-subtle relative bg-surface-main overflow-hidden">
-                    <div className="w-8 h-8 flex items-center justify-center rounded-md bg-accent-primary text-white cursor-pointer hover:bg-accent-primary/90 transition-colors shadow-sm relative z-10" onClick={() => setIsTimeSheetOpen(true)}>
+                <div className="h-[60px] flex items-center justify-center shrink-0 border-b border-sidebar-border relative bg-transparent overflow-hidden">
+                    <div className="w-8 h-8 flex items-center justify-center rounded-md bg-sidebar-accent text-sidebar-bg cursor-pointer hover:opacity-90 transition-all shadow-sm relative z-10" onClick={() => setIsTimeSheetOpen(true)}>
                         <LayoutGrid size={18} strokeWidth={2} />
                     </div>
                 </div>
 
-                <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto custom-scrollbar relative z-10 bg-surface-main">
+                <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto custom-scrollbar relative z-10 bg-transparent">
                     {sidebarContent}
                 </nav>
 
-                <div className="p-3 border-t border-border-subtle bg-surface-main flex flex-col gap-1">
-                    <div className="flex flex-col items-center gap-1 px-1 py-2 mb-2 border-b border-border-subtle text-center">
-                        <div className="w-8 h-8 rounded-full bg-accent-primary/20 flex items-center justify-center text-accent-primary font-bold">
+                <div className="p-3 border-t border-sidebar-border bg-transparent flex flex-col gap-1">
+                    <div className="flex flex-col items-center gap-1 px-1 py-2 mb-2 border-b border-sidebar-border text-center">
+                        <div className="w-8 h-8 rounded-full bg-sidebar-accent/20 flex items-center justify-center text-sidebar-accent font-bold">
                             {(user.name || user.id || 'U').charAt(0).toUpperCase()}
                         </div>
                         <div className="flex flex-col min-w-0 w-full">
-                            <span className="text-sm font-bold text-text-primary truncate">{user.name || user.id}</span>
-                            <span className="text-xs text-text-muted capitalize truncate">{user.role}</span>
+                            <span className="text-sm font-bold text-sidebar-text truncate">{user.name || user.id}</span>
+                            <span className="text-xs text-sidebar-text-muted capitalize truncate">{user.role}</span>
                         </div>
                     </div>
                     
-                    <button onClick={handleLogout} className="w-full p-2 flex items-center justify-center gap-2 text-text-secondary hover:text-text-primary transition-all rounded-md hover:bg-surface-highlight group">
+                    <button onClick={handleLogout} className="w-full p-2 flex items-center justify-center gap-2 text-sidebar-text-muted hover:text-sidebar-text transition-all rounded-md hover:bg-sidebar-accent/10 group">
                         <LogOut size={18} className="group-hover:text-status-error transition-colors shrink-0" />
                         <span className="text-sm font-medium truncate text-left">Log Out</span>
                     </button>
@@ -256,35 +279,35 @@ export const PortalShell: React.FC<PortalShellProps> = ({
             </aside>
 
             {/* MAIN CONTENT WORKSPACE */}
-            <main className={`flex-1 flex flex-col min-w-0 transition-all duration-300 overflow-hidden bg-surface-main relative`}>
+            <main className={`flex-1 flex flex-col min-w-0 transition-all duration-300 overflow-hidden bg-surface-canvas relative`}>
                 
                 {/* HEADER */}
                 <header 
-                    className="h-[60px] px-8 flex items-center justify-between bg-surface-main border-b border-border-subtle shrink-0 z-[50] transition-colors duration-500"
+                    className="h-[60px] px-8 flex items-center justify-between bg-header-bg border-b border-header-border text-header-text shrink-0 z-[50] transition-all duration-500"
                     style={currentThemeStyle}
                 >
                     <div className="flex items-center gap-4">
                         <button 
                             onClick={() => setIsMobileMenuOpen(true)}
-                            className="p-2 -ml-2 text-text-muted hover:text-text-primary lg:hidden transition-colors"
+                            className="p-2 -ml-2 text-header-text/70 hover:text-header-text lg:hidden transition-colors"
                         >
                             <Menu size={24} />
                         </button>
 
                         <div className="flex items-center gap-3">
-                            <LayoutGrid size={20} className="text-accent-secondary hidden sm:block opacity-50" />
-                            <h1 className="text-xl font-bold text-text-primary tracking-tight">{title}</h1>
+                            <LayoutGrid size={20} className="text-header-accent hidden sm:block opacity-75 animate-pulse" />
+                            <h1 className="text-xl font-bold text-header-text tracking-tight">{title}</h1>
                         </div>
                         
                         {activeServer && (
                             <div className="relative ml-2">
                                 <button 
                                     onClick={() => user.accessLevel >= 10 && setIsServerSwitcherOpen(!isServerSwitcherOpen)}
-                                    className={`flex items-center gap-2.5 px-3 py-1.5 bg-surface-alt hover:bg-surface-highlight border border-border-strong rounded-lg transition-all ${user.accessLevel >= 10 ? 'cursor-pointer' : 'cursor-default'}`}
+                                    className={`flex items-center gap-2.5 px-3 py-1.5 bg-header-text/5 hover:bg-header-text/10 border border-header-border rounded-lg transition-all ${user.accessLevel >= 10 ? 'cursor-pointer' : 'cursor-default'}`}
                                 >
-                                    <Server size={14} className="text-accent-primary" />
-                                    <span className="text-sm font-bold text-text-primary font-mono tracking-wider hidden sm:inline">{activeServer.name}</span>
-                                    {user.accessLevel >= 10 && <ChevronDown size={14} className={`text-text-muted transition-transform duration-200 ${isServerSwitcherOpen ? 'rotate-180' : ''}`} />}
+                                    <Server size={14} className="text-header-accent" />
+                                    <span className="text-sm font-bold text-header-text font-mono tracking-wider hidden sm:inline">{activeServer.name}</span>
+                                    {user.accessLevel >= 10 && <ChevronDown size={14} className={`text-header-text/60 transition-transform duration-200 ${isServerSwitcherOpen ? 'rotate-180' : ''}`} />}
                                     <div className="w-1.5 h-1.5 rounded-full bg-status-success shadow-sm animate-pulse"></div>
                                 </button>
 

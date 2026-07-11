@@ -1,5 +1,6 @@
 /** @type {import('tailwindcss').Config} */
 export default {
+  darkMode: 'class',
   content: [
     "./index.html",
     "./src/**/*.{js,ts,jsx,tsx}",
@@ -20,6 +21,19 @@ export default {
           main: 'hsl(var(--color-surface-main) / <alpha-value>)',
           alt: 'hsl(var(--color-surface-alt) / <alpha-value>)',
           highlight: 'hsl(var(--color-surface-highlight) / <alpha-value>)',
+        },
+        sidebar: {
+          accent: 'var(--sidebar-accent)',
+          border: 'var(--sidebar-border)',
+          bg: 'var(--sidebar-bg)',
+          text: 'var(--sidebar-text)',
+          'text-muted': 'var(--sidebar-text-muted)',
+        },
+        header: {
+          accent: 'var(--header-accent)',
+          border: 'var(--header-border)',
+          bg: 'var(--header-bg)',
+          text: 'var(--header-text)',
         },
         accent: {
           primary: 'hsl(var(--color-accent-primary) / <alpha-value>)',

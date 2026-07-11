@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { getStorageItem } from '../../lib/storage';
 import { 
     Globe, Copy, Settings, ShieldCheck, Zap, DownloadCloud
 } from 'lucide-react';
@@ -28,8 +29,9 @@ export const TelephonyPanel = () => {
 
     useEffect(() => {
         if (!currentUser) return;
+        const tenantId = getStorageItem('nexus_server_id') || currentUser?.serverId || 'srv-001';
         fetch('/api/collections/telephony_settings', {
-            headers: { 'X-Tenant-ID': 'srv-001', 'X-User-ID': currentUser.id }
+            headers: { 'X-Tenant-ID': tenantId, 'X-User-ID': currentUser.id }
         })
         .then(r => r.ok ? r.json() : null)
         .then((data: any) => {
@@ -291,11 +293,12 @@ export const TelephonyPanel = () => {
 
     const handleSaveAgentCredentials = async () => {
         setIsSavingProfile(true);
+        const tenantId = getStorageItem('nexus_server_id') || currentUser?.serverId || 'srv-001';
         
         try {
             await fetch('/api/collections/telephony_settings', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json', 'X-Tenant-ID': 'srv-001', 'X-User-ID': userId },
+                headers: { 'Content-Type': 'application/json', 'X-Tenant-ID': tenantId, 'X-User-ID': userId },
                 body: JSON.stringify({
                     vici_user: agentViciUser,
                     vici_pass: agentViciPass,

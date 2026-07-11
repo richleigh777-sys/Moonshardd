@@ -34,11 +34,11 @@ export const useAgentPortalLogic = () => {
         return unsubscribe;
     }, [setToast]);
 
-    const allowedTerminals = useMemo(() => {
+    const allowedWorkspaces = useMemo(() => {
         return ['action', 'money', 'settings'];
     }, [systemConfig.permissions]);
 
-    const isAllowed = useCallback((id: string) => allowedTerminals.includes(id), [allowedTerminals]);
+    const isAllowed = useCallback((id: string) => allowedWorkspaces.includes(id), [allowedWorkspaces]);
 
     useEffect(() => {
         if (!isAllowed(view)) {
@@ -46,7 +46,7 @@ export const useAgentPortalLogic = () => {
             const t = setTimeout(() => setView('action'), 0);
             return () => clearTimeout(t);
         }
-    }, [allowedTerminals, view, isAllowed]);
+    }, [allowedWorkspaces, view, isAllowed]);
 
     useEffect(() => {
         const handleNav = (e: Event) => {

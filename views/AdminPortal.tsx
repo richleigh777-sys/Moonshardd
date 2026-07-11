@@ -17,7 +17,7 @@ interface AdminPortalProps {
 
 export const AdminPortal: React.FC<AdminPortalProps> = ({ onGhostLogin }) => {
     const {
-        currentUser, view, setView, showTerminals, setShowTerminals, showCalculator, setShowCalculator,
+        currentUser, view, setView, showControls, setShowControls, showCalculator, setShowCalculator,
         showScratchpad, setShowScratchpad, isAllowed,
         sales, users, notes, health, notifications, clearNotification, productConfig, updateProductConfig,
         systemConfig, updateSystemConfig, updateUser, addUser, importSales, sendDirective,
@@ -114,8 +114,8 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({ onGhostLogin }) => {
                         handleBulkLedgerAction={handleBulkLedgerAction}
                         setToast={setToast}
                         onGhostLogin={onGhostLogin}
-                        showTerminals={showTerminals}
-                        setShowTerminals={setShowTerminals}
+                        showControls={showControls}
+                        setShowControls={setShowControls}
                     />
                 </div>
             </PortalShell>

@@ -23,7 +23,7 @@ import { OperationalRhythm } from './OperationalRhythm';
 import { SmartPitchWorkspace } from './SmartPitchWorkspace';
 import { AgentSettingsView } from './AgentSettingsView';
 
-interface AgentTerminalManagerProps {
+interface AgentViewManagerProps {
     isAllowed: (id: string) => boolean;
     mySales: Sale[];
     myNotes: Note[];
@@ -35,10 +35,10 @@ interface AgentTerminalManagerProps {
     setView: (view: string) => void;
 }
 
-export const AgentViewManager: React.FC<AgentTerminalManagerProps> = ({
+export const AgentViewManager: React.FC<AgentViewManagerProps> = ({
     isAllowed, mySales, myNotes, sales, attendance, currentUser, deleteNote, setToast, setView
 }) => {
-    const { updateSaleStatus } = useCRM();
+    
     const [activeLeadPhone, setActiveLeadPhone] = useState<string | null>(null);
     const [smartPitchContext, setSmartPitchContext] = useState<any>(null);
 

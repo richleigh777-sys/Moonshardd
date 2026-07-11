@@ -47,15 +47,27 @@
     /* Premium Elevation Shadows */
     --shadow-panel: 0 4px 20px -2px rgba(0,0,0,0.03), 0 0 0 1px rgba(0,0,0,0.02);
     --shadow-float: 0 16px 40px -4px rgba(0,0,0,0.08), 0 0 0 1px rgba(0,0,0,0.02);
+
+    /* Dynamic theme custom overrides fallbacks - Light Mode */
+    --sidebar-accent: hsl(var(--color-accent-primary));
+    --sidebar-border: hsl(var(--color-border-subtle));
+    --sidebar-bg: hsl(var(--color-surface-widget));
+    --sidebar-text: hsl(var(--color-text-primary));
+    --sidebar-text-muted: hsl(var(--color-text-muted));
+
+    --header-accent: hsl(var(--color-accent-secondary));
+    --header-border: hsl(var(--color-border-subtle));
+    --header-bg: hsl(var(--color-surface-main));
+    --header-text: hsl(var(--color-text-primary));
   }
 
   html.dark, .dark {
     /* Premium Modern Dark Mode - Midnight Obsidian */
-    --color-surface-canvas: 222 47% 7%; /* Extremely deep midnight */
-    --color-surface-widget: 222 47% 10%; /* Subtle elevation */
-    --color-surface-main: 222 47% 12%; /* Cards and Panels */
-    --color-surface-alt: 222 40% 16%; /* Inputs and Hover */
-    --color-surface-highlight: 250 50% 25%;
+    --color-surface-canvas: 215 15% 4%; /* Elegant premium true obsidian black */
+    --color-surface-widget: 215 12% 8%; /* Sophisticated deep charcoal */
+    --color-surface-main: 215 12% 10%; /* Primary cards and panels */
+    --color-surface-alt: 215 12% 14%; /* Hover/Input recess */
+    --color-surface-highlight: 250 50% 20%;
     
     --color-accent-primary: 250 85% 70%;
     --color-accent-secondary: 330 80% 70%;
@@ -64,8 +76,8 @@
     --color-text-secondary: 210 20% 75%; /* Soft Silver */
     --color-text-muted: 210 15% 55%; /* Dimmed Silver */
     
-    --color-border-subtle: 222 30% 18%; /* Dark crisp borders */
-    --color-border-strong: 222 30% 28%;
+    --color-border-subtle: 215 12% 15%; /* Subtle dark borders */
+    --color-border-strong: 215 12% 24%;
     
     /* Standardized SaaS Status Colors */
     --color-status-success: 150 70% 45%; 
@@ -87,6 +99,18 @@
     /* Premium Dark Elevation Shadows */
     --shadow-panel: 0 8px 30px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.03);
     --shadow-float: 0 24px 50px rgba(0,0,0,0.8), 0 0 0 1px rgba(255,255,255,0.05);
+
+    /* Dynamic theme custom overrides fallbacks - Dark Mode */
+    --sidebar-accent: hsl(var(--color-accent-primary));
+    --sidebar-border: hsl(var(--color-border-subtle));
+    --sidebar-bg: hsl(var(--color-surface-widget));
+    --sidebar-text: hsl(var(--color-text-primary));
+    --sidebar-text-muted: hsl(var(--color-text-muted));
+
+    --header-accent: hsl(var(--color-accent-secondary));
+    --header-border: hsl(var(--color-border-subtle));
+    --header-bg: hsl(var(--color-surface-main));
+    --header-text: hsl(var(--color-text-primary));
   }
 
   html {
@@ -185,8 +209,8 @@
   width: 100%;
 }
 .react-datepicker {
-  background-color: var(--color-surface-main) !important;
-  border: 1px solid var(--color-border-subtle) !important;
+  background-color: hsl(var(--color-surface-main)) !important;
+  border: 1px solid hsl(var(--color-border-subtle)) !important;
   border-radius: 16px !important;
   box-shadow: var(--shadow-float) !important;
   font-family: inherit !important;
@@ -194,8 +218,8 @@
   overflow: hidden;
 }
 .react-datepicker__header {
-  background-color: var(--color-surface-alt) !important;
-  border-bottom: 1px solid var(--color-border-subtle) !important;
+  background-color: hsl(var(--color-surface-alt)) !important;
+  border-bottom: 1px solid hsl(var(--color-border-subtle)) !important;
   border-top-left-radius: 16px !important;
   border-top-right-radius: 16px !important;
   padding-top: 12px !important;
@@ -221,7 +245,7 @@
 .react-datepicker__month-select, .react-datepicker__year-select {
   background-color: hsl(var(--color-surface-main)) !important;
   color: hsl(var(--color-text-primary)) !important;
-  border: 1px solid var(--color-border-subtle) !important;
+  border: 1px solid hsl(var(--color-border-subtle)) !important;
   border-radius: 8px !important;
   padding: 4px 8px !important;
   outline: none !important;

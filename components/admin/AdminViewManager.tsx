@@ -29,7 +29,7 @@ import { CRMAuditDashboard } from './CRMAuditDashboard';
 import { UniqueSalesPool } from './UniqueSalesPool';
 import { WorkflowEngine } from './WorkflowEngine';
 
-interface AdminTerminalManagerProps {
+interface AdminViewManagerProps {
     isAllowed: (id: string) => boolean;
     setView: (view: string) => void;
     currentUser: User;
@@ -51,15 +51,15 @@ interface AdminTerminalManagerProps {
     handleBulkLedgerAction: (ids: string[], action: string, payload?: any) => Promise<void>;
     setToast: (toast: ToastMessage | null) => void;
     onGhostLogin: (userId: string) => void;
-    showTerminals: boolean;
-    setShowTerminals: (show: boolean) => void;
+    showControls: boolean;
+    setShowControls: (show: boolean) => void;
 }
 
-export const AdminViewManager: React.FC<AdminTerminalManagerProps> = ({
+export const AdminViewManager: React.FC<AdminViewManagerProps> = ({
     isAllowed, setView, currentUser, sales, users, notes, health, productConfig, updateProductConfig,
     systemConfig, updateSystemConfig, updateUser, addUser, importSales, sendDirective,
     runDiagnostic, testUplink, handleLedgerAction, handleBulkLedgerAction, setToast,
-    onGhostLogin, showTerminals, setShowTerminals
+    onGhostLogin, showControls, setShowControls
 }) => {
     const [activeActionTab, setActiveActionTab] = React.useState('pipeline');
     const [activeMoneyTab, setActiveMoneyTab] = React.useState('payroll');
@@ -153,8 +153,8 @@ export const AdminViewManager: React.FC<AdminTerminalManagerProps> = ({
                     
                     <TabContent value="overview" className="w-full h-full overflow-y-auto">
                         <AdminDashboard 
-                            onToggleTerminals={() => setShowTerminals(!showTerminals)} 
-                            areTerminalsOpen={showTerminals} 
+                            onToggleControls={() => setShowControls(!showControls)} 
+                            areControlsOpen={showControls} 
                             onBroadcast={async (msg, urgency) => { 
                                 await sendDirective({ message: msg, urgency, senderName: currentUser?.name || 'Admin' }); 
                                 sfx.playSubmit(); 

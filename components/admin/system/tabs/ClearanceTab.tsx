@@ -11,7 +11,7 @@ interface ClearanceTabProps {
     isSuperAdmin: boolean;
 }
 
-const AGENT_TERMINALS = [
+const AGENT_WORKSPACES = [
     { id: 'dash', label: 'Dashboard' },
     { id: 'dialer', label: 'Dialer System' },
     { id: 'comms', label: 'Chat Uplink' },
@@ -28,7 +28,7 @@ const AGENT_TERMINALS = [
     { id: 'scripts', label: 'Script Hub' },
 ];
 
-const MANAGER_TERMINALS = [
+const MANAGER_WORKSPACES = [
     { id: 'overview', label: 'Overview' },
     { id: 'nexus', label: 'Main Settings' },
     { id: 'enrollment', label: 'Order Entry' },
@@ -184,7 +184,7 @@ export const ClearanceTab: React.FC<ClearanceTabProps> = ({ config, onChange, is
                     <h5 className="text-sm font-bold uppercase tracking-wider text-text-primary font-mono">Agent Cleared Views</h5>
                 </div>
                 <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
-                    {AGENT_TERMINALS.map(term => {
+                    {AGENT_WORKSPACES.map(term => {
                         const isChecked = config.permissions?.agent?.includes(term.id);
                         return (
                             <div 
@@ -217,7 +217,7 @@ export const ClearanceTab: React.FC<ClearanceTabProps> = ({ config, onChange, is
                     <h5 className="text-sm font-bold uppercase tracking-wider text-text-primary font-mono">Manager Cleared Views</h5>
                 </div>
                 <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
-                    {MANAGER_TERMINALS.map(term => {
+                    {MANAGER_WORKSPACES.map(term => {
                         const isChecked = config.permissions?.manager?.includes(term.id);
                         const requiredLevel = config.adminLevelClearances?.[term.id] || 1;
                         return (

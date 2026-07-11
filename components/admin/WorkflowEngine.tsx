@@ -3,7 +3,7 @@ import { Plus, Play, Pause, Trash2, GitMerge, AlertCircle, Clock, Send, RotateCc
 import { Card } from '../ui/Base';
 
 export const WorkflowEngine: React.FC = () => {
-    const [workflows, setWorkflows] = useState([
+    const [workflows] = useState([
         {
             id: 'wf-1',
             name: 'Declined Sale Recovery',

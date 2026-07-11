@@ -17,7 +17,7 @@ export const useAdminPortalLogic = () => {
     } = useCRM();
     
     const [view, setView] = useState('action');
-    const [showTerminals, setShowTerminals] = useState(false);
+    const [showControls, setShowControls] = useState(false);
     const [showCalculator, setShowCalculator] = useState(false);
     const [showScratchpad, setShowScratchpad] = useState(false);
     const [conflict, setConflict] = useState<{
@@ -187,7 +187,7 @@ export const useAdminPortalLogic = () => {
     };
 
     return {
-        currentUser, view, setView, showTerminals, setShowTerminals, showCalculator, setShowCalculator,
+        currentUser, view, setView, showControls, setShowControls, showCalculator, setShowCalculator,
         showScratchpad, setShowScratchpad, isSuperAdmin, isAllowed, allowedTabs,
         sales, users, notes, health, notifications, clearNotification, productConfig, updateProductConfig,
         systemConfig, updateSystemConfig, updateUser, addUser, 

@@ -32,7 +32,7 @@ const INITIAL_ORGS: OrganizationNode[] = [
 ];
 
 export const CommandDeckTab = () => {
-    const { users, systemConfig, updateSystemConfig, updateUser, sendDirective, addNote } = useCRM();
+    const { systemConfig, updateSystemConfig, sendDirective, addNote } = useCRM();
     const { setToast } = useSystem();
     const { serverList, createNewServer, updateServer } = useServerManager();
 

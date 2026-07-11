@@ -133,7 +133,7 @@ export const GodModePanel = () => {
                     <div className="flex-1 relative p-4 overflow-y-auto custom-scrollbar">
                         <div className={`grid grid-cols-1 lg:grid-cols-2 gap-4 transition-all duration-700 ${isOptimizing ? 'scale-95 opacity-40 blur-sm' : ''}`}>
                             {memoryMap.map((mem) => (
-                                <MemoryBlock key={mem.id} {...mem} active={inspectTarget === mem.id} isDefragging={isOptimizing} onClick={() => handleInspect(mem.id)} />
+                                <MemoryBlock key={mem.id} {...mem} active={inspectTarget === mem.id} isDefragging={isOptimizing} onClick={() => setInspectTarget(mem.id as any)} />
                             ))}
                         </div>
                     </div>

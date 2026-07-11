@@ -14,6 +14,7 @@ import { Customer, Sale } from '../../types';
 import { sfx } from '../../lib/soundService';
 import { useSystem } from '../../hooks/useSystem';
 import { useAuth } from '../../hooks/useAuth';
+import { useServerManager } from '../../hooks/useServerManager';
 import { useBulkImport, CONTACT_MAPPABLES } from '../../hooks/useBulkImport';
 import { useCustomerFilters } from '../../hooks/useCustomerFilters';
 import { useCustomerMetrics } from '../../hooks/useCustomerMetrics';
@@ -128,6 +129,8 @@ import { ScrollControls } from '../widgets/sales-ledger/ScrollControls';
 export const UniqueSalesPool: React.FC = () => {
     const { customers = [], updateCustomer, deleteCustomer, addCustomer, bulkAddCustomers, sales = [], logAudit, systemConfig } = useCRM();
     const { currentUser: agent } = useAuth();
+    const { activeServer } = useServerManager();
+    const currentTenantId = activeServer?.id || agent?.serverId || 'srv-001';
     const isSuperAdmin = agent?.role === 'admin' || agent?.level === 10;
     const { setToast } = useSystem();
     const containerRef = React.useRef<HTMLDivElement>(null);
@@ -181,7 +184,7 @@ export const UniqueSalesPool: React.FC = () => {
                     headers: {
                         'X-User-ID': agent?.id || 'sys_root',
                         'X-User-Level': String(agent?.role === 'admin' ? 10 : 1),
-                        'X-Tenant-ID': 'srv-001'
+                        'X-Tenant-ID': currentTenantId
                     }
                 });
                 if (res.ok) {
@@ -195,7 +198,7 @@ export const UniqueSalesPool: React.FC = () => {
             }
         };
         fetchSmartLists();
-    }, [agent]);
+    }, [agent?.id, agent?.role, currentTenantId]);
     const [activeSmartListId, setActiveSmartListId] = useState<string | null>(null);
     const [isSavingSmartList, setIsSavingSmartList] = useState(false);
     const [newSmartListName, setNewSmartListName] = useState('');
@@ -228,7 +231,7 @@ export const UniqueSalesPool: React.FC = () => {
                     'Content-Type': 'application/json',
                     'X-User-ID': agent?.id || 'sys_root',
                     'X-User-Level': String(agent?.role === 'admin' ? 10 : 1),
-                    'X-Tenant-ID': 'srv-001'
+                    'X-Tenant-ID': currentTenantId
                 },
                 body: JSON.stringify({ id: newList.id, ...newList })
             });
@@ -254,7 +257,7 @@ export const UniqueSalesPool: React.FC = () => {
                 headers: {
                     'X-User-ID': agent?.id || 'sys_root',
                     'X-User-Level': String(agent?.role === 'admin' ? 10 : 1),
-                    'X-Tenant-ID': 'srv-001'
+                    'X-Tenant-ID': currentTenantId
                 }
             });
         } catch (err) {
@@ -615,43 +618,136 @@ export const UniqueSalesPool: React.FC = () => {
             </div>            <div id="sales-pool-table-container" className="bg-surface-main border border-border-subtle rounded-xl overflow-hidden shadow-sm flex-1 flex flex-col min-h-0 relative">
                 <ScrollControls containerRef={containerRef} />
                 <div ref={containerRef} className="overflow-auto ledger-scrollbar w-full flex-1 relative">
-                    <table className="w-full text-left border-collapse">
-                        <thead className="sticky top-0 z-30 bg-surface-main">
-                            <tr className="border-b border-border-subtle bg-surface-alt text-sm font-bold tracking-wide text-text-muted uppercase h-8">
-                                <th className="sticky left-0 z-40 bg-surface-alt px-3 py-1.5 shadow-[1px_0_0_var(--border-subtle)] min-w-[300px]">Client Identifiers</th>
-                                <th className="px-3 py-1.5 min-w-[160px]">Direct Contact</th>
-                                <th className="px-3 py-1.5 min-w-[160px]">Vital Statistics</th>
-                                <th className="px-3 py-1.5">Profile & Taxonomy</th>
-                                <th className="px-3 py-1.5">Billing & Shipping Locations</th>
-                                <th className="px-3 py-1.5 text-right">LTV Metric</th>
-                                <th className="px-3 py-1.5 text-center">Maintenance</th>
-                            </tr>
-                        </thead>
-                        <tbody className="divide-y divide-border-subtle text-sm">
+                    {(systemConfig?.workspaceConfig?.workspaceViews?.salesPoolView || 'POOL_DETAILED') === 'POOL_TILES' ? (
+                        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 p-4">
                             {filteredCustomers.length === 0 ? (
-                                <tr>
-                                    <td colSpan={7} className="px-3 py-4 text-center text-text-muted font-semibold">
-                                        <div className="flex flex-col items-center gap-2">
-                                            <AlertCircle size={24} className="text-text-muted" />
-                                            <span>No matches found in the unique customer directory.</span>
-                                        </div>
-                                    </td>
-                                </tr>
+                                <div className="col-span-full py-12 text-center text-text-muted font-semibold">
+                                    <div className="flex flex-col items-center gap-2 justify-center">
+                                        <AlertCircle size={32} className="text-text-muted" />
+                                        <span>No matches found in the unique customer directory.</span>
+                                    </div>
+                                </div>
                             ) : (
-                                paginatedCustomers.map(customer => (
-                                    <CustomerRow 
-                                        key={customer.id}
-                                        customer={customer}
-                                        metrics={customerDynamicMetrics.get(customer.id)}
-                                        isExpanded={!!expandedCustomers[customer.id]}
-                                        toggleRow={toggleRow}
-                                        setEditingCustomer={setEditingCustomer}
-                                        handleDelete={handleDelete}
-                                    />
-                                ))
+                                paginatedCustomers.map(customer => {
+                                    const metrics = customerDynamicMetrics.get(customer.id);
+                                    return (
+                                        <div 
+                                            key={customer.id}
+                                            className="p-4 rounded-2xl border border-border-subtle bg-surface-main hover:border-[#3B82F6] transition-all hover:shadow-lg flex flex-col justify-between gap-4 cursor-pointer"
+                                            onClick={() => setEditingCustomer(customer)}
+                                        >
+                                            <div>
+                                                <div className="flex justify-between items-start gap-2">
+                                                    <div>
+                                                        <h4 className="font-bold text-text-primary text-base">{customer.firstName} {customer.lastName}</h4>
+                                                        <p className="text-xs text-text-muted font-mono mt-0.5">{customer.id}</p>
+                                                    </div>
+                                                    <span className="text-xs font-bold px-2 py-0.5 rounded-full bg-[#3B82F6]/10 text-[#3B82F6]">
+                                                        {customer.tags?.[0] || 'Lead'}
+                                                    </span>
+                                                </div>
+                                                <div className="mt-3 space-y-1.5 text-xs text-text-secondary">
+                                                    <p className="flex items-center gap-1.5"><Phone size={12} className="text-text-muted"/> {customer.phone || 'N/A'}</p>
+                                                    <p className="flex items-center gap-1.5"><Mail size={12} className="text-text-muted"/> {customer.email || 'N/A'}</p>
+                                                    {customer.city && (
+                                                        <p className="flex items-center gap-1.5"><MapPin size={12} className="text-text-muted"/> {customer.city}, {customer.state}</p>
+                                                    )}
+                                                </div>
+                                            </div>
+                                            <div className="flex justify-between items-center pt-3 border-t border-border-subtle">
+                                                <div className="text-xs">
+                                                    <p className="text-text-muted uppercase tracking-wider font-bold">LTV Metric</p>
+                                                    <p className="font-bold text-status-success mt-0.5 text-sm">${metrics?.ltv || 0}</p>
+                                                </div>
+                                                <div className="flex gap-1" onClick={e => e.stopPropagation()}>
+                                                    <button onClick={() => setEditingCustomer(customer)} className="p-2 hover:bg-surface-alt rounded-lg text-text-secondary"><Edit3 size={14} /></button>
+                                                    <button onClick={() => handleDelete(customer.id, `${customer.firstName} ${customer.lastName}`)} className="p-2 hover:bg-surface-alt rounded-lg text-status-danger"><Trash2 size={14} /></button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    );
+                                })
                             )}
-                        </tbody>
-                    </table>
+                        </div>
+                    ) : (systemConfig?.workspaceConfig?.workspaceViews?.salesPoolView || 'POOL_DETAILED') === 'POOL_COMPACT' ? (
+                        <div className="flex flex-col divide-y divide-border-subtle p-2">
+                            {filteredCustomers.length === 0 ? (
+                                <div className="py-8 text-center text-text-muted font-semibold">
+                                    <div className="flex flex-col items-center gap-2 justify-center">
+                                        <AlertCircle size={24} className="text-text-muted" />
+                                        <span>No matches found.</span>
+                                    </div>
+                                </div>
+                            ) : (
+                                paginatedCustomers.map(customer => {
+                                    const metrics = customerDynamicMetrics.get(customer.id);
+                                    return (
+                                        <div 
+                                            key={customer.id}
+                                            className="py-2.5 px-3 hover:bg-surface-alt flex justify-between items-center transition-colors cursor-pointer border-b border-border-subtle"
+                                            onClick={() => setEditingCustomer(customer)}
+                                        >
+                                            <div className="flex items-center gap-3">
+                                                <div className="w-2 h-2 rounded-full bg-[#3B82F6]" />
+                                                <div>
+                                                    <span className="font-bold text-text-primary">{customer.firstName} {customer.lastName}</span>
+                                                    <span className="text-xs text-text-muted font-mono ml-2">({customer.phone})</span>
+                                                </div>
+                                            </div>
+                                            <div className="flex items-center gap-6" onClick={e => e.stopPropagation()}>
+                                                <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-surface-alt border border-border-subtle text-text-secondary">
+                                                    {customer.pipelineStages?.[0] || 'New'}
+                                                </span>
+                                                <span className="font-bold text-status-success text-xs">${metrics?.ltv || 0}</span>
+                                                <div className="flex gap-1">
+                                                    <button onClick={() => setEditingCustomer(customer)} className="p-1 hover:bg-surface-main rounded"><Edit3 size={13} /></button>
+                                                    <button onClick={() => handleDelete(customer.id, `${customer.firstName} ${customer.lastName}`)} className="p-1 hover:bg-surface-main rounded text-status-danger"><Trash2 size={13} /></button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    );
+                                })
+                            )}
+                        </div>
+                    ) : (
+                        <table className="w-full text-left border-collapse">
+                            <thead className="sticky top-0 z-30 bg-surface-main">
+                                <tr className="border-b border-border-subtle bg-surface-alt text-sm font-bold tracking-wide text-text-muted uppercase h-8">
+                                    <th className="sticky left-0 z-40 bg-surface-alt px-3 py-1.5 shadow-[1px_0_0_var(--border-subtle)] min-w-[300px]">Client Identifiers</th>
+                                    <th className="px-3 py-1.5 min-w-[160px]">Direct Contact</th>
+                                    <th className="px-3 py-1.5 min-w-[160px]">Vital Statistics</th>
+                                    <th className="px-3 py-1.5">Profile & Taxonomy</th>
+                                    <th className="px-3 py-1.5">Billing & Shipping Locations</th>
+                                    <th className="px-3 py-1.5 text-right">LTV Metric</th>
+                                    <th className="px-3 py-1.5 text-center">Maintenance</th>
+                                </tr>
+                            </thead>
+                            <tbody className="divide-y divide-border-subtle text-sm">
+                                {filteredCustomers.length === 0 ? (
+                                    <tr>
+                                        <td colSpan={7} className="px-3 py-4 text-center text-text-muted font-semibold">
+                                            <div className="flex flex-col items-center gap-2">
+                                                <AlertCircle size={24} className="text-text-muted" />
+                                                <span>No matches found in the unique customer directory.</span>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                ) : (
+                                    paginatedCustomers.map(customer => (
+                                        <CustomerRow 
+                                            key={customer.id}
+                                            customer={customer}
+                                            metrics={customerDynamicMetrics.get(customer.id)}
+                                            isExpanded={!!expandedCustomers[customer.id]}
+                                            toggleRow={toggleRow}
+                                            setEditingCustomer={setEditingCustomer}
+                                            handleDelete={handleDelete}
+                                        />
+                                    ))
+                                )}
+                            </tbody>
+                        </table>
+                    )}
                 </div>
 
                 {/* Pagination Footer */}

@@ -19,10 +19,10 @@ export const PipelineHealthWidget: React.FC<PipelineHealthWidgetProps> = ({ sale
         const counts = { 'Prospect': 0, 'Pitched': 0, 'Rebuttal': 0, 'Callback': 0, 'Sale': 0 };
         
         sales.forEach(s => {
-            if (s.status === 'Approved' || s.pipelineStatus === 'Sale') counts['Sale']++;
-            else if (s.pipelineStatus === 'Callback') counts['Callback']++;
+            if (s.status === 'Approved' || s.pipelineStatus === 'Closed Won') counts['Sale']++;
+            else if (s.pipelineStatus === 'Winback') counts['Callback']++;
             else if (s.pipelineStatus === 'Rebuttal') counts['Rebuttal']++;
-            else if (s.pipelineStatus === 'Pitched') counts['Pitched']++;
+            else if (s.pipelineStatus === 'Pitching') counts['Pitched']++;
             else counts['Prospect']++;
         });
   

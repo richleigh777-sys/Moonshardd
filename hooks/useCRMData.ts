@@ -218,7 +218,7 @@ export const useCRMData = (currentUser: User | null) => {
 
             currentSales.forEach(sale => {
                 const timeInStage = now - sale.timestamp;
-                const isStale = (sale.status === 'Pending' || sale.pipelineStatus === 'Contacted – Interested') && timeInStage > STAGNATION_THRESHOLD;
+                const isStale = (sale.status === 'Pending' || sale.pipelineStatus === 'Pitching') && timeInStage > STAGNATION_THRESHOLD;
                 
                 if (isStale && sale.agentId === currentUser.id) {
                     const existingTask = currentTasks.find(t => t.linkedSaleId === sale.id && t.status === 'pending');

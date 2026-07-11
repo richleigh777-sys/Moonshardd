@@ -11,7 +11,7 @@ import { sfx } from '../../lib/soundService';
 import { useCRM } from '../../hooks/useCRM';
 import { useAgentStats } from './hooks/useAgentStats';
 import { useLeadRouter } from '../../hooks/useLeadRouter';
-import { IntelligentTerminalMap } from './IntelligentTerminalMap';
+import { IntelligentWorkspaceMap } from './IntelligentWorkspaceMap';
 
 interface OperationalRhythmProps {
     notes: Note[];
@@ -337,8 +337,8 @@ export const OperationalRhythm: React.FC<OperationalRhythmProps> = ({ notes, sal
                 </Card>
             )}
 
-            {/* Intelligent Terminal Routing & Diagnostic Gateway */}
-            <IntelligentTerminalMap 
+            {/* Intelligent Workspace Routing & Diagnostic Gateway */}
+            <IntelligentWorkspaceMap 
                 sales={sales} 
                 notes={notes} 
                 currentUser={currentUser} 

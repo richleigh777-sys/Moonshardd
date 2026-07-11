@@ -4,7 +4,7 @@ import { SystemHealth, SystemConfig } from '../../types';
 import { DashboardHeader } from './dashboard/DashboardHeader';
 import { usePresence } from '../../hooks/usePresence';
 import { ChevronDown, ChevronUp } from 'lucide-react';
-import { DashboardTerminalZone } from './dashboard/financials/DashboardTerminalZone';
+import { DashboardWorkspaceZone } from './dashboard/financials/DashboardWorkspaceZone';
 import { DashboardLiveMetrics } from './dashboard/DashboardLiveMetrics';
 import { DailyVibesWidget } from './dashboard/DailyVibesWidget';
 
@@ -21,8 +21,8 @@ import { PredictiveAlerts } from './tools/PredictiveAlerts';
 import { SystemConfigPanel } from './SystemConfigPanel';
 
 interface AdminDashboardProps {
-  onToggleTerminals?: () => void;
-  areTerminalsOpen?: boolean;
+  onToggleControls?: () => void;
+  areControlsOpen?: boolean;
   onBroadcast?: (msg: string, urgency: 'Routine' | 'Immediate' | 'Flash') => Promise<void>;
   health?: SystemHealth;
   onRunDiagnostics?: () => void;
@@ -35,8 +35,8 @@ interface AdminDashboardProps {
 }
 
 export const AdminDashboard: React.FC<AdminDashboardProps> = ({
-  onToggleTerminals,
-  areTerminalsOpen,
+  onToggleControls,
+  areControlsOpen,
   onBroadcast,
   health,
   onRunDiagnostics,
@@ -67,12 +67,12 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
     <div className="space-y-4 animate-in fade-in duration-700 h-full flex flex-col overflow-y-auto p-4">
       <DashboardHeader
         health={health}
-        onToggleTerminals={onToggleTerminals}
-        areTerminalsOpen={areTerminalsOpen}
+        onToggleControls={onToggleControls}
+        areControlsOpen={areControlsOpen}
       />
 
-      <DashboardTerminalZone
-          areTerminalsOpen={areTerminalsOpen || false}
+      <DashboardWorkspaceZone
+          areWorkspacesOpen={areControlsOpen || false}
           onBroadcast={onBroadcast}
           health={health}
           onRunDiagnostics={onRunDiagnostics}

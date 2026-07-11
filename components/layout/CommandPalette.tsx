@@ -77,7 +77,7 @@ export const CommandPalette: React.FC = () => {
     const commands = useMemo(() => {
         const leadCommands = (sales || []).slice(0, 10).map(sale => ({
             id: `lead-${sale.id}`,
-            label: `Jump to Lead: ${sale.customer.firstName} ${sale.customer.lastName}`,
+            label: `Jump to Lead: ${sale.customer}`,
             icon: UserIcon,
             action: () => document.dispatchEvent(new CustomEvent('OPEN_CUSTOMER_DOSSIER', { detail: sale.id }))
         }));

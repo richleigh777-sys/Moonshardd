@@ -12,6 +12,7 @@ import { ImportWizard } from './sales-ledger/ImportWizard';
 import { CustomerProfileModal } from '../modals/CustomerProfileModal';
 import { LogisticsModal } from '../modals/LogisticsModal';
 import { useSalesLedgerUI } from './sales-ledger/useSalesLedgerUI';
+import { useCRM } from '../../hooks/useCRM';
 import { useSystem } from '../../hooks/useSystem';
 import { useAuth } from '../../hooks/useAuth';
 import { sfx } from '../../lib/soundService';
@@ -40,10 +41,19 @@ export const SalesLedger: React.FC<SalesLedgerProps> = ({ sales = [], onAction, 
         columnPreferences, setColumnPreferences, fileInputRef, importConfig, setImportConfig,
         columnMapping, setColumnMapping, isImporting, handleFileTrigger, handleFileChange,
         autoMapColumns, executeImport, paginatedSales, totalPages, currentPage, setCurrentPage,
-        handlePageChange, handleRefresh, handleBulkCommand, handleSaveBulk, isLoading, hasMore, fetchNextPage
+        handlePageChange, handleBulkCommand, handleSaveBulk, isLoading, hasMore, fetchNextPage
     } = useSalesLedgerUI(sales, onImport, onBulkAction);
 
-    // const { systemConfig } = useCRM();
+    const { systemConfig } = useCRM();
+
+    React.useEffect(() => {
+        const layout = systemConfig?.workspaceConfig?.workspaceViews?.salesLedgerView || 'LEDGER_CLASSIC';
+        if (layout === 'LEDGER_COMPACT') {
+            setDensity('compact');
+        } else {
+            setDensity('comfortable');
+        }
+    }, [systemConfig?.workspaceConfig?.workspaceViews?.salesLedgerView, setDensity]);
 
     const [selectedProfilePhone, setSelectedProfilePhone] = React.useState<string | null>(null);
     const [logisticsSale, setLogisticsSale] = React.useState<Sale | null>(null);

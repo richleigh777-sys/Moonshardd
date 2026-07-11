@@ -52,7 +52,7 @@ export const IdentityTab: React.FC<IdentityTabProps> = ({ formData, setFormData 
                 </div>
                 <div className="flex-1">
                     <h4 className="text-[15px] font-bold text-text-primary group-hover:text-accent-primary transition-colors">System Activation Status</h4>
-                    <p className="text-sm text-text-muted tracking-wide mt-0.5">Toggle visibility in Agent Terminal systems</p>
+                    <p className="text-sm text-text-muted tracking-wide mt-0.5">Toggle visibility in Agent Workspace systems</p>
                 </div>
                 <div className={`w-14 h-7 rounded-full p-1 relative transition-colors ${formData.active ? 'bg-status-success' : 'bg-border-strong'}`}>
                     <div className={`absolute top-1 w-5 h-5 rounded-full bg-white shadow transition-all ${formData.active ? 'left-8' : 'left-1'}`}></div>

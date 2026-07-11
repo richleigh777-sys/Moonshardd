@@ -1,101 +1,74 @@
-
-import { useState, useMemo } from 'react';
+import { getStorageItem } from "../../../../../lib/storage";
+import { useState, useEffect, useMemo } from 'react';
 import { useCRM } from '../../../../../hooks/useCRM';
-import { usePayoutHistory } from '../../../../widgets/payouts/usePayoutHistory';
-import { getDailyHours, calculateSalePayout } from '../../../../../views/utils/crmLogic';
 
 export const usePayrollData = () => {
-    const { sales, attendance, systemConfig, users } = useCRM();
-    const agents = useMemo(() => users.filter(u => u.role === 'agent'), [users]);
+    const { currentUser } = useCRM();
+    const [agents, setAgents] = useState<any[]>([]);
+    const [payrollData, setPayrollData] = useState<any[]>([]);
+    const [metrics, setMetrics] = useState<any>({
+        pendingLiability: 0,
+        lastPayout: 0,
+        activeEarners: 0,
+        topEarner: { name: 'None', amount: 0 },
+        avgCostOfSale: 0
+    });
     
     const [selectedAgentId, setSelectedAgentId] = useState<string>('All');
     const [adjustments, setAdjustments] = useState<Record<string, number>>({});
-    
-    // Base Timeline Generation
-    const baseTimeline = usePayoutHistory(sales, attendance, systemConfig, agents[0] || null);
+    const [loading, setLoading] = useState<boolean>(true);
 
-    // Core Calculation Logic
-    const payrollData = useMemo(() => {
-        return baseTimeline.map(cycle => {
-            const agentPayouts = agents.map(agent => {
-                const adjKey = `${cycle.id}_${agent.id}`;
-                const manualAdj = adjustments[adjKey] || 0;
+    useEffect(() => {
+        let isMounted = true;
+        setLoading(true);
 
-                const agentSales = sales.filter(s => 
-                    s.agentId === agent.id && 
-                    s.status === 'Approved' && 
-                    s.timestamp >= cycle.startDate.getTime() && 
-                    s.timestamp <= cycle.endDate.getTime()
-                );
-
-                const enrichedSales = agentSales.map(s => {
-                    const hours = getDailyHours(agent.id, s.timestamp, attendance);
-                    const payout = calculateSalePayout(s, hours, systemConfig, agent.commissionRate, agent.shippingDeductionOverride);
-                    return { sale: s, payout };
+        const fetchPayroll = async () => {
+            try {
+                const res = await fetch('/api/financials/payroll', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Tenant-ID': getStorageItem('nexus_server_id') || currentUser?.serverId || 'srv-001',
+                        'X-User-Level': String(currentUser?.level || 1),
+                        'X-User-ID': String(currentUser?.id || 'unknown'),
+                        'X-User-Team': currentUser?.team || 'Alpha'
+                    },
+                    body: JSON.stringify({ adjustments })
                 });
 
-                const totalVol = enrichedSales.reduce((acc, s) => acc + Number(s.sale.amount), 0);
-                const comm = enrichedSales.reduce((acc, s) => acc + s.payout.commission, 0);
-                const spiff = enrichedSales.reduce((acc, s) => acc + s.payout.spiff, 0);
-                const deduction = enrichedSales.reduce((acc, s) => acc + s.payout.shippingDeduction, 0);
-                
-                const net = comm + spiff - deduction + manualAdj;
+                if (!res.ok) {
+                    throw new Error(`Server returned status ${res.status}`);
+                }
 
-                return {
-                    agent,
-                    volume: totalVol,
-                    commission: comm,
-                    spiff,
-                    deduction,
-                    manualAdj,
-                    salesCount: agentSales.length,
-                    netPayout: net,
-                    enrichedSales
-                };
-            }).filter(p => p.volume > 0 || p.manualAdj !== 0).sort((a, b) => b.netPayout - a.netPayout);
+                const data = await res.json();
+                if (data.success && isMounted) {
+                    setAgents(data.agents || []);
+                    setPayrollData(data.payrollData || []);
+                    setMetrics(data.metrics);
+                }
+            } catch (err) {
+                console.error('[CRM:usePayrollData] Failed to fetch server-computed payroll:', err);
+            } finally {
+                if (isMounted) setLoading(false);
+            }
+        };
 
-            const totalLiability = agentPayouts.reduce((acc, p) => acc + p.netPayout, 0);
-            const totalRevenue = agentPayouts.reduce((acc, p) => acc + p.volume, 0);
+        fetchPayroll();
 
-            return {
-                ...cycle,
-                agentPayouts,
-                totalLiability,
-                totalRevenue,
-                costOfSale: totalRevenue > 0 ? (totalLiability / totalRevenue) * 100 : 0
-            };
-        });
-    }, [baseTimeline, agents, sales, systemConfig, adjustments, attendance]);
+        return () => {
+            isMounted = false;
+        };
+    }, [adjustments, currentUser?.id, currentUser?.serverId, currentUser?.level, currentUser?.team]);
 
     // Filtering
     const filteredPayroll = useMemo(() => {
         if (selectedAgentId === 'All') return payrollData;
         return payrollData.map(cycle => ({
             ...cycle,
-            agentPayouts: cycle.agentPayouts.filter(p => p.agent.id === selectedAgentId),
-            totalLiability: cycle.agentPayouts.filter(p => p.agent.id === selectedAgentId).reduce((acc, p) => acc + p.netPayout, 0)
+            agentPayouts: (cycle.agentPayouts || []).filter((p: any) => p.agent?.id === selectedAgentId),
+            totalLiability: (cycle.agentPayouts || []).filter((p: any) => p.agent?.id === selectedAgentId).reduce((acc: number, p: any) => acc + p.netPayout, 0)
         })).filter(c => c.agentPayouts.length > 0);
     }, [payrollData, selectedAgentId]);
-
-    // Metrics HUD
-    const metrics = useMemo(() => {
-        const openCycles = payrollData.filter(c => c.status === 'Open' || c.status === 'Processing');
-        const paidCycles = payrollData.filter(c => c.status === 'Paid');
-        
-        const pendingLiability = openCycles.reduce((acc, c) => acc + c.totalLiability, 0);
-        const lastPayout = paidCycles.length > 0 ? paidCycles[0].totalLiability : 0;
-        const currentCycle = openCycles[0];
-        const activeEarners = currentCycle ? currentCycle.agentPayouts.length : 0;
-        const avgCostOfSale = payrollData.length > 0 ? payrollData.reduce((acc, c) => acc + c.costOfSale, 0) / payrollData.length : 0;
-        
-        let topEarner = { name: 'None', amount: 0 };
-        if (currentCycle && currentCycle.agentPayouts.length > 0) {
-            const top = currentCycle.agentPayouts[0]; 
-            topEarner = { name: top.agent.name, amount: top.netPayout };
-        }
-
-        return { pendingLiability, lastPayout, activeEarners, topEarner, avgCostOfSale };
-    }, [payrollData]);
 
     const setAdjustment = (cycleId: string, agentId: string, amount: number) => {
         const key = `${cycleId}_${agentId}`;
@@ -108,6 +81,7 @@ export const usePayrollData = () => {
         metrics,
         selectedAgentId,
         setSelectedAgentId,
-        setAdjustment
+        setAdjustment,
+        loading
     };
 };

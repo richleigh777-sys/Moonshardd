@@ -24,6 +24,17 @@ const broadcast = (event: any) => {
     originalBroadcast(event);
 };
 
+// Refraction Metric & Heartbeat telemetry state
+let totalRequests = 0;
+let totalLatencyMs = 0;
+let maxLatencyMs = 0;
+
+const systemHeartbeats = {
+    dripCampaignsWorker: { lastRun: Date.now(), status: "HEALTHY", error: null as string | null },
+    inactivityCheckWorker: { lastRun: Date.now(), status: "HEALTHY", error: null as string | null },
+    queryEngine: { status: "HEALTHY", lastPing: Date.now() },
+};
+
 // Workflow & Automation Core
 function startAutomatedWorkers() {
     // Simulates the chron job scanning for "Closed Lost" 30-Day Recovery leads
@@ -33,6 +44,9 @@ function startAutomatedWorkers() {
             
             // Run 90-day inactivity check for customers
             await check90DayInactivity();
+            systemHeartbeats.inactivityCheckWorker.lastRun = Date.now();
+            systemHeartbeats.inactivityCheckWorker.status = "HEALTHY";
+            systemHeartbeats.inactivityCheckWorker.error = null;
             
             // Identify leads due for automated drip campaigns
             const result = await query(
@@ -42,6 +56,10 @@ function startAutomatedWorkers() {
                  WHERE d.status = 'Pending' AND d.next_action_date <= NOW() 
                  LIMIT 5`
             );
+            systemHeartbeats.dripCampaignsWorker.lastRun = Date.now();
+            systemHeartbeats.dripCampaignsWorker.status = "HEALTHY";
+            systemHeartbeats.dripCampaignsWorker.error = null;
+
             if (result.rows.length > 0) {
                 console.log(`[Automation] Triggering ${result.rows.length} drip sequence(s)...`);
                 // Here we would integrate Twilio / SendGrid trigger logic
@@ -51,8 +69,12 @@ function startAutomatedWorkers() {
                     await query(`UPDATE drip_campaigns SET status = 'In Progress', sequence_step = sequence_step + 1 WHERE id = $1`, [row.campaign_id]);
                 }
             }
-        } catch (err) {
+        } catch (err: any) {
             console.error("[Automation Error]:", err);
+            systemHeartbeats.dripCampaignsWorker.status = "STALLED";
+            systemHeartbeats.dripCampaignsWorker.error = err.message;
+            systemHeartbeats.inactivityCheckWorker.status = "STALLED";
+            systemHeartbeats.inactivityCheckWorker.error = err.message;
         }
     }, 300000); // Check every 5 minutes to reduce Cloud Run/SQL costs
 }
@@ -159,6 +181,30 @@ async function startServer() {
   }
 
   app.use(cors({ origin: process.env.CORS_ORIGIN || '*' })); // Restrict CORS
+  
+  // --- Backend Refraction Tracker Middleware ---
+  app.use((req, res, next) => {
+      totalRequests++;
+      const start = process.hrtime.bigint();
+      
+      const traceId = `refract-${Math.random().toString(36).substring(2, 11)}`;
+      res.setHeader('X-Refraction-Trace-ID', traceId);
+      
+      res.on('finish', () => {
+          const end = process.hrtime.bigint();
+          const latencyMs = Number(end - start) / 1000000;
+          
+          totalLatencyMs += latencyMs;
+          if (latencyMs > maxLatencyMs) {
+              maxLatencyMs = latencyMs;
+          }
+          
+          if (process.env.DEBUG_REFRACTION === 'true') {
+              console.log(`[Backend Refraction] ${req.method} ${req.path} -> Trace: ${traceId} | Latency: ${latencyMs.toFixed(2)}ms`);
+          }
+      });
+      next();
+  });
   
   // Security Headers
   // helmet removed
@@ -449,12 +495,272 @@ async function startServer() {
       }
   });
 
+  app.post("/api/financials/payroll", async (req, res) => {
+      try {
+          const tenantCheck = await getValidatedTenantId(req);
+          if (tenantCheck.error) {
+              return res.status(403).json({ error: tenantCheck.error });
+          }
+          const tenantId = tenantCheck.tenantId;
+          const { adjustments = {} } = req.body;
+
+          const preciseRound = (num: number, decimals: number = 2): number => {
+              const factor = Math.pow(10, decimals);
+              return Math.round((num + Number.EPSILON) * factor) / factor;
+          };
+
+          const getDailyHours = (agentId: string, timestamp: number, attendanceRecords: any[]) => {
+              if (!attendanceRecords || attendanceRecords.length === 0) return 0;
+              const d = new Date(timestamp);
+              const dayStart = new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime();
+              const dayEnd = dayStart + 86400000;
+              const historicalSeconds = attendanceRecords
+                  .filter((a: any) => a.agentId === agentId && a.type === 'CLOCK_OUT' && a.timestamp >= dayStart && a.timestamp < dayEnd)
+                  .reduce((acc: number, curr: any) => acc + (Number(curr.duration) || 0), 0);
+              return preciseRound(historicalSeconds / 3600, 2);
+          };
+
+          const calculateSalePayout = (sale: any, dailyHours: number, sysConfig: any, agentCommissionRate?: number, agentShippingDeduction?: number) => {
+              const amount = preciseRound(Number(sale.amount) || 0);
+              const shippingDeduction = preciseRound(agentShippingDeduction !== undefined ? Number(agentShippingDeduction) : (Number(sysConfig.shippingDeduction) || 0));
+              const commissionableBasis = Math.max(0, amount - shippingDeduction);
+              const rateToUse = Number(agentCommissionRate) || Number(sysConfig.baseCommission) || 15;
+              const baseCommission = preciseRound(commissionableBasis * (rateToUse / 100));
+              
+              let maxEligibleSpiff = 0;
+              let activeSpiff = null;
+              if (sysConfig.spiffRules && sysConfig.spiffRules.length > 0) {
+                  for (const rule of [...sysConfig.spiffRules].sort((a,b) => b.threshold - a.threshold)) {
+                      if (amount >= rule.threshold && dailyHours >= rule.minHours) {
+                          if (rule.amount > maxEligibleSpiff) {
+                              maxEligibleSpiff = rule.amount;
+                              activeSpiff = rule;
+                          }
+                      }
+                  }
+              }
+              const net = Math.max(0, baseCommission + maxEligibleSpiff);
+              return { 
+                  net: preciseRound(net), 
+                  commission: preciseRound(baseCommission), 
+                  commissionableBasis: preciseRound(commissionableBasis), 
+                  spiff: maxEligibleSpiff, 
+                  activeSpiffRule: activeSpiff,
+                  shippingDeduction
+              };
+          };
+
+          // Fetch collections
+          let allSales: any[] = [];
+          let allAttendance: any[] = [];
+          let allUsers: any[] = [];
+          let sysConfig: any = { 
+              shiftStart: "08:00", shiftEnd: "17:00", cutoffDay1: 15, cutoffDay2: 0,
+              baseCommission: 15, breakDurationMinutes: 60, ecoMode: false, telephonyEnabled: false
+          };
+
+          if (!db) {
+              allSales = (memoryDB.get('sales') || []).filter((x: any) => x.serverId === tenantId || x.tenantId === tenantId);
+              allAttendance = (memoryDB.get('attendance') || []).filter((x: any) => x.serverId === tenantId || x.tenantId === tenantId);
+              allUsers = (memoryDB.get('users') || []).filter((x: any) => x.serverId === tenantId || x.tenantId === tenantId);
+              const sysConfigDocs = memoryDB.get('systemConfig') || [];
+              if (sysConfigDocs.length > 0) {
+                  sysConfig = sysConfigDocs[0];
+              }
+          } else {
+              const result = await db.select().from(schema.crmDocuments)
+                  .where(and(
+                      inArray(schema.crmDocuments.collection_name, ['sales', 'attendance', 'users', 'systemConfig']),
+                      sql`${schema.crmDocuments.data}->>'deletedAt' IS NULL`
+                  ));
+              
+              for (const row of result) {
+                  const data = row.data as any;
+                  if (row.collection_name === 'sales') {
+                      if (data.serverId === tenantId || data.tenantId === tenantId) {
+                          allSales.push(data);
+                      }
+                  } else if (row.collection_name === 'users') {
+                      if (data.serverId === tenantId || data.tenantId === tenantId) {
+                          allUsers.push(data);
+                      }
+                  } else if (row.collection_name === 'attendance') {
+                      if (data.serverId === tenantId || data.tenantId === tenantId) {
+                          allAttendance.push(data);
+                      }
+                  } else if (row.collection_name === 'systemConfig') {
+                      if (data.serverId === tenantId || data.tenantId === tenantId) {
+                          sysConfig = data;
+                      }
+                  }
+              }
+          }
+
+          // Filter for active agents
+          const agents = allUsers.filter(u => u.role?.toLowerCase() === 'agent');
+
+          const cycles: any[] = [];
+          const now = new Date();
+          const cutoffDay1 = sysConfig.cutoffDay1 || 15;
+
+          // Generate last 6 months of cycles
+          for (let i = 0; i < 6; i++) {
+              const cursorDate = new Date(now.getFullYear(), now.getMonth() - i, 1);
+              const year = cursorDate.getFullYear();
+              const month = cursorDate.getMonth();
+              const lastDayOfMonth = new Date(year, month + 1, 0).getDate();
+
+              // Cycle 1: 1st to cutoff
+              const c1Start = new Date(year, month, 1, 0, 0, 0, 0);
+              const c1End = new Date(year, month, cutoffDay1, 23, 59, 59, 999);
+              const c1Pay = new Date(year, month, 20, 12, 0, 0);
+
+              // Cycle 2: cutoff+1 to end of month
+              const c2Start = new Date(year, month, cutoffDay1 + 1, 0, 0, 0, 0);
+              const c2End = new Date(year, month, lastDayOfMonth, 23, 59, 59, 999);
+              const c2Pay = new Date(year, month + 1, 5, 12, 0, 0);
+
+              [
+                  { s: c1Start, e: c1End, p: c1Pay, l: 'Cycle 1' },
+                  { s: c2Start, e: c2End, p: c2Pay, l: 'Cycle 2' }
+              ].forEach(cycle => {
+                  let status = 'Open';
+                  if (now > cycle.p) status = 'Paid';
+                  else if (now > cycle.e) status = 'Processing';
+
+                  cycles.push({
+                      id: `${year}-${month}-${cycle.l.replace(' ', '')}`,
+                      label: `${cycle.l} (${cycle.s.toLocaleDateString('en-US', { month: 'short' })})`,
+                      startDate: cycle.s,
+                      endDate: cycle.e,
+                      payDate: cycle.p,
+                      status
+                  });
+              });
+          }
+
+          // Compute payroll mapping cycles
+          const payrollData = cycles.map(cycle => {
+              const agentPayouts = agents.map(agent => {
+                  const adjKey = `${cycle.id}_${agent.id}`;
+                  const manualAdj = adjustments[adjKey] || 0;
+
+                  const agentSales = allSales.filter(s => 
+                      s.agentId === agent.id && 
+                      s.status === 'Approved' && 
+                      s.timestamp >= new Date(cycle.startDate).getTime() && 
+                      s.timestamp <= new Date(cycle.endDate).getTime()
+                  );
+
+                  const enrichedSales = agentSales.map(s => {
+                      const hours = getDailyHours(agent.id, s.timestamp, allAttendance);
+                      const payout = calculateSalePayout(s, hours, sysConfig, agent.commissionRate, agent.shippingDeductionOverride);
+                      return { sale: s, payout };
+                  });
+
+                  const totalVol = enrichedSales.reduce((acc, s) => acc + Number(s.sale.amount || 0), 0);
+                  const comm = enrichedSales.reduce((acc, s) => acc + s.payout.commission, 0);
+                  const spiff = enrichedSales.reduce((acc, s) => acc + s.payout.spiff, 0);
+                  const deduction = enrichedSales.reduce((acc, s) => acc + (s.payout.shippingDeduction || 0), 0);
+                  
+                  const net = comm + spiff - deduction + manualAdj;
+
+                  return {
+                      agent,
+                      volume: totalVol,
+                      commission: comm,
+                      spiff,
+                      deduction,
+                      manualAdj,
+                      salesCount: agentSales.length,
+                      netPayout: net,
+                      enrichedSales
+                  };
+              }).filter(p => p.volume > 0 || p.manualAdj !== 0).sort((a, b) => b.netPayout - a.netPayout);
+
+              const totalLiability = agentPayouts.reduce((acc, p) => acc + p.netPayout, 0);
+              const totalRevenue = agentPayouts.reduce((acc, p) => acc + p.volume, 0);
+
+              return {
+                  ...cycle,
+                  agentPayouts,
+                  totalLiability,
+                  totalRevenue,
+                  costOfSale: totalRevenue > 0 ? (totalLiability / totalRevenue) * 100 : 0
+              };
+          });
+
+          // Metrics computation
+          const openCycles = payrollData.filter(c => c.status === 'Open' || c.status === 'Processing');
+          const paidCycles = payrollData.filter(c => c.status === 'Paid');
+          
+          const pendingLiability = openCycles.reduce((acc, c) => acc + c.totalLiability, 0);
+          const lastPayout = paidCycles.length > 0 ? paidCycles[0].totalLiability : 0;
+          const currentCycle = openCycles[0];
+          const activeEarners = currentCycle ? currentCycle.agentPayouts.length : 0;
+          const avgCostOfSale = payrollData.length > 0 ? payrollData.reduce((acc, c) => acc + c.costOfSale, 0) / payrollData.length : 0;
+          
+          let topEarner = { name: 'None', amount: 0 };
+          if (currentCycle && currentCycle.agentPayouts.length > 0) {
+              const top = currentCycle.agentPayouts[0]; 
+              topEarner = { name: top.agent.name, amount: top.netPayout };
+          }
+
+          const metrics = { pendingLiability, lastPayout, activeEarners, topEarner, avgCostOfSale };
+
+          res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate'); // Ensure real-time consistency
+          res.json({ success: true, agents, payrollData, metrics });
+      } catch (err: any) {
+          console.error("[CRM:FinancialOps] Failed payroll aggregation:", err);
+          res.status(500).json({ error: err.message });
+      }
+  });
+
   // API Routes
   app.get("/api/health", async (req, res) => {
+    const startDb = Date.now();
+    let dbConnected = false;
+    let dbLatencyMs = -1;
+    
     try {
-      // Un-comment to test real database connection:
-      // const dbResult = await query('SELECT NOW()');
-      res.json({ status: "ok", mode: "secure-api" });
+      if (process.env.DATABASE_URL) {
+         await query('SELECT NOW()');
+         dbConnected = true;
+         dbLatencyMs = Date.now() - startDb;
+         systemHeartbeats.queryEngine.status = "HEALTHY";
+         systemHeartbeats.queryEngine.lastPing = Date.now();
+      }
+    } catch (dbErr: any) {
+      console.error("[CRM:Watchdog] Database ping failed:", dbErr.message);
+      systemHeartbeats.queryEngine.status = "DEGRADED";
+    }
+
+    try {
+      const memory = process.memoryUsage();
+      const avgLatency = totalRequests > 0 ? (totalLatencyMs / totalRequests) : 0;
+      
+      res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate'); // Avoid stale caching
+      res.json({
+        status: dbConnected ? "HEALTHY" : "DEGRADED",
+        mode: "secure-api",
+        uptime: process.uptime(),
+        memory: {
+          rss: Math.round(memory.rss / (1024 * 1024)), // MB
+          heapUsed: Math.round(memory.heapUsed / (1024 * 1024)), // MB
+          heapTotal: Math.round(memory.heapTotal / (1024 * 1024)), // MB
+        },
+        database: {
+          connected: dbConnected,
+          latencyMs: dbLatencyMs,
+          poolActive: !!db,
+        },
+        heartbeats: systemHeartbeats,
+        refractionMetrics: {
+          totalRequests,
+          averageResponseTimeMs: parseFloat(avgLatency.toFixed(3)),
+          maxResponseTimeMs: parseFloat(maxLatencyMs.toFixed(3))
+        }
+      });
     } catch (e: any) {
       res.status(500).json({ status: "error", message: e.message });
     }
@@ -482,8 +788,58 @@ async function startServer() {
   });
 
   // --- STRICT DRIZZLE ORM POSTGRESQL IMPLEMENTATION START ---
-  const sensitiveCollections = ['sales', 'users', 'customers', 'notes', 'audit', 'tasks'];
+  const tenantIsolatedCollections = [
+      'sales', 'users', 'customers', 'notes', 'audit', 'tasks', 'audit_logs',
+      'attendance', 'directives', 'messages', 'channels', 'notifications',
+      'callLogs', 'scripts', 'sheets', 'accounts', 'dialer_lists', 'systemConfig', 'config'
+  ];
   const memoryDB = new Map<string, any[]>();
+
+  // --- SECURE ZERO-TRUST SERVER-SIDE TENANT ENFORCEMENT ENGINE ---
+  async function getValidatedTenantId(req: express.Request): Promise<{ tenantId: string; error?: string }> {
+      const tenantId = String(req.headers['x-tenant-id'] || 'srv-001');
+      const userLevel = parseInt(String(req.headers['x-user-level'] || '1'), 10);
+      const userId = String(req.headers['x-user-id'] || 'unknown');
+
+      // Level 10 Super Admins (or system root) can access any tenant/server
+      if (userLevel >= 10 || userId === 'sys_root') {
+          return { tenantId };
+      }
+
+      // Try to resolve the user's registered serverId to enforce strict matching
+      let officialTenantId = '';
+
+      // 1. Check if serverId/tenantId is embedded in their ID (e.g., agent-srv-001-1)
+      const idMatch = userId.match(/srv-\d+/i);
+      if (idMatch) {
+          officialTenantId = idMatch[0].toLowerCase();
+      }
+
+      // 2. Fetch from crm_documents if db is initialized
+      if (db) {
+          try {
+              const uDoc = await db.select().from(schema.crmDocuments).where(
+                  and(
+                      eq(schema.crmDocuments.collection_name, 'users'),
+                      sql`${schema.crmDocuments.data}->>'id' = ${userId}`
+                  )
+              ).limit(1);
+              if (uDoc.length > 0 && uDoc[0].data && (uDoc[0].data as any).serverId) {
+                  officialTenantId = (uDoc[0].data as any).serverId;
+              }
+          } catch (e: any) {
+              console.warn('[Tenant Enforcement] DB lookup warning:', e.message);
+          }
+      }
+
+      // 3. Strictly validate if we have resolved their registered server
+      if (officialTenantId && officialTenantId.toLowerCase() !== tenantId.toLowerCase()) {
+          console.warn(`[Security Alert: Tenant Mismatch] User ${userId} requested claimed tenant '${tenantId}' but is registered under '${officialTenantId}'`);
+          return { tenantId: '', error: `Security Violation: Your account (${userId}) is registered under tenant '${officialTenantId}' and is not authorized to access tenant '${tenantId}'.` };
+      }
+
+      return { tenantId };
+  }
 
   app.get("/api/omnisearch", async (req, res) => {
       try {
@@ -578,7 +934,11 @@ async function startServer() {
           const namesStr = req.query.names as string;
           if (!namesStr) return res.json({});
           const collections = namesStr.split(',').filter(Boolean);
-          const tenantId = String(req.headers['x-tenant-id'] || 'srv-001');
+          const tenantCheck = await getValidatedTenantId(req);
+          if (tenantCheck.error) {
+              return res.status(403).json({ error: tenantCheck.error });
+          }
+          const tenantId = tenantCheck.tenantId;
           const userLevel = parseInt(String(req.headers['x-user-level'] || '1'), 10);
           const userId = String(req.headers['x-user-id'] || 'unknown');
           const action = req.query.action || req.headers['x-action'];
@@ -592,7 +952,7 @@ async function startServer() {
               for (const col of collections) {
                   let items = memoryDB.get(col) || [];
                   items = items.filter(d => !d.deletedAt);
-                  if (sensitiveCollections.includes(col)) {
+                  if (tenantIsolatedCollections.includes(col)) {
                       items = items.filter(d => d.serverId === tenantId || d.tenantId === tenantId);
                   }
                   if (userLevel < 10 && (col === 'sales' || col === 'customers' || col === 'audit_logs')) {
@@ -624,9 +984,9 @@ async function startServer() {
               // We must apply RBAC only to restricted collections, allowing public ones
               let rbacFilter;
               if (userLevel >= 5 && userTeam) {
-                  rbacFilter = sql`(${schema.crmDocuments.data}->>'agentId' = ${userId} OR crm_documents.data->>'assignedTo' = ${userId} OR ${schema.crmDocuments.data}->>'agentTeam' = ${userTeam})`;
+                  rbacFilter = sql`(${schema.crmDocuments.data}->>'agentId' = ${userId} OR ${schema.crmDocuments.data}->>'assignedTo' = ${userId} OR ${schema.crmDocuments.data}->>'agentTeam' = ${userTeam})`;
               } else {
-                  rbacFilter = sql`${schema.crmDocuments.data}->>'agentId' = ${userId} OR crm_documents.data->>'assignedTo' = ${userId}`;
+                  rbacFilter = sql`(${schema.crmDocuments.data}->>'agentId' = ${userId} OR ${schema.crmDocuments.data}->>'assignedTo' = ${userId})`;
               }
               
               conditions.push(sql`(
@@ -635,6 +995,13 @@ async function startServer() {
               )`);
           }
 
+          if (userLevel < 10) {
+              const isolatedColsStr = tenantIsolatedCollections.map(c => `'${c}'`).join(",");
+              conditions.push(sql`(
+                  ${schema.crmDocuments.collection_name} NOT IN (${sql.raw(isolatedColsStr)})
+                  OR (${schema.crmDocuments.data}->>'serverId' = ${tenantId} OR ${schema.crmDocuments.data}->>'tenantId' = ${tenantId})
+              )`);
+          }
           const result = await db.select().from(schema.crmDocuments)
               .where(and(...conditions));
 
@@ -646,7 +1013,7 @@ async function startServer() {
           for (const row of result) {
               const data = row.data as any;
               // Tenant-level isolation for sensitive collections
-              if (sensitiveCollections.includes(row.collection_name)) {
+              if (tenantIsolatedCollections.includes(row.collection_name)) {
                   if (data.serverId === tenantId || data.tenantId === tenantId) {
                       grouped[row.collection_name].push(data);
                   }
@@ -769,6 +1136,11 @@ async function startServer() {
         try {
             const userId = req.headers['x-user-id'] as string;
             if (!userId) return res.status(401).json({ error: 'Unauthorized' });
+            if (!db) {
+                const list = memoryDB.get('agent_scratchpads') || [];
+                const item = list.find(x => x.user_id === userId);
+                return res.json({ data: item || null });
+            }
             const results = await db.select().from(schema.crmAgentScratchpads).where(eq(schema.crmAgentScratchpads.user_id, userId));
             return res.json({ data: results.length ? results[0] : null });
         } catch (err) {
@@ -780,6 +1152,11 @@ async function startServer() {
         try {
             const userId = req.headers['x-user-id'] as string;
             if (!userId) return res.status(401).json({ error: 'Unauthorized' });
+            if (!db) {
+                const list = memoryDB.get('telephony_settings') || [];
+                const item = list.find(x => x.user_id === userId);
+                return res.json({ data: item || null });
+            }
             const results = await db.select().from(schema.crmTelephonySettings).where(eq(schema.crmTelephonySettings.user_id, userId));
             return res.json({ data: results.length ? results[0] : null });
         } catch (err) {
@@ -791,6 +1168,11 @@ async function startServer() {
         try {
             const userId = req.headers['x-user-id'] as string;
             if (!userId) return res.status(401).json({ error: 'Unauthorized' });
+            if (!db) {
+                const list = memoryDB.get('agent_work_states') || [];
+                const item = list.find(x => x.user_id === userId);
+                return res.json({ data: item || null });
+            }
             const results = await db.select().from(schema.crmAgentWorkStates).where(eq(schema.crmAgentWorkStates.user_id, userId));
             return res.json({ data: results.length ? results[0] : null });
         } catch (err) {
@@ -800,6 +1182,10 @@ async function startServer() {
     }
     if (collection === 'disposition_reasons') {
         try {
+            if (!db) {
+                const list = memoryDB.get('disposition_reasons') || [];
+                return res.json({ data: list.map(r => ({ id: r.id, reason: r.reason })) });
+            }
             const results = await db.select().from(schema.crmDispositionReasons);
             return res.json({ data: results.map(r => ({ id: r.id, reason: r.reason })) });
         } catch (err) {
@@ -811,7 +1197,11 @@ async function startServer() {
         try {
             const userId = req.headers['x-user-id'] as string;
             if (!userId) return res.status(401).json({ error: 'Unauthorized' });
-            
+            if (!db) {
+                const list = memoryDB.get('smart_lists') || [];
+                const results = list.filter(x => x.user_id === userId);
+                return res.json({ data: results.map(r => ({ id: r.id, name: r.name, filters: r.filters })) });
+            }
             const results = await db.select().from(schema.crmSavedFilters).where(eq(schema.crmSavedFilters.user_id, userId));
             return res.json({ data: results.map(r => ({ id: r.id, name: r.name, filters: r.filters })) });
         } catch (err) {
@@ -821,13 +1211,21 @@ async function startServer() {
     }
 
       try {
-          const tenantId = String(req.headers['x-tenant-id'] || 'srv-001');
+          const tenantCheck = await getValidatedTenantId(req);
+          if (tenantCheck.error) {
+              return res.status(403).json({ error: tenantCheck.error });
+          }
+          const tenantId = tenantCheck.tenantId;
           const collectionName = req.params.collection;
           const userLevel = parseInt(String(req.headers['x-user-level'] || '1'), 10);
           const userId = String(req.headers['x-user-id'] || 'unknown');
           const action = req.query.action || req.headers['x-action'];
 
           const userTeam = String(req.headers['x-user-team'] || '');
+
+          if (userLevel < 10 && collectionName === 'master_identity_index') {
+              return res.status(403).json({ error: "Forbidden: Agents cannot access the Master Identity Index." });
+          }
 
           if (userLevel < 10 && action === 'export') {
               return res.status(403).json({ error: "Forbidden: Level 10 Clearance Required for Export." });
@@ -838,6 +1236,9 @@ async function startServer() {
           if (!db) {
               rows = memoryDB.get(collectionName) || [];
               rows = rows.filter(d => !d.deletedAt);
+              if (tenantIsolatedCollections.includes(collectionName)) {
+                  rows = rows.filter(d => d.serverId === tenantId || d.tenantId === tenantId);
+              }
               if (userLevel < 10 && (collectionName === 'sales' || collectionName === 'customers' || collectionName === 'audit_logs')) {
                   if (userLevel >= 5 && userTeam) {
                       rows = rows.filter(d => d.agentId === userId || d.assignedTo === userId || d.agentTeam === userTeam);
@@ -866,7 +1267,7 @@ async function startServer() {
                   }
               }
 
-              if (sensitiveCollections.includes(collectionName)) {
+              if (tenantIsolatedCollections.includes(collectionName)) {
                   conditions.push(sql`(${schema.crmDocuments.data}->>'serverId' = ${tenantId} OR ${schema.crmDocuments.data}->>'tenantId' = ${tenantId})`);
               }
 
@@ -911,7 +1312,7 @@ async function startServer() {
           }
 
           let finalData = rows;
-          if (sensitiveCollections.includes(collectionName)) {
+          if (tenantIsolatedCollections.includes(collectionName)) {
               finalData = rows.filter(data => data.serverId === tenantId || data.tenantId === tenantId);
           }
 
@@ -972,10 +1373,17 @@ async function startServer() {
 
   app.post("/api/collections/:collection/bulk", async (req, res) => {
       try {
-          const tenantId = String(req.headers['x-tenant-id'] || 'srv-001');
+          const tenantCheck = await getValidatedTenantId(req);
+          if (tenantCheck.error) {
+              return res.status(403).json({ error: tenantCheck.error });
+          }
+          const tenantId = tenantCheck.tenantId;
           const userLevel = parseInt(String(req.headers['x-user-level'] || '1'), 10);
           const userId = String(req.headers['x-user-id'] || 'unknown');
           const userTeam = String(req.headers['x-user-team'] || '');
+          if (userLevel < 10 && req.params.collection === "master_identity_index") {
+              return res.status(403).json({ error: "Forbidden: Agents cannot modify the Master Identity Index." });
+          }
           const isRestricted = userLevel < 10 && ['sales', 'customers', 'audit_logs'].includes(req.params.collection);
 
           const items = Array.isArray(req.body) ? req.body : req.body.items || [];
@@ -994,6 +1402,10 @@ async function startServer() {
               for (const item of items) {
                   const id = item.id || `id_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
                   const payload = { ...item, id, updated_at: new Date().toISOString() };
+                  if (tenantIsolatedCollections.includes(req.params.collection) ) {
+                      payload.serverId = tenantId;
+                      payload.tenantId = tenantId;
+                  }
                   const idx = itemsList.findIndex(x => x.id === id);
                   if (idx >= 0) {
                       const existing = itemsList[idx];
@@ -1045,6 +1457,10 @@ async function startServer() {
                   }
                   
                   const payload = { ...item, id, updated_at: new Date().toISOString() };
+                  if (tenantIsolatedCollections.includes(req.params.collection) ) {
+                      payload.serverId = tenantId;
+                      payload.tenantId = tenantId;
+                  }
                   validRecords.push({ id, collection_name: req.params.collection, data: payload });
                   
                   const impersonatedAdminId = req.headers['x-impersonated-by-admin-id'];
@@ -1122,6 +1538,9 @@ async function startServer() {
           const userLevel = parseInt(String(req.headers['x-user-level'] || '1'), 10);
           const userId = String(req.headers['x-user-id'] || 'unknown');
           const userTeam = String(req.headers['x-user-team'] || '');
+          if (userLevel < 10 && req.params.collection === "master_identity_index") {
+              return res.status(403).json({ error: "Forbidden: Agents cannot modify the Master Identity Index." });
+          }
           const isRestricted = userLevel < 10 && ['sales', 'customers', 'audit_logs'].includes(req.params.collection);
 
           const ids = Array.isArray(req.body) ? req.body : req.body?.ids || [];
@@ -1258,6 +1677,18 @@ async function startServer() {
             const userId = req.headers['x-user-id'] as string;
             if (!userId) return res.status(401).json({ error: 'Unauthorized' });
             const payload = req.body;
+            if (!db) {
+                const list = memoryDB.get('agent_scratchpads') || [];
+                const existingIdx = list.findIndex(x => x.user_id === userId);
+                const newData = { user_id: userId, data: payload.data || {}, updated_at: new Date() };
+                if (existingIdx >= 0) {
+                    list[existingIdx] = newData;
+                } else {
+                    list.push(newData);
+                }
+                memoryDB.set('agent_scratchpads', list);
+                return res.json({ success: true });
+            }
             await db.insert(schema.crmAgentScratchpads).values({
                 user_id: userId,
                 data: payload.data || {}
@@ -1279,6 +1710,26 @@ async function startServer() {
             const userId = req.headers['x-user-id'] as string;
             if (!userId) return res.status(401).json({ error: 'Unauthorized' });
             const payload = req.body;
+            if (!db) {
+                const list = memoryDB.get('telephony_settings') || [];
+                const existingIdx = list.findIndex(x => x.user_id === userId);
+                const newData = {
+                    user_id: userId,
+                    vici_user: payload.vici_user,
+                    vici_pass: payload.vici_pass,
+                    vici_phone: payload.vici_phone,
+                    vici_dialer_url: payload.vici_dialer_url,
+                    vici_campaign_id: payload.vici_campaign_id,
+                    updated_at: new Date()
+                };
+                if (existingIdx >= 0) {
+                    list[existingIdx] = newData;
+                } else {
+                    list.push(newData);
+                }
+                memoryDB.set('telephony_settings', list);
+                return res.json({ success: true });
+            }
             await db.insert(schema.crmTelephonySettings).values({
                 user_id: userId,
                 vici_user: payload.vici_user,
@@ -1308,6 +1759,25 @@ async function startServer() {
             const userId = req.headers['x-user-id'] as string;
             if (!userId) return res.status(401).json({ error: 'Unauthorized' });
             const payload = req.body;
+            if (!db) {
+                const list = memoryDB.get('agent_work_states') || [];
+                const existingIdx = list.findIndex(x => x.user_id === userId);
+                const newData = {
+                    user_id: userId,
+                    is_on_break: payload.is_on_break || false,
+                    break_start_time: payload.break_start_time ? new Date(payload.break_start_time) : null,
+                    total_break_time: payload.total_break_time || 0,
+                    break_reason: payload.break_reason || null,
+                    updated_at: new Date()
+                };
+                if (existingIdx >= 0) {
+                    list[existingIdx] = newData;
+                } else {
+                    list.push(newData);
+                }
+                memoryDB.set('agent_work_states', list);
+                return res.json({ success: true });
+            }
             await db.insert(schema.crmAgentWorkStates).values({
                 user_id: userId,
                 is_on_break: payload.is_on_break || false,
@@ -1333,6 +1803,22 @@ async function startServer() {
     if (collection === 'disposition_reasons') {
         try {
             const payload = req.body;
+            if (!db) {
+                const list = memoryDB.get('disposition_reasons') || [];
+                const existingIdx = list.findIndex(x => x.id === payload.id);
+                const newData = {
+                    id: payload.id,
+                    reason: payload.reason,
+                    updated_at: new Date()
+                };
+                if (existingIdx >= 0) {
+                    list[existingIdx] = newData;
+                } else {
+                    list.push(newData);
+                }
+                memoryDB.set('disposition_reasons', list);
+                return res.json({ success: true, id: payload.id });
+            }
             await db.insert(schema.crmDispositionReasons).values({
                 id: payload.id,
                 reason: payload.reason
@@ -1355,6 +1841,24 @@ async function startServer() {
             if (!userId) return res.status(401).json({ error: 'Unauthorized' });
             
             const payload = req.body;
+            if (!db) {
+                const list = memoryDB.get('smart_lists') || [];
+                const existingIdx = list.findIndex(x => x.id === payload.id);
+                const newData = {
+                    id: payload.id,
+                    user_id: userId,
+                    name: payload.name,
+                    filters: payload.filters,
+                    updated_at: new Date()
+                };
+                if (existingIdx >= 0) {
+                    list[existingIdx] = newData;
+                } else {
+                    list.push(newData);
+                }
+                memoryDB.set('smart_lists', list);
+                return res.json({ success: true, id: payload.id });
+            }
             await db.insert(schema.crmSavedFilters).values({
                 id: payload.id,
                 user_id: userId,
@@ -1376,10 +1880,17 @@ async function startServer() {
     }
 
       try {
-          const tenantId = String(req.headers['x-tenant-id'] || 'srv-001');
+          const tenantCheck = await getValidatedTenantId(req);
+          if (tenantCheck.error) {
+              return res.status(403).json({ error: tenantCheck.error });
+          }
+          const tenantId = tenantCheck.tenantId;
           const userLevel = parseInt(String(req.headers['x-user-level'] || '1'), 10);
           const userId = String(req.headers['x-user-id'] || 'unknown');
           const userTeam = String(req.headers['x-user-team'] || '');
+          if (userLevel < 10 && req.params.collection === "master_identity_index") {
+              return res.status(403).json({ error: "Forbidden: Agents cannot modify the Master Identity Index." });
+          }
           const isRestricted = userLevel < 10 && ['sales', 'customers', 'audit_logs'].includes(req.params.collection);
 
           let incomingBody = req.body;
@@ -1396,6 +1907,10 @@ async function startServer() {
 
           const id = incomingBody.id || `id_${Date.now()}`;
           const payload = { ...incomingBody, id, updated_at: new Date().toISOString() };
+          if (tenantIsolatedCollections.includes(req.params.collection) ) {
+              payload.serverId = tenantId;
+              payload.tenantId = tenantId;
+          }
           
           if (!db) {
               const itemsList = memoryDB.get(req.params.collection) || [];
@@ -1503,9 +2018,17 @@ async function startServer() {
 
   app.put("/api/collections/:collection/:id", async (req, res) => {
       try {
+          const tenantCheck = await getValidatedTenantId(req);
+          if (tenantCheck.error) {
+              return res.status(403).json({ error: tenantCheck.error });
+          }
+          const tenantId = tenantCheck.tenantId;
           const userLevel = parseInt(String(req.headers['x-user-level'] || '1'), 10);
           const userId = String(req.headers['x-user-id'] || 'unknown');
           const userTeam = String(req.headers['x-user-team'] || '');
+          if (userLevel < 10 && req.params.collection === "master_identity_index") {
+              return res.status(403).json({ error: "Forbidden: Agents cannot modify the Master Identity Index." });
+          }
           const isRestricted = userLevel < 10 && ['sales', 'customers', 'audit_logs'].includes(req.params.collection);
 
           if (!db) {
@@ -1519,7 +2042,16 @@ async function startServer() {
                           return res.status(403).json({ error: "Access Denied: You do not own this record." });
                       }
                   }
+                  if (tenantIsolatedCollections.includes(req.params.collection) ) {
+                      if (existing.serverId !== tenantId && existing.tenantId !== tenantId) {
+                          return res.status(403).json({ error: "Access Denied: Record belongs to another server." });
+                      }
+                  }
                   itemsList[idx] = { ...itemsList[idx], ...req.body };
+                  if (tenantIsolatedCollections.includes(req.params.collection) ) {
+                      itemsList[idx].serverId = tenantId;
+                      itemsList[idx].tenantId = tenantId;
+                  }
                   memoryDB.set(req.params.collection, itemsList);
               }
               try { broadcast({ type: 'COLLECTION_MUTATED', collectionName: req.params.collection, id: req.params.id }); } catch(e) { console.debug("Ignored exception", e); }{ /* ignore */ }
@@ -1530,6 +2062,10 @@ async function startServer() {
               eq(schema.crmDocuments.collection_name, req.params.collection),
               eq(schema.crmDocuments.id, req.params.id)
           ];
+          if (tenantIsolatedCollections.includes(req.params.collection) ) {
+              conditions.push(sql`(${schema.crmDocuments.data}->>'serverId' = ${tenantId} OR ${schema.crmDocuments.data}->>'tenantId' = ${tenantId})`);
+          }
+
           if (isRestricted) {
               if (userLevel >= 5 && userTeam) {
                   conditions.push(sql`(${schema.crmDocuments.data}->>'agentId' = ${userId} OR crm_documents.data->>'assignedTo' = ${userId} OR ${schema.crmDocuments.data}->>'agentTeam' = ${userTeam} OR ${schema.crmDocuments.data}->>'team' = ${userTeam})`);
@@ -1545,6 +2081,10 @@ async function startServer() {
           
           const existingData = existingRows[0].data as any;
           const newData = { ...existingData, ...req.body };
+          if (tenantIsolatedCollections.includes(req.params.collection) ) {
+              newData.serverId = tenantId;
+              newData.tenantId = tenantId;
+          }
 
           await db.update(schema.crmDocuments)
               .set({ data: newData, updated_at: sql`NOW()` })
@@ -1600,6 +2140,12 @@ async function startServer() {
     const { collection, id } = req.params;
     if (collection === 'disposition_reasons') {
         try {
+            if (!db) {
+                const list = memoryDB.get('disposition_reasons') || [];
+                const newList = list.filter(x => x.id !== id);
+                memoryDB.set('disposition_reasons', newList);
+                return res.json({ success: true });
+            }
             await db.delete(schema.crmDispositionReasons).where(eq(schema.crmDispositionReasons.id, id));
             return res.json({ success: true });
         } catch (err) {
@@ -1611,7 +2157,12 @@ async function startServer() {
         try {
             const userId = req.headers['x-user-id'] as string;
             if (!userId) return res.status(401).json({ error: 'Unauthorized' });
-            
+            if (!db) {
+                const list = memoryDB.get('smart_lists') || [];
+                const newList = list.filter(x => !(x.id === id && x.user_id === userId));
+                memoryDB.set('smart_lists', newList);
+                return res.json({ success: true });
+            }
             await db.delete(schema.crmSavedFilters).where(and(eq(schema.crmSavedFilters.id, id), eq(schema.crmSavedFilters.user_id, userId)));
             return res.json({ success: true });
         } catch (err) {
@@ -1621,9 +2172,17 @@ async function startServer() {
     }
 
       try {
+          const tenantCheck = await getValidatedTenantId(req);
+          if (tenantCheck.error) {
+              return res.status(403).json({ error: tenantCheck.error });
+          }
+          const tenantId = tenantCheck.tenantId;
           const userLevel = parseInt(String(req.headers['x-user-level'] || '1'), 10);
           const userId = String(req.headers['x-user-id'] || 'unknown');
           const userTeam = String(req.headers['x-user-team'] || '');
+          if (userLevel < 10 && req.params.collection === "master_identity_index") {
+              return res.status(403).json({ error: "Forbidden: Agents cannot modify the Master Identity Index." });
+          }
           const isRestricted = userLevel < 10 && ['sales', 'customers', 'audit_logs'].includes(req.params.collection);
 
           if (!db) {
@@ -1637,6 +2196,11 @@ async function startServer() {
                           return res.status(403).json({ error: "Access Denied: You do not own this record." });
                       }
                   }
+                  if (tenantIsolatedCollections.includes(req.params.collection) ) {
+                      if (existing.serverId !== tenantId && existing.tenantId !== tenantId) {
+                          return res.status(403).json({ error: "Access Denied: Record belongs to another server." });
+                      }
+                  }
                   itemsList[idx] = { ...itemsList[idx], deletedAt: new Date().toISOString() };
                   memoryDB.set(req.params.collection, itemsList);
               }
@@ -1648,6 +2212,9 @@ async function startServer() {
               eq(schema.crmDocuments.collection_name, req.params.collection),
               eq(schema.crmDocuments.id, req.params.id)
           ];
+          if (tenantIsolatedCollections.includes(req.params.collection) ) {
+              conditions.push(sql`(${schema.crmDocuments.data}->>'serverId' = ${tenantId} OR ${schema.crmDocuments.data}->>'tenantId' = ${tenantId})`);
+          }
           
           if (isRestricted) {
               if (userLevel >= 5 && userTeam) {

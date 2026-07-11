@@ -1,5 +1,6 @@
 
 import React, { useMemo, useState, useEffect } from 'react';
+import { getStorageItem } from '../../lib/storage';
 import { User, ShoppingBag, Clock, Shield, Mail, Phone, MapPin, TrendingUp, Award, Calendar, Activity, AlertTriangle, ArrowUpRight, Zap, Link, Eye, EyeOff, UserIcon, FileText, ChevronDown, ChevronRight, CheckCircle2, Ticket, MessageSquare, PhoneOff, Tag, Copy, HeartPulse, Network, Layers } from 'lucide-react';
 import { Modal } from '../ui/Modal';
 import { Sale } from '../../types';
@@ -109,8 +110,9 @@ export const CustomerProfileModal: React.FC<CustomerProfileModalProps> = ({
         
         const fetchCustomerData = async () => {
             try {
+                const tenantId = getStorageItem('nexus_server_id') || currentUser?.serverId || 'srv-001';
                 const headers = {
-                    'X-Tenant-ID': 'srv-001',
+                    'X-Tenant-ID': tenantId,
                     'X-User-Level': String(currentUser?.level || 1),
                     'X-User-ID': String(currentUser?.id || 'unknown'),
                 };

@@ -1,4 +1,3 @@
-
 import React, { useRef, useEffect } from 'react';
 
 export interface LogEntry {
@@ -29,20 +28,22 @@ export const CommandLog: React.FC<CommandLogProps> = ({ logs, className = "" }) 
     };
 
     return (
-        <div className={`bg-surface-main/50 rounded-2xl border border-border-subtle p-3 overflow-y-auto custom-scrollbar font-mono text-sm shadow-inner ${className}`}>
+        <div className={`bg-surface-main rounded-2xl border border-border-subtle p-3 overflow-y-auto custom-scrollbar text-sm shadow-sm ${className}`}>
             {logs.length === 0 && (
                 <div className="h-full flex items-center justify-center text-text-muted italic opacity-50">
-                    System Ready... Awaiting Input
+                    No announcements yet.
                 </div>
             )}
-            <div className="flex flex-col gap-1">
+            <div className="flex flex-col gap-2">
                 {logs.map((entry) => (
-                    <div key={entry.id} className="flex gap-2 animate-in slide-in-from-left-2 duration-300">
-                        <span className="text-text-muted opacity-50 select-none">[{entry.time}]</span>
-                        <span className={`font-bold ${getUrgencyColor(entry.urgency)}  tracking-wider min-w-[70px]`}>
-                            {entry.urgency}:
-                        </span>
-                        <span className="text-text-primary break-words flex-1">{entry.msg}</span>
+                    <div key={entry.id} className="flex gap-2 p-2 rounded-lg bg-surface-alt border border-border-subtle animate-in slide-in-from-left-2 duration-300">
+                        <span className="text-text-muted text-xs mt-0.5">{entry.time}</span>
+                        <div className="flex flex-col flex-1">
+                            <span className={`font-bold text-xs ${getUrgencyColor(entry.urgency)} tracking-wide`}>
+                                {entry.urgency.toUpperCase()}
+                            </span>
+                            <span className="text-text-primary break-words mt-0.5">{entry.msg}</span>
+                        </div>
                     </div>
                 ))}
             </div>

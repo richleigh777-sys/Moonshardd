@@ -1,12 +1,11 @@
 
 import React, { useState, useEffect, useMemo } from 'react';
 import { 
-    ShieldCheck, AlertTriangle, Archive, CheckCircle, RefreshCcw, Link as LinkIcon, DollarSign, Phone, TerminalSquare
+    ShieldCheck, AlertTriangle, Archive, CheckCircle, RefreshCcw, Link as LinkIcon, DollarSign, Phone, PlaySquare
 } from 'lucide-react';
 import { Sale } from '../../types';
 import { Button, Card } from '../ui/Base';
 import { sfx } from '../../lib/soundService';
-import { useCRM } from '../../hooks/useCRM';
 import { useSystem } from '../../hooks/useSystem';
 import { MaskedData } from '../ui/MaskedData';
 
@@ -66,7 +65,7 @@ const useDunningLogic = (sales: Sale[]) => {
 };
 
 export const RecoveryEngine = ({ sales, onAction }: Props) => {
-  const { addNote, currentUser, customers, updateCustomer } = useCRM();
+  
   const { setToast } = useSystem();
   
   const dunningQueue = useDunningLogic(sales);
@@ -290,7 +289,7 @@ export const RecoveryEngine = ({ sales, onAction }: Props) => {
                     </>
                 ) : (
                     <div className="flex flex-col items-center justify-center h-full text-text-muted opacity-40">
-                        <TerminalSquare size={48} strokeWidth={1} className="mb-4" />
+                        <PlaySquare size={48} strokeWidth={1} className="mb-4" />
                         <p className="text-xs font-bold uppercase tracking-widest">Select record for recovery operations</p>
                     </div>
                 )}

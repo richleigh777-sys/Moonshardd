@@ -1,6 +1,6 @@
 
 import React, { useRef, useState } from 'react';
-import { Save, Trash2, X, Copy, Check, Terminal } from 'lucide-react';
+import { Save, Trash2, X, Copy, Check, Globe } from 'lucide-react';
 import { ScriptItem } from '../../../types';
 import { Button, Card } from '../../ui/Base';
 import { sfx } from '../../../lib/soundService';
@@ -121,7 +121,7 @@ export const ScriptEditor: React.FC<ScriptEditorProps> = ({
                 <div className="flex-1 bg-surface-alt border border-border-subtle rounded-xl p-6 relative group focus-within:border-accent-primary/50 transition-colors shadow-sm flex flex-col">
                     <div className="flex justify-between items-center mb-4 pb-3 border-b border-border-subtle">
                         <span className="text-sm font-bold text-text-muted flex items-center gap-2 tracking-wide uppercase">
-                            <Terminal size={16}/> Dialogue Source
+                            <Globe size={16}/> Dialogue Source
                         </span>
                         <button 
                             onClick={handleCopyAll} 

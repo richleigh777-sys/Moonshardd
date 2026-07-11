@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import { useAuth } from '../../hooks/useAuth';
+import { getStorageItem } from '../../lib/storage';
 import { Modal } from '../ui/Modal';
 import { 
   PhoneMissed, PhoneOff, CalendarClock, Ban, Check, X, 
@@ -14,6 +16,7 @@ interface DispositionModalProps {
 }
 
 export const DispositionModal: React.FC<DispositionModalProps> = ({ isOpen, onClose, onSave, formData }) => {
+  const { currentUser } = useAuth();
   const [outcome, setOutcome] = useState<'busy' | 'not_interested' | 'disconnected' | 'callback' | 'hold_order'>('busy');
   const [callbackDate, setCallbackDate] = useState('');
   const [callbackTime, setCallbackTime] = useState('');
@@ -25,9 +28,9 @@ export const DispositionModal: React.FC<DispositionModalProps> = ({ isOpen, onCl
 
   React.useEffect(() => {
     if (isOpen) {
-      
+      const tenantId = getStorageItem('nexus_server_id') || currentUser?.serverId || 'srv-001';
       fetch('/api/collections/disposition_reasons', {
-        headers: { 'X-Tenant-ID': 'srv-001' }
+        headers: { 'X-Tenant-ID': tenantId }
       })
       .then(r => r.ok ? r.json() : null)
       .then((data: any) => {
@@ -38,7 +41,7 @@ export const DispositionModal: React.FC<DispositionModalProps> = ({ isOpen, onCl
       .catch(console.error)
       ;
     }
-  }, [isOpen]);
+  }, [isOpen, currentUser]);
 
   const [selectedReason, setSelectedReason] = useState<string>('');
   const [showConfig, setShowConfig] = useState(false);
@@ -79,10 +82,12 @@ export const DispositionModal: React.FC<DispositionModalProps> = ({ isOpen, onCl
     const updated = [...reasons, newReason];
     setReasons(updated);
     
+    const tenantId = getStorageItem('nexus_server_id') || currentUser?.serverId || 'srv-001';
+    
     try {
       await fetch('/api/collections/disposition_reasons', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'X-Tenant-ID': 'srv-001' },
+        headers: { 'Content-Type': 'application/json', 'X-Tenant-ID': tenantId },
         body: JSON.stringify(newReason)
       });
     } catch (err) {
@@ -95,11 +100,12 @@ export const DispositionModal: React.FC<DispositionModalProps> = ({ isOpen, onCl
   const handleDeleteReason = async (idToDelete: string) => {
     const updated = reasons.filter(r => r.id !== idToDelete);
     setReasons(updated);
+    const tenantId = getStorageItem('nexus_server_id') || currentUser?.serverId || 'srv-001';
     
     try {
       await fetch(`/api/collections/disposition_reasons/${idToDelete}`, {
         method: 'DELETE',
-        headers: { 'X-Tenant-ID': 'srv-001' }
+        headers: { 'X-Tenant-ID': tenantId }
       });
     } catch (err) {
       console.error(err);
@@ -127,11 +133,12 @@ export const DispositionModal: React.FC<DispositionModalProps> = ({ isOpen, onCl
     updated[idx] = updatedReason;
     
     setReasons(updated);
+    const tenantId = getStorageItem('nexus_server_id') || currentUser?.serverId || 'srv-001';
     
     try {
       await fetch('/api/collections/disposition_reasons', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'X-Tenant-ID': 'srv-001' },
+        headers: { 'Content-Type': 'application/json', 'X-Tenant-ID': tenantId },
         body: JSON.stringify(updatedReason)
       });
     } catch (err) {

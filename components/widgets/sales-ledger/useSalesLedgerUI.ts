@@ -103,7 +103,7 @@ export const useSalesLedgerUI = (initialSales: Sale[], onImport?: (data: any) =>
         }
 
         if (command.startsWith('pipeline:')) {
-            const pipelineStatus = command.split(':')[1];
+            const pipelineStatus = command.split(':')[1] as any;
             await bulkUpdateSales(Array.from(selectedIds), { pipelineStatus });
             setToast({ title: 'Bulk Action', message: `Pipeline updated to ${pipelineStatus}`, type: "success" });
             setSelectedIds(new Set());

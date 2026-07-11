@@ -24,7 +24,7 @@ export const OpportunityRadar: React.FC<OpportunityRadarProps> = ({ sales, agent
             "Volume": relevantSales.length,
             "Value": relevantSales.reduce((a,b) => a + Number(b.amount), 0),
             "Retention": relevantSales.filter(s => s.isReorder).length,
-            "Speed": relevantSales.filter(s => s.pipelineStatus === 'Closed').length, 
+            "Speed": relevantSales.filter(s => s.pipelineStatus === 'Closed Won').length, 
             "Upsell": relevantSales.filter(s => s.amount > 100).length
         };
 
